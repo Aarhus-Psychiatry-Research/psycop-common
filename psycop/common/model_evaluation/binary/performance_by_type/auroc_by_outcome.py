@@ -1,13 +1,16 @@
-import pandas as pd
-import polars as pl
 from itertools import product
+
+import pandas as pd
 import plotnine as pn
+import polars as pl
 from sklearn.metrics import roc_auc_score
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 
 
-def create_permutations(model_names: list[str], validation_outcome_col_names: list[str]) -> list[tuple[str, str]]:
+def create_permutations(
+    model_names: list[str], validation_outcome_col_names: list[str]
+) -> list[tuple[str, str]]:
     return list(product(model_names, validation_outcome_col_names))
 
 

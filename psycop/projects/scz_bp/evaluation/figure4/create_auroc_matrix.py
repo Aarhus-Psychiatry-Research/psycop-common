@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import polars as pl
-import pandas as pd
 from confection import Config
 
 from psycop.common.model_evaluation.binary.performance_by_type.auroc_by_outcome import auroc_by_outcome, plot_auroc_by_outcome
@@ -18,17 +17,29 @@ def scz_bp_validation_outcomes() -> list[pl.DataFrame]:
             "meta_scz_diagnosis_within_0_to_1825_days_max_fallback_0": "scz_diagnosis",
             "meta_bp_diagnosis_within_0_to_1825_days_max_fallback_0": "bp_diagnosis",
             "outc_first_scz_or_bp_within_0_to_1825_days_max_fallback_0": "first_diagnosis",
-        })
+        }
+    )
 
+    meta_df = meta_df.with_columns(
+        pl.concat_str(
+            [pl.col("dw_ek_borger"), pl.col("timestamp").dt.strftime("%Y-%m-%d-%H-%M-%S")],
+            separator="-",
+        ).alias("pred_time_uuid")
+    )
 
-    meta_df = meta_df.with_columns(pl.concat_str([pl.col("dw_ek_borger"), pl.col("timestamp").dt.strftime('%Y-%m-%d-%H-%M-%S')], separator="-").alias("pred_time_uuid"))
-
-    return [meta_df.select(["pred_time_uuid", "scz_diagnosis"]), meta_df.select(["pred_time_uuid", "first_diagnosis"]), meta_df.select(["pred_time_uuid", "bp_diagnosis"])]
+    return [
+        meta_df.select(["pred_time_uuid", "scz_diagnosis"]),
+        meta_df.select(["pred_time_uuid", "first_diagnosis"]),
+        meta_df.select(["pred_time_uuid", "bp_diagnosis"]),
+    ]
 
 
 if __name__ == "__main__":
     populate_baseline_registry()
-    m = auroc_by_outcome(model_names=["sczbp/scz_only", "sczbp/structured_text_xgboost_ddpm", "sczbp/bp_only"], validation_outcomes=scz_bp_validation_outcomes())
+    m = auroc_by_outcome(
+        model_names=["sczbp/scz_only", "sczbp/structured_text_xgboost_ddpm", "sczbp/bp_only"],
+        validation_outcomes=scz_bp_validation_outcomes(),
+    )
 
     m = m.replace({"sczbp/scz_only": "Schizophrenia", "sczbp/structured_text_xgboost_ddpm": "Any diagnosis", "sczbp/bp_only": "Bipolar disorder", "scz_diagnosis": "Schizophrenia", "first_diagnosis": "Any diagnosis", "bp_diagnosis": "Bipolar disorder"})
 
