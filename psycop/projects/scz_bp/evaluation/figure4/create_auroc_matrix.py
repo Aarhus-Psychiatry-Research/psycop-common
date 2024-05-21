@@ -32,9 +32,16 @@ def scz_bp_validation_outcomes() -> list[EvaluationFrame]:
     )
 
     return [
-        EvaluationFrame(df=meta_df.select(["pred_time_uuid", "scz_diagnosis"]), outcome_col_name="scz_diagnosis"),
-        EvaluationFrame(df=meta_df.select(["pred_time_uuid", "first_diagnosis"]), outcome_col_name="first_diagnosis"),
-        EvaluationFrame(df=meta_df.select(["pred_time_uuid", "bp_diagnosis"]), outcome_col_name="bp_diagnosis")
+        EvaluationFrame(
+            df=meta_df.select(["pred_time_uuid", "scz_diagnosis"]), outcome_col_name="scz_diagnosis"
+        ),
+        EvaluationFrame(
+            df=meta_df.select(["pred_time_uuid", "first_diagnosis"]),
+            outcome_col_name="first_diagnosis",
+        ),
+        EvaluationFrame(
+            df=meta_df.select(["pred_time_uuid", "bp_diagnosis"]), outcome_col_name="bp_diagnosis"
+        ),
     ]
 
 

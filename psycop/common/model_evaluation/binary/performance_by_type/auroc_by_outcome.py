@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from dataclasses import dataclass
 from itertools import product
 
 import pandas as pd
@@ -7,28 +8,29 @@ import polars as pl
 from sklearn.metrics import roc_auc_score
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
-from dataclasses import dataclass, field
+
 
 @dataclass
-class EvaluationFrame():
+class EvaluationFrame:
     """Dataclass used for evaluating AUROC by different combinations of models
     and outcomes. Df should contain 2 columns: 1 for the prediction time uuid
     and 1 with the outcome (0/1)"""
+
     df: pl.DataFrame
     outcome_col_name: str
 
     def __post_init__(self):
         cols = self.df.columns
         if len(cols) > 2:
-            raise ValueError(f"Df should only contain 2 columns: a prediction time uuid, and an outcome column. Current columns: {self.df.columns}")
+            raise ValueError(
+                f"Df should only contain 2 columns: a prediction time uuid, and an outcome column. Current columns: {self.df.columns}"
+            )
 
 
 def create_permutations(
     model_names: list[str], validation_outcome_col_names: list[str]
 ) -> list[tuple[str, str]]:
     return list(product(model_names, validation_outcome_col_names))
-
-
 
 
 def auroc_by_outcome(
@@ -38,7 +40,6 @@ def auroc_by_outcome(
     prediction_time_uuid: str = "pred_time_uuid",
     best_run_metric: str = "all_oof_BinaryAUROC",
 ) -> pd.DataFrame:
-    
     validation_outcome_col_names = [
         validation_outcome.outcome_col_name for validation_outcome in validation_outcomes
     ]
