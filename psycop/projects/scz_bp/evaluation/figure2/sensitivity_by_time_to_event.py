@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 import pandas as pd
 import plotnine as pn
 import polars as pl
@@ -12,13 +13,16 @@ from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
 
 
 def _plot_metric_by_time_to_event(
-    df: pd.DataFrame, metric: str, plot_combined: bool = False
+    df: pd.DataFrame, metric: str, groups_to_plot: Sequence[str]
 ) -> pn.ggplot:
     df["subset"] = df["subset"].replace({"bp": "BP", "scz": "SCZ", "both": "Combined"})
     df["subset"] = pd.Categorical(df["subset"], ["BP", "SCZ", "Combined"])
-    if not plot_combined:
-        df = df.query("subset != 'Combined'").copy()
-        df["subset"] = pd.Categorical(df["subset"], ["BP", "SCZ"])
+
+    outcome2color: dict[str, str] = {"BP": "#669BBC", "SCZ": "#A8C686"}
+    outcome2color = {group: outcome2color[group] for group in groups_to_plot}
+
+    df = df[df['subset'].isin(groups_to_plot)].copy()
+    df["subset"] = pd.Categorical(df["subset"], groups_to_plot)
 
     p = (
         pn.ggplot(
@@ -36,7 +40,7 @@ def _plot_metric_by_time_to_event(
         + pn.geom_point()
         + pn.geom_linerange(size=0.5)
         + pn.geom_line()
-        + pn.scale_color_manual(values=["#669BBC", "#A8C686", "#F3A712"])
+        + pn.scale_color_manual(values=list(outcome2color.values()))
         + pn.theme_minimal()
         + pn.theme(
             legend_position=(0.3, 0.92),
@@ -101,11 +105,11 @@ def scz_bp_get_sensitivity_by_time_to_event_df(eval_ds: EvalDataset, ppr: float)
     return pd.concat(dfs)
 
 
-def scz_bp_plot_sensitivity_by_time_to_event(eval_ds: EvalDataset, ppr: float) -> pn.ggplot:
+def scz_bp_plot_sensitivity_by_time_to_event(eval_ds: EvalDataset, ppr: float, groups_to_plot: Sequence[str] = ["BP", "SCZ"]) -> pn.ggplot:
     plot_df = scz_bp_get_sensitivity_by_time_to_event_df(eval_ds=eval_ds, ppr=ppr)
     plot_df = reverse_x_axis_categories(plot_df)
 
-    p = _plot_metric_by_time_to_event(df=plot_df, metric="sensitivity") + pn.labs(
+    p = _plot_metric_by_time_to_event(df=plot_df, metric="sensitivity", groups_to_plot=groups_to_plot) + pn.labs(
         x="Months to outcome", y="Sensitivitiy", color="Predicted Positive Rate"
     )
 
@@ -113,11 +117,11 @@ def scz_bp_plot_sensitivity_by_time_to_event(eval_ds: EvalDataset, ppr: float) -
 
 
 if __name__ == "__main__":
-    best_experiment = "sczbp/text_only"
+    best_experiment = "sczbp/test_scz"
     best_pos_rate = 0.04
     eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=best_experiment)
 
-    p = scz_bp_plot_sensitivity_by_time_to_event(eval_ds=eval_ds, ppr=best_pos_rate)
+    p = scz_bp_plot_sensitivity_by_time_to_event(eval_ds=eval_ds.copy(), ppr=best_pos_rate, groups_to_plot=["BP"])
     p + pn.theme(
         legend_position=(0.4, 0.92),
         axis_text_x=pn.element_text(rotation=45, hjust=1),

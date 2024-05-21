@@ -54,7 +54,7 @@ def scz_bp_plotnine_confusion_matrix(matrix: ConfusionMatrix, outcome_text: str)
     return p
 
 
-def scz_bp_confusion_matrix_plot(eval_ds: EvalDataset, positive_rate: float) -> pn.ggplot:
+def scz_bp_confusion_matrix_plot(eval_ds: EvalDataset, positive_rate: float, outcome_text: str="SCZ or BP within 5 years") -> pn.ggplot:
     df = pd.DataFrame(
         {
             "true": eval_ds.y,
@@ -66,7 +66,7 @@ def scz_bp_confusion_matrix_plot(eval_ds: EvalDataset, positive_rate: float) -> 
     confusion_matrix = get_confusion_matrix_cells_from_df(df=df)
 
     p = scz_bp_plotnine_confusion_matrix(
-        matrix=confusion_matrix, outcome_text="SCZ or BP within 5 years"
+        matrix=confusion_matrix, outcome_text=outcome_text
     )
 
     return p
