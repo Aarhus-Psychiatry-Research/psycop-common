@@ -184,7 +184,7 @@ psycop/tests/test_eval_results/*
 *.docx
 psycop/**/*.md
 
-# Wandb
+# wandb
 /wandb
 multirun
 

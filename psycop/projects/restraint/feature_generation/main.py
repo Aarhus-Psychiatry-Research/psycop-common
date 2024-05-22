@@ -4,8 +4,6 @@ import logging
 import sys
 from pathlib import Path
 
-import wandb
-
 from psycop.common.feature_generation.application_modules.describe_flattened_dataset import (
     save_flattened_dataset_description_to_disk,
 )
@@ -72,10 +70,3 @@ if __name__ == "__main__":
         (Path(__file__).resolve().parents[1] / "wandb" / "debug-cli.onerm").mkdir(
             exist_ok=True, parents=True
         )
-
-    wandb.init(
-        project=f"{project_info.project_name}-feature-generation",
-        entity="psycop",
-        config={"feature_set_path": project_info.flattened_dataset_dir},
-        mode="offline",
-    )

@@ -2,18 +2,18 @@
 
 utilities.
 """
+
 import math
 import sys
 import tempfile
 from collections.abc import Iterable, Sequence
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Literal, Optional, Union
 
 import dill as pkl
 import numpy as np
 import pandas as pd
-import wandb
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import ConfigDict
 from sklearn.pipeline import Pipeline
@@ -277,13 +277,13 @@ def get_percent_lost(n_before: float, n_after: float) -> float:
     return round((100 * (1 - n_after / n_before)), 2)
 
 
-def output_table(output_format: str, df: pd.DataFrame) -> Union[pd.DataFrame, wandb.Table, str]:
+def output_table(
+    output_format: Literal["html", "df", "wandb_table"], df: pd.DataFrame
+) -> pd.DataFrame | str:
     """Output table in specified format."""
     if output_format == "html":
         return df.reset_index(drop=True).to_html()
     if output_format == "df":
         return df.reset_index(drop=True)
-    if output_format == "wandb_table":
-        return wandb.Table(dataframe=df)
 
     raise ValueError("Output format does not match anything that is allowed")

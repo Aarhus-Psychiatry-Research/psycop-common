@@ -2,13 +2,12 @@
 
 utility functions.
 """
+
 import functools
 import time
-import traceback
 from functools import wraps
 
 import pandas as pd
-import wandb
 from wasabi import Printer
 
 
@@ -66,8 +65,6 @@ def return_terrible_auroc_on_exception(func):  # noqa # type: ignore
         try:
             return func(*args, **kwargs)
         except Exception:
-            if wandb.run is not None:
-                wandb.alert(title="Run crashed", text=traceback.format_exc())
             return 0.5
 
     return wrapper

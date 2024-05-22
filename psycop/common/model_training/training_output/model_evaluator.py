@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import Union
 
 # Set matplotlib backend to Agg to avoid errors when running on a server in parallel
-import wandb
 from sklearn.metrics import roc_auc_score
 from sklearn.pipeline import Pipeline
 
@@ -80,7 +79,7 @@ class ModelEvaluator:
             roc_auc=roc_auc,
         )
 
-        wandb.log(
+        logging.info(
             {
                 "roc_auc_unweighted": roc_auc,
                 "lookbehind": max(self.cfg.preprocessing.pre_split.lookbehind_combination),

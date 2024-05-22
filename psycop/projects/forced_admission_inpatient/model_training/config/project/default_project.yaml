@@ -3,9 +3,9 @@ project_path: E:\shared_resources\forced_admissions_inpatient\models\full_model_
 seed: 42
 
 wandb:
-  entity: psycop # Which entity to run WanDB in.
-  mode: offline # Which mode to run WanDB in. Takes "run", "dryrun", "offline" and "disabled"
-  group: forced_admissions # Which group to run WanDB in.
+  entity: psycop # Which entity to run wandb in.
+  mode: offline # Which mode to run wandb in. Takes "run", "dryrun", "offline" and "disabled"
+  group: forced_admissions # Which group to run wandb in.
   
   
 gpu: true

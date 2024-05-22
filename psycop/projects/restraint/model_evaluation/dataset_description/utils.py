@@ -1,4 +1,5 @@
 """util functions to create table one"""
+
 import pandas as pd
 
 from psycop.common.model_training.application_modules.process_manager_setup import setup
@@ -11,7 +12,7 @@ def load_feature_set() -> pd.DataFrame:
     Returns:
         pd.DataFrame: Df with column denoting train or test
     """
-    cfg, _ = setup(
+    cfg = setup(
         config_file_name="default_config.yaml",
         application_config_dir_relative_path="../../../../../../psycop_coercion/model_training/application/config/",
     )

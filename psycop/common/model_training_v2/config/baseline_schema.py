@@ -9,7 +9,7 @@ class BaselineSchema(BaseModel):
     logger: BaselineLogger
     trainer: BaselineTrainer
 
-    @model_validator(mode="after")
+    @model_validator(mode="after")  # type: ignore
     def update_loggers(self) -> "BaselineSchema":
         self.trainer.set_logger(self.logger)
         return self

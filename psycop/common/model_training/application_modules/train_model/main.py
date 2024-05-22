@@ -1,12 +1,11 @@
 """Train a single model and evaluate it."""
+
 from pathlib import Path
 from typing import Optional
 
 import pandas as pd
-import wandb
 
 from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
-from psycop.common.model_training.application_modules.wandb_handler import WandbHandler
 from psycop.common.model_training.config_schemas.conf_utils import validate_classification_objective
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.common.model_training.data_loader.utils import load_and_filter_split_from_cfg
@@ -28,8 +27,8 @@ def get_eval_dir(cfg: FullConfigSchema) -> Path:
         eval_dir_path = (
             cfg.project.project_path
             / "pipeline_eval"
-            / wandb.run.group  # type: ignore
-            / wandb.run.name  # type: ignore
+            / cfg.wandb.run.group  # type: ignore
+            / cfg.wandb.run.name  # type: ignore
         )
 
     eval_dir_path.mkdir(parents=True, exist_ok=True)
@@ -37,9 +36,7 @@ def get_eval_dir(cfg: FullConfigSchema) -> Path:
 
 
 @return_terrible_auroc_on_exception
-def post_wandb_setup_train_model(
-    cfg: FullConfigSchema, override_output_dir: Optional[Path] = None
-) -> float:
+def train_model(cfg: FullConfigSchema, override_output_dir: Optional[Path] = None) -> float:
     """Train a single model and evaluate it."""
     eval_dir_path = get_eval_dir(cfg)
 
@@ -91,17 +88,5 @@ def post_wandb_setup_train_model(
         outcome_col_name=outcome_col_name,
         train_col_names=train_col_names,
     ).evaluate_and_save_eval_data()
-
-    return roc_auc
-
-
-def train_model(cfg: FullConfigSchema, override_output_dir: Optional[Path] = None) -> float:
-    """Main function for training a single model."""
-    WandbHandler(cfg=cfg).setup_wandb()
-
-    # Try except block ensures process doesn't die in the case of an exception,
-    # but rather logs to wandb and starts another run with a new combination of
-    # hyperparameters
-    roc_auc = post_wandb_setup_train_model(cfg, override_output_dir=override_output_dir)
 
     return roc_auc

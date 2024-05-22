@@ -6,7 +6,7 @@ from psycop.common.model_training.data_loader.data_loader import DataLoader
 from psycop.projects.restraint.model_evaluation.config import COLOURS, FIGURES_PATH, PN_THEME
 
 # load train and test splits using config
-cfg, _ = setup(
+cfg = setup(
     config_file_name="default_config.yaml",
     application_config_dir_relative_path="../../../../../../restraint/model_training/application/config/",
 )

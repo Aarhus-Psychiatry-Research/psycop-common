@@ -47,16 +47,16 @@ def train_models_in_parallel(dataset_override_path: Optional[Path] = None):
 
     # Must run cfg before main to ensure that wandb is initialized
     # before adding wandb_alert_on_exception decorator
-    cfg, wandb_group = setup(
+    cfg = setup(
         config_file_name=CONFIG_FILE_NAME,
         application_config_dir_relative_path="../../../../psycop/projects/cancer/model_training/config/",
     )
 
     main(
         cfg=cfg,
-        wandb_group=wandb_group,
         dataset_override_path=dataset_override_path,
         config_file_name=CONFIG_FILE_NAME,
+        wandb_group="PLACEHOLDER",
     )
 
 
