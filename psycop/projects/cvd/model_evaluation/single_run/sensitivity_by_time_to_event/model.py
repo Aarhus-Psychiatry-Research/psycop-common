@@ -1,5 +1,4 @@
 from collections.abc import Sequence
-from datetime import datetime
 from typing import NewType
 
 import pandas as pd

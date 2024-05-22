@@ -4,9 +4,6 @@ from dataclasses import dataclass
 import plotnine as pn
 
 from psycop.projects.cvd.model_evaluation.single_run.auroc_by.auroc_by_view import auroc_by_view
-from psycop.projects.cvd.model_evaluation.single_run.auroc_by.day_of_week_model import (
-    AUROCByDayOfWeekDF,
-)
 from psycop.projects.cvd.model_evaluation.single_run.auroc_by.month_of_year_model import (
     AUROCByMonthOfYearDF,
 )

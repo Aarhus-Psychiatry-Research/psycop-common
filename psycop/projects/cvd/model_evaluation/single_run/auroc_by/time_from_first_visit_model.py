@@ -2,8 +2,6 @@ from typing import NewType
 
 import polars as pl
 
-from psycop.common.cohort_definition import PredictionTimeFrame
-from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits_to_psychiatry
 from psycop.common.global_utils.cache import shared_cache
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalDF
 from psycop.common.model_evaluation.binary.time.timedelta_data import get_auroc_by_timedelta_df
