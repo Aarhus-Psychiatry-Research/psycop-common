@@ -8,6 +8,8 @@ from psycop.projects.cvd.model_evaluation.single_run.auroc_by.auroc_by_model imp
 from psycop.projects.cvd.model_evaluation.single_run.sensitivity_by_time_to_event.model import (
     add_age,
     parse_dw_ek_borger_from_uuid,
+)
+from psycop.projects.cvd.model_evaluation.single_run.sensitivity_by_time_to_event.parse_timestamp_from_uuid import (
     parse_timestamp_from_uuid,
 )
 
