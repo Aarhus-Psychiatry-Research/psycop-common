@@ -11,17 +11,15 @@ from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import 
 
 
 @dataclass
-class TimeFromFirstVisitPlot(SingleRunPlot):
+class AUROCByTimeFromFirstVisitPlot(SingleRunPlot):
     data: TimeFromFirstVisitDF
 
     def __call__(self) -> pn.ggplot:
         logging.info(f"Starting {self.__class__.__name__}")
 
-        # TD: Switch to Lasse's probability density plot
-
         return auroc_by_view(
             df=self.data.to_pandas(),
-            x_column="time_bin",
+            x_column="unit_from_event_binned",
             line_y_col_name="auroc",
-            xlab="Time from first visit",
+            xlab="Months from first visit",
         )

@@ -3,6 +3,7 @@ from typing import NewType
 import polars as pl
 
 from psycop.common.cohort_definition import PredictionTimeFrame
+from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits_to_psychiatry
 from psycop.common.global_utils.cache import shared_cache
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalDF
 from psycop.common.model_evaluation.binary.time.timedelta_data import get_auroc_by_timedelta_df
@@ -15,22 +16,20 @@ TimeFromFirstVisitDF = NewType("TimeFromFirstVisitDF", pl.DataFrame)
 
 
 @shared_cache.cache()
-def time_from_first_visit_model(
-    eval_df: EvalDF, pred_timestamps: PredictionTimeFrame
+def auroc_by_time_from_first_visit_model(
+    eval_df: EvalDF, all_visits_df: pl.DataFrame
 ) -> TimeFromFirstVisitDF:
-    eval_dataset = parse_dw_ek_borger_from_uuid(parse_timestamp_from_uuid(eval_df)).join(
-        pred_timestamps.stripped_df, on="dw_ek_borger"
-    )
+    eval_dataset = parse_dw_ek_borger_from_uuid(parse_timestamp_from_uuid(eval_df))
 
     first_visit = (
-        eval_dataset.sort("timestamp", descending=False)
-        .groupby("id")
+        all_visits_df.sort("timestamp", descending=False)
+        .groupby("dw_ek_borger")
         .head(1)
         .rename({"timestamp": "first_visit_timestamp"})
     )
 
     joined_df = eval_dataset.join(
-        first_visit.select(["first_visit_timestamp", "id"]), on="id"
+        first_visit.select(["first_visit_timestamp", "dw_ek_borger"]), on="dw_ek_borger", how="left"
     ).to_pandas()
 
     result_df = get_auroc_by_timedelta_df(

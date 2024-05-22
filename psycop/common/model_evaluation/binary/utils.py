@@ -6,6 +6,8 @@ from sklearn.metrics import recall_score, roc_auc_score
 
 from psycop.common.model_evaluation.binary.bootstrap_estimates import bootstrap_estimates
 
+log = logging.getLogger(__file__)
+
 
 def _auroc_within_group(
     df: pd.DataFrame, confidence_interval: bool = True, n_bootstraps: int = 100
@@ -22,7 +24,7 @@ def _auroc_within_group(
     auroc_by_group = {"auroc": auroc, "n_in_bin": len(df)}
 
     if confidence_interval:
-        logging.info("Bootstrapping estimates")
+        log.info("Bootstrapping estimates")
 
         ci = bootstrap_estimates(
             roc_auc_score,
@@ -34,7 +36,7 @@ def _auroc_within_group(
         auroc_by_group["ci_lower"] = ci[0][0]
         auroc_by_group["ci_upper"] = ci[0][1]
 
-        logging.info("Finished bootstrapping")
+        log.info("Finished bootstrapping")
 
     return pd.DataFrame(auroc_by_group, index=[0])
 
