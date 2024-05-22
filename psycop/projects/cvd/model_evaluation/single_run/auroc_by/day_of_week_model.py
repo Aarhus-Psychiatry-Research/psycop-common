@@ -5,9 +5,7 @@ import polars as pl
 from psycop.common.global_utils.cache import shared_cache
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalDF
 from psycop.common.model_evaluation.binary.time.periodic_data import roc_auc_by_periodic_time_df
-from psycop.projects.cvd.model_evaluation.single_run.sensitivity_by_time_to_event.parse_timestamp_from_uuid import (
-    parse_timestamp_from_uuid,
-)
+from psycop.projects.cvd.model_evaluation.uuid_parsers import parse_timestamp_from_uuid
 
 AUROCByDayOfWeekDF = NewType("AUROCByDayOfWeekDF", pl.DataFrame)
 
