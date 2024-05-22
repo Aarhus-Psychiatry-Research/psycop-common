@@ -87,10 +87,10 @@ def calculate_cost_benefit_estimates_stats(df: pd.DataFrame) -> pd.DataFrame:
 
     # Add the statistics to a dictionary
     stats = {
-        "median": median_value,
-        "mean": mean_value,
-        "5th percentile": percentile_5th,
-        "95th percentile": percentile_95th,
+        f"Median ({median_value}:1)": median_value,
+        f"Median ({mean_value}:1)": mean_value,
+        f"5th percentile ({percentile_5th}:1)": percentile_5th,
+        f"95th percentile ({percentile_95th}:1)": percentile_95th,
     }
 
     return pd.DataFrame(stats, index=[0])
@@ -187,7 +187,7 @@ def plot_cost_benefit_by_ppr(df: pd.DataFrame, per_true_positive: bool) -> pn.gg
     return p
 
 
-def cost_benefit_by_cost_benefit_ratio(
+def fa_cost_benefit_by_ratio_and_ppr(
     run: ForcedAdmissionOutpatientPipelineRun,
     per_true_positive: bool,
     cost_benefit_ratios: Sequence[int],
@@ -212,22 +212,6 @@ def cost_benefit_by_cost_benefit_ratio(
 
     p = plot_cost_benefit_by_ppr(plot_df, per_true_positive)
 
-    return p
-
-
-def fa_cost_benefit_by_savings_recources_ratio_and_ppr(
-    run: ForcedAdmissionOutpatientPipelineRun,
-    per_true_positive: bool,
-    cost_benefit_ratios: Sequence[int],
-    positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
-) -> pn.ggplot:
-    p = cost_benefit_by_cost_benefit_ratio(
-        run=run,
-        cost_benefit_ratios=cost_benefit_ratios,
-        per_true_positive=per_true_positive,
-        positive_rates=positive_rates,
-    )
-
     if per_true_positive:
         p.save(
             filename=run.paper_outputs.paths.figures
@@ -246,12 +230,61 @@ def fa_cost_benefit_by_savings_recources_ratio_and_ppr(
     return p
 
 
+def fa_cost_benefit_from_monte_carlo_simulations(
+    run: ForcedAdmissionOutpatientPipelineRun,
+    per_true_positive: bool,
+    positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
+    n: int = 1000,
+) -> pn.ggplot:
+    df = sample_cost_benefit_estimates(n=n)
+    stats = calculate_cost_benefit_estimates_stats(df)
+
+    dfs = []
+
+    for key, item in stats.items():
+        df = calculate_cost_benefit(
+            run=run,
+            cost_benefit_ratio=item[0],
+            per_true_positive=per_true_positive,
+            positive_rates=positive_rates,
+        )
+
+        # Convert to string to allow distinct scales for color
+        df["cost_benefit_ratio_str"] = str(key)
+        dfs.append(df)
+
+    plot_df = pd.concat(dfs)
+
+    p = plot_cost_benefit_by_ppr(plot_df, per_true_positive)
+
+    if per_true_positive:
+        p.save(
+            filename=run.paper_outputs.paths.figures
+            / "fa_outpatient_monte_carlo_cost_benefit_estimates_per_true_positives.png",
+            width=7,
+            height=7,
+        )
+    else:
+        p.save(
+            filename=run.paper_outputs.paths.figures
+            / "fa_outpatient_monte_carlo_cost_benefit_estimates_per_true_unique_outcomes.png",
+            width=7,
+            height=7,
+        )
+
+    return p
+
+
 if __name__ == "__main__":
     from psycop.projects.forced_admission_outpatient.model_eval.selected_runs import (
         get_best_eval_pipeline,
     )
 
-    fa_cost_benefit_by_savings_recources_ratio_and_ppr(
+    fa_cost_benefit_from_monte_carlo_simulations(
+        run=get_best_eval_pipeline(), per_true_positive=True
+    )
+
+    fa_cost_benefit_by_ratio_and_ppr(
         run=get_best_eval_pipeline(),
         per_true_positive=True,
         cost_benefit_ratios=[500, 40, 20, 10, 6, 3],
