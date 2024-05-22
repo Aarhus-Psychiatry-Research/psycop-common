@@ -2,6 +2,7 @@
 
 utilities.
 """
+
 import logging
 import math
 import sys
@@ -23,6 +24,8 @@ from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 
 TEST_PLOT_PATH = PSYCOP_PKG_ROOT / "test_utils" / "test_outputs" / "plots_from_tests"
 TEST_PLOT_PATH.mkdir(parents=True, exist_ok=True)
+
+log = logging.getLogger(__name__)
 
 
 class BaseModel(PydanticBaseModel):
@@ -115,7 +118,7 @@ def bin_continuous_data(
         pd.Series: Binned categories for values in data
         pd.Series: Number of samples in binned category
     """
-    logging.info("Binning data")
+    log.info("Binning data")
     labels = []
 
     if not isinstance(bins, list):
