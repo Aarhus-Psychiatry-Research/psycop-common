@@ -8,7 +8,8 @@ from .unpack_annotations import get_pretty_type_str
 
 
 @dataclass(frozen=True)
-class MyType: ...
+class MyType:
+    ...
 
 
 @dataclass(frozen=True)

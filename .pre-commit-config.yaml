@@ -7,12 +7,6 @@ repos:
       - id: ruff
         args:
           [
-            "--extend-select",
-            "F401",
-            "--extend-select",
-            "F841",
-            "--extend-select",
-            "B007",
             "--fix",
           ]
       - id: ruff-format
