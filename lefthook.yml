@@ -16,7 +16,11 @@ pre-commit:
   commands:
     format:
       glob: "*.{py}"
-      run: inv lint
+      run: ruff format {staged_files}
+      stage_fixed: true
+    lint:
+      glob: "*.{py}"
+      run: ruff --fix {staged_files}
       stage_fixed: true
 
 test:
