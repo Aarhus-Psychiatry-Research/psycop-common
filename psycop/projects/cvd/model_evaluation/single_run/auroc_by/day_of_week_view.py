@@ -11,7 +11,7 @@ from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import 
 
 
 @dataclass(frozen=True)
-class AUROCByDayOfWeek(SingleRunPlot):
+class AUROCByDayOfWeekPlot(SingleRunPlot):
     data: AUROCByDayOfWeekDF
 
     def __call__(self) -> pn.ggplot:

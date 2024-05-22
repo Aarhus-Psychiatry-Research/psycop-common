@@ -9,11 +9,11 @@ from psycop.projects.cvd.model_evaluation.single_run.sensitivity_by_time_to_even
     parse_timestamp_from_uuid,
 )
 
-AUROCByDayOfWeekDF = NewType("AUROCByDayOfWeekDF", pl.DataFrame)
+AUROCByMonthOfYearDF = NewType("AUROCByMonthOfYearDF", pl.DataFrame)
 
 
 @shared_cache.cache()
-def auroc_by_month_of_year(eval_df: EvalDF) -> AUROCByDayOfWeekDF:
+def auroc_by_month_of_year(eval_df: EvalDF) -> AUROCByMonthOfYearDF:
     eval_dataset = parse_timestamp_from_uuid(eval_df).to_pandas()
 
     df = roc_auc_by_periodic_time_df(
@@ -23,4 +23,4 @@ def auroc_by_month_of_year(eval_df: EvalDF) -> AUROCByDayOfWeekDF:
         bin_period="M",
     )
 
-    return AUROCByDayOfWeekDF(pl.from_pandas(df))
+    return AUROCByMonthOfYearDF(pl.from_pandas(df))

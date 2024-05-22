@@ -7,12 +7,15 @@ from psycop.projects.cvd.model_evaluation.single_run.auroc_by.auroc_by_view impo
 from psycop.projects.cvd.model_evaluation.single_run.auroc_by.day_of_week_model import (
     AUROCByDayOfWeekDF,
 )
+from psycop.projects.cvd.model_evaluation.single_run.auroc_by.month_of_year_model import (
+    AUROCByMonthOfYearDF,
+)
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
 
 
 @dataclass
 class AUROCByMonthOfYearPlot(SingleRunPlot):
-    data: AUROCByDayOfWeekDF
+    data: AUROCByMonthOfYearDF
 
     def __call__(self) -> pn.ggplot:
         logging.info(f"Starting {self.__class__.__name__}")
