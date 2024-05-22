@@ -13,8 +13,8 @@ AurocByAgeDF = NewType("AurocByAgeDF", pl.DataFrame)
 
 
 @shared_cache.cache()
-def auroc_by_age_model(eval_df: pl.DataFrame, age_df: pl.DataFrame) -> AurocByAgeDF:
-    eval_dataset = (add_age(parse_dw_ek_borger_from_uuid(eval_df), age_df)).to_pandas()
+def auroc_by_age_model(eval_df: pl.DataFrame, birthdays: pl.DataFrame) -> AurocByAgeDF:
+    eval_dataset = (add_age(parse_dw_ek_borger_from_uuid(eval_df), birthdays)).to_pandas()
 
     df = auroc_by_model(
         input_values=eval_dataset["age"],

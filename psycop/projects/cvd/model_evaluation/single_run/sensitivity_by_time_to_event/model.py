@@ -33,8 +33,8 @@ def parse_dw_ek_borger_from_uuid(df: pl.DataFrame) -> pl.DataFrame:
     )
 
 
-def add_age(df: pl.DataFrame, birthday_df: pl.DataFrame, age_col_name: str = "age") -> pl.DataFrame:
-    df = df.join(birthday_df, on="dw_ek_borger", how="left")
+def add_age(df: pl.DataFrame, birthdays: pl.DataFrame, age_col_name: str = "age") -> pl.DataFrame:
+    df = df.join(birthdays, on="dw_ek_borger", how="left")
     df = df.with_columns(
         ((pl.col("timestamp") - pl.col("date_of_birth")).dt.days()).alias(age_col_name)
     )
