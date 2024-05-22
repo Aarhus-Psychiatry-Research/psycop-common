@@ -1,7 +1,9 @@
 from collections.abc import Sequence
 
+import numpy as np
 import pandas as pd
 import plotnine as pn
+from scipy.stats import truncnorm
 
 from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
     generate_performance_by_ppr_table,
@@ -16,11 +18,87 @@ from psycop.projects.forced_admission_outpatient.utils.pipeline_objects import (
 )
 
 
+def _sample_float_from_truncated_log_normal(
+    mean_efficiency: float, lower_bound: float, upper_bound: float, n: int = 1000
+) -> np.ndarray:  # type: ignore
+    # Log-normal distribution parameters
+    # Calculate the parameters of the underlying normal distribution
+    # Mean (mu) and standard deviation (sigma) of the underlying normal distribution
+    sigma = 0.5  # You might need to adjust this to get the exact mean and skewness
+    mu = np.log(mean_efficiency) - 0.5 * sigma**2
+
+    # Define the truncation bounds in terms of the standard normal distribution
+    a, b = (np.log(lower_bound) - mu) / sigma, (np.log(upper_bound) - mu) / sigma
+
+    # Sample from the truncated normal distribution
+    truncated_normal = truncnorm(a, b, loc=mu, scale=sigma)
+
+    return np.exp(truncated_normal.rvs(size=n))
+
+
+def _sample_int_from_truncated_normal(
+    mean_cost: int, std_cost: int, lower_bound: int, n: int = 1000
+) -> np.ndarray:  # type: ignore
+    # Calculate the truncation bounds in terms of the standard normal distribution
+    a, b = (lower_bound - mean_cost) / std_cost, np.inf
+
+    # Create the truncated normal distribution
+    truncated_normal = truncnorm(a, b, loc=mean_cost, scale=std_cost)
+
+    return truncated_normal.rvs(size=n).astype(int)
+
+
+def sample_cost_benefit_estimates(n: int = 1000) -> pd.DataFrame:
+    # sample intervention cost 100 times - a integer from a normal distribution with mean 500 and std 100 and a lower bound of 0
+    cost_of_intervention = _sample_int_from_truncated_normal(
+        mean_cost=500, std_cost=200, lower_bound=0, n=n
+    )
+
+    # sample efficiency of intervention - a float from a log-normal distribution with mean 0.5 and bounds 0.1 and 0.9
+    efficiency_of_intervention = _sample_float_from_truncated_log_normal(
+        mean_efficiency=0.15, lower_bound=0.01, upper_bound=0.99, n=n
+    )
+
+    # sample savings from prevented outcome - a integer from a normal distribution with mean 100000 and std 25000
+    savings_from_prevented_outcome = _sample_int_from_truncated_normal(
+        mean_cost=100000, std_cost=25000, lower_bound=0, n=n
+    )
+
+    df = pd.DataFrame(
+        {
+            "cost_of_intervention": cost_of_intervention,
+            "efficiency_of_intervention": efficiency_of_intervention,
+            "savings_from_prevented_outcome": savings_from_prevented_outcome,
+            "cost_benefit_ratio": savings_from_prevented_outcome
+            * efficiency_of_intervention
+            / cost_of_intervention,
+        }
+    )
+
+    return df
+
+
+def calculate_cost_benefit_estimates_stats(df: pd.DataFrame) -> pd.DataFrame:
+    # Calculate the required statistics
+    median_value = int(df["cost_benefit_ratio"].median())
+    mean_value = int(df["cost_benefit_ratio"].mean())
+    percentile_5th = int(np.percentile(df["cost_benefit_ratio"], 5))
+    percentile_95th = int(np.percentile(df["cost_benefit_ratio"], 95))
+
+    # Add the statistics to a dictionary
+    stats = {
+        "median": median_value,
+        "mean": mean_value,
+        "5th percentile": percentile_5th,
+        "95th percentile": percentile_95th,
+    }
+
+    return pd.DataFrame(stats, index=[0])
+
+
 def calculate_cost_benefit(
     run: ForcedAdmissionOutpatientPipelineRun,
-    savings_from_prevented_outcome: int,
-    cost_of_intervention: int,
-    efficiency_of_intervention: float,
+    cost_benefit_ratio: int,
     per_true_positive: bool = True,
     positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
 ) -> pd.DataFrame:
@@ -45,18 +123,15 @@ def calculate_cost_benefit(
         for pos_rate in positive_rates
     ]
 
-    saving_per_positive_pred = savings_from_prevented_outcome * efficiency_of_intervention
-
     if per_true_positive:
         df["benefit_harm"] = (
-            (df["true_positives"] * saving_per_positive_pred)
-            - (df["false_positives"] * cost_of_intervention)
+            (df["true_positives"] * cost_benefit_ratio) - (df["false_positives"])
         ) / df["Number of positive outcomes in test set (TP+FN)"]
 
     else:
         df["benefit_harm"] = (
-            (df["Number of unique outcome events detected ≥1"] * saving_per_positive_pred)
-            - (df["false_positives"] * cost_of_intervention)
+            (df["Number of unique outcome events detected ≥1"] * cost_benefit_ratio)
+            - (df["false_positives"])
         ) / df["Total number of unique outcome events"]
 
     return df[["benefit_harm", "positive_rate"]]
@@ -70,7 +145,7 @@ def plot_cost_benefit_by_ppr(df: pd.DataFrame, per_true_positive: bool) -> pn.gg
     df = df.assign(values=pd.Categorical(df["savings_recources_ratio"], legend_order))
 
     p = (
-        pn.ggplot(df, pn.aes(x="positive_rate", y="benefit_harm", color="savings_recources_ratio"))
+        pn.ggplot(df, pn.aes(x="positive_rate", y="benefit_harm", color="cost_benefit_ratio_str"))
         + pn.geom_point()
         + pn.labs(x="Predicted Positive Rate", y="Benefit/Harm")
         + FA_PN_THEME
@@ -112,33 +187,25 @@ def plot_cost_benefit_by_ppr(df: pd.DataFrame, per_true_positive: bool) -> pn.gg
     return p
 
 
-def cost_benefit_by_savings_recources_ratio(
+def cost_benefit_by_cost_benefit_ratio(
     run: ForcedAdmissionOutpatientPipelineRun,
     per_true_positive: bool,
-    savings_from_prevented_outcome: Sequence[int],
-    cost_of_intervention: int,
-    efficiency_of_intervention: float,
+    cost_benefit_ratios: Sequence[int],
     positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
 ) -> pn.ggplot:
     dfs = []
 
-    for savings in savings_from_prevented_outcome:
+    for ratio in cost_benefit_ratios:
         df = calculate_cost_benefit(
             run=run,
-            savings_from_prevented_outcome=savings,
-            cost_of_intervention=cost_of_intervention,
-            efficiency_of_intervention=efficiency_of_intervention,
+            cost_benefit_ratio=ratio,
             per_true_positive=per_true_positive,
             positive_rates=positive_rates,
         )
 
-        savings_recources_ratio = (
-            f"{int(savings*efficiency_of_intervention)!s}:{cost_of_intervention!s}"
-        )
+        cost_benefit_ratio_str = f"{ratio}:1"
         # Convert to string to allow distinct scales for color
-        df["savings_recources_ratio"] = str(savings_recources_ratio)
-        df["cost_of_intervention"] = str(cost_of_intervention)
-        df["efficiency_of_intervention"] = str(efficiency_of_intervention)
+        df["cost_benefit_ratio_str"] = str(cost_benefit_ratio_str)
         dfs.append(df)
 
     plot_df = pd.concat(dfs)
@@ -151,16 +218,12 @@ def cost_benefit_by_savings_recources_ratio(
 def fa_cost_benefit_by_savings_recources_ratio_and_ppr(
     run: ForcedAdmissionOutpatientPipelineRun,
     per_true_positive: bool,
-    savings_from_prevented_outcome: Sequence[int],
-    cost_of_intervention: int,
-    efficiency_of_intervention: float,
+    cost_benefit_ratios: Sequence[int],
     positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
 ) -> pn.ggplot:
-    p = cost_benefit_by_savings_recources_ratio(
+    p = cost_benefit_by_cost_benefit_ratio(
         run=run,
-        savings_from_prevented_outcome=savings_from_prevented_outcome,
-        cost_of_intervention=cost_of_intervention,
-        efficiency_of_intervention=efficiency_of_intervention,
+        cost_benefit_ratios=cost_benefit_ratios,
         per_true_positive=per_true_positive,
         positive_rates=positive_rates,
     )
@@ -190,8 +253,6 @@ if __name__ == "__main__":
 
     fa_cost_benefit_by_savings_recources_ratio_and_ppr(
         run=get_best_eval_pipeline(),
-        per_true_positive=False,
-        savings_from_prevented_outcome=[1000, 40, 20, 10, 6],
-        cost_of_intervention=1,
-        efficiency_of_intervention=0.5,
+        per_true_positive=True,
+        cost_benefit_ratios=[500, 40, 20, 10, 6, 3],
     )
