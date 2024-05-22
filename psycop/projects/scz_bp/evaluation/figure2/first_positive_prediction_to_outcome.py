@@ -85,7 +85,7 @@ def scz_bp_first_pred_to_event_stratified(
     return PlotDfWithAnnotations(df=plot_df, annotation_dict=annotation_dict)
 
 
-def plot_scz_bp_first_pred_to_event_stratified(eval_ds: EvalDataset, ppr: float, groups_to_plot: Sequence[str] = ["SCZ", "BP"]) -> pn.ggplot:
+def plot_scz_bp_first_pred_to_event_stratified(eval_ds: EvalDataset, ppr: float, groups_to_plot: Sequence[str] = ["BP", "SCZ"]) -> pn.ggplot:
     df_with_annotations = scz_bp_first_pred_to_event_stratified(eval_ds=eval_ds, ppr=ppr)
     plot_df = df_with_annotations.df
     annotation_dict = df_with_annotations.annotation_dict
