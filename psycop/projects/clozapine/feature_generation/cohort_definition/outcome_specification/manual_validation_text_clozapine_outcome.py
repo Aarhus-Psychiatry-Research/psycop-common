@@ -2,15 +2,15 @@ from pathlib import Path
 
 import pandas as pd
 
+from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.common.feature_generation.utils import write_df_to_file
-from psycop.common.global_utils.sql.loader import sql_load
 
 
 def process_df_from_disk():  # noqa: ANN201
     view = "[raw_text_df_clozapine_outcome]"
     sql = "SELECT * FROM [fct]." + view
 
-    raw_text_df = sql_load(sql, chunksize=None)
+    raw_text_df = sql_load(sql)
 
     rows_no_text_on_matched_word = pd.read_parquet(
         "E:/shared_resources/clozapine/text_outcome/rows_no_text_on_matched_word_v1.parquet"

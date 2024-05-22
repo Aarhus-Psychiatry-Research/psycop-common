@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.209.0 (2024-05-15)
+
+### Feature
+
+* Mlflow query for run and get eval_df ([#911](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/911)) ([`6632b19`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6632b1945fa49dd73d4f961f1062202e89846958))
+* Update cfg experiments ([#909](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/909)) ([`e37e6f1`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e37e6f1b47b570ad801a6735ce52a73fc797dff5))
+
 ## v0.208.1 (2024-05-13)
 
 ### Fix

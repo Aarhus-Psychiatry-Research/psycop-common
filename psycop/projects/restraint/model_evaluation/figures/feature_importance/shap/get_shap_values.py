@@ -8,14 +8,14 @@ import shap
 from joblib import Memory
 from sklearn.pipeline import Pipeline
 
-from psycop.common.global_utils.cache import mem
+from psycop.common.global_utils.cache import shared_cache
 from psycop.projects.restraint.model_evaluation.config import BEST_DEV_RUN
 from psycop.projects.restraint.model_evaluation.utils.feature_name_to_readable import (
     feature_name_to_readable,
 )
 from psycop.projects.restraint.utils.best_runs import Run
 
-mem = Memory(location=".", verbose=0)  # noqa: F811
+shared_cache = Memory(location=".", verbose=0)  # noqa: F811
 
 
 def generate_shap_df_for_predictor_col(
@@ -35,7 +35,7 @@ def generate_shap_df_for_predictor_col(
     return df
 
 
-@mem.cache
+@shared_cache.cache
 def get_long_shap_df(X: pd.DataFrame, shap_values: list[float]) -> pd.DataFrame:
     predictor_cols = X.columns
     dfs = []
@@ -82,7 +82,7 @@ def generate_shap_values_from_pipe(
     return shap_values
 
 
-@mem.cache
+@shared_cache.cache
 def get_shap_bundle_for_best_run(
     run: Run = BEST_DEV_RUN,
     n_rows: Optional[int] = 10_000,
@@ -143,7 +143,7 @@ if __name__ == "__main__":
     long_shap_df = shap_bundle.get_long_shap_df()  # type: ignore
 
 
-@mem.cache
+@shared_cache.cache
 def generate_shap_values(
     features: pd.DataFrame, outcome: pd.DataFrame, pipeline: Pipeline
 ) -> bytes:

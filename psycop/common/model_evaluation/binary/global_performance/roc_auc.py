@@ -1,5 +1,7 @@
 """AUC ROC curve."""
 
+import logging
+
 import numpy as np
 import pandas as pd
 import plotnine as pn
@@ -21,6 +23,7 @@ def bootstrap_roc(
     base_fpr = np.linspace(0, 1, 101)
 
     # Bootstrap TPRs
+    logging.info("Starting bootstrapping")
     for _ in range(n_bootstraps):
         y_resampled, y_hat_probs_resampled = resample(y, y_hat_probs)  # type: ignore
         fpr_resampled, tpr_resampled, _ = roc_curve(y_resampled, y_hat_probs_resampled)

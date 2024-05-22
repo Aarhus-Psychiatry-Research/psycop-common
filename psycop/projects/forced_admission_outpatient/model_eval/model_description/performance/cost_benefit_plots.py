@@ -6,18 +6,18 @@ import plotnine as pn
 from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
     generate_performance_by_ppr_table,
 )
-from psycop.projects.forced_admission_inpatient.model_eval.config import FA_PN_THEME
-from psycop.projects.forced_admission_inpatient.model_eval.model_description.performance.performance_by_ppr import (
+from psycop.projects.forced_admission_outpatient.model_eval.config import FA_PN_THEME
+from psycop.projects.forced_admission_outpatient.model_eval.model_description.performance.performance_by_ppr import (
     _get_num_of_unique_outcome_events,  # type: ignore
     _get_number_of_outcome_events_with_at_least_one_true_positve,  # type: ignore
 )
-from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
-    ForcedAdmissionInpatientPipelineRun,
+from psycop.projects.forced_admission_outpatient.utils.pipeline_objects import (
+    ForcedAdmissionOutpatientPipelineRun,
 )
 
 
 def calculate_cost_benefit(
-    run: ForcedAdmissionInpatientPipelineRun,
+    run: ForcedAdmissionOutpatientPipelineRun,
     savings_from_prevented_outcome: int,
     cost_of_intervention: int,
     efficiency_of_intervention: float,
@@ -113,7 +113,7 @@ def plot_cost_benefit_by_ppr(df: pd.DataFrame, per_true_positive: bool) -> pn.gg
 
 
 def cost_benefit_by_savings_recources_ratio(
-    run: ForcedAdmissionInpatientPipelineRun,
+    run: ForcedAdmissionOutpatientPipelineRun,
     per_true_positive: bool,
     savings_from_prevented_outcome: Sequence[int],
     cost_of_intervention: int,
@@ -149,7 +149,7 @@ def cost_benefit_by_savings_recources_ratio(
 
 
 def fa_cost_benefit_by_savings_recources_ratio_and_ppr(
-    run: ForcedAdmissionInpatientPipelineRun,
+    run: ForcedAdmissionOutpatientPipelineRun,
     per_true_positive: bool,
     savings_from_prevented_outcome: Sequence[int],
     cost_of_intervention: int,
@@ -168,14 +168,14 @@ def fa_cost_benefit_by_savings_recources_ratio_and_ppr(
     if per_true_positive:
         p.save(
             filename=run.paper_outputs.paths.figures
-            / "fa_inpatient_cost_benefit_estimates_per_true_positives.png",
+            / "fa_outpatient_cost_benefit_estimates_per_true_positives.png",
             width=7,
             height=7,
         )
     else:
         p.save(
             filename=run.paper_outputs.paths.figures
-            / "fa_inpatient_cost_benefit_estimates_per_true_unique_outcomes.png",
+            / "fa_outpatient_cost_benefit_estimates_per_true_unique_outcomes.png",
             width=7,
             height=7,
         )
@@ -184,14 +184,14 @@ def fa_cost_benefit_by_savings_recources_ratio_and_ppr(
 
 
 if __name__ == "__main__":
-    from psycop.projects.forced_admission_inpatient.model_eval.selected_runs import (
+    from psycop.projects.forced_admission_outpatient.model_eval.selected_runs import (
         get_best_eval_pipeline,
     )
 
     fa_cost_benefit_by_savings_recources_ratio_and_ppr(
         run=get_best_eval_pipeline(),
         per_true_positive=False,
-        savings_from_prevented_outcome=[40, 20, 10, 6],
+        savings_from_prevented_outcome=[1000, 40, 20, 10, 6],
         cost_of_intervention=1,
         efficiency_of_intervention=0.5,
     )

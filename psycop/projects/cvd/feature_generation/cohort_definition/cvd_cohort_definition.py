@@ -1,12 +1,16 @@
+import datetime
+
 import polars as pl
 
 from psycop.common.cohort_definition import (
     CohortDefiner,
     FilteredPredictionTimeBundle,
     OutcomeTimestampFrame,
+    PredictionTimeFrame,
     filter_prediction_times,
 )
 from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits_to_psychiatry
+from psycop.common.global_utils.cache import shared_cache
 from psycop.projects.cvd.feature_generation.cohort_definition.eligible_prediction_times.single_filters import (
     CVDMinAgeFilter,
     CVDMinDateFilter,
@@ -17,6 +21,18 @@ from psycop.projects.cvd.feature_generation.cohort_definition.eligible_predictio
 from psycop.projects.cvd.feature_generation.cohort_definition.outcome_specification.combined import (
     get_first_cvd_indicator,
 )
+
+
+@shared_cache.cache()
+def cvd_pred_times(cache_version: datetime.date) -> PredictionTimeFrame:  # noqa: B008, ARG001
+    return CVDCohortDefiner().get_filtered_prediction_times_bundle().prediction_times
+
+
+@shared_cache.cache()
+def cvd_outcome_timestamps(
+    cache_version: datetime.date,  # noqa: B008, ARG001
+) -> OutcomeTimestampFrame:
+    return CVDCohortDefiner().get_outcome_timestamps()
 
 
 class CVDCohortDefiner(CohortDefiner):

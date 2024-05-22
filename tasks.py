@@ -28,10 +28,12 @@ from psycop.automation.logger import echo_header, msg_type
 
 
 @task
-def install_requirements(c: Context):
+def install_requirements(c: Context, uv: bool = False):
     requirements_files = Path().parent.glob("*requirements.txt")
     requirements_string = " -r ".join([str(file) for file in requirements_files])
-    c.run(f"pip install --upgrade -r {requirements_string}")
+
+    package_manager = "pip" if not uv else "uv pip"
+    c.run(f"{package_manager} install --upgrade -r {requirements_string}")
 
     if on_ovartaci():
         # Install pytorch with cuda from private repo
