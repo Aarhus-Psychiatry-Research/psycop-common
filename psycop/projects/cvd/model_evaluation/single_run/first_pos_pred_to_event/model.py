@@ -11,9 +11,7 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
 from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
 )
-from psycop.projects.cvd.model_evaluation.single_run.sensitivity_by_time_to_event.model import (
-    parse_dw_ek_borger_from_uuid,
-)
+from psycop.projects.cvd.model_evaluation.uuid_parsers import parse_dw_ek_borger_from_uuid
 
 FirstPosPredToEventDF = NewType("FirstPosPredToEventDF", pl.DataFrame)
 # Contains columns "pred", "y", "id", "pred_timestamps", "outcome_timestamps"

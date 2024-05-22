@@ -5,15 +5,22 @@ import polars as pl
 
 from psycop.common.global_utils.cache import shared_cache
 from psycop.projects.cvd.model_evaluation.single_run.auroc_by.auroc_by_model import auroc_by_model
-from psycop.projects.cvd.model_evaluation.single_run.sensitivity_by_time_to_event.model import (
-    add_age,
+from psycop.projects.cvd.model_evaluation.uuid_parsers import (
     parse_dw_ek_borger_from_uuid,
-)
-from psycop.projects.cvd.model_evaluation.single_run.sensitivity_by_time_to_event.parse_timestamp_from_uuid import (
     parse_timestamp_from_uuid,
 )
 
 AUROCByAgeDF = NewType("AUROCByAgeDF", pl.DataFrame)
+
+
+def add_age(df: pl.DataFrame, birthdays: pl.DataFrame, age_col_name: str = "age") -> pl.DataFrame:
+    df = df.join(birthdays, on="dw_ek_borger", how="left")
+    df = df.with_columns(
+        ((pl.col("timestamp") - pl.col("date_of_birth")).dt.days()).alias(age_col_name)
+    )
+    df = df.with_columns((pl.col(age_col_name) / 365.25).alias(age_col_name))
+
+    return df
 
 
 @shared_cache.cache()

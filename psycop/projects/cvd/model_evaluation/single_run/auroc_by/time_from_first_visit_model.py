@@ -5,10 +5,8 @@ import polars as pl
 from psycop.common.global_utils.cache import shared_cache
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalDF
 from psycop.common.model_evaluation.binary.time.timedelta_data import get_auroc_by_timedelta_df
-from psycop.projects.cvd.model_evaluation.single_run.sensitivity_by_time_to_event.model import (
+from psycop.projects.cvd.model_evaluation.uuid_parsers import (
     parse_dw_ek_borger_from_uuid,
-)
-from psycop.projects.cvd.model_evaluation.single_run.sensitivity_by_time_to_event.parse_timestamp_from_uuid import (
     parse_timestamp_from_uuid,
 )
 

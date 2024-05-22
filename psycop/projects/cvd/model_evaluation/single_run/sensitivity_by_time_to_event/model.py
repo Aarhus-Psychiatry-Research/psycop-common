@@ -12,24 +12,9 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
 from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
 )
+from psycop.projects.cvd.model_evaluation.uuid_parsers import parse_dw_ek_borger_from_uuid
 
 SensitivityByTTEDF = NewType("SensitivityByTTEDF", pl.DataFrame)
-
-
-def parse_dw_ek_borger_from_uuid(df: pl.DataFrame) -> pl.DataFrame:
-    return df.with_columns(
-        pl.col("pred_time_uuid").str.split("-").list.first().cast(pl.Int64).alias("dw_ek_borger")
-    )
-
-
-def add_age(df: pl.DataFrame, birthdays: pl.DataFrame, age_col_name: str = "age") -> pl.DataFrame:
-    df = df.join(birthdays, on="dw_ek_borger", how="left")
-    df = df.with_columns(
-        ((pl.col("timestamp") - pl.col("date_of_birth")).dt.days()).alias(age_col_name)
-    )
-    df = df.with_columns((pl.col(age_col_name) / 365.25).alias(age_col_name))
-
-    return df
 
 
 @shared_cache.cache()
