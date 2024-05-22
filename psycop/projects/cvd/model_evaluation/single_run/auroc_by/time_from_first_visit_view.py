@@ -1,4 +1,5 @@
 import logging
+from dataclasses import dataclass
 
 import plotnine as pn
 
@@ -9,6 +10,7 @@ from psycop.projects.cvd.model_evaluation.single_run.auroc_by.time_from_first_vi
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
 
 
+@dataclass
 class TimeFromFirstVisitPlot(SingleRunPlot):
     data: TimeFromFirstVisitDF
 

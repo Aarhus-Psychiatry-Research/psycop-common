@@ -9,11 +9,11 @@ from psycop.projects.cvd.model_evaluation.single_run.sensitivity_by_time_to_even
     parse_dw_ek_borger_from_uuid,
 )
 
-AurocByAgeDF = NewType("AurocByAgeDF", pl.DataFrame)
+AUROCByAgeDF = NewType("AUROCByAgeDF", pl.DataFrame)
 
 
 @shared_cache.cache()
-def auroc_by_age_model(eval_df: pl.DataFrame, birthdays: pl.DataFrame) -> AurocByAgeDF:
+def auroc_by_age_model(eval_df: pl.DataFrame, birthdays: pl.DataFrame) -> AUROCByAgeDF:
     eval_dataset = (add_age(parse_dw_ek_borger_from_uuid(eval_df), birthdays)).to_pandas()
 
     df = auroc_by_model(
@@ -23,4 +23,4 @@ def auroc_by_age_model(eval_df: pl.DataFrame, birthdays: pl.DataFrame) -> AurocB
         input_name="age",
     )
 
-    return AurocByAgeDF(pl.from_pandas(df))
+    return AUROCByAgeDF(pl.from_pandas(df))

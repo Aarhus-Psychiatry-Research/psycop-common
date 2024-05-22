@@ -1,4 +1,5 @@
 import logging
+from dataclasses import dataclass
 
 import plotnine as pn
 
@@ -7,6 +8,7 @@ from psycop.projects.cvd.model_evaluation.single_run.auroc_by.sex_model import A
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
 
 
+@dataclass
 class SexByAUROC(SingleRunPlot):
     data: AurocBySexDF
 

@@ -1,14 +1,16 @@
 import logging
 
 import plotnine as pn
+from attr import dataclass
 
-from psycop.projects.cvd.model_evaluation.single_run.auroc_by.age_model import AurocByAgeDF
+from psycop.projects.cvd.model_evaluation.single_run.auroc_by.age_model import AUROCByAgeDF
 from psycop.projects.cvd.model_evaluation.single_run.auroc_by.auroc_by_view import auroc_by_view
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
 
 
-class AgeByAUROC(SingleRunPlot):
-    data: AurocByAgeDF
+@dataclass
+class AUROCByAge(SingleRunPlot):
+    data: AUROCByAgeDF
 
     def __call__(self) -> pn.ggplot:
         logging.info(f"Starting {self.__class__.__name__}")
