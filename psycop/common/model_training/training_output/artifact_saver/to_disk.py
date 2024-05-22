@@ -80,7 +80,7 @@ class ArtifactsToDiskSaver:
         lookahead_days = cfg.preprocessing.pre_split.min_lookahead_days
 
         row = {
-            "run_name": cfg.wandb.run.name,  # type: ignore
+            "run_group": cfg.project.wandb.group,
             "roc_auc": roc_auc,
             "timestamp": pd.Timestamp.now(),
             "lookahead_days": lookahead_days,

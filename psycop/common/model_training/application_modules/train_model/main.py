@@ -24,12 +24,7 @@ def get_eval_dir(cfg: FullConfigSchema) -> Path:
     if cfg.project.wandb.group == "integration_testing":
         eval_dir_path = PSYCOP_PKG_ROOT / "model_training" / "test_eval_results"
     else:
-        eval_dir_path = (
-            cfg.project.project_path
-            / "pipeline_eval"
-            / cfg.wandb.run.group  # type: ignore
-            / cfg.wandb.run.name  # type: ignore
-        )
+        eval_dir_path = cfg.project.project_path / "pipeline_eval" / cfg.project.wandb.group
 
     eval_dir_path.mkdir(parents=True, exist_ok=True)
     return eval_dir_path
