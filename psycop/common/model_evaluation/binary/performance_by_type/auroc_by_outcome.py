@@ -52,6 +52,7 @@ def auroc_by_outcome(
             MlflowClientWrapper()
             .get_best_run_from_experiment(experiment_name=model_name, metric=best_run_metric)
             .eval_df()
+            .frame
         )
         validation_outcome = next(
             validation_outcome

@@ -17,7 +17,7 @@ TimeFromFirstVisitDF = NewType("TimeFromFirstVisitDF", pl.DataFrame)
 def auroc_by_time_from_first_visit_model(
     eval_df: EvalDF, all_visits_df: pl.DataFrame
 ) -> TimeFromFirstVisitDF:
-    eval_dataset = parse_dw_ek_borger_from_uuid(parse_timestamp_from_uuid(eval_df))
+    eval_dataset = parse_dw_ek_borger_from_uuid(parse_timestamp_from_uuid(eval_df.frame))
 
     first_visit = (
         all_visits_df.sort("timestamp", descending=False)

@@ -35,7 +35,7 @@ def data(runs: Sequence[RunSelector]) -> pl.DataFrame:
         MlflowClientWrapper()
         .get_run(r.experiment_name, r.run_name)
         .eval_df()
-        .with_columns(pl.lit(r.run_name).alias("run_name"))
+        .frame.with_columns(pl.lit(r.run_name).alias("run_name"))
         for r in runs
     ]
     run_performances = [_run_auroc_with_ci(df=EvalDF(df)) for df in eval_dfs]

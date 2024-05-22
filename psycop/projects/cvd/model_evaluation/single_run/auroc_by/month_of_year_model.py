@@ -14,7 +14,7 @@ AUROCByMonthOfYearDF = NewType("AUROCByMonthOfYearDF", pl.DataFrame)
 
 @shared_cache.cache()
 def auroc_by_month_of_year(eval_df: EvalDF) -> AUROCByMonthOfYearDF:
-    eval_dataset = parse_timestamp_from_uuid(eval_df).to_pandas()
+    eval_dataset = parse_timestamp_from_uuid(eval_df.frame).to_pandas()
 
     df = roc_auc_by_periodic_time_df(
         labels=eval_dataset["y"],
