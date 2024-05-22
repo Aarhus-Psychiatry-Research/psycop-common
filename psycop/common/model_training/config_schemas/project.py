@@ -1,4 +1,5 @@
 """Project configuration schemas."""
+
 from pathlib import Path
 
 from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel

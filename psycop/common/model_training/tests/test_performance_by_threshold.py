@@ -3,7 +3,6 @@
 E.g. if predicted probability is .4, and threshold is .5, resolve to 0.
 """
 
-
 from typing import TYPE_CHECKING
 
 from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (

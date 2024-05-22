@@ -1,4 +1,5 @@
 """Main feature generation."""
+
 import sys
 from pathlib import Path
 

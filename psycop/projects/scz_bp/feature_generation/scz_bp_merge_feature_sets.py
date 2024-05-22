@@ -1,6 +1,5 @@
 """Combine features sets (e.g. embedded text with structured feature sets)"""
 
-
 from pathlib import Path
 
 import pandas as pd

@@ -1,4 +1,5 @@
 """Get performance by which threshold is used to classify positive. PPR means predicted positive rate, i.e. the proportion of the population that is predicted to be positive."""
+
 from collections.abc import Sequence
 
 import numpy as np
@@ -221,10 +222,10 @@ def generate_performance_by_ppr_table(
             eval_dataset=eval_dataset, positive_rate=positive_rate
         )
 
-        threshold_metrics[
-            "prop of all events captured"
-        ] = get_prop_of_events_captured_from_eval_dataset(
-            eval_dataset=eval_dataset, positive_rate=positive_rate
+        threshold_metrics["prop of all events captured"] = (
+            get_prop_of_events_captured_from_eval_dataset(
+                eval_dataset=eval_dataset, positive_rate=positive_rate
+            )
         )
 
         rows.append(threshold_metrics)

@@ -1,4 +1,5 @@
 """Flatten the dataset."""
+
 from __future__ import annotations
 
 import logging

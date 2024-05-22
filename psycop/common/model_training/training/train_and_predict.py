@@ -1,4 +1,5 @@
 """Training script for training a single model."""
+
 import os
 from typing import Any, Optional, Union
 

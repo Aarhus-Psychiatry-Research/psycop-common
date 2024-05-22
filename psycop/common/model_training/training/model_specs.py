@@ -1,4 +1,5 @@
 """Specifications of models to be evaluated."""
+
 from typing import Any
 
 import numpy as np

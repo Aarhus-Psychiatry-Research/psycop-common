@@ -1,4 +1,5 @@
 """Row filter for pre-split data."""
+
 from datetime import timedelta
 from typing import Union
 
