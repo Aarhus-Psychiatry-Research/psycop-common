@@ -1,4 +1,3 @@
-
 from psycop.common.model_training.config_schemas.conf_utils import load_app_cfg_as_pydantic
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 
