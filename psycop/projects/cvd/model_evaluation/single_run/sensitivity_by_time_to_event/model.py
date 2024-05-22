@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from datetime import datetime
 from typing import NewType
 
 import pandas as pd
@@ -22,7 +23,7 @@ def parse_timestamp_from_uuid(df: pl.DataFrame) -> pl.DataFrame:
         .str.split("-")
         .list.slice(1)
         .list.join("-")
-        .dt.strftime("%Y-%m-%d-%H-%M-%S")
+        .str.strptime(pl.Datetime, format="%Y-%m-%d-%H-%M-%S")
         .alias("timestamp")
     )
 

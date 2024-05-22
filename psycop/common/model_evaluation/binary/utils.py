@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 import pandas as pd
 from sklearn.metrics import recall_score, roc_auc_score
@@ -20,6 +22,8 @@ def _auroc_within_group(
     auroc_by_group = {"auroc": auroc, "n_in_bin": len(df)}
 
     if confidence_interval:
+        logging.info("Bootstrapping estimates")
+
         ci = bootstrap_estimates(
             roc_auc_score,
             n_bootstraps=n_bootstraps,
@@ -29,6 +33,8 @@ def _auroc_within_group(
         )
         auroc_by_group["ci_lower"] = ci[0][0]
         auroc_by_group["ci_upper"] = ci[0][1]
+
+        logging.info("Finished bootstrapping")
 
     return pd.DataFrame(auroc_by_group, index=[0])
 

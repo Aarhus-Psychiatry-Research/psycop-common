@@ -2,6 +2,7 @@
 
 utilities.
 """
+import logging
 import math
 import sys
 import tempfile
@@ -114,6 +115,7 @@ def bin_continuous_data(
         pd.Series: Binned categories for values in data
         pd.Series: Number of samples in binned category
     """
+    logging.info("Binning data")
     labels = []
 
     if not isinstance(bins, list):

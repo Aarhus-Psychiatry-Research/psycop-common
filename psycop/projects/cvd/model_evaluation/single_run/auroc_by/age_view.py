@@ -16,5 +16,5 @@ class AUROCByAge(SingleRunPlot):
         logging.info(f"Starting {self.__class__.__name__}")
 
         return auroc_by_view(
-            df=self.data.to_pandas(), x_column="age", line_y_col_name="auroc", xlab="Age"
+            df=self.data.to_pandas(), x_column="age_binned", line_y_col_name="auroc", xlab="Age"
         )

@@ -20,10 +20,11 @@ def auroc_by_sex_model(eval_df: pl.DataFrame, sex_df: pl.DataFrame) -> AurocBySe
     )
 
     df = auroc_by_model(
-        input_values=eval_dataset["sex"],
+        input_values=eval_dataset["sex_female"],
         y=eval_dataset["y"],
         y_hat_probs=eval_dataset["y_hat_prob"],
         input_name="sex",
+        bin_continuous_input=False,
     )
 
     return AurocBySexDF(pl.from_pandas(df))
