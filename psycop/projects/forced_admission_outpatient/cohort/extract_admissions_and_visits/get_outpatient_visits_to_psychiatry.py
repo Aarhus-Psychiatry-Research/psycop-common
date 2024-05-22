@@ -3,6 +3,7 @@ Script for obtaining and writing all admission  and discharge timestamps
 for all admissions from 2012-2022. Handles LPR2 to LPR3 transition, duplicates
 and short term readmissions
 """
+
 from datetime import timedelta
 
 import pandas as pd

@@ -1,4 +1,5 @@
 """Apply sentence transformer to text data and save to disk"""
+
 from time import time
 
 import polars as pl

@@ -1,4 +1,5 @@
 """Feature specification module."""
+
 import logging
 from collections.abc import Sequence
 

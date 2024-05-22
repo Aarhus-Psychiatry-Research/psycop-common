@@ -5,17 +5,13 @@ import polars as pl
 
 from psycop.common.cohort_definition import OutcomeTimestampFrame, PredictionTimeFrame
 from psycop.common.global_utils.cache import shared_cache
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_time_from_first_positive_to_diagnosis_df,
 )
 from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
 )
-from psycop.projects.cvd.model_evaluation.single_run.sensitivity_by_time_to_event.model import (
-    add_dw_ek_borger,
-)
-from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import RunSelector
+from psycop.projects.cvd.model_evaluation.uuid_parsers import parse_dw_ek_borger_from_uuid
 
 FirstPosPredToEventDF = NewType("FirstPosPredToEventDF", pl.DataFrame)
 # Contains columns "pred", "y", "id", "pred_timestamps", "outcome_timestamps"
@@ -23,15 +19,13 @@ FirstPosPredToEventDF = NewType("FirstPosPredToEventDF", pl.DataFrame)
 
 @shared_cache.cache()
 def first_positive_prediction_to_event_model(
-    run: RunSelector,
+    eval_df: pl.DataFrame,
     pred_timestamps: PredictionTimeFrame,
     outcome_timestamps: OutcomeTimestampFrame,
     desired_positive_rate: float = 0.05,
 ) -> FirstPosPredToEventDF:
-    eval_df = MlflowClientWrapper().get_run(run.experiment_name, run.run_name).eval_df()
-
-    eval_df = (
-        add_dw_ek_borger(eval_df)
+    eval_dataset = (
+        parse_dw_ek_borger_from_uuid(eval_df)
         .join(pred_timestamps.stripped_df, on="dw_ek_borger", suffix="_pred")
         .join(outcome_timestamps.stripped_df, on="dw_ek_borger", suffix="_outcome")
     ).to_pandas()
@@ -39,12 +33,12 @@ def first_positive_prediction_to_event_model(
     df = pd.DataFrame(
         {
             "pred": get_predictions_for_positive_rate(
-                desired_positive_rate=desired_positive_rate, y_hat_probs=eval_df["y_hat_prob"]
+                desired_positive_rate=desired_positive_rate, y_hat_probs=eval_dataset["y_hat_prob"]
             )[0],
-            "y": eval_df["y"],
-            "id": eval_df["dw_ek_borger"],
-            "pred_timestamps": eval_df["timestamp"],
-            "outcome_timestamps": eval_df["timestamp_outcome"],
+            "y": eval_dataset["y"],
+            "id": eval_dataset["dw_ek_borger"],
+            "pred_timestamps": eval_dataset["timestamp"],
+            "outcome_timestamps": eval_dataset["timestamp_outcome"],
         }
     )
 

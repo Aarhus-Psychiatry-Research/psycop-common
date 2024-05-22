@@ -20,7 +20,6 @@ B) Patients
 - N prediction times (outpatient contacts)
 """
 
-
 """Part B
 
 - get filtered IDs

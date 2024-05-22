@@ -12,32 +12,20 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
 from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
 )
-from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import (
-    RunSelector,
-    get_eval_df,
-)
+from psycop.projects.cvd.model_evaluation.uuid_parsers import parse_dw_ek_borger_from_uuid
 
 SensitivityByTTEDF = NewType("SensitivityByTTEDF", pl.DataFrame)
 
 
-def add_dw_ek_borger(df: pl.DataFrame) -> pl.DataFrame:
-    return df.with_columns(
-        pl.col("pred_time_uuid").str.split("-").list.first().cast(pl.Int64).alias("dw_ek_borger")
-    )
-
-
 @shared_cache.cache()
 def sensitivity_by_time_to_event_model(
-    run: RunSelector,
+    eval_df: pl.DataFrame,
     pred_timestamps: PredictionTimeFrame,
     outcome_timestamps: OutcomeTimestampFrame,
     pprs: Sequence[float] = (0.01, 0.03, 0.05),
 ) -> SensitivityByTTEDF:
-    eval_dataset = get_eval_df(run=run)
-
-    # Add dw_ek_borger, extract from pred_time_uuid
     eval_dataset = (
-        add_dw_ek_borger(eval_dataset)
+        parse_dw_ek_borger_from_uuid(eval_df)
         .join(pred_timestamps.stripped_df, on="dw_ek_borger", suffix="_pred")
         .join(outcome_timestamps.stripped_df, on="dw_ek_borger", suffix="_outcome")
     ).to_pandas()

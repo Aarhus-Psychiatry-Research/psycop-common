@@ -1,4 +1,5 @@
 """Text-feature specification module."""
+
 import logging
 from typing import Callable, Literal
 

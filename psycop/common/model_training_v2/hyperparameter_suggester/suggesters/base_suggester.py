@@ -5,5 +5,4 @@ import optuna
 
 @runtime_checkable
 class Suggester(Protocol):
-    def suggest_hyperparameters(self, trial: optuna.Trial) -> dict[str, Any]:
-        ...
+    def suggest_hyperparameters(self, trial: optuna.Trial) -> dict[str, Any]: ...

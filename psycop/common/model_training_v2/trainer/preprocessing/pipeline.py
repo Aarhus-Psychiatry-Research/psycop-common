@@ -15,8 +15,7 @@ class PreprocessingPipeline(ABC, SupportsLoggerMixin):
     steps: Sequence[PresplitStep]
 
     @abstractmethod
-    def apply(self, data: pl.LazyFrame) -> pd.DataFrame:
-        ...
+    def apply(self, data: pl.LazyFrame) -> pd.DataFrame: ...
 
 
 @BaselineRegistry.preprocessing.register("baseline_preprocessing_pipeline")

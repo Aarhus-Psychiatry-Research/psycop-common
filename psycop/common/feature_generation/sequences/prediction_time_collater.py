@@ -20,8 +20,7 @@ from psycop.projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer
 
 @runtime_checkable
 class BasePredictionTimeCollater(Protocol):
-    def get_dataset(self) -> PredictionTimeDataset:
-        ...
+    def get_dataset(self) -> PredictionTimeDataset: ...
 
 
 @SequenceRegistry.datasets.register("prediction_time_collater")

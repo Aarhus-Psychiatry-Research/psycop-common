@@ -25,25 +25,22 @@ class SingleRunModel:
         )
 
     def get_eval_df(self, run: RunSelector) -> pl.DataFrame:
-        return self._get_run(run).eval_df()
+        return self._get_run(run).eval_df().frame
 
 
 def get_eval_df(run: RunSelector) -> pl.DataFrame:
     return SingleRunModel().get_eval_df(run=run)
 
 
-class SingleRunView(Protocol):
-    ...
+class SingleRunView(Protocol): ...
 
 
 class SingleRunPlot(SingleRunView):
-    def __call__(self) -> plotnine.ggplot:
-        ...
+    def __call__(self) -> plotnine.ggplot: ...
 
 
 class SingleRunTable(SingleRunView):
-    def __call__(self) -> pl.DataFrame:
-        ...
+    def __call__(self) -> pl.DataFrame: ...
 
 
 SingleRunArtifact = SingleRunPlot | SingleRunTable
