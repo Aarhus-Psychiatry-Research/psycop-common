@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+
 import pandas as pd
 import plotnine as pn
 import polars as pl
@@ -21,7 +22,7 @@ def _plot_metric_by_time_to_event(
     outcome2color: dict[str, str] = {"BP": "#669BBC", "SCZ": "#A8C686"}
     outcome2color = {group: outcome2color[group] for group in groups_to_plot}
 
-    df = df[df['subset'].isin(groups_to_plot)].copy()
+    df = df[df["subset"].isin(groups_to_plot)].copy()
     df["subset"] = pd.Categorical(df["subset"], groups_to_plot)
 
     p = (
@@ -105,13 +106,15 @@ def scz_bp_get_sensitivity_by_time_to_event_df(eval_ds: EvalDataset, ppr: float)
     return pd.concat(dfs)
 
 
-def scz_bp_plot_sensitivity_by_time_to_event(eval_ds: EvalDataset, ppr: float, groups_to_plot: Sequence[str] = ["BP", "SCZ"]) -> pn.ggplot:
+def scz_bp_plot_sensitivity_by_time_to_event(
+    eval_ds: EvalDataset, ppr: float, groups_to_plot: Sequence[str] = ["BP", "SCZ"]
+) -> pn.ggplot:
     plot_df = scz_bp_get_sensitivity_by_time_to_event_df(eval_ds=eval_ds, ppr=ppr)
     plot_df = reverse_x_axis_categories(plot_df)
 
-    p = _plot_metric_by_time_to_event(df=plot_df, metric="sensitivity", groups_to_plot=groups_to_plot) + pn.labs(
-        x="Months to outcome", y="Sensitivitiy", color="Predicted Positive Rate"
-    )
+    p = _plot_metric_by_time_to_event(
+        df=plot_df, metric="sensitivity", groups_to_plot=groups_to_plot
+    ) + pn.labs(x="Months to outcome", y="Sensitivitiy", color="Predicted Positive Rate")
 
     return p
 
@@ -121,7 +124,9 @@ if __name__ == "__main__":
     best_pos_rate = 0.04
     eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=best_experiment)
 
-    p = scz_bp_plot_sensitivity_by_time_to_event(eval_ds=eval_ds.copy(), ppr=best_pos_rate, groups_to_plot=["BP"])
+    p = scz_bp_plot_sensitivity_by_time_to_event(
+        eval_ds=eval_ds.copy(), ppr=best_pos_rate, groups_to_plot=["BP"]
+    )
     p + pn.theme(
         legend_position=(0.4, 0.92),
         axis_text_x=pn.element_text(rotation=45, hjust=1),

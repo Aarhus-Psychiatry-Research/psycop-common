@@ -2,7 +2,6 @@ from pathlib import Path
 
 import polars as pl
 from confection import Config
-from sklearn.metrics import roc_auc_score
 
 from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
 from psycop.projects.scz_bp.dataset_description.scz_bp_table_one import SczBpTableOne
@@ -20,7 +19,9 @@ from psycop.projects.scz_bp.evaluation.model_performance.robustness.scz_bp_robus
 from psycop.projects.scz_bp.evaluation.model_performance.robustness.scz_bp_robustness_by_time_from_first_visit import (
     scz_bp_auroc_by_time_from_first_contact,
 )
-from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import scz_bp_get_eval_ds_from_best_run_in_experiment
+from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
+    scz_bp_get_eval_ds_from_best_run_in_experiment,
+)
 
 
 def prepare_metadata(metadata_cfg: Config) -> pl.DataFrame:
@@ -57,7 +58,6 @@ if __name__ == "__main__":
         scz_bp_auroc_by_quarter(eval_ds=best_eval_ds.model_copy()),
     ]
 
-    
     metadata_cfg = Config().from_disk(
         Path(__file__).parent.parent.parent / "dataset_description" / "eval_config.cfg"
     )
@@ -79,7 +79,7 @@ if __name__ == "__main__":
             positive_rate=best_pos_rate,
             actual_outcome_text="SCZ within 5 years",
             predicted_text="SCZ or BP within 5 years",
-            add_auroc=True
+            add_auroc=True,
         )
     )
     panels.append(
@@ -89,7 +89,7 @@ if __name__ == "__main__":
             positive_rate=best_pos_rate,
             actual_outcome_text="BP within 5 years",
             predicted_text="SCZ or BP within 5 years",
-            add_auroc=True
+            add_auroc=True,
         )
     )
 

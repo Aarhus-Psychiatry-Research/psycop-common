@@ -13,7 +13,6 @@ from psycop.common.model_training.training_output.dataclasses import (
     EvalDataset,
     get_predictions_for_positive_rate,
 )
-
 from psycop.common.test_utils.str_to_df import str_to_df
 from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
     scz_bp_get_eval_ds_from_best_run_in_experiment,
@@ -21,7 +20,12 @@ from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
 from psycop.projects.t2d.paper_outputs.config import T2D_PN_THEME
 
 
-def scz_bp_plotnine_confusion_matrix(matrix: ConfusionMatrix, actual_outcome_text: str, predicted_text: str, auroc: float | None = None) -> pn.ggplot:
+def scz_bp_plotnine_confusion_matrix(
+    matrix: ConfusionMatrix,
+    actual_outcome_text: str,
+    predicted_text: str,
+    auroc: float | None = None,
+) -> pn.ggplot:
     """Create a confusion matrix and return a plotnine object."""
     df = str_to_df(
         f"""true,pred,estimate
@@ -36,7 +40,14 @@ def scz_bp_plotnine_confusion_matrix(matrix: ConfusionMatrix, actual_outcome_tex
 """
     )
     if auroc is not None:
-        df = pd.concat([df, pd.DataFrame({"true" : [" "], "pred" : [" "], "estimate" : [f"AUROC:\n {round(auroc, 2)}"]})]).reset_index(drop=True)
+        df = pd.concat(
+            [
+                df,
+                pd.DataFrame(
+                    {"true": [" "], "pred": [" "], "estimate": [f"AUROC:\n {round(auroc, 2)}"]}
+                ),
+            ]
+        ).reset_index(drop=True)
     df["true"] = pd.Categorical(df["true"], ["-", "+", " "])
     df["pred"] = pd.Categorical(df["pred"], ["+", "-", " "])
     p = (
@@ -59,13 +70,20 @@ def scz_bp_plotnine_confusion_matrix(matrix: ConfusionMatrix, actual_outcome_tex
     return p
 
 
-def scz_bp_confusion_matrix_plot(y_true: pd.Series, y_hat: pd.Series, positive_rate: float, actual_outcome_text: str="SCZ or BP within 5 years", predicted_text: str ="SCZ or BP within 5 years", add_auroc: bool = False) -> pn.ggplot:
+def scz_bp_confusion_matrix_plot(
+    y_true: pd.Series,  # type: ignore
+    y_hat: pd.Series,  # type: ignore
+    positive_rate: float,
+    actual_outcome_text: str = "SCZ or BP within 5 years",
+    predicted_text: str = "SCZ or BP within 5 years",
+    add_auroc: bool = False,
+) -> pn.ggplot:
     df = pd.DataFrame(
         {
             "true": y_true,
-            "pred": get_predictions_for_positive_rate(y_hat_probs=y_hat, desired_positive_rate=positive_rate)[
-                0
-            ],
+            "pred": get_predictions_for_positive_rate(
+                y_hat_probs=y_hat, desired_positive_rate=positive_rate
+            )[0],
         }
     )
     if add_auroc:
@@ -76,8 +94,10 @@ def scz_bp_confusion_matrix_plot(y_true: pd.Series, y_hat: pd.Series, positive_r
     confusion_matrix = get_confusion_matrix_cells_from_df(df=df)
 
     p = scz_bp_plotnine_confusion_matrix(
-        matrix=confusion_matrix, actual_outcome_text=actual_outcome_text, predicted_text=predicted_text,
-        auroc=auroc # type: ignore
+        matrix=confusion_matrix,
+        actual_outcome_text=actual_outcome_text,
+        predicted_text=predicted_text,
+        auroc=auroc,  # type: ignore
     )
 
     return p
@@ -98,4 +118,8 @@ if __name__ == "__main__":
     eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=best_experiment)
 
     # x = _output_performance_by_ppr(eval_ds=eval_ds) # noqa: ERA001
-    p = scz_bp_confusion_matrix_plot(y_true=eval_ds.y, y_hat=eval_ds.y_hat_probs, positive_rate=best_pos_rate) # type: ignore
+    p = scz_bp_confusion_matrix_plot(
+        y_true=eval_ds.y,
+        y_hat=eval_ds.y_hat_probs,
+        positive_rate=best_pos_rate,  # type: ignore
+    )  # type: ignore

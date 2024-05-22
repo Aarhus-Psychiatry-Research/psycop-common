@@ -14,7 +14,9 @@ if __name__ == "__main__":
     n_trials = 150
     n_jobs = 25
     for outcome_dir in outcome_dirs:
-        for cfg_path in (Path(__file__).parent / "config" / "individual_outcomes" / outcome_dir).iterdir():
+        for cfg_path in (
+            Path(__file__).parent / "config" / "individual_outcomes" / outcome_dir
+        ).iterdir():
             if "bp_structured_only" in str(cfg_path):
                 print(f"Already processed {cfg_path}. Skipping")
                 continue
@@ -26,4 +28,4 @@ if __name__ == "__main__":
                 direction="maximize",
                 catch=(Exception,),
                 custom_populate_registry_fn=populate_scz_bp_registry,
-            )   
+            )

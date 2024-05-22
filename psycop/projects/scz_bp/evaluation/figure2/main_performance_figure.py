@@ -33,7 +33,9 @@ if __name__ == "__main__":
 
     panel_a = plot_scz_bp_auroc_by_data_type(modality2experiment_mapping)
     panel_b = scz_bp_confusion_matrix_plot(
-        eval_ds=best_eval_ds.model_copy(), positive_rate=best_pos_rate
+        y_true=best_eval_ds.y.copy(),  # type: ignore
+        y_hat=best_eval_ds.y_hat_probs.copy(),  # type: ignore
+        positive_rate=best_pos_rate,
     )
     panel_c = scz_bp_plot_sensitivity_by_time_to_event(
         eval_ds=best_eval_ds.model_copy(), ppr=best_pos_rate
@@ -45,5 +47,7 @@ if __name__ == "__main__":
     panels = [panel_a, panel_b, panel_c, panel_d]
 
     with pd.option_context("mode.chained_assignment", None):
-        grid = create_patchwork_grid(plots=panels, single_plot_dimensions=(5, 5), n_in_row=2, start_letter_index=2)
+        grid = create_patchwork_grid(
+            plots=panels, single_plot_dimensions=(5, 5), n_in_row=2, start_letter_index=2
+        )
     grid.savefig(SCZ_BP_EVAL_OUTPUT_DIR / f"fig_2_{best_experiment.split('/')[1]}.png")
