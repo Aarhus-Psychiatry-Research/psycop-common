@@ -11,6 +11,14 @@ from psycop.projects.cvd.model_evaluation.single_run.performance_by_ppr.view imp
 )
 
 if __name__ == "__main__":
+    import coloredlogs
+
+    coloredlogs.install(  # type: ignore
+        level="INFO",
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+        datefmt="%Y/%m/%d %H:%M:%S",
+    )
+
     run = MlflowClientWrapper().get_run(experiment_name="baseline_v2_cvd", run_name="Layer 1")
     eval_df = run.eval_df()
     prediction_timestamps = cvd_pred_times()
@@ -24,4 +32,4 @@ if __name__ == "__main__":
     )
 
     view = performance_by_ppr_view(model=model)
-
+    pass

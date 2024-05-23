@@ -41,26 +41,27 @@ def performance_by_ppr_view(model: PerformanceByPPRModel) -> pl.DataFrame:
             "true_negatives": "TN",
             "false_positives": "FP",
             "false_negatives": "FN",
-            "prop of all events captured": "% of all T2D captured",
+            "prop_of_all_events_captured": "% of all T2D captured",
             "f1": "F1",
-            "mcc": "MCC",
         }
     )
 
     # Handle proportion columns
-    prop_cols = [c for c in renamed_df.columns if renamed_df[c].dtype == "float64"]
+    prop_cols = [col for col, dtype in renamed_df.schema.items() if dtype == pl.Float64]
     for c in prop_cols:
-        renamed_df[c] = renamed_df[c].apply(_format_prop_as_percent)
+        renamed_df = renamed_df.with_columns([pl.col(c).apply(lambda x: f"{x:.1%}").alias(c)])
 
     # Handle count columns
-    count_cols = [c for c in renamed_df.columns if renamed_df[c].dtype == "int64"]
+    count_cols = [col for col, dtype in renamed_df.schema.items() if dtype == pl.Int64]
     for col in count_cols:
-        renamed_df[col] = renamed_df[col].apply(_format_with_thousand_separator)
+        renamed_df = renamed_df.with_columns(pl.col(col).apply(lambda x: f"{x:,}").alias(col))
 
-    renamed_df["Median years from first positive to T2D"] = renamed_df.with_columns(
-        (pl.col("median_warning_days") / 365.25)
-        .round(1)
-        .alias("Median years from first positive to T2D")
+    renamed_df = renamed_df.with_columns(
+        model.with_columns(
+            (pl.col("median_warning_days") / 365.25)
+            .round(1)
+            .alias("Median years from first positive to CVD")
+        )
     )
 
     return renamed_df

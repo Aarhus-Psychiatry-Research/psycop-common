@@ -26,18 +26,20 @@ class MlflowAllMetricsFrame(ValidatedFrame[pl.DataFrame]):
     allow_extra_columns = False
 
 
+@dataclass(frozen=True)
 class EvalDF(ValidatedFrame[pl.DataFrame]):
-    frame: pl.DataFrame
-    pred_time_uuid_col_name: str = "pred_time_uuid"
-    # pred_time_uuid: a string of the form "{citizen id}-%Y-%m-%d-%H-%M-%S", e.g. "98573-2021-01-01-00-00-00"
-
     y_col_name: str = "y"
     y_hat_prob_col_name: str = "y_hat_prob"
+    pred_time_uuid_col_name: str = "pred_time_uuid"
+
+    frame: pl.DataFrame
 
     pred_time_uuid_col_rules: Sequence[ValidatorRule] = (
         ColumnExistsRule(),
         ColumnTypeRule(expected_type=pl.Utf8),
     )
+    # pred_time_uuid: a string of the form "{citizen id}-%Y-%m-%d-%H-%M-%S", e.g. "98573-2021-01-01-00-00-00"
+
     y_col_rules: Sequence[ValidatorRule] = (
         ColumnExistsRule(),
         ColumnTypeRule(expected_type=pl.Int64),
