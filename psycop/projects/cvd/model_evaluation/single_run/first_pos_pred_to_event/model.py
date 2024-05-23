@@ -26,8 +26,8 @@ def first_positive_prediction_to_event_model(
 ) -> FirstPosPredToEventDF:
     eval_dataset = (
         parse_dw_ek_borger_from_uuid(eval_df)
-        .join(pred_timestamps.stripped_df, on="dw_ek_borger", suffix="_pred")
-        .join(outcome_timestamps.stripped_df, on="dw_ek_borger", suffix="_outcome")
+        .join(pred_timestamps.essentials_df, on="dw_ek_borger", suffix="_pred")
+        .join(outcome_timestamps.essentials_df, on="dw_ek_borger", suffix="_outcome")
     ).to_pandas()
 
     df = pd.DataFrame(

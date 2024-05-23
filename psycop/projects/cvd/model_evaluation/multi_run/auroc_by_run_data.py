@@ -9,10 +9,8 @@ from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClien
 from psycop.common.model_evaluation.binary.global_performance.roc_auc import bootstrap_roc
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import RunSelector
 
-EvalDF = NewType("EvalDF", pl.DataFrame)
 
-
-def _run_auroc_with_ci(df: EvalDF, n_bootstraps: int = 5) -> pl.DataFrame:
+def _run_auroc_with_ci(df: pl.DataFrame, n_bootstraps: int = 5) -> pl.DataFrame:
     logging.info(f"Bootstrapping {df['run_name'][0]}")
     _, aucs_bootstrapped, _ = bootstrap_roc(
         n_bootstraps=n_bootstraps,
@@ -38,7 +36,7 @@ def data(runs: Sequence[RunSelector]) -> pl.DataFrame:
         .frame.with_columns(pl.lit(r.run_name).alias("run_name"))
         for r in runs
     ]
-    run_performances = [_run_auroc_with_ci(df=EvalDF(df)) for df in eval_dfs]
+    run_performances = [_run_auroc_with_ci(df=df) for df in eval_dfs]
     return pl.concat(run_performances)
 
 
