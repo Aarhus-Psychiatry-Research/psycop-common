@@ -1,5 +1,5 @@
 """Table with models as rows and time from first positive to outcome at different
-positive predicted rates as columns, stratified by BP and SCZ"""
+positive predicted rates as columns"""
 
 
 from collections.abc import Sequence
