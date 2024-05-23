@@ -37,11 +37,14 @@ def scz_bp_validation_outcomes() -> list[EvaluationFrame]:
             df=meta_df.select(["pred_time_uuid", "Schizophrenia"]), outcome_col_name="Schizophrenia"
         ),
         EvaluationFrame(
-            df=meta_df.select(["pred_time_uuid", "First schizophrenia or bipolar disorder diagnosis"]),
+            df=meta_df.select(
+                ["pred_time_uuid", "First schizophrenia or bipolar disorder diagnosis"]
+            ),
             outcome_col_name="First schizophrenia or bipolar disorder diagnosis",
         ),
         EvaluationFrame(
-            df=meta_df.select(["pred_time_uuid", "Bipolar disorder"]), outcome_col_name="Bipolar disorder"
+            df=meta_df.select(["pred_time_uuid", "Bipolar disorder"]),
+            outcome_col_name="Bipolar disorder",
         ),
     ]
 
@@ -62,18 +65,24 @@ if __name__ == "__main__":
     }
     validation_outcomes = scz_bp_validation_outcomes()
 
-    for split, mapping in {"Train" : best_train_model_name_mapping, "Test" : best_test_model_name_mapping}.items():
+    for split, mapping in {
+        "Train": best_train_model_name_mapping,
+        "Test": best_test_model_name_mapping,
+    }.items():
         m = auroc_by_outcome(
-            model_names=(list(mapping.keys())),
-            validation_outcomes=validation_outcomes,
+            model_names=(list(mapping.keys())), validation_outcomes=validation_outcomes
         )
         m = m.replace(mapping)
         m = m.pivot(columns="validation_outcome", index="model_name", values="estimate")
         m = m.sort_index(ascending=False)
         # reverse order of columns to get scz first
-        m = m[["Schizophrenia", "First schizophrenia or bipolar disorder diagnosis", "Bipolar disorder"]]
+        m = m[
+            [
+                "Schizophrenia",
+                "First schizophrenia or bipolar disorder diagnosis",
+                "Bipolar disorder",
+            ]
+        ]
 
         with (SCZ_BP_EVAL_OUTPUT_DIR / f"{split}_auroc_matrix.html").open("w") as f:
             m.to_html(f)
-
-    
