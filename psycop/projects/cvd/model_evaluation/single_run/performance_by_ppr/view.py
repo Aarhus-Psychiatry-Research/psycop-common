@@ -6,16 +6,6 @@ from psycop.projects.cvd.model_evaluation.single_run.performance_by_ppr.model im
 )
 
 
-def _format_with_thousand_separator(num: int) -> str:
-    return f"{num:,.0f}"
-
-
-def _format_prop_as_percent(num: float) -> str:
-    output = f"{num:.1%}"
-
-    return output
-
-
 def performance_by_ppr_view(model: PerformanceByPPRModel) -> pl.DataFrame:
     df = model
 
