@@ -20,14 +20,16 @@ from psycop.projects.scz_bp.model_training.populate_scz_bp_registry import popul
 if __name__ == "__main__":
     populate_scz_bp_registry()
 
-    best_experiments = {"bp": "sczbp/test_bp_structured_text_ddpm", "scz": "sczbp/test_scz_structured_text_ddpm"}
+    best_experiments = {
+        "bp": "sczbp/test_bp_structured_text_ddpm",
+        "scz": "sczbp/test_scz_structured_text_ddpm",
+    }
     for diagnosis in ["scz", "bp"]:
-
         modality2experiment_mapping = modality2experiment = {
-                "Structured + text + synthetic": f"sczbp/test_{diagnosis}_structured_text_ddpm",
-                "Structured + text": f"sczbp/test_{diagnosis}_structured_text",
-                "Structured only ": f"sczbp/test_{diagnosis}_structured_only",
-                "Text only": f"sczbp/test_{diagnosis}_tfidf_1000",
+            "Structured + text + synthetic": f"sczbp/test_{diagnosis}_structured_text_ddpm",
+            "Structured + text": f"sczbp/test_{diagnosis}_structured_text",
+            "Structured only ": f"sczbp/test_{diagnosis}_structured_only",
+            "Text only": f"sczbp/test_{diagnosis}_tfidf_1000",
         }
 
         best_experiment = best_experiments[diagnosis]
@@ -56,7 +58,9 @@ if __name__ == "__main__":
         panels = [panel_a, panel_b, panel_c, panel_d]
 
         with pd.option_context("mode.chained_assignment", None):
-            grid = create_patchwork_grid(plots=panels, single_plot_dimensions=(5, 5), n_in_row=2, start_letter_index=1)
+            grid = create_patchwork_grid(
+                plots=panels, single_plot_dimensions=(5, 5), n_in_row=2, start_letter_index=1
+            )
         grid.savefig(
             SCZ_BP_EVAL_OUTPUT_DIR / f"fig_2_{diagnosis}_{best_experiment.split('/')[1]}.png"
         )

@@ -19,7 +19,8 @@ def calculate_pretty_oof_performance(metric_frame: pl.DataFrame) -> pl.DataFrame
                 "pretty_value"
             )
         )
-        .select("pretty_value").rename({"pretty_value" : "value"})
+        .select("pretty_value")
+        .rename({"pretty_value": "value"})
     )
     return only_oof
 
@@ -68,13 +69,24 @@ if __name__ == "__main__":
                     ).drop("metric")
                 )
 
-        performance_df = pl.concat(performance_dfs, how="vertical").pivot(values="value", index=["diagnosis", "feature_set"], columns="split").with_columns(
-                    pl.col("feature_set").cast(
-                        pl.Enum(
-                            ["Structured + text + synthetic", "Structured + text", "Text only", "Structured only"]
-                        )
-                    ),
-                    pl.col("diagnosis").cast(pl.Enum(["scz", "bp"]))
-                ).sort("diagnosis", "feature_set")
-        performance_df.to_pandas().to_html(SCZ_BP_EVAL_OUTPUT_DIR / "performance_by_individual_outcome.html")
-        
+        performance_df = (
+            pl.concat(performance_dfs, how="vertical")
+            .pivot(values="value", index=["diagnosis", "feature_set"], columns="split")
+            .with_columns(
+                pl.col("feature_set").cast(
+                    pl.Enum(
+                        [
+                            "Structured + text + synthetic",
+                            "Structured + text",
+                            "Text only",
+                            "Structured only",
+                        ]
+                    )
+                ),
+                pl.col("diagnosis").cast(pl.Enum(["scz", "bp"])),
+            )
+            .sort("diagnosis", "feature_set")
+        )
+        performance_df.to_pandas().to_html(
+            SCZ_BP_EVAL_OUTPUT_DIR / "performance_by_individual_outcome.html"
+        )
