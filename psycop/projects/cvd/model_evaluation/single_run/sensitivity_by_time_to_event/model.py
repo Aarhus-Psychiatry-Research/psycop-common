@@ -26,8 +26,8 @@ def sensitivity_by_time_to_event_model(
 ) -> SensitivityByTTEDF:
     eval_dataset = (
         parse_dw_ek_borger_from_uuid(eval_df)
-        .join(pred_timestamps.stripped_df, on="dw_ek_borger", suffix="_pred")
-        .join(outcome_timestamps.stripped_df, on="dw_ek_borger", suffix="_outcome")
+        .join(pred_timestamps.specified_df, on="dw_ek_borger", suffix="_pred")
+        .join(outcome_timestamps.specified_df, on="dw_ek_borger", suffix="_outcome")
     ).to_pandas()
 
     dfs = []

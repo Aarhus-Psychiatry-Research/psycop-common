@@ -127,6 +127,11 @@ class ValidatedFrame(Generic[PolarsFrameGeneric]):
     def _get_rule_errors(self, column_infos: Iter[ColumnInfo]) -> Sequence[FrameValidationError]:
         return Iter([c_info.check_rules(self.frame) for c_info in column_infos]).flatten().to_list()
 
+    @property
+    def specified_df(self) -> PolarsFrameGeneric:
+        specified_columns = self._get_column_infos().map(lambda ci: ci.name).to_list()
+        return self.frame.select(*specified_columns)
+
     def __post_init__(self):
         column_infos = self._get_column_infos()
         extra_columns_error_strings = self._get_extra_column_errors(column_infos)

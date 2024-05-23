@@ -25,10 +25,6 @@ class PredictionTimeFrame(ValidatedFrame[pl.DataFrame]):
 
     allow_extra_columns: bool = True
 
-    @property
-    def stripped_df(self) -> pl.DataFrame:
-        return self.frame.select(pl.col(self.timestamp_col_name), pl.col(self.entity_id_col_name))
-
 
 @dataclass(frozen=True)
 class OutcomeTimestampFrame(ValidatedFrame[pl.DataFrame]):
@@ -43,10 +39,6 @@ class OutcomeTimestampFrame(ValidatedFrame[pl.DataFrame]):
     timestamp_col_rules: Sequence[ValidatorRule] = (ColumnTypeRule(expected_type=pl.Datetime),)
 
     allow_extra_columns: bool = True
-
-    @property
-    def stripped_df(self) -> pl.DataFrame:
-        return self.frame.select(pl.col(self.timestamp_col_name), pl.col(self.entity_id_col_name))
 
 
 @runtime_checkable
