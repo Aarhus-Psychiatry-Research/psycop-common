@@ -1,4 +1,5 @@
 """Load text data from sql warehouse."""
+
 from __future__ import annotations
 
 from functools import partial

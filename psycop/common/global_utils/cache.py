@@ -1,3 +1,4 @@
+import datetime
 from pathlib import Path
 
 from joblib import Memory
@@ -11,4 +12,5 @@ else:
 
 cache_dir.mkdir(parents=True, exist_ok=True)
 
-mem = Memory(location=cache_dir, verbose=1)
+shared_cache = Memory(location=cache_dir, verbose=1)
+shared_cache.reduce_size(age_limit=datetime.timedelta(days=1))

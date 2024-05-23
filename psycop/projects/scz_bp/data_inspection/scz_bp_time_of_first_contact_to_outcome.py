@@ -1,4 +1,5 @@
 """Script to get an overview of prevalent cases and how long of a wash-in to use"""
+
 import plotnine as pn
 import polars as pl
 

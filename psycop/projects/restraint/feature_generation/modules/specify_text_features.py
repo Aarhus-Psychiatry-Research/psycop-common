@@ -1,4 +1,5 @@
 """Text-feature specification module."""
+
 import datetime as dt
 import logging
 from typing import Union

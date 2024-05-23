@@ -3,6 +3,7 @@
 Required to allow the trainer_spawner to point towards a python script
 file, rather than an installed module.
 """
+
 import faulthandler
 from pathlib import Path
 from typing import Union

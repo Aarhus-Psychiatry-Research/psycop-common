@@ -24,7 +24,17 @@ def sanitise_dict_keys(d: dict[str, Any]) -> dict[str, Any]:
 @BaselineRegistry.loggers.register("mlflow_logger")
 @dataclass
 class MLFlowLogger(BaselineLogger):
+    """MLFlow logger for baseline trainings.
+
+    Args:
+        experiment_name: Name of the experiment.
+        run_name: Name of the run. If None, a random run name will be generated.
+        tracking_uri: URI of the MLFlow tracking server.
+        postpone_run_creation_to_first_log: Whether to create a run when the first log is created. Helpful in tests, where we can avoid logging.
+    """
+
     experiment_name: str
+    run_name: str | None = None
     tracking_uri: str = "http://exrhel0371.it.rm.dk:5050"
     postpone_run_creation_to_first_log: bool = False
 
@@ -38,10 +48,18 @@ class MLFlowLogger(BaselineLogger):
         if not self._run_initialised:
             self._log_str = ""
             mlflow.set_tracking_uri(self.tracking_uri)
-            # Start a new run. End a run if it already exists within the process.
+
+            # When hyperparameter tuning, we run multiple processes, each of which does multiple runs.
+            # WHen starting an experiment, An MLFlow run is initialized with a random ID if no other run is active in the process.
+            # This means that all trainings will be logged to the same run, unless we stop the previous run and start a new one.
             if mlflow.active_run() is not None:
                 mlflow.end_run()
+
             self.mlflow_experiment = mlflow.set_experiment(experiment_name=self.experiment_name)
+            if self.run_name is not None:
+                # Override the run with the given name
+                mlflow.start_run(run_name=self.run_name)
+
             self._run_initialised = True
 
     def _append_log_str(self, prefix: str, message: str):

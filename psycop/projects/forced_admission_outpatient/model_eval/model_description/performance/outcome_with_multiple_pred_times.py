@@ -1,7 +1,9 @@
 import pandas as pd
+import patchworklib as pw
 import plotnine as pn
 from wasabi import Printer
 
+from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.projects.forced_admission_outpatient.model_eval.config import BEST_POS_RATE, FA_PN_THEME
 from psycop.projects.forced_admission_outpatient.utils.pipeline_objects import (
@@ -24,6 +26,7 @@ def _get_prediction_times_with_outcome_shared_by_n_other(
             "id": eval_dataset.ids,
             "y": eval_dataset.y,
             "y_pred": positives_series,
+            "y_hat_probs": eval_dataset.y_hat_probs.squeeze(),
             "pred_timestamps": eval_dataset.pred_timestamps,
             "outcome_timestamps": eval_dataset.outcome_timestamps,
         }
@@ -42,9 +45,75 @@ def _get_prediction_times_with_outcome_shared_by_n_other(
     return filtered_df
 
 
-def _get_tpr_and_time_to_event_for_cases_wtih_n_pred_times_per_outcome(
+def _plot_model_outputs_over_time_for_prediction_times_with_outcome_shared_by_n_other(
+    eval_dataset: EvalDataset, n: int, ppr: float, save: bool = False
+) -> pn.ggplot | None:
+    df = _get_prediction_times_with_outcome_shared_by_n_other(eval_dataset, n)
+
+    df["time_to_event"] = (df["outcome_timestamps"] - df["pred_timestamps"]).dt.days
+
+    df["y_pred"] = df["y_pred"].astype("category")
+
+    if df["outcome_uuid"].nunique() < 4:
+        return None
+
+    # plot a point for each prediction time, with time to event on the x-axis and the model output (y_hat_probs)$ on the y-axis. Colour the point red if y_pred is 0 and green if y_pred is 1. Connect points with the same outcome_uuid with a line.
+    plot = (
+        pn.ggplot(df)
+        + FA_PN_THEME
+        + pn.geom_point(
+            pn.aes(x="time_to_event", y="y_hat_probs", color="y_pred"), size=3, alpha=0.8
+        )
+        + pn.geom_line(pn.aes(x="time_to_event", y="y_hat_probs", group="outcome_uuid"), alpha=0.4)
+        + pn.labs(x="Time to event (days)", y="Model output")
+        + pn.scale_color_manual(values=["#D55E00", "#009E73"], labels=["Negative", "Positive"])
+        + pn.ggtitle(f"Outcomes with {n} prediction times (PPR: {ppr*100}%)")
+        + pn.labs(color="Prediction")
+        + pn.scale_x_reverse()
+    )
+
+    if save:
+        plot_output_path = (
+            run.paper_outputs.paths.figures
+            / f"fa_outpatient_model_outputs_over_time_for_outcomes_with_{n}_pred_times.png"
+        )
+
+        plot.save(plot_output_path)
+
+    return plot
+
+
+def plot_model_outputs_over_time_for_cases_multiple_pred_times_per_outcome(
+    run: ForcedAdmissionOutpatientPipelineRun,
+    eval_dataset: EvalDataset,
+    max_n: int,
+    ppr: float,
+    save: bool = True,
+) -> pw.Bricks:
+    plots = [
+        _plot_model_outputs_over_time_for_prediction_times_with_outcome_shared_by_n_other(
+            eval_dataset, n, ppr
+        )
+        for n in range(1, max_n)
+    ]
+
+    plots = [plot for plot in plots if plot is not None]
+
+    grid = create_patchwork_grid(plots=plots, single_plot_dimensions=(5, 5), n_in_row=2)
+
+    if save:
+        grid_output_path = (
+            run.paper_outputs.paths.figures
+            / "fa_outpatient_model_outputs_over_time_for_outcomes_with_multiple_pred_times.png"
+        )
+        grid.savefig(grid_output_path)
+
+    return grid
+
+
+def _plot_tpr_and_time_to_event_for_cases_wtih_n_pred_times_per_outcome(
     eval_dataset: EvalDataset, n: int
-) -> pn.ggplot:
+) -> pn.ggplot | None:
     df = _get_prediction_times_with_outcome_shared_by_n_other(eval_dataset, n)
 
     df["time_to_event"] = (df["outcome_timestamps"] - df["pred_timestamps"]).dt.days
@@ -53,8 +122,8 @@ def _get_tpr_and_time_to_event_for_cases_wtih_n_pred_times_per_outcome(
         df.groupby("outcome_uuid")["pred_timestamps"].rank(method="first").astype(int)
     )
 
-    if df["outcome_uuid"].nunique() < 5:
-        return pn.ggplot()
+    if df["outcome_uuid"].nunique() < 4:
+        return None
 
     # Add true positive rate for each group
     df["tpr"] = ""
@@ -140,26 +209,44 @@ def plot_distribution_of_n_pred_times_per_outcome(
     return plot
 
 
+def plot_tpr_and_time_to_event_for_cases_wtih_multiple_pred_times_per_outcome(
+    run: ForcedAdmissionOutpatientPipelineRun,
+    eval_dataset: EvalDataset,
+    max_n: int,
+    save: bool = True,
+) -> pw.Bricks:
+    plots = [
+        _plot_tpr_and_time_to_event_for_cases_wtih_n_pred_times_per_outcome(eval_dataset, n)
+        for n in range(1, max_n)
+    ]
+
+    plots = [plot for plot in plots if plot is not None]
+
+    grid = create_patchwork_grid(plots=plots, single_plot_dimensions=(5, 5), n_in_row=2)
+
+    if save:
+        grid_output_path = (
+            run.paper_outputs.paths.figures
+            / "fa_outpatient_performance_and_distribution_for_outcomes_with_multiple_pred_times.png"
+        )
+        grid.savefig(grid_output_path)
+
+    return grid
+
+
 if __name__ == "__main__":
-    from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
     from psycop.projects.forced_admission_outpatient.model_eval.selected_runs import (
         get_best_eval_pipeline,
     )
 
     run = get_best_eval_pipeline()
     eval_dataset = run.pipeline_outputs.get_eval_dataset()
-    max_n = 7
+    max_n = 10
 
-    plots = [
-        _get_tpr_and_time_to_event_for_cases_wtih_n_pred_times_per_outcome(eval_dataset, n)
-        for n in range(1, max_n)
-    ]
-
-    grid_output_path = (
-        run.paper_outputs.paths.figures
-        / "fa_outpatient_performance_and_distribution_for_outcomes_with_multiple_pred_times.png"
+    plot_model_outputs_over_time_for_cases_multiple_pred_times_per_outcome(
+        run, eval_dataset, max_n, ppr=BEST_POS_RATE
     )
 
-    grid = create_patchwork_grid(plots=plots, single_plot_dimensions=(5, 5), n_in_row=2)
-    grid.savefig(grid_output_path)
-    msg.good(f"Saved figure to {grid_output_path}")
+    plot_tpr_and_time_to_event_for_cases_wtih_multiple_pred_times_per_outcome(
+        run, eval_dataset, max_n
+    )

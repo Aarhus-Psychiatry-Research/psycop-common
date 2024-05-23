@@ -1,4 +1,5 @@
 """Pipeline for fitting text models"""
+
 import logging
 from collections.abc import Sequence
 from pathlib import Path

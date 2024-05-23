@@ -9,8 +9,7 @@ from .polarsframe import PolarsFrame
 
 
 class FrameValidationError(Protocol):
-    def get_error_string(self) -> str:
-        ...
+    def get_error_string(self) -> str: ...
 
 
 @dataclass(frozen=True)
@@ -34,8 +33,7 @@ class ColumnInfo:
 class ValidatorRule(Protocol):
     def __call__(
         self, column_info: ColumnInfo, frame: PolarsFrame
-    ) -> Sequence[FrameValidationError]:
-        ...
+    ) -> Sequence[FrameValidationError]: ...
 
 
 @dataclass(frozen=True)

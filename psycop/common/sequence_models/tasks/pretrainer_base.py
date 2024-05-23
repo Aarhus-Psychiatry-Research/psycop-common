@@ -15,8 +15,7 @@ Metrics = dict[str, torch.Tensor]
 
 class BasePatientSlicePretrainer(ABC, pl.LightningModule):
     @abstractmethod
-    def collate_fn(self, patient_slices: Sequence[PatientSlice]) -> BatchWithLabels:
-        ...
+    def collate_fn(self, patient_slices: Sequence[PatientSlice]) -> BatchWithLabels: ...
 
     @abstractmethod
     def training_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:  # type: ignore
@@ -29,22 +28,19 @@ class BasePatientSlicePretrainer(ABC, pl.LightningModule):
     @abstractmethod
     def forward(  # type: ignore
         self, inputs: dict[str, torch.Tensor], labels: torch.Tensor
-    ) -> Metrics:
-        ...
+    ) -> Metrics: ...
 
     @abstractmethod
-    def filter_and_reformat(self, patient_slices: Sequence[PatientSlice]) -> Sequence[PatientSlice]:
-        ...
+    def filter_and_reformat(
+        self, patient_slices: Sequence[PatientSlice]
+    ) -> Sequence[PatientSlice]: ...
 
-    def configure_optimizers(self) -> OptimizerLRScheduler:
-        ...
+    def configure_optimizers(self) -> OptimizerLRScheduler: ...
 
     @property
     @abstractmethod
-    def embedder(self) -> PatientSliceEmbedder:
-        ...
+    def embedder(self) -> PatientSliceEmbedder: ...
 
     @property
     @abstractmethod
-    def encoder(self) -> nn.Module:
-        ...
+    def encoder(self) -> nn.Module: ...

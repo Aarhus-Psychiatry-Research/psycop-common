@@ -1,4 +1,5 @@
 """Utility functions for the application modules."""
+
 import functools
 import logging
 from collections.abc import Callable
