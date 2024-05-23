@@ -16,8 +16,8 @@ def _format_prop_as_percent(num: float) -> str:
     return output
 
 
-def performance_by_ppr_view(table: PerformanceByPPRModel) -> pl.DataFrame:
-    df = table
+def performance_by_ppr_view(model: PerformanceByPPRModel) -> pl.DataFrame:
+    df = model
 
     output_df = df.drop(
         [
