@@ -128,7 +128,8 @@ class ValidatedFrame(Generic[PolarsFrameGeneric]):
         return Iter([c_info.check_rules(self.frame) for c_info in column_infos]).flatten().to_list()
 
     @property
-    def specified_df(self) -> PolarsFrameGeneric:
+    def essentials_df(self) -> PolarsFrameGeneric:
+        """Get all columns that have a `_col_name` attribute in the dataclass."""
         specified_columns = self._get_column_infos().map(lambda ci: ci.name).to_list()
         return self.frame.select(*specified_columns)
 
