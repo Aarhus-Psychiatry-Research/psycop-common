@@ -28,11 +28,11 @@ class MarkdownFigure(MarkdownArtifact):
     relative_to_path: Optional[Path] = None
 
     def __post_init__(self):
-        if self.relative_to_path is not None:
-            self.file_path = self.file_path.relative_to(self.relative_to_path)
-
         if not self.file_path.exists():
             raise FileNotFoundError
+
+        if self.relative_to_path is not None:
+            self.file_path = self.file_path.relative_to(self.relative_to_path)
 
     def get_markdown(self) -> str:
         return f"""{self.title_prefix} {self.title}
