@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Optional
 
 import pandas as pd
+import plotnine as pn
 import polars as pl
 
 
