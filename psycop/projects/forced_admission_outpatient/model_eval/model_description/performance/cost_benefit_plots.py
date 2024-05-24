@@ -1,3 +1,4 @@
+import re
 from collections.abc import Sequence
 
 import numpy as np
@@ -11,6 +12,8 @@ from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr
 from psycop.projects.forced_admission_outpatient.model_eval.config import FA_PN_THEME
 from psycop.projects.forced_admission_outpatient.model_eval.model_description.performance.performance_by_ppr import (
     _get_num_of_unique_outcome_events,  # type: ignore
+)
+from psycop.projects.forced_admission_outpatient.model_eval.model_description.performance.performance_by_ppr import (
     _get_number_of_outcome_events_with_at_least_one_true_positve,  # type: ignore
 )
 from psycop.projects.forced_admission_outpatient.utils.pipeline_objects import (
@@ -88,7 +91,7 @@ def calculate_cost_benefit_estimates_stats(df: pd.DataFrame) -> pd.DataFrame:
     # Add the statistics to a dictionary
     stats = {
         f"Median ({median_value}:1)": median_value,
-        f"Median ({mean_value}:1)": mean_value,
+        f"Mean ({mean_value}:1)": mean_value,
         f"5th percentile ({percentile_5th}:1)": percentile_5th,
         f"95th percentile ({percentile_95th}:1)": percentile_95th,
     }
@@ -139,10 +142,10 @@ def calculate_cost_benefit(
 
 def plot_cost_benefit_by_ppr(df: pd.DataFrame, per_true_positive: bool) -> pn.ggplot:
     legend_order = sorted(
-        df["savings_recources_ratio"].unique(), key=lambda s: int(s.split(":")[0]), reverse=True
+        df["cost_benefit_ratio_str"].unique(), key=lambda s: int(re.sub(r'[^\d]+', '', s.split(":")[0])), reverse=True
     )
 
-    df = df.assign(values=pd.Categorical(df["savings_recources_ratio"], legend_order))
+    df = df.assign(values=pd.Categorical(df["cost_benefit_ratio_str"], legend_order))
 
     p = (
         pn.ggplot(df, pn.aes(x="positive_rate", y="benefit_harm", color="cost_benefit_ratio_str"))
@@ -154,7 +157,7 @@ def plot_cost_benefit_by_ppr(df: pd.DataFrame, per_true_positive: bool) -> pn.gg
         + pn.theme(
             panel_grid_major=pn.element_blank(),
             panel_grid_minor=pn.element_blank(),
-            legend_position=(0.3, 0.18),
+            legend_position=(0.4, 0.18),
         )
         + pn.geom_hline(yintercept=0, linetype="dotted", color="red")
         + pn.annotate(
@@ -183,7 +186,7 @@ def plot_cost_benefit_by_ppr(df: pd.DataFrame, per_true_positive: bool) -> pn.gg
         p += pn.ggtitle("Cost/benefit estimate based on unique outcomes predicted ≥1")
 
     for value in legend_order:
-        p += pn.geom_path(df[df["savings_recources_ratio"] == value], group=1)  # type: ignore
+        p += pn.geom_path(df[df["cost_benefit_ratio_str"] == value], group=1)  # type: ignore
     return p
 
 
@@ -287,5 +290,5 @@ if __name__ == "__main__":
     fa_cost_benefit_by_ratio_and_ppr(
         run=get_best_eval_pipeline(),
         per_true_positive=True,
-        cost_benefit_ratios=[500, 40, 20, 10, 6, 3],
+        cost_benefit_ratios=[500, 100, 40, 20, 10, 6, 3],
     )
