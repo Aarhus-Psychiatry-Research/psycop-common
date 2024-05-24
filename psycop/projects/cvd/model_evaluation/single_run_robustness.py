@@ -1,8 +1,7 @@
 import logging
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 import patchworklib as pw
-import plotnine as pn
 import polars as pl
 
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
@@ -37,6 +36,11 @@ from psycop.projects.cvd.model_evaluation.single_run.auroc_by.time_from_first_vi
     AUROCByTimeFromFirstVisitPlot,
 )
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    import plotnine as pn
 
 log = logging.getLogger(__name__)
 
@@ -92,5 +96,3 @@ if __name__ == "__main__":
     )
 
     figure.savefig("test.png")
-
-    pass
