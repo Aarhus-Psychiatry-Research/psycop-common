@@ -1,3 +1,4 @@
+import logging
 import re
 from collections.abc import Sequence
 from pathlib import Path
@@ -120,6 +121,7 @@ if __name__ == "__main__":
 
     lookahead_days_str = re.findall(r".+_within_(\d+)_days.+", cfg["trainer.outcome_col_name"])[0]
     lookahead_years = int(int(lookahead_days_str) / 365)
+    estimator_type = cfg["trainer.task.task_pipe.sklearn_pipe._.model.estimator_steps"]
 
     artifacts = markdown_artifacts(
         outcome_label="CVD",
@@ -129,7 +131,7 @@ if __name__ == "__main__":
         all_visits_df=pl.from_pandas(physical_visits_to_psychiatry()),
         birthdays_df=pl.from_pandas(birthdays()),
         write_path=output_path,
-        estimator_type=cfg["trainer.task.task_pipe.sklearn_pipe._.model.estimator_steps"],
+        estimator_type=estimator_type,
         primary_pos_proportion=0.05,
         pos_proportions=[0.01, 0.05, 0.1],
         lookahead_years=lookahead_years,
@@ -143,4 +145,5 @@ if __name__ == "__main__":
         figure_title_prefix="Figure",
     )
 
+    logging.info(f"Writing to {output_path}")
     (output_path / "Report.md").write_text(markdown_text)
