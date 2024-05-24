@@ -27,7 +27,7 @@ class FirstPosPredToEventPlot(SingleRunPlot):
         p = (
             pn.ggplot(plot_df, pn.aes(x="years_from_pred_to_event", fill="y"))  # type: ignore
             + pn.geom_density(alpha=0.8, fill="#0072B2")
-            + pn.xlab("Years from first positive prediction\n to event")
+            + pn.xlab("Years until event")
             + pn.scale_x_reverse(breaks=range(int(plot_df["years_from_pred_to_event"].max() + 1)))
             + pn.ylab("Proportion")
             + pn.geom_vline(xintercept=median_years, linetype="dashed", size=1)

@@ -10,7 +10,6 @@ from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import 
 @dataclass(frozen=True)
 class AUROCPlot(SingleRunPlot):
     data: AUROC
-    title: str = "Receiver Operating Characteristic (ROC) Curve"
 
     def __call__(self) -> pn.ggplot:
         logging.info(f"Starting {self.__class__.__name__}")
@@ -30,7 +29,7 @@ class AUROCPlot(SingleRunPlot):
             + pn.geom_line(size=1)
             + pn.geom_line(pn.aes(y="tpr_upper"), linetype="dashed", color="grey")
             + pn.geom_line(pn.aes(y="tpr_lower"), linetype="dashed", color="grey")
-            + pn.labs(title=self.title, x="1 - Specificity", y="Sensitivity")
+            + pn.labs(x="1 - Specificity", y="Sensitivity")
             + pn.xlim(0, 1)
             + pn.ylim(0, 1)
             + pn.geom_abline(intercept=0, slope=1, linetype="dotted")

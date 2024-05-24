@@ -73,7 +73,6 @@ log = logging.getLogger(__name__)
 def single_run_main(
     eval_frame: EvalFrame,
     desired_positive_rate: float,
-    explored_positive_rates: Sequence[float],
     outcome_label: str,
     outcome_timestamps: OutcomeTimestampFrame,
 ) -> pw.Bricks:
@@ -88,7 +87,7 @@ def single_run_main(
         SensitivityByTTEPlot(
             outcome_label=outcome_label,
             data=sensitivity_by_time_to_event_model(
-                eval_df=eval_df, outcome_timestamps=outcome_timestamps, pprs=explored_positive_rates
+                eval_df=eval_df, outcome_timestamps=outcome_timestamps, pprs=[desired_positive_rate]
             ),
         ),
         FirstPosPredToEventPlot(
@@ -128,7 +127,6 @@ if __name__ == "__main__":
     figure = single_run_main(
         eval_frame=eval_frame,
         desired_positive_rate=0.05,
-        explored_positive_rates=[0.05, 0.1],
         outcome_label="CVD",
         outcome_timestamps=outcome_timestamps,
     )

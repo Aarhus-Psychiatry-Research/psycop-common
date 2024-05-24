@@ -26,20 +26,14 @@ class SensitivityByTTEPlot(SingleRunPlot):
             pn.ggplot(
                 df,
                 pn.aes(
-                    x="unit_from_event_binned",
-                    y="sensitivity",
-                    ymin="ci_lower",
-                    ymax="ci_upper",
-                    color="actual_positive_rate",
+                    x="unit_from_event_binned", y="sensitivity", ymin="ci_lower", ymax="ci_upper"
                 ),
             )
             + pn.scale_x_discrete(reverse=True)
             + pn.geom_point()
             + pn.geom_linerange(size=0.5)
             + pn.labs(x="Months to outcome", y="Sensitivity")
-            + pn.scale_color_manual([COLORS.primary, COLORS.secondary])
-            + pn.labs(color="Predicted Positive Rate")
-            + pn.theme(legend_position=(0.3, 0.88))
+            + pn.scale_color_manual([COLORS.primary])
         )
 
         for value in df["actual_positive_rate"].unique():

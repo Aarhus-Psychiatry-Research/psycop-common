@@ -1,6 +1,7 @@
 import logging
 import re
 from collections.abc import Sequence
+from os import write
 from pathlib import Path
 
 import polars as pl
@@ -45,14 +46,11 @@ def markdown_artifacts(
     pos_proportions: Sequence[float],
     lookahead_years: int,
 ) -> Sequence[MarkdownArtifact]:
-    write_path = Path(__file__).parent / "output"
-
     # Main figure
     main_figure_output_path = write_path / f"{outcome_label}_main_figure.png"
     main_figure = single_run_main(
         eval_frame=eval_df,
         desired_positive_rate=primary_pos_proportion,
-        explored_positive_rates=pos_proportions,
         outcome_label=outcome_label,
         outcome_timestamps=outcome_timestamps,
     )
@@ -75,7 +73,7 @@ def markdown_artifacts(
     )
     performance_by_ppr_table.write_csv(performance_by_ppr_output_path)
 
-    pos_rate_percent = f"{int(primary_pos_proportion * 100)}%"
+    pos_rate_percent = f"{int(primary_pos_proportion * 100)}"
     artifacts = [
         MarkdownFigure(
             title=f"Performance of {estimator_type} at a {pos_rate_percent} predicted positive rate with {lookahead_years} years of lookahead",
@@ -112,16 +110,29 @@ def markdown_artifacts(
 
 
 if __name__ == "__main__":
+    import coloredlogs
+
+    coloredlogs.install(  # type: ignore
+        level="INFO",
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+        datefmt="%Y/%m/%d %H:%M:%S",
+    )
+
     run_name = "Layer 1"
-    output_path = Path(__file__).parent / run_name / "output"
+    output_path = Path(__file__).parent / run_name
+    output_path.mkdir(exist_ok=True)
 
     run = MlflowClientWrapper().get_run("baseline_v2_cvd", run_name)
     cfg = run.get_config()
     eval_frame = run.eval_frame()
 
-    lookahead_days_str = re.findall(r".+_within_(\d+)_days.+", cfg["trainer.outcome_col_name"])[0]
+    lookahead_days_str = re.findall(r".+_within_(\d+)_days.+", cfg["trainer"]["outcome_col_name"])[
+        0
+    ]
     lookahead_years = int(int(lookahead_days_str) / 365)
-    estimator_type = cfg["trainer.task.task_pipe.sklearn_pipe._.model.estimator_steps"]
+    estimator_type = cfg["trainer"]["task"]["task_pipe"]["sklearn_pipe"]["*"]["model"][
+        "@estimator_steps"
+    ]
 
     artifacts = markdown_artifacts(
         outcome_label="CVD",
