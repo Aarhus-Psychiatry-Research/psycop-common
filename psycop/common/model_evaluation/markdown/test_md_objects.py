@@ -17,10 +17,7 @@ class TestMarkdownFigure:
 
     def test_markdown_figure_output(self):
         output = MarkdownFigure(
-            title="Figure_title",
-            file_path=Path("path/to/file"),
-            description="Description",
-            check_filepath_exists=False,
+            title="Figure_title", file_path=Path("path/to/file"), description="Description"
         ).get_markdown()
 
         assert isinstance(output, str)
@@ -37,14 +34,11 @@ class TestMarkdownTable:
     def test_creating_markdown_table(self, tmp_path: Path):
         self.table_csv.to_csv(tmp_path / "table.csv", index=False)
 
-        md_table = MarkdownTable(
-            title="Table_title",
-            file_path=tmp_path / "table.csv",
-            description="Description",
-            check_filepath_exists=True,
+        md_table = MarkdownTable.from_filepath(
+            title="Table_title", table_path=tmp_path / "table.csv", description="Description"
         )
 
-        md = md_table.get_markdown_table()
+        md = md_table.table.to_markdown(index=False)
 
         assert isinstance(md, str)
         assert "|---" in md
@@ -70,11 +64,8 @@ class TestCreateSupplementaryFromMarkdownArtifacts:
             f.write("Testing 123")
 
         artifacts = [
-            MarkdownTable(
-                title="Table_title",
-                file_path=tmp_path / "table.csv",
-                description="Description",
-                check_filepath_exists=False,
+            MarkdownTable.from_filepath(
+                title="Table_title", table_path=tmp_path / "table.csv", description="Description"
             ),
             MarkdownFigure(
                 title="Figure_title",
@@ -82,17 +73,13 @@ class TestCreateSupplementaryFromMarkdownArtifacts:
                 description="Figure description",
                 relative_to_path=tmp_path,
             ),
-            MarkdownTable(
-                title="Table_title",
-                file_path=tmp_path / "table.csv",
-                description="Description",
-                check_filepath_exists=False,
+            MarkdownTable.from_filepath(
+                title="Table_title", table_path=tmp_path / "table.csv", description="Description"
             ),
             MarkdownFigure(
                 title="Figure_title",
                 file_path=Path("path/to/file"),
                 description="Figure description",
-                check_filepath_exists=False,
             ),
         ]
 
