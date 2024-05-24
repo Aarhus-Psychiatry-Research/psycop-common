@@ -24,7 +24,6 @@ class MarkdownFigure(MarkdownArtifact):
     title: str
     description: str
     file_path: Path
-    title_prefix: str = "Figure"
     relative_to_path: Optional[Path] = None
 
     def __post_init__(self):
@@ -35,7 +34,7 @@ class MarkdownFigure(MarkdownArtifact):
             self.file_path = self.file_path.relative_to(self.relative_to_path)
 
     def get_markdown(self) -> str:
-        return f"""{self.title_prefix} {self.title}
+        return f"""{self.title}
 
 ![]({self.file_path.as_posix()})
 
@@ -52,21 +51,17 @@ class MarkdownTable(MarkdownArtifact):
 
     @classmethod
     def from_filepath(
-        cls: type["MarkdownTable"],
-        table_path: Path,
-        title: str,
-        description: str,
-        title_prefix: str = "Table",
+        cls: type["MarkdownTable"], table_path: Path, title: str, description: str
     ) -> "MarkdownTable":
         if table_path.suffix == ".csv":
             table = pd.read_csv(table_path)
         else:
             table = pd.read_excel(table_path)
 
-        return cls(title=title, description=description, title_prefix=title_prefix, table=table)
+        return cls(title=title, description=description, table=table)
 
     def get_markdown(self) -> str:
-        return f"""{self.title_prefix} {self.title}
+        return f"""{self.title}
 
 {self.table.to_markdown(index=False)}
 
