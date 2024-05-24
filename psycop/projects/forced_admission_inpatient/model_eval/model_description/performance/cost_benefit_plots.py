@@ -3,13 +3,16 @@ from collections.abc import Sequence
 
 import numpy as np
 import pandas as pd
+import patchworklib as pw
 import plotnine as pn
 from scipy.stats import truncnorm
 
 from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
     generate_performance_by_ppr_table,
 )
-from psycop.projects.forced_admission_inpatient.model_eval.config import FA_PN_THEME
+from psycop.common.model_evaluation.patchwork.patchwork_grid import (
+    create_patchwork_grid,
+)
 from psycop.projects.forced_admission_inpatient.model_eval.model_description.performance.performance_by_ppr import (
     _get_num_of_unique_outcome_events,  # type: ignore
 )
@@ -18,6 +21,10 @@ from psycop.projects.forced_admission_inpatient.model_eval.model_description.per
 )
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
     ForcedAdmissionInpatientPipelineRun,
+)
+from psycop.projects.forced_admission_outpatient.model_eval.config import (
+    COLORS,
+    FA_PN_THEME,
 )
 
 
@@ -79,6 +86,30 @@ def sample_cost_benefit_estimates(n: int = 1000) -> pd.DataFrame:
     )
 
     return df
+
+
+def plot_sampling_distribution(df: pd.DataFrame, col_to_plot: str, save: bool = False) -> pn.ggplot:
+    # Create string for plottign for col name by removing underscores and capitalizing
+    col_to_plot_str = col_to_plot.replace("_", " ").capitalize()
+
+    p = (
+        pn.ggplot(df, pn.aes(x=col_to_plot))
+        + pn.geom_histogram(
+            pn.aes(y=pn.after_stat("density")),
+            bins=30,
+            fill=COLORS.secondary,
+            alpha=0.4,
+            color=COLORS.secondary,
+        )
+        + pn.geom_density(color=COLORS.tertiary, size=1.5)
+        + pn.labs(x=f"{col_to_plot_str}", y="Density")
+        + FA_PN_THEME
+        + pn.theme(panel_grid_major=pn.element_blank(), panel_grid_minor=pn.element_blank())
+    )
+    if save:
+        p.save(filename=f"sampling_distribution_{col_to_plot}.png", width=7, height=7)
+
+    return p
 
 
 def calculate_cost_benefit_estimates_stats(df: pd.DataFrame) -> pd.DataFrame:
@@ -240,6 +271,11 @@ def fa_cost_benefit_from_monte_carlo_simulations(
     n: int = 1000,
 ) -> pn.ggplot:
     df = sample_cost_benefit_estimates(n=n)
+
+    dist_plots = fa_patchwork_sampling_distribution_plots(
+        run=run, df=df, cols_to_plot=list(df.columns), grid_plot=False, save=False
+    )
+
     stats = calculate_cost_benefit_estimates_stats(df)
 
     dfs = []
@@ -260,22 +296,49 @@ def fa_cost_benefit_from_monte_carlo_simulations(
 
     p = plot_cost_benefit_by_ppr(plot_df, per_true_positive)
 
+    # add distribution plots to the cost benefit plot
+    grid = create_patchwork_grid(plots=[dist_plots, p], single_plot_dimensions=(5, 5), n_in_row=1)  # type: ignore
+
     if per_true_positive:
-        p.save(
+        grid.savefig(
             filename=run.paper_outputs.paths.figures
-            / "fa_inpatient_monte_carlo_cost_benefit_estimates_per_true_positives.png",
+            / "fa_outpatient_monte_carlo_cost_benefit_estimates_per_true_positives.png",
             width=7,
             height=7,
         )
     else:
-        p.save(
+        grid.savefig(
             filename=run.paper_outputs.paths.figures
-            / "fa_inpatient_monte_carlo_cost_benefit_estimates_per_true_unique_outcomes.png",
+            / "fa_outpatient_monte_carlo_cost_benefit_estimates_per_true_unique_outcomes.png",
             width=7,
             height=7,
         )
 
     return p
+
+
+def fa_patchwork_sampling_distribution_plots(
+    run: ForcedAdmissionInpatientPipelineRun,
+    df: pd.DataFrame,
+    cols_to_plot: Sequence[str],
+    grid_plot: bool = False,
+    save: bool = False,
+) -> pw.Bricks | Sequence[pn.ggplot]:
+    plots = [plot_sampling_distribution(df, col_to_plot) for col_to_plot in cols_to_plot]
+
+    if grid_plot:
+        grid = create_patchwork_grid(plots=plots, single_plot_dimensions=(5, 5), n_in_row=2)
+
+        if save:
+            grid_output_path = (
+                run.paper_outputs.paths.figures
+                / "fa_outpatient_cost_benefit_intervention_efficiency_sampled_distributions.png"
+            )
+            grid.savefig(grid_output_path)
+
+        return grid
+
+    return plots
 
 
 if __name__ == "__main__":
