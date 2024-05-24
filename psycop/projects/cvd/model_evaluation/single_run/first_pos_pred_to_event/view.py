@@ -52,5 +52,3 @@ if __name__ == "__main__":
         outcome_label="CVD",
     )()
     plot.save("test.png")
-
-    pass

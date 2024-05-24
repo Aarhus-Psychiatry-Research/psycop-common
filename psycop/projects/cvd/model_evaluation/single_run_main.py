@@ -134,5 +134,3 @@ if __name__ == "__main__":
     )
 
     figure.savefig("test_cvd_main.png")
-
-    pass
