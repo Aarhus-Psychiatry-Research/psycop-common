@@ -263,6 +263,11 @@ def fa_cost_benefit_from_monte_carlo_simulations(
     n: int = 1000,
 ) -> pn.ggplot:
     df = sample_cost_benefit_estimates(n=n)
+
+    dist_plots = fa_patchwork_sampling_distribution_plots(
+        run=run, df=df, cols_to_plot=list(df.columns), grid_plot=False, save=False
+    )
+
     stats = calculate_cost_benefit_estimates_stats(df)
 
     dfs = []
@@ -283,15 +288,18 @@ def fa_cost_benefit_from_monte_carlo_simulations(
 
     p = plot_cost_benefit_by_ppr(plot_df, per_true_positive)
 
+    # add distribution plots to the cost benefit plot
+    grid = create_patchwork_grid(plots=[dist_plots, p], single_plot_dimensions=(5, 5), n_in_row=1)  # type: ignore
+
     if per_true_positive:
-        p.save(
+        grid.savefig(
             filename=run.paper_outputs.paths.figures
             / "fa_outpatient_monte_carlo_cost_benefit_estimates_per_true_positives.png",
             width=7,
             height=7,
         )
     else:
-        p.save(
+        grid.savefig(
             filename=run.paper_outputs.paths.figures
             / "fa_outpatient_monte_carlo_cost_benefit_estimates_per_true_unique_outcomes.png",
             width=7,
@@ -305,20 +313,24 @@ def fa_patchwork_sampling_distribution_plots(
     run: ForcedAdmissionOutpatientPipelineRun,
     df: pd.DataFrame,
     cols_to_plot: Sequence[str],
+    grid_plot: bool = False,
     save: bool = False,
-) -> pw.Bricks:
+) -> pw.Bricks | Sequence[pn.ggplot]:
     plots = [plot_sampling_distribution(df, col_to_plot) for col_to_plot in cols_to_plot]
 
-    grid = create_patchwork_grid(plots=plots, single_plot_dimensions=(5, 5), n_in_row=2)
+    if grid_plot:
+        grid = create_patchwork_grid(plots=plots, single_plot_dimensions=(5, 5), n_in_row=2)
 
-    if save:
-        grid_output_path = (
-            run.paper_outputs.paths.figures
-            / "fa_outpatient_cost_benefit_intervention_efficiency_sampled_distributions.png"
-        )
-        grid.savefig(grid_output_path)
+        if save:
+            grid_output_path = (
+                run.paper_outputs.paths.figures
+                / "fa_outpatient_cost_benefit_intervention_efficiency_sampled_distributions.png"
+            )
+            grid.savefig(grid_output_path)
 
-    return grid
+        return grid
+
+    return plots
 
 
 if __name__ == "__main__":
