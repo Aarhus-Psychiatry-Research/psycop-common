@@ -75,7 +75,6 @@ def single_run_main(
     desired_positive_rate: float,
     explored_positive_rates: Sequence[float],
     outcome_label: str,
-    pred_timestamps: PredictionTimeFrame,
     outcome_timestamps: OutcomeTimestampFrame,
 ) -> pw.Bricks:
     eval_df = eval_frame.frame
@@ -89,17 +88,12 @@ def single_run_main(
         SensitivityByTTEPlot(
             outcome_label=outcome_label,
             data=sensitivity_by_time_to_event_model(
-                eval_df=eval_df,
-                pred_timestamps=pred_timestamps,
-                outcome_timestamps=outcome_timestamps,
-                pprs=explored_positive_rates,
+                eval_df=eval_df, outcome_timestamps=outcome_timestamps, pprs=explored_positive_rates
             ),
         ),
         FirstPosPredToEventPlot(
             data=first_positive_prediction_to_event_model(
-                eval_df=eval_df,
-                pred_timestamps=pred_timestamps,
-                outcome_timestamps=outcome_timestamps,
+                eval_df=eval_df, outcome_timestamps=outcome_timestamps
             ),
             outcome_label=outcome_label,
         ),
@@ -136,8 +130,9 @@ if __name__ == "__main__":
         desired_positive_rate=0.05,
         explored_positive_rates=[0.05, 0.1],
         outcome_label="CVD",
-        pred_timestamps=pred_timestamps,
         outcome_timestamps=outcome_timestamps,
     )
 
     figure.savefig("test_cvd_main.png")
+
+    pass

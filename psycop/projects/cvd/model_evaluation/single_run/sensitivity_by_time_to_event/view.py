@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import plotnine as pn
 
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
+from psycop.projects.t2d.paper_outputs.config import COLORS
 
 from .model import SensitivityByTTEDF
 
@@ -36,14 +37,9 @@ class SensitivityByTTEPlot(SingleRunPlot):
             + pn.geom_point()
             + pn.geom_linerange(size=0.5)
             + pn.labs(x="Months to outcome", y="Sensitivity")
-            + pn.theme(axis_text_x=pn.element_text(rotation=45, hjust=1))
-            + pn.scale_color_brewer(type="qual", palette=2)
+            + pn.scale_color_manual([COLORS.primary, COLORS.secondary])
             + pn.labs(color="Predicted Positive Rate")
-            + pn.theme(
-                panel_grid_major=pn.element_blank(),
-                panel_grid_minor=pn.element_blank(),
-                legend_position=(0.3, 0.88),
-            )
+            + pn.theme(legend_position=(0.3, 0.88))
         )
 
         for value in df["actual_positive_rate"].unique():

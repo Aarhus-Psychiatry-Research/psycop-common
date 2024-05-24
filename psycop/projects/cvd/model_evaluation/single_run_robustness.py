@@ -95,4 +95,4 @@ if __name__ == "__main__":
         all_visits_df=pl.from_pandas(physical_visits_to_psychiatry()),
     )
 
-    figure.savefig("test.png")
+    figure.savefig("test_cvd_robustness.png")
