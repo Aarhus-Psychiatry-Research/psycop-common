@@ -1,5 +1,4 @@
 import logging
-from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
 import patchworklib as pw
@@ -65,6 +64,8 @@ from psycop.projects.cvd.model_evaluation.single_run.sensitivity_by_time_to_even
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     import plotnine as pn
 
 log = logging.getLogger(__name__)
