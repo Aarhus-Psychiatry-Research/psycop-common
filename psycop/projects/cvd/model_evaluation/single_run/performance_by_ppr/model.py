@@ -8,7 +8,7 @@ import polars as pl
 
 from psycop.common.cohort_definition import OutcomeTimestampFrame, PredictionTimeFrame
 from psycop.common.global_utils.cache import shared_cache
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalDF
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
     get_confusion_matrix_cells_from_df,
 )
@@ -25,7 +25,7 @@ from psycop.projects.cvd.model_evaluation.uuid_parsers import (
 )
 
 
-def _performance_by_ppr_row(eval_df: EvalDF, positive_rate: float) -> pl.DataFrame:
+def _performance_by_ppr_row(eval_df: EvalFrame, positive_rate: float) -> pl.DataFrame:
     logging.info("Generating performance by PPR row")
     pd_df = eval_df.frame.to_pandas()
     preds, _ = get_predictions_for_positive_rate(
@@ -88,7 +88,7 @@ def _performance_by_ppr_row(eval_df: EvalDF, positive_rate: float) -> pl.DataFra
 
 
 def _get_prop_with_at_least_one_true_positve(
-    eval_df: EvalDF,
+    eval_df: EvalFrame,
     outcome_timestamps: OutcomeTimestampFrame,
     prediction_timestamps: PredictionTimeFrame,
     positive_rate: float = 0.5,
@@ -120,7 +120,7 @@ def _get_prop_with_at_least_one_true_positve(
     return true_positives["id"].nunique() / df["id"].nunique()
 
 
-def get_percentage_of_events_captured(eval_df: EvalDF, positive_rate: float) -> float:
+def get_percentage_of_events_captured(eval_df: EvalFrame, positive_rate: float) -> float:
     logging.info("Calculating proportion of events hit by a positive prediction")
     # Get all patients with at least one event and at least one positive prediction
     base_df = parse_dw_ek_borger_from_uuid(eval_df.frame).to_pandas()
@@ -147,7 +147,7 @@ PerformanceByPPRModel = NewType("PerformanceByPPRModel", pl.DataFrame)
 
 # @shared_cache.cache()
 def performance_by_ppr_model(
-    eval_df: EvalDF,
+    eval_df: EvalFrame,
     positive_rates: Sequence[float],
     pred_timestamps: PredictionTimeFrame,
     outcome_timestamps: OutcomeTimestampFrame,

@@ -27,7 +27,7 @@ class MlflowAllMetricsFrame(ValidatedFrame[pl.DataFrame]):
 
 
 @dataclass(frozen=True)
-class EvalDF(ValidatedFrame[pl.DataFrame]):
+class EvalFrame(ValidatedFrame[pl.DataFrame]):
     y_col_name: str = "y"
     y_hat_prob_col_name: str = "y_hat_prob"
     pred_time_uuid_col_name: str = "pred_time_uuid"
@@ -72,9 +72,9 @@ class PsycopMlflowRun(Run):
         cfg_path = self.download_artifact(artifact_name="config.cfg", save_location=None)
         return Config().from_disk(cfg_path)
 
-    def eval_df(self) -> EvalDF:
+    def eval_frame(self) -> EvalFrame:
         eval_df_path = self.download_artifact(artifact_name="eval_df.parquet", save_location=None)
-        return EvalDF(frame=pl.read_parquet(eval_df_path), allow_extra_columns=False)
+        return EvalFrame(frame=pl.read_parquet(eval_df_path), allow_extra_columns=False)
 
     def download_artifact(self, artifact_name: str, save_location: str | None = None) -> Path:
         """Download an artifact from a run. Returns the path to the downloaded artifact.

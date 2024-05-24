@@ -4,7 +4,7 @@ import pandas as pd
 import polars as pl
 
 from psycop.common.cohort_definition import OutcomeTimestampFrame
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalDF
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame
 from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
 )
@@ -15,7 +15,7 @@ from psycop.projects.cvd.model_evaluation.uuid_parsers import (
 
 
 def days_from_first_positive_to_event(
-    eval_dataset: EvalDF,
+    eval_dataset: EvalFrame,
     outcome_timestamps: OutcomeTimestampFrame,
     positive_rate: float = 0.5,
     aggregation_method: str = "sum",
