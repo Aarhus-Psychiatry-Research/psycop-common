@@ -36,8 +36,6 @@ def _auroc_within_group(
         auroc_by_group["ci_lower"] = ci[0][0]
         auroc_by_group["ci_upper"] = ci[0][1]
 
-        log.info("Finished bootstrapping")
-
     return pd.DataFrame(auroc_by_group, index=[0])
 
 
