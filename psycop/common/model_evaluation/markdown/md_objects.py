@@ -2,49 +2,36 @@ import abc
 import copy
 from abc import ABC
 from collections.abc import Sequence
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
 import pandas as pd
+import polars as pl
 
 
 class MarkdownArtifact(ABC):
-    def __init__(
-        self, title: str, file_path: Path, description: str, check_filepath_exists: bool = True
-    ):
-        self.title = title
-        self.file_path = file_path
-        self.description = description
-
-        if check_filepath_exists and not self.file_path.exists():
-            raise FileNotFoundError(f"{self.file_path} does not exist")
+    title: str
 
     @abc.abstractmethod
     def get_markdown(self) -> str:
         raise NotImplementedError
 
 
+@dataclass
 class MarkdownFigure(MarkdownArtifact):
-    def __init__(
-        self,
-        file_path: Path,
-        description: str,
-        title: str,
-        title_prefix: str = "Figure",
-        check_filepath_exists: bool = True,
-        relative_to_path: Optional[Path] = None,
-    ):
-        super().__init__(
-            title=title,
-            file_path=file_path,
-            description=description,
-            check_filepath_exists=check_filepath_exists,
-        )
+    title: str
+    description: str
+    file_path: Path
+    title_prefix: str = "Figure"
+    relative_to_path: Optional[Path] = None
 
-        self.title_prefix = title_prefix
+    def __post_init__(self):
+        if self.relative_to_path is not None:
+            self.file_path = self.file_path.relative_to(self.relative_to_path)
 
-        if relative_to_path is not None:
-            self.file_path = self.file_path.relative_to(relative_to_path)
+        if not self.file_path.exists():
+            raise FileNotFoundError
 
     def get_markdown(self) -> str:
         return f"""{self.title_prefix} {self.title}
@@ -55,43 +42,32 @@ class MarkdownFigure(MarkdownArtifact):
 """
 
 
+@dataclass
 class MarkdownTable(MarkdownArtifact):
-    def __init__(
-        self,
+    title: str
+    description: str
+    table: pd.DataFrame
+    title_prefix: str = "Table"
+
+    @classmethod
+    def from_filepath(
+        cls: type["MarkdownTable"],
+        table_path: Path,
         title: str,
-        file_path: Path,
         description: str,
         title_prefix: str = "Table",
-        check_filepath_exists: bool = True,
-    ):
-        super().__init__(
-            title=title,
-            file_path=file_path,
-            description=description,
-            check_filepath_exists=check_filepath_exists,
-        )
-        self.title_prefix = title_prefix
+    ) -> "MarkdownTable":
+        if table_path.suffix == ".csv":
+            table = pd.read_csv(table_path)
+        else:
+            table = pd.read_excel(table_path)
 
-    def _get_table_as_pd(self) -> pd.DataFrame:
-        if self.file_path.suffix == ".csv":
-            return pd.read_csv(self.file_path)
-
-        if self.file_path.suffix == ".xlsx":
-            return pd.read_excel(self.file_path)
-
-        raise ValueError(
-            f"File extension {self.file_path.suffix} not supported. "
-            f"Only .csv and .xlsx are supported."
-        )
-
-    def get_markdown_table(self) -> str:
-        df = self._get_table_as_pd()
-        return df.to_markdown(index=False)  # type: ignore
+        return cls(title=title, description=description, title_prefix=title_prefix, table=table)
 
     def get_markdown(self) -> str:
         return f"""{self.title_prefix} {self.title}
 
-{self.get_markdown_table()}
+{self.table.to_markdown(index=False)}
 
 {self.description}
 """
