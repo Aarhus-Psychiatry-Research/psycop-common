@@ -12,7 +12,10 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
 from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
 )
-from psycop.projects.cvd.model_evaluation.uuid_parsers import parse_dw_ek_borger_from_uuid
+from psycop.projects.cvd.model_evaluation.uuid_parsers import (
+    parse_dw_ek_borger_from_uuid,
+    parse_timestamp_from_uuid,
+)
 
 SensitivityByTTEDF = NewType("SensitivityByTTEDF", pl.DataFrame)
 
@@ -20,14 +23,13 @@ SensitivityByTTEDF = NewType("SensitivityByTTEDF", pl.DataFrame)
 @shared_cache.cache()
 def sensitivity_by_time_to_event_model(
     eval_df: pl.DataFrame,
-    pred_timestamps: PredictionTimeFrame,
     outcome_timestamps: OutcomeTimestampFrame,
     pprs: Sequence[float] = (0.01, 0.03, 0.05),
 ) -> SensitivityByTTEDF:
     eval_dataset = (
-        parse_dw_ek_borger_from_uuid(eval_df)
-        .join(pred_timestamps.essentials_df, on="dw_ek_borger", suffix="_pred")
-        .join(outcome_timestamps.essentials_df, on="dw_ek_borger", suffix="_outcome")
+        parse_timestamp_from_uuid(parse_dw_ek_borger_from_uuid(eval_df)).join(
+            outcome_timestamps.essentials_df, on="dw_ek_borger", suffix="_outcome", how="left"
+        )
     ).to_pandas()
 
     dfs = []
@@ -43,7 +45,6 @@ def sensitivity_by_time_to_event_model(
             bins=range(0, 60, 6),
             bin_unit="M",
             bin_continuous_input=True,
-            drop_na_events=True,
         )
 
         # Convert to string to allow distinct scales for color

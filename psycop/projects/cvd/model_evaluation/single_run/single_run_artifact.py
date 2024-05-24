@@ -25,7 +25,7 @@ class SingleRunModel:
         )
 
     def get_eval_df(self, run: RunSelector) -> pl.DataFrame:
-        return self._get_run(run).eval_df().frame
+        return self._get_run(run).eval_frame().frame
 
 
 def get_eval_df(run: RunSelector) -> pl.DataFrame:

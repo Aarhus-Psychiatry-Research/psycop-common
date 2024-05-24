@@ -32,7 +32,7 @@ def data(runs: Sequence[RunSelector]) -> pl.DataFrame:
     eval_dfs = [
         MlflowClientWrapper()
         .get_run(r.experiment_name, r.run_name)
-        .eval_df()
+        .eval_frame()
         .frame.with_columns(pl.lit(r.run_name).alias("run_name"))
         for r in runs
     ]
