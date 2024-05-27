@@ -10,17 +10,10 @@ from scipy.stats import truncnorm
 from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
     generate_performance_by_ppr_table,
 )
-from psycop.common.model_evaluation.patchwork.patchwork_grid import (
-    create_patchwork_grid,
-)
-from psycop.projects.forced_admission_outpatient.model_eval.config import (
-    COLORS,
-    FA_PN_THEME,
-)
+from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
+from psycop.projects.forced_admission_outpatient.model_eval.config import COLORS, FA_PN_THEME
 from psycop.projects.forced_admission_outpatient.model_eval.model_description.performance.performance_by_ppr import (
     _get_num_of_unique_outcome_events,  # type: ignore
-)
-from psycop.projects.forced_admission_outpatient.model_eval.model_description.performance.performance_by_ppr import (
     _get_number_of_outcome_events_with_at_least_one_true_positve,  # type: ignore
 )
 from psycop.projects.forced_admission_outpatient.utils.pipeline_objects import (
@@ -106,6 +99,69 @@ def plot_sampling_distribution(df: pd.DataFrame, col_to_plot: str, save: bool = 
         + FA_PN_THEME
         + pn.theme(panel_grid_major=pn.element_blank(), panel_grid_minor=pn.element_blank())
     )
+    # if col_to_plot == "cost_benefit_ratio" then add vertical lines for the 5th, and 95th percentiles, the mean and the median
+    if col_to_plot == "cost_benefit_ratio":
+        p += pn.geom_vline(
+            xintercept=int(df["cost_benefit_ratio"].median()), linetype="dotted", color="red"
+        )
+        p += pn.annotate(
+            "text",
+            x=int(df["cost_benefit_ratio"].median()),
+            y=0.028,
+            label="Median",
+            color="red",
+            va="center",
+            ha="right",
+            size=6,
+            angle=90,
+        )
+        p += pn.geom_vline(
+            xintercept=int(df["cost_benefit_ratio"].mean()), linetype="dotted", color="blue"
+        )
+        p += pn.annotate(
+            "text",
+            x=int(df["cost_benefit_ratio"].mean()),
+            y=0.028,
+            label="Mean",
+            color="blue",
+            va="center",
+            ha="right",
+            size=6,
+            angle=90,
+        )
+        p += pn.geom_vline(
+            xintercept=int(np.percentile(df["cost_benefit_ratio"], 5)),
+            linetype="dotted",
+            color="green",
+        )
+        p += pn.annotate(
+            "text",
+            x=int(np.percentile(df["cost_benefit_ratio"], 5)),
+            y=0.028,
+            label="5th percentile",
+            color="green",
+            va="center",
+            ha="right",
+            size=6,
+            angle=90,
+        )
+        p += pn.geom_vline(
+            xintercept=int(np.percentile(df["cost_benefit_ratio"], 95)),
+            linetype="dotted",
+            color="green",
+        )
+        p += pn.annotate(
+            "text",
+            x=int(np.percentile(df["cost_benefit_ratio"], 95)),
+            y=0.028,
+            label="95th percentile",
+            color="green",
+            va="center",
+            ha="right",
+            size=6,
+            angle=90,
+        )
+
     if save:
         p.save(filename=f"sampling_distribution_{col_to_plot}.png", width=7, height=7)
 
@@ -173,7 +229,9 @@ def calculate_cost_benefit(
 
 def plot_cost_benefit_by_ppr(df: pd.DataFrame, per_true_positive: bool) -> pn.ggplot:
     legend_order = sorted(
-        df["cost_benefit_ratio_str"].unique(), key=lambda s: int(re.sub(r'[^\d]+', '', s.split(":")[0])), reverse=True
+        df["cost_benefit_ratio_str"].unique(),
+        key=lambda s: int(re.sub(r"[^\d]+", "", s.split(":")[0])),
+        reverse=True,
     )
 
     df = df.assign(values=pd.Categorical(df["cost_benefit_ratio_str"], legend_order))
@@ -295,8 +353,8 @@ def fa_cost_benefit_from_monte_carlo_simulations(
     plot_df = pd.concat(dfs)
 
     p = plot_cost_benefit_by_ppr(plot_df, per_true_positive)
-    
-    dist_plots.append(p) # type: ignore
+
+    dist_plots.append(p)  # type: ignore
 
     # add distribution plots to the cost benefit plot
     grid = create_patchwork_grid(plots=dist_plots, single_plot_dimensions=(5.1, 5.1), n_in_row=2)  # type: ignore
@@ -305,13 +363,13 @@ def fa_cost_benefit_from_monte_carlo_simulations(
         grid_output_path = (
             run.paper_outputs.paths.figures
             / "fa_outpatient_monte_carlo_cost_benefit_estimates_per_true_positives.png"
-            )
+        )
         grid.savefig(grid_output_path)
     else:
         grid_output_path = (
             run.paper_outputs.paths.figures
             / "fa_outpatient_monte_carlo_cost_benefit_estimates_per_true_unique_outcomes.png"
-            )
+        )
         grid.savefig(grid_output_path)
 
     return p
