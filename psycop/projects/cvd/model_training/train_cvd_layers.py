@@ -21,6 +21,10 @@ if __name__ == "__main__":
 
     for layer in range(1, 5):
         cfg = confection.Config().from_disk(Path(__file__).parent / "cvd_baseline.cfg")
+
+        cfg["logger"]["*"]["mlflow"]["experiment_name"] = "CVD"
+        cfg["logger"]["*"]["mlflow"]["run_name"] = f"Layer {layer}"
+
         layers = [str(i) for i in range(1, layer + 1)]
         cfg["trainer"]["preprocessing_pipeline"]["*"]["layer_selector"]["keep_matching"] = (
             f".+_layer_({'|'.join(layers)}).+"
