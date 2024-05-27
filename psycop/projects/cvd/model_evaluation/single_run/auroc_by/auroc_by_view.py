@@ -1,6 +1,7 @@
 import pandas as pd
 import plotnine as pn
 
+from psycop.projects.scz_bp.evaluation.configs import Colors
 from psycop.projects.t2d.paper_outputs.config import COLORS
 
 
@@ -36,8 +37,9 @@ def auroc_by_view(
     )
 
     if "ci_lower" in df.columns:
-        p += pn.geom_pointrange(
-            pn.aes(ymin="ci_lower", ymax="ci_upper"), color=COLORS.primary, size=0.5
+        p += pn.geom_point(color=COLORS.primary, size=1)
+        p += pn.geom_errorbar(
+            pn.aes(ymin="ci_lower", ymax="ci_upper"), width=0.1, color=COLORS.primary
         )
 
     if df[x_column].nunique() < 3:

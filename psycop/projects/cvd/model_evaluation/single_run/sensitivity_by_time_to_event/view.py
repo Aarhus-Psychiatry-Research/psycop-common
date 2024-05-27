@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from turtle import color
 
 import plotnine as pn
 
@@ -32,7 +33,8 @@ class SensitivityByTTEPlot(SingleRunPlot):
             )
             + pn.scale_x_discrete(reverse=True)
             + pn.geom_path(fill=self.colors.primary, size=1)
-            + pn.geom_pointrange(color=self.colors.primary, size=0.5)
+            + pn.geom_point(color=self.colors.primary, size=1)
+            + pn.geom_errorbar(color=self.colors.primary, width=0.1)
             + pn.labs(x="Months to outcome", y="Sensitivity")
             + pn.scale_color_manual([self.colors.primary])
         )
