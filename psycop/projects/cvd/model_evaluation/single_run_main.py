@@ -67,7 +67,7 @@ from psycop.projects.scz_bp.evaluation.configs import COLORS
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-import plotnine as pn
+    import plotnine as pn
 
 log = logging.getLogger(__name__)
 
@@ -77,7 +77,6 @@ def single_run_main(
     desired_positive_rate: float,
     outcome_label: str,
     outcome_timestamps: OutcomeTimestampFrame,
-    theme: pn.theme,
 ) -> pw.Bricks:
     eval_df = eval_frame.frame
 
@@ -105,7 +104,7 @@ def single_run_main(
     ggplots: list[pn.ggplot] = []
     for plot in plots:
         log.info(f"Starting processing of {plot.__class__.__name__}")
-        ggplots.append(plot() + theme)
+        ggplots.append(plot())
 
     figure = create_patchwork_grid(plots=ggplots, single_plot_dimensions=(5, 4.5), n_in_row=2)
     return figure
@@ -133,7 +132,6 @@ if __name__ == "__main__":
         desired_positive_rate=0.05,
         outcome_label="CVD",
         outcome_timestamps=outcome_timestamps,
-        theme=pn.theme_minimal(),
     )
 
     figure.savefig("test_cvd_main.png")

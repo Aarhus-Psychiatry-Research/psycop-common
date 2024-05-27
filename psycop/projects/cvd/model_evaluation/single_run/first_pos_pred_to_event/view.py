@@ -12,6 +12,7 @@ from psycop.projects.cvd.model_evaluation.single_run.first_pos_pred_to_event.mod
 )
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
 from psycop.projects.scz_bp.evaluation.configs import COLORS, Colors
+from psycop.projects.t2d.paper_outputs.config import FONT_SIZES, THEME
 
 
 @dataclass(frozen=True)
@@ -33,6 +34,7 @@ class FirstPosPredToEventPlot(SingleRunPlot):
             + pn.ylab("Proportion")
             + pn.geom_vline(xintercept=median_years, linetype="dashed", size=1)
             + pn.geom_vline(xintercept=0, linetype="solid", size=1)
+            + THEME
         )
         p.save("test.png")
         return p

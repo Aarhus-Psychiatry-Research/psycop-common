@@ -15,6 +15,10 @@ def performance_by_ppr_view(model: PerformanceByPPRModel, outcome_label: str) ->
     model2pretty = {
         "positive_rate": "Predicted positive rate",
         "true_prevalence": "True prevalence",
+        "PPV": "PPV",
+        "NPV": "NPV",
+        "FPR": "FPR",
+        "FNR": "FNR",
         "sensitivity": "Sens",
         "specificity": "Spec",
         "accuracy": "Acc",
