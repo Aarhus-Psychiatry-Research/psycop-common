@@ -20,7 +20,7 @@ pre-commit:
       stage_fixed: true
     lint:
       glob: "*.{py}"
-      run: ruff --fix {staged_files}
+      run: ruff --fix --unsafe-fixes {staged_files}
       stage_fixed: true
 
 test:

@@ -4,6 +4,7 @@ from collections.abc import Sequence
 from os import write
 from pathlib import Path
 
+import plotnine as pn
 import polars as pl
 
 from psycop.common.cohort_definition import OutcomeTimestampFrame, PredictionTimeFrame
