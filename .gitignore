@@ -212,3 +212,5 @@ mlruns/*
 .testmon*
 *.db
 
+# VSCode
+.vscode/settings.json
