@@ -43,7 +43,4 @@ def auroc_by_view(
     if df[x_column].nunique() < 3:
         p += pn.scale_x_discrete()
 
-    # Draw the plot to check that it works
-    p.draw()
-
     return p

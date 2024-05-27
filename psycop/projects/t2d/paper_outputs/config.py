@@ -24,9 +24,18 @@ T2D_PN_THEME = pn.theme_bw() + pn.theme(
     panel_grid=pn.element_blank(), axis_title=pn.element_text(size=14)
 )
 
+from typing import Protocol
+
+
+class ColorsPTC(Protocol):
+    primary: str
+    secondary: str
+    tertiary: str
+    background: str
+
 
 @dataclass
-class Colors:
+class Colors(ColorsPTC):
     primary = "#0072B2"
     secondary = "#009E73"
     tertiary = "#D55E00"

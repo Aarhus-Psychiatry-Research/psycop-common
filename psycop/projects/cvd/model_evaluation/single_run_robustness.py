@@ -2,6 +2,7 @@ import logging
 from typing import TYPE_CHECKING
 
 import patchworklib as pw
+import plotnine
 import polars as pl
 
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
@@ -50,6 +51,7 @@ def single_run_robustness(
     sex_df: pl.DataFrame,
     birthdays: pl.DataFrame,
     all_visits_df: pl.DataFrame,
+    theme: plotnine.theme,
 ) -> pw.Bricks:
     eval_df = eval_frame.frame
 
@@ -67,7 +69,7 @@ def single_run_robustness(
     ggplots: list[pn.ggplot] = []
     for plot in plots:
         log.info(f"Starting processing of {plot.__class__.__name__}")
-        ggplots.append(plot())
+        ggplots.append(plot() + theme)
 
     figure = create_patchwork_grid(plots=ggplots, single_plot_dimensions=(5, 4.5), n_in_row=2)
     return figure
@@ -93,6 +95,7 @@ if __name__ == "__main__":
         birthdays=pl.from_pandas(birthdays()),
         sex_df=pl.from_pandas(sex_female()),
         all_visits_df=pl.from_pandas(physical_visits_to_psychiatry()),
+        theme=plotnine.theme_minimal(),
     )
 
     figure.savefig("test_cvd_robustness.png")

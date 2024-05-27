@@ -4,6 +4,7 @@ from collections.abc import Sequence
 from os import write
 from pathlib import Path
 
+import plotnine as pn
 import polars as pl
 
 from psycop.common.cohort_definition import OutcomeTimestampFrame, PredictionTimeFrame
@@ -45,6 +46,7 @@ def markdown_artifacts(
     primary_pos_proportion: float,
     pos_proportions: Sequence[float],
     lookahead_years: int,
+    theme: pn.theme,
 ) -> Sequence[MarkdownArtifact]:
     # Main figure
     main_figure_output_path = write_path / f"{outcome_label}_main_figure.png"
@@ -53,13 +55,18 @@ def markdown_artifacts(
         desired_positive_rate=primary_pos_proportion,
         outcome_label=outcome_label,
         outcome_timestamps=outcome_timestamps,
+        theme=theme,
     )
     main_figure.savefig(main_figure_output_path)
 
     # Robustness figure
     robustness_figure_output_path = write_path / f"{outcome_label}_robustness_figure.png"
     robustness_figure = single_run_robustness(
-        eval_frame=eval_df, sex_df=sex_df, all_visits_df=all_visits_df, birthdays=birthdays_df
+        eval_frame=eval_df,
+        sex_df=sex_df,
+        all_visits_df=all_visits_df,
+        birthdays=birthdays_df,
+        theme=theme,
     )
     robustness_figure.savefig(robustness_figure_output_path)
 
@@ -146,6 +153,7 @@ if __name__ == "__main__":
         primary_pos_proportion=0.05,
         pos_proportions=[0.01, 0.05, 0.1],
         lookahead_years=lookahead_years,
+        theme=pn.theme_classic(),
     )
 
     markdown_text = create_supplementary_from_markdown_artifacts(

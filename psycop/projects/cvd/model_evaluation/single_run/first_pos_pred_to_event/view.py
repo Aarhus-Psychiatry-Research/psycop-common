@@ -11,7 +11,7 @@ from psycop.projects.cvd.model_evaluation.single_run.first_pos_pred_to_event.mod
     first_positive_prediction_to_event_model,
 )
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
-from psycop.projects.scz_bp.evaluation.configs import COLORS
+from psycop.projects.scz_bp.evaluation.configs import COLORS, Colors
 
 
 @dataclass(frozen=True)
@@ -19,6 +19,7 @@ class FirstPosPredToEventPlot(SingleRunPlot):
     data: FirstPosPredToEventDF
     outcome_label: str
     desired_positive_rate: float = 0.05
+    fill_color: str = Colors.primary
 
     def __call__(self) -> pn.ggplot:
         plot_df = self.data.to_pandas()
@@ -26,7 +27,7 @@ class FirstPosPredToEventPlot(SingleRunPlot):
 
         p = (
             pn.ggplot(plot_df, pn.aes(x="years_from_pred_to_event", fill="y"))  # type: ignore
-            + pn.geom_density(alpha=0.8, fill="#0072B2")
+            + pn.geom_density(alpha=0.8, fill=self.fill_color)
             + pn.xlab("Years until event")
             + pn.scale_x_reverse(breaks=range(int(plot_df["years_from_pred_to_event"].max() + 1)))
             + pn.ylab("Proportion")

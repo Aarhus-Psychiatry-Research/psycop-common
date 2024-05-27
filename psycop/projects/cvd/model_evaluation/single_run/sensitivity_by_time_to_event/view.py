@@ -3,13 +3,14 @@ from dataclasses import dataclass
 import plotnine as pn
 
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
-from psycop.projects.t2d.paper_outputs.config import COLORS
+from psycop.projects.t2d.paper_outputs.config import COLORS, ColorsPTC
 
 from .model import SensitivityByTTEDF
 
 
 @dataclass(frozen=True)
 class SensitivityByTTEPlot(SingleRunPlot):
+    colors: ColorsPTC
     outcome_label: str
     data: SensitivityByTTEDF
     desired_positive_rate: float = 0.05
@@ -30,10 +31,10 @@ class SensitivityByTTEPlot(SingleRunPlot):
                 ),
             )
             + pn.scale_x_discrete(reverse=True)
-            + pn.geom_point()
-            + pn.geom_linerange(size=0.5)
+            + pn.geom_path(fill=self.colors.primary, size=1)
+            + pn.geom_pointrange(color=self.colors.primary, size=0.5)
             + pn.labs(x="Months to outcome", y="Sensitivity")
-            + pn.scale_color_manual([COLORS.primary])
+            + pn.scale_color_manual([self.colors.primary])
         )
 
         for value in df["actual_positive_rate"].unique():

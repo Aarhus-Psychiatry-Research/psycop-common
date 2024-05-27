@@ -37,7 +37,6 @@ class ConfusionMatrixPlot(SingleRunPlot):
             + pn.theme(
                 axis_line=pn.element_blank(),
                 axis_ticks=pn.element_blank(),
-                axis_text=pn.element_text(size=15, color="black"),
                 panel_grid_major=pn.element_blank(),
                 panel_grid_minor=pn.element_blank(),
                 panel_background=pn.element_blank(),
