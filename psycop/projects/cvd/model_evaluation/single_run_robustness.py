@@ -2,6 +2,7 @@ import logging
 from typing import TYPE_CHECKING
 
 import patchworklib as pw
+import plotnine
 import polars as pl
 
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female

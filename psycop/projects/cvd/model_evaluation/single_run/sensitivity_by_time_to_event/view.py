@@ -1,15 +1,17 @@
 from dataclasses import dataclass
+from turtle import color
 
 import plotnine as pn
 
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
-from psycop.projects.t2d.paper_outputs.config import COLORS
+from psycop.projects.t2d.paper_outputs.config import COLORS, FONT_SIZES, THEME, ColorsPTC
 
 from .model import SensitivityByTTEDF
 
 
 @dataclass(frozen=True)
 class SensitivityByTTEPlot(SingleRunPlot):
+    colors: ColorsPTC
     outcome_label: str
     data: SensitivityByTTEDF
     desired_positive_rate: float = 0.05
@@ -30,10 +32,15 @@ class SensitivityByTTEPlot(SingleRunPlot):
                 ),
             )
             + pn.scale_x_discrete(reverse=True)
-            + pn.geom_point()
-            + pn.geom_linerange(size=0.5)
+            + pn.geom_path(group=1, size=0.5)
+            + pn.geom_point(size=1)
+            + pn.geom_errorbar(width=0.1)
             + pn.labs(x="Months to outcome", y="Sensitivity")
-            + pn.scale_color_manual([COLORS.primary])
+            + THEME
+            + pn.theme(
+                axis_text_x=pn.element_text(size=FONT_SIZES.axis_tick_labels, angle=45, hjust=1),
+                axis_text_y=pn.element_text(size=FONT_SIZES.axis_tick_labels),
+            )
         )
 
         for value in df["actual_positive_rate"].unique():

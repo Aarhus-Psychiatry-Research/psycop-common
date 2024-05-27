@@ -62,6 +62,7 @@ from psycop.projects.cvd.model_evaluation.single_run.sensitivity_by_time_to_even
     SensitivityByTTEPlot,
 )
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
+from psycop.projects.scz_bp.evaluation.configs import COLORS
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -90,6 +91,7 @@ def single_run_main(
             data=sensitivity_by_time_to_event_model(
                 eval_df=eval_df, outcome_timestamps=outcome_timestamps, pprs=[desired_positive_rate]
             ),
+            colors=COLORS,
         ),
         FirstPosPredToEventPlot(
             data=first_positive_prediction_to_event_model(
