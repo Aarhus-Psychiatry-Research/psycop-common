@@ -250,15 +250,11 @@ def fa_cost_benefit_by_ratio_and_ppr(
         p.save(
             filename=run.paper_outputs.paths.figures
             / "fa_inpatient_cost_benefit_estimates_per_true_positives.png",
-            width=7,
-            height=7,
         )
     else:
         p.save(
             filename=run.paper_outputs.paths.figures
             / "fa_inpatient_cost_benefit_estimates_per_true_unique_outcomes.png",
-            width=7,
-            height=7,
         )
 
     return p
@@ -295,24 +291,24 @@ def fa_cost_benefit_from_monte_carlo_simulations(
     plot_df = pd.concat(dfs)
 
     p = plot_cost_benefit_by_ppr(plot_df, per_true_positive)
+    
+    dist_plots.append(p) # type: ignore
 
     # add distribution plots to the cost benefit plot
-    grid = create_patchwork_grid(plots=[dist_plots, p], single_plot_dimensions=(5, 5), n_in_row=1)  # type: ignore
+    grid = create_patchwork_grid(plots=dist_plots, single_plot_dimensions=(5.1, 5.1), n_in_row=2)  # type: ignore
 
     if per_true_positive:
-        grid.savefig(
-            filename=run.paper_outputs.paths.figures
-            / "fa_outpatient_monte_carlo_cost_benefit_estimates_per_true_positives.png",
-            width=7,
-            height=7,
-        )
+        grid_output_path = (
+            run.paper_outputs.paths.figures
+            / "fa_outpatient_monte_carlo_cost_benefit_estimates_per_true_positives.png"
+            )
+        grid.savefig(grid_output_path)
     else:
-        grid.savefig(
-            filename=run.paper_outputs.paths.figures
-            / "fa_outpatient_monte_carlo_cost_benefit_estimates_per_true_unique_outcomes.png",
-            width=7,
-            height=7,
-        )
+        grid_output_path = (
+            run.paper_outputs.paths.figures
+            / "fa_outpatient_monte_carlo_cost_benefit_estimates_per_true_unique_outcomes.png"
+            )
+        grid.savefig(grid_output_path)
 
     return p
 
@@ -327,7 +323,7 @@ def fa_patchwork_sampling_distribution_plots(
     plots = [plot_sampling_distribution(df, col_to_plot) for col_to_plot in cols_to_plot]
 
     if grid_plot:
-        grid = create_patchwork_grid(plots=plots, single_plot_dimensions=(5, 5), n_in_row=2)
+        grid = create_patchwork_grid(plots=plots, single_plot_dimensions=(5, 5), n_in_row=4)
 
         if save:
             grid_output_path = (

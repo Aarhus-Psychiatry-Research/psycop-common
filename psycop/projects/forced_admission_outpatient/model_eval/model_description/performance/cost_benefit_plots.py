@@ -10,8 +10,13 @@ from scipy.stats import truncnorm
 from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
     generate_performance_by_ppr_table,
 )
-from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
-from psycop.projects.forced_admission_outpatient.model_eval.config import COLORS, FA_PN_THEME
+from psycop.common.model_evaluation.patchwork.patchwork_grid import (
+    create_patchwork_grid,
+)
+from psycop.projects.forced_admission_outpatient.model_eval.config import (
+    COLORS,
+    FA_PN_THEME,
+)
 from psycop.projects.forced_admission_outpatient.model_eval.model_description.performance.performance_by_ppr import (
     _get_num_of_unique_outcome_events,  # type: ignore
 )
@@ -56,7 +61,7 @@ def _sample_int_from_truncated_normal(
 def sample_cost_benefit_estimates(n: int = 1000) -> pd.DataFrame:
     # sample intervention cost 100 times - a integer from a normal distribution with mean 500 and std 100 and a lower bound of 0
     cost_of_intervention = _sample_int_from_truncated_normal(
-        mean_cost=500, std_cost=200, lower_bound=0, n=n
+        mean_cost=500, std_cost=200, lower_bound=50, n=n
     )
 
     # sample efficiency of intervention - a float from a log-normal distribution with mean 0.5 and bounds 0.1 and 0.9
@@ -66,7 +71,7 @@ def sample_cost_benefit_estimates(n: int = 1000) -> pd.DataFrame:
 
     # sample savings from prevented outcome - a integer from a normal distribution with mean 100000 and std 25000
     savings_from_prevented_outcome = _sample_int_from_truncated_normal(
-        mean_cost=100000, std_cost=25000, lower_bound=0, n=n
+        mean_cost=100000, std_cost=25000, lower_bound=10000, n=n
     )
 
     df = pd.DataFrame(
@@ -207,9 +212,9 @@ def plot_cost_benefit_by_ppr(df: pd.DataFrame, per_true_positive: bool) -> pn.gg
     )
 
     if per_true_positive:
-        p += pn.ggtitle("Cost/benefit estimate based on True Positives")
+        p += pn.ggtitle("Cost/benefit pr. positive outcomes")
     else:
-        p += pn.ggtitle("Cost/benefit estimate based on unique outcomes predicted ≥1")
+        p += pn.ggtitle("Cost/benefit pr. unique outcomes")
 
     for value in legend_order:
         p += pn.geom_path(df[df["cost_benefit_ratio_str"] == value], group=1)  # type: ignore
@@ -263,7 +268,7 @@ def fa_cost_benefit_from_monte_carlo_simulations(
     run: ForcedAdmissionOutpatientPipelineRun,
     per_true_positive: bool,
     positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
-    n: int = 1000,
+    n: int = 10000,
 ) -> pn.ggplot:
     df = sample_cost_benefit_estimates(n=n)
 
@@ -290,24 +295,24 @@ def fa_cost_benefit_from_monte_carlo_simulations(
     plot_df = pd.concat(dfs)
 
     p = plot_cost_benefit_by_ppr(plot_df, per_true_positive)
+    
+    dist_plots.append(p) # type: ignore
 
     # add distribution plots to the cost benefit plot
-    grid = create_patchwork_grid(plots=[dist_plots, p], single_plot_dimensions=(5, 5), n_in_row=1)  # type: ignore
+    grid = create_patchwork_grid(plots=dist_plots, single_plot_dimensions=(5.1, 5.1), n_in_row=2)  # type: ignore
 
     if per_true_positive:
-        grid.savefig(
-            filename=run.paper_outputs.paths.figures
-            / "fa_outpatient_monte_carlo_cost_benefit_estimates_per_true_positives.png",
-            width=7,
-            height=7,
-        )
+        grid_output_path = (
+            run.paper_outputs.paths.figures
+            / "fa_outpatient_monte_carlo_cost_benefit_estimates_per_true_positives.png"
+            )
+        grid.savefig(grid_output_path)
     else:
-        grid.savefig(
-            filename=run.paper_outputs.paths.figures
-            / "fa_outpatient_monte_carlo_cost_benefit_estimates_per_true_unique_outcomes.png",
-            width=7,
-            height=7,
-        )
+        grid_output_path = (
+            run.paper_outputs.paths.figures
+            / "fa_outpatient_monte_carlo_cost_benefit_estimates_per_true_unique_outcomes.png"
+            )
+        grid.savefig(grid_output_path)
 
     return p
 
@@ -322,7 +327,7 @@ def fa_patchwork_sampling_distribution_plots(
     plots = [plot_sampling_distribution(df, col_to_plot) for col_to_plot in cols_to_plot]
 
     if grid_plot:
-        grid = create_patchwork_grid(plots=plots, single_plot_dimensions=(5, 5), n_in_row=2)
+        grid = create_patchwork_grid(plots=plots, single_plot_dimensions=(5, 5), n_in_row=4)
 
         if save:
             grid_output_path = (
