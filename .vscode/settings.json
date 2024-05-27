@@ -44,5 +44,5 @@
     "ruff.lint.args": [
         "--extend-ignore",
         "PIE790" // Do not delete unnecessary pass on save, only on pr creation
-    ],
+    ]
 }
