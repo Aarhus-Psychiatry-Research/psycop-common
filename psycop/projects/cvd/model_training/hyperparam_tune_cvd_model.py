@@ -27,7 +27,7 @@ if __name__ == "__main__":
     OptunaHyperParameterOptimization().from_cfg(
         cfg,
         study_name="cvd_hyperparam_tuning",
-        n_trials=1000,
+        n_trials=150,
         n_jobs=30,
         direction="maximize",
         catch=(Exception,),
