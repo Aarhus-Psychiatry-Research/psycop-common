@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
     lookbehinds = [90, 365, 730]
     for i, _ in enumerate(lookbehinds):
-        distances_i = [str(lookbehind) for lookbehind in lookbehinds[0 : i + 1]]
+        distances_i = [str(lookbehind) for lookbehind in lookbehinds[-i - 1 :]]
         distances = "|".join(distances_i)
 
         cfg["trainer"]["preprocessing_pipeline"]["*"]["lookbehind_selector"][
