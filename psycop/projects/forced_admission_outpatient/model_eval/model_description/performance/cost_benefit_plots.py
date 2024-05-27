@@ -362,16 +362,15 @@ def fa_cost_benefit_from_monte_carlo_simulations(
     if per_true_positive:
         grid_output_path = (
             run.paper_outputs.paths.figures
-            / "fa_outpatient_monte_carlo_cost_benefit_estimates_per_true_positives.png"
+            / "fa_outpatient_mc_cost_benefit_estimates_per_positives_outomces.png"
         )
         grid.savefig(grid_output_path)
     else:
         grid_output_path = (
             run.paper_outputs.paths.figures
-            / "fa_outpatient_monte_carlo_cost_benefit_estimates_per_true_unique_outcomes.png"
+            / "fa_outpatient_mc_cost_benefit_estimates_per_unique_outcomes.png"
         )
         grid.savefig(grid_output_path)
-
     return p
 
 
