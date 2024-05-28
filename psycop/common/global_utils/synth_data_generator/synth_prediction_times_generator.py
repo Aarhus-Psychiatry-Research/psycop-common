@@ -1,4 +1,5 @@
 """Generator for synth prediction data."""
+
 from collections.abc import Iterable
 from typing import Optional
 

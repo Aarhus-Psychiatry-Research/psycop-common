@@ -25,10 +25,6 @@ class PredictionTimeFrame(ValidatedFrame[pl.DataFrame]):
 
     allow_extra_columns: bool = True
 
-    @property
-    def stripped_df(self) -> pl.DataFrame:
-        return self.frame.select(pl.col(self.timestamp_col_name), pl.col(self.entity_id_col_name))
-
 
 @dataclass(frozen=True)
 class OutcomeTimestampFrame(ValidatedFrame[pl.DataFrame]):
@@ -44,17 +40,12 @@ class OutcomeTimestampFrame(ValidatedFrame[pl.DataFrame]):
 
     allow_extra_columns: bool = True
 
-    @property
-    def stripped_df(self) -> pl.DataFrame:
-        return self.frame.select(pl.col(self.timestamp_col_name), pl.col(self.entity_id_col_name))
-
 
 @runtime_checkable
 class PredictionTimeFilter(Protocol):
     """Interface for filtering functions applied to prediction times"""
 
-    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
-        ...
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame: ...
 
 
 class StepDelta(PSYCOPBaseModel):
@@ -83,13 +74,11 @@ class FilteredPredictionTimeBundle:
 class CohortDefiner(ABC):
     @staticmethod
     @abstractmethod
-    def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle:
-        ...
+    def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle: ...
 
     @staticmethod
     @abstractmethod
-    def get_outcome_timestamps() -> OutcomeTimestampFrame:
-        ...
+    def get_outcome_timestamps() -> OutcomeTimestampFrame: ...
 
 
 msg = Printer(timestamp=True)

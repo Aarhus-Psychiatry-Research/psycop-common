@@ -1,4 +1,5 @@
 """Generate synthetic data for evaluation of the model."""
+
 import datetime as dt
 from pathlib import Path
 from typing import Any, Literal, Optional, Union

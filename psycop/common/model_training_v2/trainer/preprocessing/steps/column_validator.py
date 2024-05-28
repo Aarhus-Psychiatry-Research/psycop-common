@@ -41,8 +41,7 @@ class ColumnExistsValidator(PresplitStep):
         return None
 
 
-class ColumnCountError(Exception):
-    ...
+class ColumnCountError(Exception): ...
 
 
 @dataclass(frozen=True)

@@ -1,6 +1,3 @@
-from .patientslice_classifier import (
-    PatientSliceClassifier,
-    BasePredictionTimeClassifier,
-)
+from .patientslice_classifier import BasePredictionTimeClassifier, PatientSliceClassifier
 from .pretrainer_base import BasePatientSlicePretrainer
 from .pretrainer_behrt import PretrainerBEHRT

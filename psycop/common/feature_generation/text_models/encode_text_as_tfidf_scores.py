@@ -1,4 +1,5 @@
 """Apply tfidf model to text data and save to disk"""
+
 from collections.abc import Iterable
 from time import time
 

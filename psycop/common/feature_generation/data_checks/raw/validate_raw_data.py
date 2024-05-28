@@ -1,5 +1,6 @@
 """Functions for validating raw data - in the sense of data returned from a
 loader."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

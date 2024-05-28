@@ -22,9 +22,9 @@ if __name__ == "__main__":
     for layer in range(1, 5):
         cfg = confection.Config().from_disk(Path(__file__).parent / "cvd_baseline.cfg")
         layers = [str(i) for i in range(1, layer + 1)]
-        cfg["trainer"]["preprocessing_pipeline"]["*"]["layer_selector"][
-            "keep_matching"
-        ] = f".+_layer_({'|'.join(layers)}).+"
+        cfg["trainer"]["preprocessing_pipeline"]["*"]["layer_selector"]["keep_matching"] = (
+            f".+_layer_({'|'.join(layers)}).+"
+        )
 
         logging.info(f"Training model with layers {layers}")
         train_baseline_model_from_cfg(cfg=cfg)

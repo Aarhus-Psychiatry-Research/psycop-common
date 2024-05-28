@@ -7,5 +7,4 @@ from psycop.projects.bipolar.feature_generation.feature_layers.value_specificati
 
 
 class BpFeatureLayer(Protocol):
-    def get_features(self, lookbehind_days: list[float]) -> Sequence[ValueSpecification]:
-        ...
+    def get_features(self, lookbehind_days: list[float]) -> Sequence[ValueSpecification]: ...

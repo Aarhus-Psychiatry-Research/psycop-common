@@ -7,5 +7,4 @@ from psycop.projects.scz_bp.feature_generation.feature_layers.value_specificatio
 
 
 class SczBpFeatureLayer(Protocol):
-    def get_features(self, lookbehind_days: list[float]) -> Sequence[ValueSpecification]:
-        ...
+    def get_features(self, lookbehind_days: list[float]) -> Sequence[ValueSpecification]: ...

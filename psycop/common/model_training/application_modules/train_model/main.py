@@ -1,4 +1,5 @@
 """Train a single model and evaluate it."""
+
 from pathlib import Path
 from typing import Optional
 

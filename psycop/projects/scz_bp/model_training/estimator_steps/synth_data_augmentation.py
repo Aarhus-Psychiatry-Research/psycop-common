@@ -1,5 +1,5 @@
 """Synthetic data augmentation as part of a training loop. Not feasible for datasets
-of our size. """
+of our size."""
 # ruff: noqa
 # from typing import Any, Literal
 

@@ -1,4 +1,5 @@
 """Utilities for saving a dataset to disk."""
+
 import logging
 from collections.abc import Sequence
 from pathlib import Path

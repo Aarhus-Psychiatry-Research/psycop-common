@@ -1,4 +1,4 @@
-""" Utils for text_models  """
+"""Utils for text_models"""
 
 from typing import Union
 
