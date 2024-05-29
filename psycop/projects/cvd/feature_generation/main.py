@@ -53,8 +53,7 @@ def get_cvd_project_info() -> ProjectInfo:
 
 
 def cvd_pred(
-    init_df: pd.DataFrame,
-    name: str,
+    init_df: Callable[[], pd.DataFrame],
     lookbehind_distances: Sequence[datetime.timedelta] = [
         datetime.timedelta(days=i) for i in [90, 365, 730]
     ],
@@ -67,7 +66,7 @@ def cvd_pred(
 ) -> ts.PredictorSpec:
     return ts.PredictorSpec(
         value_frame=ts.ValueFrame(
-            init_df=pl.from_pandas(init_df).rename({"value": name}),
+            init_df=pl.from_pandas(init_df()).rename({"value": init_df.__name__}),
             entity_id_col_name="dw_ek_borger",
         ),
         lookbehind_distances=lookbehind_distances,
@@ -107,7 +106,7 @@ if __name__ == "__main__":
             ts.StaticSpec(
                 value_frame=ts.StaticFrame(init_df=sex_female(), entity_id_col_name="dw_ek_borger"),
                 fallback=0,
-                column_prefix="pred_",
+                column_prefix="pred",
             ),
             ts.TimeDeltaSpec(
                 init_frame=ts.TimestampValueFrame(
@@ -120,42 +119,30 @@ if __name__ == "__main__":
             ),
         ],
         1: [
-            cvd_pred(ldl(), name="ldl", column_prefix="pred_layer_1"),
-            cvd_pred(
-                systolic_blood_pressure(),
-                name="systolic_blood_pressure",
-                column_prefix="pred_layer_1",
-            ),
+            cvd_pred(ldl, column_prefix="pred_layer_1"),
+            cvd_pred(systolic_blood_pressure, column_prefix="pred_layer_1"),
         ],
         2: [
-            cvd_pred(smoking_continuous(), name="smoking_continuous", column_prefix="pred_layer_2"),
-            cvd_pred(
-                smoking_categorical(), name="smoking_categorical", column_prefix="pred_layer_2"
-            ),
+            cvd_pred(smoking_continuous, column_prefix="pred_layer_2"),
+            cvd_pred(smoking_categorical, column_prefix="pred_layer_2"),
         ],
         3: [
-            cvd_pred(hba1c(), name="hba1c", column_prefix="pred_layer_3"),
-            cvd_pred(
-                chronic_lung_disease(), name="chronic_lung_disease", column_prefix="pred_layer_3"
-            ),
+            cvd_pred(hba1c, column_prefix="pred_layer_3"),
+            cvd_pred(chronic_lung_disease, column_prefix="pred_layer_3"),
         ],
         4: [
-            cvd_pred(f0_disorders(), name="f0_disorders", column_prefix="pred_layer_4"),
-            cvd_pred(f1_disorders(), name="f1_disorders", column_prefix="pred_layer_4"),
-            cvd_pred(f2_disorders(), name="f2_disorders", column_prefix="pred_layer_4"),
-            cvd_pred(f3_disorders(), name="f3_disorders", column_prefix="pred_layer_4"),
-            cvd_pred(f4_disorders(), name="f4_disorders", column_prefix="pred_layer_4"),
-            cvd_pred(f5_disorders(), name="f5_disorders", column_prefix="pred_layer_4"),
-            cvd_pred(f6_disorders(), name="f6_disorders", column_prefix="pred_layer_4"),
-            cvd_pred(f7_disorders(), name="f7_disorders", column_prefix="pred_layer_4"),
-            cvd_pred(f8_disorders(), name="f8_disorders", column_prefix="pred_layer_4"),
-            cvd_pred(f9_disorders(), name="f9_disorders", column_prefix="pred_layer_4"),
-            cvd_pred(
-                top_10_weight_gaining_antipsychotics(),
-                name="top_10_weight_gaining_antipsychotics",
-                column_prefix="pred_layer_4",
-            ),
-            cvd_pred(hdl(), name="hdl", column_prefix="pred_layer_4"),
+            cvd_pred(f0_disorders, column_prefix="pred_layer_4"),
+            cvd_pred(f1_disorders, column_prefix="pred_layer_4"),
+            cvd_pred(f2_disorders, column_prefix="pred_layer_4"),
+            cvd_pred(f3_disorders, column_prefix="pred_layer_4"),
+            cvd_pred(f4_disorders, column_prefix="pred_layer_4"),
+            cvd_pred(f5_disorders, column_prefix="pred_layer_4"),
+            cvd_pred(f6_disorders, column_prefix="pred_layer_4"),
+            cvd_pred(f7_disorders, column_prefix="pred_layer_4"),
+            cvd_pred(f8_disorders, column_prefix="pred_layer_4"),
+            cvd_pred(f9_disorders, column_prefix="pred_layer_4"),
+            cvd_pred(top_10_weight_gaining_antipsychotics, column_prefix="pred_layer_4"),
+            cvd_pred(hdl, column_prefix="pred_layer_4"),
         ],
     }
 
