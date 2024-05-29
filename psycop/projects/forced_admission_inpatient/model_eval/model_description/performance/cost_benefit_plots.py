@@ -29,7 +29,7 @@ from psycop.projects.forced_admission_outpatient.model_eval.config import (
 
 
 def _sample_float_from_truncated_log_normal(
-    mean_efficiency: float, lower_bound: float, upper_bound: float, n: int = 1000
+    mean_efficiency: float, lower_bound: float, upper_bound: float, n: int = 10000
 ) -> np.ndarray:  # type: ignore
     # Log-normal distribution parameters
     # Calculate the parameters of the underlying normal distribution
@@ -47,7 +47,7 @@ def _sample_float_from_truncated_log_normal(
 
 
 def _sample_int_from_truncated_normal(
-    mean_cost: int, std_cost: int, lower_bound: int, n: int = 1000
+    mean_cost: int, std_cost: int, lower_bound: int, n: int = 10000
 ) -> np.ndarray:  # type: ignore
     # Calculate the truncation bounds in terms of the standard normal distribution
     a, b = (lower_bound - mean_cost) / std_cost, np.inf
@@ -58,10 +58,10 @@ def _sample_int_from_truncated_normal(
     return truncated_normal.rvs(size=n).astype(int)
 
 
-def sample_cost_benefit_estimates(n: int = 1000) -> pd.DataFrame:
+def sample_cost_benefit_estimates(n: int = 10000) -> pd.DataFrame:
     # sample intervention cost 100 times - a integer from a normal distribution with mean 500 and std 100 and a lower bound of 0
     cost_of_intervention = _sample_int_from_truncated_normal(
-        mean_cost=500, std_cost=200, lower_bound=0, n=n
+        mean_cost=500, std_cost=200, lower_bound=200, n=n
     )
 
     # sample efficiency of intervention - a float from a log-normal distribution with mean 0.5 and bounds 0.1 and 0.9
@@ -71,7 +71,7 @@ def sample_cost_benefit_estimates(n: int = 1000) -> pd.DataFrame:
 
     # sample savings from prevented outcome - a integer from a normal distribution with mean 100000 and std 25000
     savings_from_prevented_outcome = _sample_int_from_truncated_normal(
-        mean_cost=100000, std_cost=25000, lower_bound=0, n=n
+        mean_cost=100000, std_cost=25000, lower_bound=10000, n=n
     )
 
     df = pd.DataFrame(
@@ -86,7 +86,6 @@ def sample_cost_benefit_estimates(n: int = 1000) -> pd.DataFrame:
     )
 
     return df
-
 
 def plot_sampling_distribution(df: pd.DataFrame, col_to_plot: str, save: bool = False) -> pn.ggplot:
     # Create string for plottign for col name by removing underscores and capitalizing
@@ -314,12 +313,12 @@ def fa_cost_benefit_by_ratio_and_ppr(
     if per_true_positive:
         p.save(
             filename=run.paper_outputs.paths.figures
-            / "fa_inpatient_cost_benefit_estimates_per_true_positives.png"
+            / "fa_inpatient_cost_benefit_per_true_positives.png"
         )
     else:
         p.save(
             filename=run.paper_outputs.paths.figures
-            / "fa_inpatient_cost_benefit_estimates_per_true_unique_outcomes.png"
+            / "fa_inpatient_cost_benefit_per_true_unique_outcomes.png"
         )
 
     return p
@@ -329,7 +328,7 @@ def fa_cost_benefit_from_monte_carlo_simulations(
     run: ForcedAdmissionInpatientPipelineRun,
     per_true_positive: bool,
     positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
-    n: int = 1000,
+    n: int = 10000,
 ) -> pn.ggplot:
     df = sample_cost_benefit_estimates(n=n)
 
@@ -365,13 +364,13 @@ def fa_cost_benefit_from_monte_carlo_simulations(
     if per_true_positive:
         grid_output_path = (
             run.paper_outputs.paths.figures
-            / "fa_inpatient_mc_cost_benefit_estimates_per_positives_outomces.png"
+            / "fa_inpatient_mc_cost_benefit_per_positives_outomces.png"
         )
         grid.savefig(grid_output_path)
     else:
         grid_output_path = (
             run.paper_outputs.paths.figures
-            / "fa_inpatient_mc_cost_benefit_estimates_per_unique_outcomes.png"
+            / "fa_inpatient_mc_cost_benefit_per_unique_outcomes.png"
         )
         grid.savefig(grid_output_path)
 
@@ -414,5 +413,5 @@ if __name__ == "__main__":
     fa_cost_benefit_by_ratio_and_ppr(
         run=get_best_eval_pipeline(),
         per_true_positive=True,
-        cost_benefit_ratios=[500, 40, 20, 10, 6, 3],
+        cost_benefit_ratios=[40, 20, 10, 6, 3],
     )

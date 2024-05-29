@@ -29,7 +29,7 @@ from psycop.projects.forced_admission_outpatient.utils.pipeline_objects import (
 
 
 def _sample_float_from_truncated_log_normal(
-    mean_efficiency: float, lower_bound: float, upper_bound: float, n: int = 1000
+    mean_efficiency: float, lower_bound: float, upper_bound: float, n: int = 10000
 ) -> np.ndarray:  # type: ignore
     # Log-normal distribution parameters
     # Calculate the parameters of the underlying normal distribution
@@ -47,7 +47,7 @@ def _sample_float_from_truncated_log_normal(
 
 
 def _sample_int_from_truncated_normal(
-    mean_cost: int, std_cost: int, lower_bound: int, n: int = 1000
+    mean_cost: int, std_cost: int, lower_bound: int, n: int = 10000
 ) -> np.ndarray:  # type: ignore
     # Calculate the truncation bounds in terms of the standard normal distribution
     a, b = (lower_bound - mean_cost) / std_cost, np.inf
@@ -58,10 +58,10 @@ def _sample_int_from_truncated_normal(
     return truncated_normal.rvs(size=n).astype(int)
 
 
-def sample_cost_benefit_estimates(n: int = 1000) -> pd.DataFrame:
+def sample_cost_benefit_estimates(n: int = 10000) -> pd.DataFrame:
     # sample intervention cost 100 times - a integer from a normal distribution with mean 500 and std 100 and a lower bound of 0
     cost_of_intervention = _sample_int_from_truncated_normal(
-        mean_cost=500, std_cost=200, lower_bound=50, n=n
+        mean_cost=500, std_cost=200, lower_bound=200, n=n
     )
 
     # sample efficiency of intervention - a float from a log-normal distribution with mean 0.5 and bounds 0.1 and 0.9
