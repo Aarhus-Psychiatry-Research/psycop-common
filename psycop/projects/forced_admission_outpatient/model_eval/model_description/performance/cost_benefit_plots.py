@@ -10,17 +10,10 @@ from scipy.stats import truncnorm
 from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
     generate_performance_by_ppr_table,
 )
-from psycop.common.model_evaluation.patchwork.patchwork_grid import (
-    create_patchwork_grid,
-)
-from psycop.projects.forced_admission_outpatient.model_eval.config import (
-    COLORS,
-    FA_PN_THEME,
-)
+from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
+from psycop.projects.forced_admission_outpatient.model_eval.config import COLORS, FA_PN_THEME
 from psycop.projects.forced_admission_outpatient.model_eval.model_description.performance.performance_by_ppr import (
     _get_num_of_unique_outcome_events,  # type: ignore
-)
-from psycop.projects.forced_admission_outpatient.model_eval.model_description.performance.performance_by_ppr import (
     _get_number_of_outcome_events_with_at_least_one_true_positve,  # type: ignore
 )
 from psycop.projects.forced_admission_outpatient.utils.pipeline_objects import (
