@@ -20,10 +20,6 @@ if __name__ == "__main__":
     populate_with_cvd_registry()
 
     cfg = confection.Config().from_disk(Path(__file__).parent / "cvd_baseline.cfg")
-    cfg["trainer"]["training_data"]["paths"] = [
-        f"E:/shared_resources/cvd/feature_set/flattened_datasets/cvd_lookbehind_experiments/{split}.parquet"
-        for split in ["train", "test"]
-    ]
 
     lookbehinds = [90, 365, 730]
     for i, _ in enumerate(lookbehinds):

@@ -19,17 +19,21 @@ if __name__ == "__main__":
     }
 
     # Set run name
-    cfg["logger"]["*"]["mlflow"]["run_name"] = "CVD hyperparam tuning, xgboost"
-    cfg["trainer"]["preprocessing_pipeline"]["*"]["layer_selector"][
-        "keep_matching"
-    ] = ".+_layer_(1|2).+"
+    for i in [1, 2, 3, 4]:
+        cfg["logger"]["*"]["mlflow"]["run_name"] = f"CVD hyperparam tuning, layer {i}, xgboost"
 
-    OptunaHyperParameterOptimization().from_cfg(
-        cfg,
-        study_name="cvd_hyperparam_tuning",
-        n_trials=150,
-        n_jobs=30,
-        direction="maximize",
-        catch=(Exception,),
-        custom_populate_registry_fn=populate_with_cvd_registry,
-    )
+        layer_regex = "|".join([str(i) for i in range(1, i + 1)])
+
+        cfg["trainer"]["preprocessing_pipeline"]["*"]["layer_selector"][
+            "keep_matching"
+        ] = f".+_layer_({layer_regex}).+"
+
+        OptunaHyperParameterOptimization().from_cfg(
+            cfg,
+            study_name="cvd_hyperparam_tuning",
+            n_trials=150,
+            n_jobs=30,
+            direction="maximize",
+            catch=(Exception,),
+            custom_populate_registry_fn=populate_with_cvd_registry,
+        )
