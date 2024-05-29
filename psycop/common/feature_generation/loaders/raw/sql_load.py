@@ -2,13 +2,19 @@
 
 from __future__ import annotations
 
+import logging
 import urllib
 import urllib.parse
 
 import pandas as pd
 from sqlalchemy import create_engine, text
 
+from psycop.common.global_utils.cache import shared_cache
 
+log = logging.getLogger(__name__)
+
+
+@shared_cache.cache()  # TD Remove this
 def sql_load(
     query: str,
     server: str = "BI-DPA-PROD",
@@ -48,6 +54,7 @@ def sql_load(
     engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
 
     conn = engine.connect().execution_options(stream_results=True, fast_executemany=True)
+    log.info(f"Loading {query}")
     df = pd.read_sql(text(query), conn)  # type: ignore
 
     if format_timestamp_cols_to_datetime:
