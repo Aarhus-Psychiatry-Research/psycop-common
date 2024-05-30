@@ -1,4 +1,5 @@
 """Utility functions for SQL loading."""
+
 from __future__ import annotations
 
 import urllib

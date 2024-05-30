@@ -67,10 +67,8 @@ class OptunaHyperParameterOptimization:
                 ):
                     cfg_copy[key] = BaselineRegistry.resolve({key: value})[key]
                 else:
-                    cfg_copy[
-                        key
-                    ] = OptunaHyperParameterOptimization()._resolve_only_registries_matching_regex(
-                        cfg=value, regex_string=regex_string
+                    cfg_copy[key] = (
+                        OptunaHyperParameterOptimization()._resolve_only_registries_matching_regex(cfg=value, regex_string=regex_string)
                     )
         return cfg_copy
 

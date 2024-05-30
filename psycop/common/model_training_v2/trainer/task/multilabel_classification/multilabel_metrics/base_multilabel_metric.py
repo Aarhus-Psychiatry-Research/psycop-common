@@ -13,5 +13,4 @@ class MultilabelMetric(BaselineMetric):
         y: pd.Series,  # type: ignore
         y_hat_prob: PredProbaSeries,
         name_prefix: str | None = None,
-    ) -> CalculatedMetric:
-        ...
+    ) -> CalculatedMetric: ...

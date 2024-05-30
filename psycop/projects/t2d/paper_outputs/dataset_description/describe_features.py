@@ -1,4 +1,5 @@
 """Main feature generation."""
+
 # %%
 import logging
 
@@ -90,9 +91,9 @@ prettified.to_csv(predictor_description_path)
 # %%
 from psycop.common.model_evaluation.markdown.md_objects import MarkdownTable
 
-md = MarkdownTable(
+md = MarkdownTable.from_filepath(
     title="## **eTable 2**: Descriptive statistics for predictors (a list of abbreviations is inserted below the table)",
-    file_path=predictor_description_path,
+    table_path=predictor_description_path,
     description="""**ALAT**: Alanine aminotransferase
 **p-Glc**: Plasma glucose.
 **BMI**: Body mass index.

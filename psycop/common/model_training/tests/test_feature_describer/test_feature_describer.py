@@ -1,4 +1,5 @@
 """Tests of the feature describer module."""
+
 from pathlib import Path
 
 import numpy as np

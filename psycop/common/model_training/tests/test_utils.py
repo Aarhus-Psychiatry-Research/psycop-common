@@ -1,4 +1,5 @@
 """Testing of the utils module."""
+
 import numpy as np
 import pandas as pd
 

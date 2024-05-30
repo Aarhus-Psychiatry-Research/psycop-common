@@ -1,6 +1,5 @@
 """Test that the model trains correctly."""
 
-
 import pytest
 
 from psycop.common.model_training.application_modules.train_model.main import (

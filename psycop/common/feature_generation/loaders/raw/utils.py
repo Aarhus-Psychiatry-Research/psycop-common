@@ -1,4 +1,5 @@
 """Example of."""
+
 from __future__ import annotations
 
 import logging
