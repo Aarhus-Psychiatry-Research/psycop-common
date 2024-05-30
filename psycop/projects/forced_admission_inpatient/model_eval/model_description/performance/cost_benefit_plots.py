@@ -10,15 +10,22 @@ from scipy.stats import truncnorm
 from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
     generate_performance_by_ppr_table,
 )
-from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
+from psycop.common.model_evaluation.patchwork.patchwork_grid import (
+    create_patchwork_grid,
+)
 from psycop.projects.forced_admission_inpatient.model_eval.model_description.performance.performance_by_ppr import (
     _get_num_of_unique_outcome_events,  # type: ignore
+)
+from psycop.projects.forced_admission_inpatient.model_eval.model_description.performance.performance_by_ppr import (
     _get_number_of_outcome_events_with_at_least_one_true_positve,  # type: ignore
 )
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
     ForcedAdmissionInpatientPipelineRun,
 )
-from psycop.projects.forced_admission_outpatient.model_eval.config import COLORS, FA_PN_THEME
+from psycop.projects.forced_admission_outpatient.model_eval.config import (
+    COLORS,
+    FA_PN_THEME,
+)
 
 
 def _sample_float_from_truncated_log_normal(
@@ -367,8 +374,9 @@ def fa_cost_benefit_from_monte_carlo_simulations(
         )
         grid.savefig(grid_output_path)
     else:
+        file_name = f"fa_inpatient_mc_cost_benefit_per_unique_outcomes_min_days_{min_alert_days}.png" if min_alert_days is not None else "fa_inpatient_mc_cost_benefit_per_unique_outcomes.png"
         grid_output_path = (
-            run.paper_outputs.paths.figures / "fa_inpatient_mc_cost_benefit_per_unique_outcomes.png"
+            run.paper_outputs.paths.figures / file_name
         )
         grid.savefig(grid_output_path)
 
@@ -405,9 +413,9 @@ if __name__ == "__main__":
     )
 
     fa_cost_benefit_from_monte_carlo_simulations(
-        run=get_best_eval_pipeline(), per_true_positive=True
+        run=get_best_eval_pipeline(),  per_true_positive=False, min_alert_days=30,
     )
 
     fa_cost_benefit_by_ratio_and_ppr(
-        run=get_best_eval_pipeline(), per_true_positive=True, cost_benefit_ratios=[40, 20, 10, 6, 3]
+        run=get_best_eval_pipeline(), per_true_positive=False, min_alert_days=30, cost_benefit_ratios=[40, 20, 10, 6, 3]
     )
