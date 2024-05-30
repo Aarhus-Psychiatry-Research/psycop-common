@@ -364,7 +364,7 @@ def fa_cost_benefit_from_monte_carlo_simulations(
     if per_true_positive:
         grid_output_path = (
             run.paper_outputs.paths.figures
-            / "fa_inpatient_mc_cost_benefit_per_positives_outomces.png"
+            / "fa_inpatient_mc_cost_benefit_per_positives_outcomes.png"
         )
         grid.savefig(grid_output_path)
     else:
@@ -412,6 +412,6 @@ if __name__ == "__main__":
 
     fa_cost_benefit_by_ratio_and_ppr(
         run=get_best_eval_pipeline(),
-        per_true_positive=True,
+        per_true_positive=False,
         cost_benefit_ratios=[40, 20, 10, 6, 3],
     )

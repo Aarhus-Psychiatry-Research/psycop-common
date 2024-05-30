@@ -31,7 +31,7 @@ def _get_num_of_unique_outcome_events(eval_dataset: EvalDataset) -> int:
 
 
 def _get_number_of_outcome_events_with_at_least_one_true_positve(
-    eval_dataset: EvalDataset, positive_rate: float
+    eval_dataset: EvalDataset, positive_rate: float,
 ) -> float:
     """Get number of outcomes with a prediction time that has at least one true positive prediction.
 
