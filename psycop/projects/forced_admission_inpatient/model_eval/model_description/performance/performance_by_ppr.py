@@ -31,13 +31,14 @@ def _get_num_of_unique_outcome_events(eval_dataset: EvalDataset) -> int:
 
 
 def _get_number_of_outcome_events_with_at_least_one_true_positve(
-    eval_dataset: EvalDataset, positive_rate: float,
+    eval_dataset: EvalDataset, positive_rate: float, min_alert_days: None | int = 30
 ) -> float:
     """Get number of outcomes with a prediction time that has at least one true positive prediction.
 
     Args:
         eval_dataset (EvalDataset): EvalDataset object.
         positive_rate (float, optional): Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
+        min_alert_days (None | int, optional): Minimum number of days a positive prediction must be made before the outcome event for it to be considered actionable/beneficial. Defaults to 30.
 
     Returns:
         float: Number of outcomes with at least one true positive.
@@ -45,6 +46,23 @@ def _get_number_of_outcome_events_with_at_least_one_true_positve(
 
     # Generate df with only true positives
     tp_df = get_true_positives(eval_dataset=eval_dataset, positive_rate=positive_rate)
+
+    # If min alert days is not None, creatre a column that calculates the number of days from pred_timestamps to outcome_timestamps
+    if min_alert_days is not None:
+        tp_df["days_from_pred_to_outcome"] = (
+            tp_df["outcome_timestamps"] - tp_df["pred_timestamps"]
+        ).dt.days
+
+        # group by id and outcome_timestamps and sort by days_from_pred_to_outcome from highest to lowest
+        tp_df = tp_df.sort_values(
+            by=["id", "outcome_timestamps", "days_from_pred_to_outcome"],
+            ascending=[True, True, False],
+        )
+
+        # if the first row of days_from_pred_to_outcome for each id and outcome id is smaller than min_alert_days, drop all rows for that id and outcome id
+        tp_df = tp_df.groupby(["id", "outcome_timestamps"]).filter(
+            lambda x: x["days_from_pred_to_outcome"].iloc[0] >= min_alert_days
+        )
 
     # Return number of outcome events with at least one true positives
     return tp_df[["id", "outcome_timestamps"]].drop_duplicates().shape[0]
@@ -112,6 +130,7 @@ def fa_inpatient_output_performance_by_ppr(
     run: ForcedAdmissionInpatientPipelineRun,
     save: bool = True,
     positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
+    min_alert_days: None | int = 30,
 ) -> pd.DataFrame | None:
     output_path = (
         run.paper_outputs.paths.tables / run.paper_outputs.artifact_names.performance_by_ppr
@@ -132,7 +151,7 @@ def fa_inpatient_output_performance_by_ppr(
 
     df["Number of unique outcome events detected ≥1"] = [
         _get_number_of_outcome_events_with_at_least_one_true_positve(
-            eval_dataset=eval_dataset, positive_rate=pos_rate
+            eval_dataset=eval_dataset, positive_rate=pos_rate, min_alert_days=min_alert_days
         )
         for pos_rate in positive_rates
     ]

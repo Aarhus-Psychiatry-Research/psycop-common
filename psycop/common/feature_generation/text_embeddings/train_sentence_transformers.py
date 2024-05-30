@@ -1,4 +1,5 @@
 """Train sentence transformer model using SimCSE loss on our data."""
+
 from time import time
 from typing import Literal
 

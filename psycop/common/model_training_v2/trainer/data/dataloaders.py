@@ -8,8 +8,7 @@ from psycop.common.model_training_v2.config.baseline_registry import BaselineReg
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
 
 
-class MissingPathError(Exception):
-    ...
+class MissingPathError(Exception): ...
 
 
 @BaselineRegistry.data.register("parquet_vertical_concatenator")

@@ -10,17 +10,10 @@ from scipy.stats import truncnorm
 from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
     generate_performance_by_ppr_table,
 )
-from psycop.common.model_evaluation.patchwork.patchwork_grid import (
-    create_patchwork_grid,
-)
-from psycop.projects.forced_admission_outpatient.model_eval.config import (
-    COLORS,
-    FA_PN_THEME,
-)
+from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
+from psycop.projects.forced_admission_outpatient.model_eval.config import COLORS, FA_PN_THEME
 from psycop.projects.forced_admission_outpatient.model_eval.model_description.performance.performance_by_ppr import (
     _get_num_of_unique_outcome_events,  # type: ignore
-)
-from psycop.projects.forced_admission_outpatient.model_eval.model_description.performance.performance_by_ppr import (
     _get_number_of_outcome_events_with_at_least_one_true_positve,  # type: ignore
 )
 from psycop.projects.forced_admission_outpatient.utils.pipeline_objects import (
@@ -197,6 +190,7 @@ def calculate_cost_benefit(
     run: ForcedAdmissionOutpatientPipelineRun,
     cost_benefit_ratio: int,
     per_true_positive: bool = True,
+    min_alert_days: None | int = 30,
     positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
 ) -> pd.DataFrame:
     eval_dataset = run.pipeline_outputs.get_eval_dataset()
@@ -215,7 +209,7 @@ def calculate_cost_benefit(
 
     df["Number of unique outcome events detected ≥1"] = [
         _get_number_of_outcome_events_with_at_least_one_true_positve(
-            eval_dataset=eval_dataset, positive_rate=pos_rate
+            eval_dataset=eval_dataset, positive_rate=pos_rate, min_alert_days=min_alert_days
         )
         for pos_rate in positive_rates
     ]
@@ -290,6 +284,7 @@ def fa_cost_benefit_by_ratio_and_ppr(
     run: ForcedAdmissionOutpatientPipelineRun,
     per_true_positive: bool,
     cost_benefit_ratios: Sequence[int],
+    min_alert_days: None | int = 30,
     positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
 ) -> pn.ggplot:
     dfs = []
@@ -298,6 +293,7 @@ def fa_cost_benefit_by_ratio_and_ppr(
         df = calculate_cost_benefit(
             run=run,
             cost_benefit_ratio=ratio,
+            min_alert_days=min_alert_days,
             per_true_positive=per_true_positive,
             positive_rates=positive_rates,
         )
@@ -332,6 +328,7 @@ def fa_cost_benefit_by_ratio_and_ppr(
 def fa_cost_benefit_from_monte_carlo_simulations(
     run: ForcedAdmissionOutpatientPipelineRun,
     per_true_positive: bool,
+    min_alert_days: None | int = 30,
     positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
     n: int = 10000,
 ) -> pn.ggplot:
@@ -350,6 +347,7 @@ def fa_cost_benefit_from_monte_carlo_simulations(
             run=run,
             cost_benefit_ratio=item[0],
             per_true_positive=per_true_positive,
+            min_alert_days=min_alert_days,
             positive_rates=positive_rates,
         )
 

@@ -1,4 +1,5 @@
 """Wandb utils."""
+
 import traceback
 from typing import Any, Callable
 

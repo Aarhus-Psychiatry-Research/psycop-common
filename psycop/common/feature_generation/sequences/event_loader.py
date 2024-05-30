@@ -10,8 +10,7 @@ from ..loaders.raw.sql_load import sql_load
 @runtime_checkable
 class EventLoader(Protocol):
     @abstractmethod
-    def load_events(self) -> pl.LazyFrame:
-        ...
+    def load_events(self) -> pl.LazyFrame: ...
 
 
 @SequenceRegistry.event_loaders.register("diagnoses")

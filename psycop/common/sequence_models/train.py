@@ -1,6 +1,7 @@
 """
 The main training entrypoint for sequence models.
 """
+
 import logging
 import os
 from pathlib import Path

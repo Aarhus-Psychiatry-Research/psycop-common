@@ -34,7 +34,7 @@ def scz_bp_parse_temporal_feature(full_string: str) -> str:
     resolve_multiple = re.findall(r"days_(.*)?_fallback", full_string)[0]
 
     remove = ["all_relevant_", "aktuelt_psykisk_", r"_layer_\d_*"]
-    remove = "(%s)" % "|".join(remove)
+    remove = "(%s)" % "|".join(remove)  # noqa
 
     feature_name = re.sub(remove, "", feature_name)
     output_string = f"{feature_name} {lookbehind}-day {resolve_multiple} "

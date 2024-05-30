@@ -12,6 +12,7 @@ from mlflow.entities.run_inputs import RunInputs
 from mlflow.tracking import MlflowClient
 
 from psycop.common.types.validated_frame import ValidatedFrame
+from psycop.common.types.validator_rules import ColumnExistsRule, ColumnTypeRule, ValidatorRule
 
 
 @dataclass(frozen=True)
@@ -23,6 +24,31 @@ class MlflowAllMetricsFrame(ValidatedFrame[pl.DataFrame]):
     value_col_name: str = "value"
 
     allow_extra_columns = False
+
+
+@dataclass(frozen=True)
+class EvalFrame(ValidatedFrame[pl.DataFrame]):
+    y_col_name: str = "y"
+    y_hat_prob_col_name: str = "y_hat_prob"
+    pred_time_uuid_col_name: str = "pred_time_uuid"
+
+    frame: pl.DataFrame
+
+    pred_time_uuid_col_rules: Sequence[ValidatorRule] = (
+        ColumnExistsRule(),
+        ColumnTypeRule(expected_type=pl.Utf8),
+    )
+    # pred_time_uuid: a string of the form "{citizen id}-%Y-%m-%d-%H-%M-%S", e.g. "98573-2021-01-01-00-00-00"
+
+    y_col_rules: Sequence[ValidatorRule] = (
+        ColumnExistsRule(),
+        ColumnTypeRule(expected_type=pl.Int64),
+    )
+
+    y_hat_prob_col_rules: Sequence[ValidatorRule] = (
+        ColumnExistsRule(),
+        ColumnTypeRule(expected_type=pl.Float64),
+    )
 
 
 class PsycopMlflowRun(Run):
@@ -46,9 +72,9 @@ class PsycopMlflowRun(Run):
         cfg_path = self.download_artifact(artifact_name="config.cfg", save_location=None)
         return Config().from_disk(cfg_path)
 
-    def eval_df(self) -> pl.DataFrame:
+    def eval_frame(self) -> EvalFrame:
         eval_df_path = self.download_artifact(artifact_name="eval_df.parquet", save_location=None)
-        return pl.read_parquet(eval_df_path)
+        return EvalFrame(frame=pl.read_parquet(eval_df_path), allow_extra_columns=False)
 
     def download_artifact(self, artifact_name: str, save_location: str | None = None) -> Path:
         """Download an artifact from a run. Returns the path to the downloaded artifact.
