@@ -18,9 +18,9 @@ class RowSpecification:
 
 def get_psychiatric_diagnosis_row_specs(readable_col_names: list[str]) -> list[RowSpecification]:
     # Get diagnosis columns
-    pattern = re.compile(r"pred_f\d_disorders")
+    pattern = re.compile(r".+f\d_disorders")
     columns = sorted(
-        [c for c in readable_col_names if pattern.search(c) and "max" in c and "1095" in c]
+        [c for c in readable_col_names if pattern.search(c) and "mean" in c and "730" in c]
     )
 
     readable_col_names = []
