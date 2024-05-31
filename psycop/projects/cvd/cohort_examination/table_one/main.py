@@ -8,10 +8,10 @@ from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClien
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
     RegionalFilter,
 )
-from psycop.projects.cvd.feature_generation.cohort_definition.cvd_cohort_definition import (
-    CVDCohortDefiner,
+from psycop.projects.cvd.cohort_examination.table_one.lib import (
+    RowSpecification,
+    get_psychiatric_diagnosis_row_specs,
 )
-from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 
 run = MlflowClientWrapper().get_run(experiment_name="CVD", run_name="Layer 1")
 cfg = run.get_config()
@@ -36,10 +36,6 @@ flattened_combined = pl.concat([train_data, test_data], how="vertical").rename(
 import pandas as pd
 
 from psycop.common.model_evaluation.utils import bin_continuous_data
-from psycop.projects.t2d.paper_outputs.dataset_description.table_one.table_one_lib import (
-    RowSpecification,
-    get_psychiatric_diagnosis_row_specs,
-)
 
 visit_row_specs = [
     RowSpecification(source_col_name="pred_age_in_years", readable_name="Age", nonnormal=True),
