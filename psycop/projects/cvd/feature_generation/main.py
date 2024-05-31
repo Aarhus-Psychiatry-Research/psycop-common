@@ -90,10 +90,7 @@ if __name__ == "__main__":
 
     layer = 1
 
-    feature_layers: Mapping[
-        int,
-        Sequence[ts.OutcomeSpec | ts.StaticSpec | ts.TimeDeltaSpec | Callable[[], pd.DataFrame]],
-    ] = {
+    feature_layers = {
         0: [
             ts.OutcomeSpec(
                 value_frame=ts.ValueFrame(
