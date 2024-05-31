@@ -46,7 +46,7 @@ visit_row_specs = [
     ),
     *get_psychiatric_diagnosis_row_specs(readable_col_names=train_data.columns),
 ]
-visit_row_specs
+visit_row_specs  # noqa: B018
 
 
 # %%
@@ -77,9 +77,11 @@ from psycop.projects.t2d.paper_outputs.dataset_description.table_one.table_one_l
 )
 
 visit_table_one = create_table(
-    row_specs=visit_row_specs, data=visit_flattened_df.fillna(0), groupby_col_name="dataset"
+    row_specs=visit_row_specs,  # type: ignore
+    data=visit_flattened_df.fillna(0),
+    groupby_col_name="dataset",
 )
-visit_table_one
+visit_table_one  # noqa: B018
 
 # %%
 ######################
@@ -119,7 +121,9 @@ patient_df = (
 
 
 patient_table_one = create_table(
-    row_specs=patient_row_specs, data=patient_df.fillna(0), groupby_col_name="dataset"
+    row_specs=patient_row_specs,  # type: ignore
+    data=patient_df.fillna(0),
+    groupby_col_name="dataset",
 )
 
 # %%
