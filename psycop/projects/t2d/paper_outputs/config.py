@@ -24,7 +24,8 @@ T2D_PN_THEME = pn.theme_bw() + pn.theme(
     panel_grid=pn.element_blank(), axis_title=pn.element_text(size=14)
 )
 
-from typing import Protocol, Sequence
+from collections.abc import Sequence
+from typing import Protocol
 
 
 class ColorsPTC(Protocol):
