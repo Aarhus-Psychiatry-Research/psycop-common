@@ -88,8 +88,6 @@ if __name__ == "__main__":
     project_info = get_cvd_project_info()
     eligible_prediction_times = cvd_pred_times()
 
-    layer = 1
-
     feature_layers = {
         0: [
             ts.OutcomeSpec(
