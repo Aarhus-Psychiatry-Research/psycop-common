@@ -13,6 +13,7 @@ from psycop.projects.cvd.cohort_examination.table_one.lib import RowSpecificatio
 run = MlflowClientWrapper().get_run(experiment_name="CVD", run_name="CVD layer 1, base")
 cfg = run.get_config()
 
+# Add train/test labels. Compute-intensive solution, but good enough for now.
 flattened_data = pl.read_parquet(cfg["trainer"]["training_data"]["paths"][0])
 train_data = (
     RegionalFilter(["train", "val"])
