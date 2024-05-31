@@ -42,7 +42,7 @@ import psycop.projects.cvd.model_evaluation.multi_run.auroc_by_run_presentation 
 from psycop.projects.t2d.paper_outputs.config import THEME
 
 plot = pres.plot(result)
-plot
+# plot
 plot.save("Model comparisons.png", limitsize=False, dpi=300, width=10, height=5)
 
 # %%
