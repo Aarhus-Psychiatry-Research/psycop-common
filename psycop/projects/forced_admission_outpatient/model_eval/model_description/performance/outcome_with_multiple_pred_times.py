@@ -5,9 +5,14 @@ import patchworklib as pw
 import plotnine as pn
 from wasabi import Printer
 
-from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
+from psycop.common.model_evaluation.patchwork.patchwork_grid import (
+    create_patchwork_grid,
+)
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.forced_admission_outpatient.model_eval.config import BEST_POS_RATE, FA_PN_THEME
+from psycop.projects.forced_admission_outpatient.model_eval.config import (
+    BEST_POS_RATE,
+    FA_PN_THEME,
+)
 from psycop.projects.forced_admission_outpatient.utils.pipeline_objects import (
     ForcedAdmissionOutpatientPipelineRun,
 )
@@ -354,6 +359,10 @@ if __name__ == "__main__":
     run = get_best_eval_pipeline()
     eval_dataset = run.pipeline_outputs.get_eval_dataset()
     max_n = 10
+
+    prediction_stability_for_cases_with_multiple_pred_times_per_outcome(
+        eval_dataset=eval_dataset,
+    )
 
     plot_model_outputs_over_time_for_cases_multiple_pred_times_per_outcome(
         run, eval_dataset, max_n, ppr=BEST_POS_RATE
