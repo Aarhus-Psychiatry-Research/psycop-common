@@ -85,9 +85,6 @@ if __name__ == "__main__":
         datefmt="%Y/%m/%d %H:%M:%S",
     )
 
-    project_info = get_cvd_project_info()
-    eligible_prediction_times = cvd_pred_times()
-
     feature_layers = {
         0: [
             ts.OutcomeSpec(
@@ -143,8 +140,8 @@ if __name__ == "__main__":
                 feature_specs.append(spec)
 
     generate_feature_set(
-        project_info=project_info,
-        eligible_prediction_times_frame=eligible_prediction_times,
+        project_info=get_cvd_project_info(),
+        eligible_prediction_times_frame=cvd_pred_times(),
         feature_specs=feature_specs,
         feature_set_name="cvd_feature_set",
         n_workers=10,
