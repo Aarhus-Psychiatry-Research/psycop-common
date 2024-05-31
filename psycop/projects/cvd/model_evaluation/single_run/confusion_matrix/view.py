@@ -6,6 +6,7 @@ import plotnine as pn
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import ConfusionMatrix
 from psycop.common.test_utils.str_to_df import str_to_df
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
+from psycop.projects.t2d.paper_outputs.config import FONT_SIZES
 
 
 @dataclass(frozen=True)
@@ -37,11 +38,12 @@ class ConfusionMatrixPlot(SingleRunPlot):
             + pn.theme(
                 axis_line=pn.element_blank(),
                 axis_ticks=pn.element_blank(),
-                axis_text=pn.element_text(size=15, color="black"),
                 panel_grid_major=pn.element_blank(),
                 panel_grid_minor=pn.element_blank(),
                 panel_background=pn.element_blank(),
                 legend_position="none",
+                axis_text_x=pn.element_text(size=FONT_SIZES.axis_tick_labels),
+                axis_text_y=pn.element_text(size=FONT_SIZES.axis_tick_labels),
             )
             + pn.scale_y_discrete(reverse=True)
             + pn.labs(x=f"Actual {self.outcome_label}", y=f"Predicted {self.outcome_label}")

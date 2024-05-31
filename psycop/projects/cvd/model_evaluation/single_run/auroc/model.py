@@ -2,13 +2,10 @@ from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
+import polars as pl
 
 from psycop.common.global_utils.cache import shared_cache
 from psycop.common.model_evaluation.binary.global_performance.roc_auc import bootstrap_roc
-from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import (
-    RunSelector,
-    get_eval_df,
-)
 
 
 @dataclass(frozen=True)
@@ -32,8 +29,7 @@ class AUROC:
 
 
 @shared_cache.cache()
-def auroc_model(run: RunSelector, n_bootstraps: int = 5) -> AUROC:
-    eval_df = get_eval_df(run)
+def auroc_model(eval_df: pl.DataFrame, n_bootstraps: int = 5) -> AUROC:
     eval_dataset = eval_df.to_pandas()
     y = eval_dataset["y"]
     y_hat_probs = eval_dataset["y_hat_prob"]

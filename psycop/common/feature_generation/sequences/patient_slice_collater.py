@@ -12,8 +12,7 @@ from psycop.common.sequence_models.registry import SequenceRegistry
 
 @runtime_checkable
 class BasePatientSliceCollater(Protocol):
-    def get_dataset(self) -> PatientSliceDataset:
-        ...
+    def get_dataset(self) -> PatientSliceDataset: ...
 
 
 @SequenceRegistry.datasets.register("unlabelled_slice_creator")

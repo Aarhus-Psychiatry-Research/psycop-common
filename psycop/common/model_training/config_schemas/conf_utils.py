@@ -2,6 +2,7 @@
 
 Very useful when testing.
 """
+
 from typing import Optional, Union
 
 from hydra import compose, initialize

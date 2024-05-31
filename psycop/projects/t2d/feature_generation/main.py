@@ -1,6 +1,5 @@
 """Main feature generation."""
 
-
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
     generate_feature_set_tsflattener_v1,
 )

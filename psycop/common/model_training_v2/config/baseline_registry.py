@@ -3,8 +3,7 @@ from confection import registry
 
 
 class RegistryWithDict(registry):
-    def to_dict(self) -> dict[str, catalogue.Registry]:
-        ...
+    def to_dict(self) -> dict[str, catalogue.Registry]: ...
 
 
 class BaselineRegistry(RegistryWithDict):

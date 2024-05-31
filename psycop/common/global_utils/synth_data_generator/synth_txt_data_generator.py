@@ -3,6 +3,7 @@
 Produces a .csv file with the following columns: citizen_id, timestamp,
 text.
 """
+
 from pathlib import Path
 from typing import Optional
 

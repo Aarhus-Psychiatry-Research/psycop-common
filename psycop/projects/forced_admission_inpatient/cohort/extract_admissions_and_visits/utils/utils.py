@@ -1,6 +1,7 @@
 """Utility functions for cleaning and repairing data breaks and errors in the
- raw contact and coercion data
- """
+raw contact and coercion data
+"""
+
 from datetime import timedelta
 
 import pandas as pd

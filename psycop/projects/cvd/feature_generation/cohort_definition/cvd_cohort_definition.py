@@ -1,5 +1,3 @@
-import datetime
-
 import polars as pl
 
 from psycop.common.cohort_definition import (
@@ -24,14 +22,12 @@ from psycop.projects.cvd.feature_generation.cohort_definition.outcome_specificat
 
 
 @shared_cache.cache()
-def cvd_pred_times(cache_version: datetime.date) -> PredictionTimeFrame:  # noqa: B008, ARG001
+def cvd_pred_times() -> PredictionTimeFrame:
     return CVDCohortDefiner().get_filtered_prediction_times_bundle().prediction_times
 
 
 @shared_cache.cache()
-def cvd_outcome_timestamps(
-    cache_version: datetime.date,  # noqa: B008, ARG001
-) -> OutcomeTimestampFrame:
+def cvd_outcome_timestamps() -> OutcomeTimestampFrame:
     return CVDCohortDefiner().get_outcome_timestamps()
 
 

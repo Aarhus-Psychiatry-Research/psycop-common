@@ -1,4 +1,5 @@
 """Generate synthetic data for each of the individual outcomes"""
+
 import numpy as np
 import pandas as pd
 import polars as pl

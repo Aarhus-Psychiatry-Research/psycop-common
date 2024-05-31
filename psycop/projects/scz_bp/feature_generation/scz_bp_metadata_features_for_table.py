@@ -1,4 +1,5 @@
 """Feature specification module."""
+
 import datetime as dt
 import logging
 from typing import TYPE_CHECKING

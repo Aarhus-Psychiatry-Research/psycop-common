@@ -29,7 +29,7 @@ The shared code across the PSYCOP projects.
 
 ![208704841-6bcefca0-9d76-48c5-b449-04d534340c4d](https://github.com/Aarhus-Psychiatry-Research/psycop-common/assets/8526086/d05d8dc7-cbb0-49ea-beb2-11d701440242)
 
-5. Profit!
+5. Profit! 
 
 ### Method 2: Ovartaci
 If you're working on Ovartaci, all you need is to activate the shared environment by

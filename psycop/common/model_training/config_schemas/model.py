@@ -1,4 +1,5 @@
 """Model configuration schemas."""
+
 from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
 
 

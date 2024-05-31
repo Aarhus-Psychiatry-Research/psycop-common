@@ -3,6 +3,7 @@ Script for obtaining and writing all admission  and discharge timestamps
 for all admissions from 2012-2022. Handles LPR2 to LPR3 transition, duplicates
 and short term readmissions
 """
+
 import pandas as pd
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load

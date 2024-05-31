@@ -1,6 +1,5 @@
 """Utilites for testing."""
 
-
 from typing import Any
 
 import pandas as pd

@@ -1,4 +1,5 @@
 """Loaders for visits to psychiatry."""
+
 import logging
 from collections.abc import Sequence
 from typing import Literal, Union

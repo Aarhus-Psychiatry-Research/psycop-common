@@ -1,4 +1,5 @@
 """Column generators for synthetic data."""
+
 from collections.abc import Iterable
 from typing import Any, Optional
 
