@@ -54,6 +54,7 @@ def get_cvd_project_info() -> ProjectInfo:
 
 def cvd_pred(
     init_df: Callable[[], pd.DataFrame],
+    layer: int,
     lookbehind_distances: Sequence[datetime.timedelta] = [
         datetime.timedelta(days=i) for i in [90, 365, 730]
     ],
@@ -62,7 +63,6 @@ def cvd_pred(
         ts.MinAggregator(),
         ts.MaxAggregator(),
     ],
-    column_prefix: str = "pred",
 ) -> ts.PredictorSpec:
     return ts.PredictorSpec(
         value_frame=ts.ValueFrame(
@@ -72,7 +72,7 @@ def cvd_pred(
         lookbehind_distances=lookbehind_distances,
         aggregators=aggregation_fns,
         fallback=np.nan,
-        column_prefix=column_prefix,
+        column_prefix=f"pred_layer_{layer}",
     )
 
 
@@ -91,7 +91,8 @@ if __name__ == "__main__":
     layer = 1
 
     feature_layers: Mapping[
-        int, Sequence[ts.OutcomeSpec | ts.StaticSpec | ts.TimeDeltaSpec | ts.PredictorSpec]
+        int,
+        Sequence[ts.OutcomeSpec | ts.StaticSpec | ts.TimeDeltaSpec | Callable[[], pd.DataFrame]],
     ] = {
         0: [
             ts.OutcomeSpec(
@@ -114,42 +115,42 @@ if __name__ == "__main__":
                     entity_id_col_name="dw_ek_borger",
                     value_timestamp_col_name="date_of_birth",
                 ),
+                column_prefix="pred",
                 fallback=0,
                 output_name="age",
             ),
         ],
-        1: [
-            cvd_pred(ldl, column_prefix="pred_layer_1"),
-            cvd_pred(systolic_blood_pressure, column_prefix="pred_layer_1"),
-        ],
-        2: [
-            cvd_pred(smoking_continuous, column_prefix="pred_layer_2"),
-            cvd_pred(smoking_categorical, column_prefix="pred_layer_2"),
-        ],
-        3: [
-            cvd_pred(hba1c, column_prefix="pred_layer_3"),
-            cvd_pred(chronic_lung_disease, column_prefix="pred_layer_3"),
-        ],
+        1: [ldl, systolic_blood_pressure],
+        2: [smoking_continuous, smoking_categorical],
+        3: [hba1c, chronic_lung_disease],
         4: [
-            cvd_pred(f0_disorders, column_prefix="pred_layer_4"),
-            cvd_pred(f1_disorders, column_prefix="pred_layer_4"),
-            cvd_pred(f2_disorders, column_prefix="pred_layer_4"),
-            cvd_pred(f3_disorders, column_prefix="pred_layer_4"),
-            cvd_pred(f4_disorders, column_prefix="pred_layer_4"),
-            cvd_pred(f5_disorders, column_prefix="pred_layer_4"),
-            cvd_pred(f6_disorders, column_prefix="pred_layer_4"),
-            cvd_pred(f7_disorders, column_prefix="pred_layer_4"),
-            cvd_pred(f8_disorders, column_prefix="pred_layer_4"),
-            cvd_pred(f9_disorders, column_prefix="pred_layer_4"),
-            cvd_pred(top_10_weight_gaining_antipsychotics, column_prefix="pred_layer_4"),
-            cvd_pred(hdl, column_prefix="pred_layer_4"),
+            f0_disorders,
+            f1_disorders,
+            f2_disorders,
+            f3_disorders,
+            f4_disorders,
+            f5_disorders,
+            f6_disorders,
+            f7_disorders,
+            f8_disorders,
+            f9_disorders,
+            top_10_weight_gaining_antipsychotics,
+            hdl,
         ],
     }
+
+    feature_specs = []
+    for layer, feature in feature_layers.items():
+        for spec in feature:
+            if isinstance(spec, Callable):
+                feature_specs.append(cvd_pred(init_df=spec, layer=layer))
+            else:
+                feature_specs.append(spec)
 
     generate_feature_set(
         project_info=project_info,
         eligible_prediction_times_frame=eligible_prediction_times,
-        feature_specs=[spec for layer_specs in feature_layers.values() for spec in layer_specs],
+        feature_specs=feature_specs,
         feature_set_name="cvd_feature_set",
         n_workers=10,
         step_size=datetime.timedelta(days=365),
