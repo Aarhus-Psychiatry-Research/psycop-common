@@ -21,8 +21,10 @@ def plot(model: pl.DataFrame) -> pn.ggplot:
 
 def _plot_transformations(model: pl.DataFrame) -> pl.DataFrame:
     model = model.with_columns(
-        pl.when(pl.col("run_name").str.contains("agg"))
+        pl.when(pl.col("run_name").str.contains("min"))
         .then(pl.lit("Aggregations"))
+        .when(pl.col("run_name").str.contains("hparam"))
+        .then(pl.lit("Lookbehinds"))
         .when(pl.col("run_name").str.contains("look"))
         .then(pl.lit("Lookbehinds"))
         .otherwise(pl.lit("Naive"))
