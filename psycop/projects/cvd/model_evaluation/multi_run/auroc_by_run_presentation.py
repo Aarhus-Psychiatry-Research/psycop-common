@@ -26,7 +26,6 @@ def plot(model: pl.DataFrame) -> pn.ggplot:
         + pn.scale_color_manual(COLORS.color_scale())
         + pn.geom_point(size=4, position=pn.position_dodge(width=dodge))
         + pn.geom_errorbar(width=0.3, position=pn.position_dodge(width=dodge))
-        # + pn.scale_y_continuous(limits=[0.75, 0.85], expand=(0, 0))
         + pn.labs(y="AUROC")
         + THEME
     )
