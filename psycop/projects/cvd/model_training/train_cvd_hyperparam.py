@@ -1,12 +1,17 @@
+from audioop import reverse
 from pathlib import Path
 
 import confection
 
-from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
+from psycop.common.model_training_v2.config.populate_registry import (
+    populate_baseline_registry,
+)
 from psycop.common.model_training_v2.hyperparameter_suggester.optuna_hyperparameter_search import (
     OptunaHyperParameterOptimization,
 )
-from psycop.projects.cvd.model_training.populate_cvd_registry import populate_with_cvd_registry
+from psycop.projects.cvd.model_training.populate_cvd_registry import (
+    populate_with_cvd_registry,
+)
 
 if __name__ == "__main__":
     populate_baseline_registry()
@@ -19,8 +24,9 @@ if __name__ == "__main__":
     }
 
     # Set run name
-    for i in [1, 2, 3, 4]:
-        cfg["logger"]["*"]["mlflow"]["run_name"] = f"CVD hyperparam tuning, layer {i}, xgboost"
+    for i in reversed([1, 2, 3, 4]):
+        name = f"CVD hyperparam tuning, layer {i}, xgboost, v2"
+        cfg["logger"]["*"]["mlflow"]["experiment_name"] = name
 
         layer_regex = "|".join([str(i) for i in range(1, i + 1)])
 
@@ -30,9 +36,9 @@ if __name__ == "__main__":
 
         OptunaHyperParameterOptimization().from_cfg(
             cfg,
-            study_name="cvd_hyperparam_tuning",
+            study_name=name,
             n_trials=150,
-            n_jobs=30,
+            n_jobs=10,
             direction="maximize",
             catch=(Exception,),
             custom_populate_registry_fn=populate_with_cvd_registry,
