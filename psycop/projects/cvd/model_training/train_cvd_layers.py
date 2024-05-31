@@ -25,9 +25,9 @@ if __name__ == "__main__":
         cfg["logger"]["*"]["mlflow"]["run_name"] = f"CVD layer {layer}, base"
 
         layers = [str(i) for i in range(1, layer + 1)]
-        cfg["trainer"]["preprocessing_pipeline"]["*"]["layer_selector"][
-            "keep_matching"
-        ] = f".+_layer_({'|'.join(layers)}).+"
+        cfg["trainer"]["preprocessing_pipeline"]["*"]["layer_selector"]["keep_matching"] = (
+            f".+_layer_({'|'.join(layers)}).+"
+        )
 
         logging.info(f"Training model with layers {layers}")
         train_baseline_model_from_cfg(cfg=cfg)
