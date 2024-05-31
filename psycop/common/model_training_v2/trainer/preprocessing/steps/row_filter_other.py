@@ -23,6 +23,8 @@ class AgeFilter(PresplitStep):
 
 @BaselineRegistry.preprocessing.register("window_filter")
 class WindowFilter(PresplitStep):
+    """Filter rows by whether their timestamp is within a certain window of the min or max timestamp in the dataset."""
+
     def __init__(self, n_days: int, direction: Literal["ahead", "behind"], timestamp_col_name: str):
         self.n_days = timedelta(n_days)
         self.direction = direction
