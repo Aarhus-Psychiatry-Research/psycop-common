@@ -20,10 +20,10 @@ flattened_data = pl.read_parquet(cfg["trainer"]["training_data"]["paths"][0])
 train_data = (
     RegionalFilter(["train", "val"])
     .apply(flattened_data.lazy())
-    .with_columns(dataset=pl.format("0. train"))
+    .with_columns(dataset=pl.lit("0. train"))
 )
 test_data = (
-    RegionalFilter(["test"]).apply(flattened_data.lazy()).with_columns(dataset=pl.format("test"))
+    RegionalFilter(["test"]).apply(flattened_data.lazy()).with_columns(dataset=pl.lit("test"))
 )
 
 flattened_combined = pl.concat([train_data, test_data], how="vertical").rename(
@@ -102,10 +102,10 @@ patient_df = (
     (
         flattened_combined.groupby("dw_ek_borger")
         .agg(
-            pred_sex_female=pl.col("pred_sex_female").first(),
-            incident_t2d=pl.col(outcome_col_name).max(),
-            first_contact_timestamp=pl.col("timestamp").min(),
-            dataset=pl.col("dataset").first(),
+            pl.col("pred_sex_female").first().alias("pred_sex_female"),
+            pl.col(outcome_col_name).max().alias(outcome_col_name),
+            pl.col("timestamp").min().alias("first_contact_timestamp"),
+            pl.col("dataset").first().alias("dataset"),
         )
         .select(["pred_sex_female", outcome_col_name, "first_contact_timestamp", "dataset"])
     )
