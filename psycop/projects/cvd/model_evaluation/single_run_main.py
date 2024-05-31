@@ -77,6 +77,7 @@ def single_run_main(
     desired_positive_rate: float,
     outcome_label: str,
     outcome_timestamps: OutcomeTimestampFrame,
+    first_letter_index: int,
 ) -> pw.Bricks:
     eval_df = eval_frame.frame
 
@@ -106,7 +107,12 @@ def single_run_main(
         log.info(f"Starting processing of {plot.__class__.__name__}")
         ggplots.append(plot())
 
-    figure = create_patchwork_grid(plots=ggplots, single_plot_dimensions=(5, 4.5), n_in_row=2)
+    figure = create_patchwork_grid(
+        plots=ggplots,
+        single_plot_dimensions=(5, 4.5),
+        n_in_row=2,
+        first_letter_index=first_letter_index,
+    )
     return figure
 
 
@@ -132,6 +138,7 @@ if __name__ == "__main__":
         desired_positive_rate=0.05,
         outcome_label="CVD",
         outcome_timestamps=outcome_timestamps,
+        first_letter_index=1,
     )
 
     figure.savefig("test_cvd_main.png")

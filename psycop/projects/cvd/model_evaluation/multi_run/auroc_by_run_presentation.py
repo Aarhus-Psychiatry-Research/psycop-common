@@ -41,7 +41,7 @@ def _plot_transformations(model: pl.DataFrame) -> pl.DataFrame:
         .then(pl.lit("Hyperparameter tuned"))
         .when(pl.col("run_name").str.contains("look"))
         .then(pl.lit("Lookbehinds (90, 365, 730 days)"))
-        .otherwise(pl.lit("Baseline"))
+        .otherwise(pl.lit("Baseline (default parameters, 730 days, mean)"))
         .alias("Type")
     ).with_columns(pl.col("run_name").str.extract(r"(\d).*").alias("Predictor layer"))
 
