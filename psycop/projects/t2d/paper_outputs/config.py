@@ -24,6 +24,7 @@ T2D_PN_THEME = pn.theme_bw() + pn.theme(
     panel_grid=pn.element_blank(), axis_title=pn.element_text(size=14)
 )
 
+from collections.abc import Sequence
 from typing import Protocol
 
 
@@ -37,9 +38,13 @@ class ColorsPTC(Protocol):
 @dataclass(frozen=True)
 class Colors(ColorsPTC):
     primary = "#0072B2"
-    secondary = "#009E73"
-    tertiary = "#D55E00"
+    secondary = "#01611E"
+    tertiary = "#B05B00"
+    quarternary = "#570018"
     background = "lightgray"
+
+    def color_scale(self) -> Sequence[str]:
+        return [getattr(self, attr) for attr in dir(self) if attr.endswith("ary")]
 
 
 @dataclass(frozen=True)
