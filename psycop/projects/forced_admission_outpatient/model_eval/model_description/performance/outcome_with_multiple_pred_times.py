@@ -40,11 +40,11 @@ def _is_zeros_then_ones(seq: Sequence[int]) -> bool:
 
 
 def _get_prediction_times_with_outcome_shared_more_than_one_prediction_time(
-    eval_dataset: EvalDataset,
+    eval_dataset: EvalDataset, pos_rate: float = BEST_POS_RATE
 ) -> pd.DataFrame:
     # Generate df
     positives_series, _ = eval_dataset.get_predictions_for_positive_rate(
-        desired_positive_rate=BEST_POS_RATE
+        desired_positive_rate=pos_rate
     )
 
     df = pd.DataFrame(
@@ -71,11 +71,11 @@ def _get_prediction_times_with_outcome_shared_more_than_one_prediction_time(
 
 
 def _get_prediction_times_with_outcome_shared_by_n_other(
-    eval_dataset: EvalDataset, n: int
+    eval_dataset: EvalDataset, n: int, pos_rate: float = BEST_POS_RATE
 ) -> pd.DataFrame:
     # Generate df
     positives_series, _ = eval_dataset.get_predictions_for_positive_rate(
-        desired_positive_rate=BEST_POS_RATE
+        desired_positive_rate=pos_rate
     )
 
     df = pd.DataFrame(
@@ -292,15 +292,10 @@ def plot_tpr_and_time_to_event_for_cases_wtih_multiple_pred_times_per_outcome(
 
 
 def prediction_stability_for_cases_with_multiple_pred_times_per_outcome(
-    eval_dataset: EvalDataset, save: bool = True
+    eval_dataset: EvalDataset,
+    save: bool = True,
+    positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
 ) -> pd.DataFrame:
-    df = _get_prediction_times_with_outcome_shared_more_than_one_prediction_time(eval_dataset)
-
-    # Group by outcome_uuid, sort by pred_timestamps from earliest to latest, and count whether each outcome_uuid has only positive predicitons, only negative predictions, first negative and then positive predictions, or first positive and then negative predictions, or mixed predictions
-    df["pred_time_order"] = (
-        df.groupby("outcome_uuid")["pred_timestamps"].rank(method="first").astype(int)
-    )
-
     # create empty lists for each possible type of prediction sequence
     only_ones = []
     only_zeros = []
@@ -308,42 +303,58 @@ def prediction_stability_for_cases_with_multiple_pred_times_per_outcome(
     zeros_then_ones = []
     mixed = []
 
-    for outcome_uuid in df["outcome_uuid"].unique():
-        outcome_predictions = df[df["outcome_uuid"] == outcome_uuid]["y_pred"].tolist()
+    df_list = []
 
-        if all(pred == 0 for pred in outcome_predictions):
-            only_zeros.append(outcome_uuid)
-        elif all(pred == 1 for pred in outcome_predictions):
-            only_ones.append(outcome_uuid)
-        elif (
-            outcome_predictions[0] == 1
-            and outcome_predictions[-1] == 0
-            or _is_ones_then_zeros(outcome_predictions)
-        ):
-            ones_then_zeros.append(outcome_uuid)
-        elif _is_zeros_then_ones(outcome_predictions):
-            zeros_then_ones.append(outcome_uuid)
-        else:
-            mixed.append(outcome_uuid)
+    for pos_rate in positive_rates:
+        df = _get_prediction_times_with_outcome_shared_more_than_one_prediction_time(
+            eval_dataset, pos_rate
+        )
 
-    counts = {
-        "stable_true_positive": len(only_ones),
-        "stable_false_negative": len(only_zeros),
-        "true_positve_to_false_negative": len(ones_then_zeros),
-        "false_negative_to_true_positive": len(zeros_then_ones),
-        "unstable": len(mixed),
-    }
+        df["pred_time_order"] = (
+            df.groupby("outcome_uuid")["pred_timestamps"].rank(method="first").astype(int)
+        )
 
-    df = pd.DataFrame(counts, index=[0])
+        for outcome_uuid in df["outcome_uuid"].unique():
+            outcome_predictions = df[df["outcome_uuid"] == outcome_uuid]["y_pred"].tolist()
+
+            if all(pred == 0 for pred in outcome_predictions):
+                only_zeros.append(outcome_uuid)
+            elif all(pred == 1 for pred in outcome_predictions):
+                only_ones.append(outcome_uuid)
+            elif (
+                outcome_predictions[0] == 1
+                and outcome_predictions[-1] == 0
+                or _is_ones_then_zeros(outcome_predictions)
+            ):
+                ones_then_zeros.append(outcome_uuid)
+            elif _is_zeros_then_ones(outcome_predictions):
+                zeros_then_ones.append(outcome_uuid)
+            else:
+                mixed.append(outcome_uuid)
+
+        counts = {
+            "stable_true_positive": len(only_ones),
+            "stable_false_negative": len(only_zeros),
+            "true_positve_to_false_negative": len(ones_then_zeros),
+            "false_negative_to_true_positive": len(zeros_then_ones),
+            "unstable": len(mixed),
+            "positive_rate": pos_rate,
+        }
+
+        pos_rate_df = pd.DataFrame(counts, index=[0])
+
+        df_list.append(pos_rate_df)
+
+    full_df = pd.concat(df_list)
 
     if save:
         table_output_path = (
             run.paper_outputs.paths.figures
             / "fa_inpatient_prediction_stability_for_outcomes_with_multiple_pred_times.png"
         )
-        df.to_csv(table_output_path, index=False)
+        full_df.to_csv(table_output_path, index=False)
 
-    return df
+    return full_df
 
 
 if __name__ == "__main__":
