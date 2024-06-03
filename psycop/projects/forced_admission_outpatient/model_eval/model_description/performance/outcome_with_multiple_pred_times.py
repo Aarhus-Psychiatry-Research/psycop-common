@@ -332,11 +332,11 @@ def prediction_stability_for_cases_with_multiple_pred_times_per_outcome(
             mixed.append(outcome_uuid)
 
     counts = {
-        "only_ones": len(only_ones),
-        "only_zeros": len(only_zeros),
-        "ones_then_zeros": len(ones_then_zeros),
-        "zeros_then_ones": len(zeros_then_ones),
-        "mixed": len(mixed),
+        "stable_true_positive": len(only_ones),
+        "stable_false_negative": len(only_zeros),
+        "true_positve_to_false_negative": len(ones_then_zeros),
+        "false_negative_to_true_positive": len(zeros_then_ones),
+        "unstable": len(mixed),
     }
 
     df = pd.DataFrame(counts, index=[0])
