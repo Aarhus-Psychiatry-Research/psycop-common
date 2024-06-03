@@ -5,9 +5,14 @@ import patchworklib as pw
 import plotnine as pn
 from wasabi import Printer
 
-from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
+from psycop.common.model_evaluation.patchwork.patchwork_grid import (
+    create_patchwork_grid,
+)
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.forced_admission_outpatient.model_eval.config import BEST_POS_RATE, FA_PN_THEME
+from psycop.projects.forced_admission_outpatient.model_eval.config import (
+    BEST_POS_RATE,
+    FA_PN_THEME,
+)
 from psycop.projects.forced_admission_outpatient.utils.pipeline_objects import (
     ForcedAdmissionOutpatientPipelineRun,
 )
@@ -296,15 +301,9 @@ def prediction_stability_for_cases_with_multiple_pred_times_per_outcome(
     save: bool = True,
     positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
 ) -> pd.DataFrame:
-    # create empty lists for each possible type of prediction sequence
-    only_ones = []
-    only_zeros = []
-    ones_then_zeros = []
-    zeros_then_ones = []
-    mixed = []
-
+    
     df_list = []
-
+    
     for pos_rate in positive_rates:
         df = _get_prediction_times_with_outcome_shared_more_than_one_prediction_time(
             eval_dataset, pos_rate
@@ -313,6 +312,13 @@ def prediction_stability_for_cases_with_multiple_pred_times_per_outcome(
         df["pred_time_order"] = (
             df.groupby("outcome_uuid")["pred_timestamps"].rank(method="first").astype(int)
         )
+
+        # create empty lists for each possible type of prediction sequence
+        only_ones = []
+        only_zeros = []
+        ones_then_zeros = []
+        zeros_then_ones = []
+        mixed = []
 
         for outcome_uuid in df["outcome_uuid"].unique():
             outcome_predictions = df[df["outcome_uuid"] == outcome_uuid]["y_pred"].tolist()
