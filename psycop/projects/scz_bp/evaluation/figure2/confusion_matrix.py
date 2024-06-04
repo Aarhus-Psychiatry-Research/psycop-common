@@ -121,7 +121,7 @@ if __name__ == "__main__":
 
     # x = _output_performance_by_ppr(eval_ds=eval_ds) # noqa: ERA001
     p = scz_bp_confusion_matrix_plot(
-        y_true=eval_ds.y,
-        y_hat=eval_ds.y_hat_probs,
+        y_true=eval_ds.y,  # type: ignore
+        y_hat=eval_ds.y_hat_probs,  # type: ignore
         positive_rate=best_pos_rate,  # type: ignore
     )  # type: ignore

@@ -145,10 +145,12 @@ if __name__ == "__main__":
     eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(
         experiment_name=best_experiment, model_type="bp"
     )
-    eval_ds.outcome_timestamps.notna().sum()
+    eval_ds.outcome_timestamps.notna().sum()  # type: ignore
 
     p = scz_bp_plot_sensitivity_by_time_to_event(
-        eval_ds=eval_ds.copy(), ppr=best_pos_rate, groups_to_plot=["BP"]
+        eval_ds=eval_ds.copy(),  # type: ignore
+        ppr=best_pos_rate,
+        groups_to_plot=["BP"],  # type: ignore
     )
     p + pn.theme(
         legend_position=(0.4, 0.92),
