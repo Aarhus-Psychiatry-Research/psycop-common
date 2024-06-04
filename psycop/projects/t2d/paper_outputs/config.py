@@ -24,13 +24,37 @@ T2D_PN_THEME = pn.theme_bw() + pn.theme(
     panel_grid=pn.element_blank(), axis_title=pn.element_text(size=14)
 )
 
+from collections.abc import Sequence
+from typing import Protocol
 
-@dataclass
-class Colors:
+
+class ColorsPTC(Protocol):
+    primary: str
+    secondary: str
+    tertiary: str
+    background: str
+
+
+@dataclass(frozen=True)
+class Colors(ColorsPTC):
     primary = "#0072B2"
-    secondary = "#009E73"
-    tertiary = "#D55E00"
+    secondary = "#01611E"
+    tertiary = "#B05B00"
+    quarternary = "#570018"
     background = "lightgray"
+
+    def color_scale(self) -> Sequence[str]:
+        return [getattr(self, attr) for attr in dir(self) if attr.endswith("ary")]
+
+
+@dataclass(frozen=True)
+class FontSizes:
+    axis_tick_labels: int = 12
 
 
 COLORS = Colors()
+FONT_SIZES = FontSizes()
+THEME = pn.theme_classic() + pn.theme(
+    axis_text_x=pn.element_text(size=FONT_SIZES.axis_tick_labels),
+    axis_text_y=pn.element_text(size=FONT_SIZES.axis_tick_labels),
+)

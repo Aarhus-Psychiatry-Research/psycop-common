@@ -11,7 +11,10 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
 from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
 )
-from psycop.projects.cvd.model_evaluation.uuid_parsers import parse_dw_ek_borger_from_uuid
+from psycop.projects.cvd.model_evaluation.uuid_parsers import (
+    parse_dw_ek_borger_from_uuid,
+    parse_timestamp_from_uuid,
+)
 
 FirstPosPredToEventDF = NewType("FirstPosPredToEventDF", pl.DataFrame)
 # Contains columns "pred", "y", "id", "pred_timestamps", "outcome_timestamps"
@@ -20,14 +23,13 @@ FirstPosPredToEventDF = NewType("FirstPosPredToEventDF", pl.DataFrame)
 @shared_cache.cache()
 def first_positive_prediction_to_event_model(
     eval_df: pl.DataFrame,
-    pred_timestamps: PredictionTimeFrame,
     outcome_timestamps: OutcomeTimestampFrame,
     desired_positive_rate: float = 0.05,
 ) -> FirstPosPredToEventDF:
     eval_dataset = (
-        parse_dw_ek_borger_from_uuid(eval_df)
-        .join(pred_timestamps.essentials_df, on="dw_ek_borger", suffix="_pred")
-        .join(outcome_timestamps.essentials_df, on="dw_ek_borger", suffix="_outcome")
+        parse_timestamp_from_uuid(parse_dw_ek_borger_from_uuid(eval_df)).join(
+            outcome_timestamps.essentials_df, on="dw_ek_borger", suffix="_outcome"
+        )
     ).to_pandas()
 
     df = pd.DataFrame(
