@@ -26,16 +26,17 @@ grouped_by_outcome = label_by_outcome_type(pl.from_pandas(df_lab_result), group_
 grouped_by_outcome.filter(pl.col("outcome_type").is_null())
 
 # %%
+limits = (datetime.datetime(2011, 1, 1), datetime.datetime(2021, 11, 22))
 p = (
     pn.ggplot(grouped_by_outcome.fill_null("Unknown"), pn.aes(x="timestamp", fill="outcome_type"))
-    # + pn.geom_density(alpha=0.7)
-    + pn.geom_histogram()
+    + pn.geom_density(alpha=0.7, trim=True)
+    # + pn.geom_histogram()
     + pn.geom_vline(xintercept=datetime.datetime(2013, 1, 1), color="black")
     + pn.theme_minimal()
     + pn.xlab("Date")
     + pn.ylab("Incident CVD in month")
     + THEME
-    + pn.scale_x_datetime(limits=(datetime.datetime(2011, 1, 1), datetime.datetime(2021, 11, 22)))
+    + pn.scale_x_datetime(limits=limits)
     + pn.theme(
         axis_text_x=pn.element_text(size=FONT_SIZES.axis_tick_labels, angle=45, hjust=1),
         axis_text_y=pn.element_text(size=FONT_SIZES.axis_tick_labels),
