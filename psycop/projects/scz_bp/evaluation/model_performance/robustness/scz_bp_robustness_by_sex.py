@@ -29,5 +29,5 @@ if __name__ == "__main__":
     best_experiment = "sczbp/text_only"
     best_pos_rate = 0.04
 
-    best_eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=best_experiment)
+    best_eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=best_experiment, model_type="joint")
     p = scz_bp_auroc_by_sex(best_eval_ds)

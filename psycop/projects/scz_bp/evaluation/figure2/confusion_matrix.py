@@ -115,7 +115,7 @@ def _output_performance_by_ppr(eval_ds: EvalDataset) -> pd.DataFrame:  # type: i
 if __name__ == "__main__":
     best_experiment = "sczbp/test_tfidf_1000"
     best_pos_rate = 0.04
-    eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=best_experiment)
+    eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=best_experiment, model_type="joint")
 
     # x = _output_performance_by_ppr(eval_ds=eval_ds) # noqa: ERA001
     p = scz_bp_confusion_matrix_plot(

@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from typing import Literal
 
 import pandas as pd
 from pandas import Index
@@ -14,19 +15,15 @@ from psycop.projects.scz_bp.evaluation.figure2.first_positive_prediction_to_outc
 from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
     scz_bp_get_eval_ds_from_best_run_in_experiment,
 )
+from psycop.projects.scz_bp.evaluation.table2.performance_by_ppr import (
+    format_prop_as_percent,
+    format_with_thousand_separator,
+)
 
 
-def format_with_thousand_separator(num: int) -> str:
-    return f"{num:,.0f}"
-
-
-def format_prop_as_percent(num: float) -> str:
-    output = f"{num:.1%}"
-
-    return output
-
-
-def _clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
+def _clean_up_performance_by_ppr(
+    table: pd.DataFrame, outcome: Literal["SCZ", "BP"]
+) -> pd.DataFrame:
     df = table
 
     output_df = df.drop(
@@ -52,7 +49,7 @@ def _clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
             "true_negatives": "TN",
             "false_positives": "FP",
             "false_negatives": "FN",
-            "prop of all events captured": "% of all BP or SCZ captured",
+            "prop of all events captured": f"% of all {outcome} captured",
             "f1": "F1",
             "mcc": "MCC",
             "SCZ": "Median years from first positive to first SCZ diagnosis",
@@ -73,11 +70,9 @@ def _clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
     for col in count_cols:
         renamed_df[col] = renamed_df[col].apply(format_with_thousand_separator)
 
-    renamed_df["Median years from first positive to first SCZ or BP diagnosis"] = round(
-        df["median_warning_days"] / 365.25, 1
+    renamed_df[f"Median years from first positive to first {outcome} diagnosis"] = round(
+        df[f"{outcome}"], 1
     )
-    renamed_df["Median years from first positive to first SCZ diagnosis"] = round(df["SCZ"], 1)
-    renamed_df["Median years from first positive to first BP diagnosis"] = round(df["BP"], 1)
 
     return renamed_df
 
@@ -100,20 +95,29 @@ def median_years_to_scz_and_bp_by_ppr(
 
 
 if __name__ == "__main__":
-    best_experiment = "sczbp/test_tfidf_1000"
-    positive_rates = [0.08, 0.06, 0.04, 0.02, 0.01]
-    eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=best_experiment, model_type="joint")
+    outcomes = {
+        "SCZ": "sczbp/test_scz_structured_text_ddpm",
+        "BP": "sczbp/test_bp_structured_text_ddpm",
+    }
 
-    df = generate_performance_by_ppr_table(  # type: ignore
-        eval_dataset=eval_ds, positive_rates=positive_rates
-    )
-    median_years_to_scz_bp = median_years_to_scz_and_bp_by_ppr(
-        eval_ds=eval_ds, positive_rates=positive_rates
-    )
-    df["positive_rate"] = df["positive_rate"].round(2)
+    for outcome, best_experiment in outcomes.items():
+        positive_rates = [0.08, 0.06, 0.04, 0.02, 0.01]
+        eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(
+            experiment_name=best_experiment, model_type=outcome.lower() # type: ignore
+        )  # type: ignore
 
-    df = _clean_up_performance_by_ppr(df.merge(median_years_to_scz_bp, on="positive_rate"))
+        df = generate_performance_by_ppr_table(  # type: ignore
+            eval_dataset=eval_ds, positive_rates=positive_rates
+        )
+        median_years_to_scz_bp = median_years_to_scz_and_bp_by_ppr(
+            eval_ds=eval_ds, positive_rates=positive_rates
+        )
+        df["positive_rate"] = df["positive_rate"].round(2)
 
-    with (SCZ_BP_EVAL_OUTPUT_DIR / "table2.html").open("w") as f:
-        f.write(df.to_html())
+        df = _clean_up_performance_by_ppr(
+            df.merge(median_years_to_scz_bp, on="positive_rate"),
+            outcome=outcome,  # type: ignore
+        )  # type: ignore
 
+        with (SCZ_BP_EVAL_OUTPUT_DIR / f"table2_{outcome}.html").open("w") as f:
+            f.write(df.to_html())

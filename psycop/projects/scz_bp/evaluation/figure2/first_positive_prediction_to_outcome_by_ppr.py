@@ -2,6 +2,7 @@
 positive predicted rates as columns"""
 
 from collections.abc import Sequence
+from typing import Literal
 
 import pandas as pd
 
@@ -15,11 +16,11 @@ from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
 
 
 def scz_bp_time_from_first_positive_prediction_to_outcome_table(
-    modality2experiment: dict[str, str], pprs: Sequence[float], group_by_outcome: bool
+    modality2experiment: dict[str, str], pprs: Sequence[float], group_by_outcome: bool, model_type: Literal["joint", "scz", "bp"]
 ) -> pd.DataFrame:
     modality_dfs: list[pd.DataFrame] = []
     for modality, experiment in modality2experiment.items():
-        eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=experiment)
+        eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=experiment, model_type=model_type)
         ppr_dfs: list[pd.DataFrame] = []
         for ppr in pprs:
             ppr_df = scz_bp_first_pred_to_event_stratified(eval_ds=eval_ds, ppr=ppr).df
@@ -68,7 +69,7 @@ if __name__ == "__main__":
     pprs = [0.01, 0.02, 0.04, 0.06, 0.08]
 
     table = scz_bp_time_from_first_positive_prediction_to_outcome_table(
-        modality2experiment=modality2experiment_mapping, pprs=pprs, group_by_outcome=False
+        modality2experiment=modality2experiment_mapping, pprs=pprs, group_by_outcome=False, model_type="joint"
     )
 
     with (SCZ_BP_EVAL_OUTPUT_DIR / "figure_2_a.html").open("w") as f:
