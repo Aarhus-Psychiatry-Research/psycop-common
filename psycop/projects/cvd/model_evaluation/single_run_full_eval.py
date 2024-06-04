@@ -46,6 +46,7 @@ def markdown_artifacts(
     primary_pos_proportion: float,
     pos_proportions: Sequence[float],
     lookahead_years: int,
+    first_letter_index: int,
 ) -> Sequence[MarkdownArtifact]:
     # Main figure
     main_figure_output_path = write_path / f"{outcome_label}_main_figure.png"
@@ -54,6 +55,7 @@ def markdown_artifacts(
         desired_positive_rate=primary_pos_proportion,
         outcome_label=outcome_label,
         outcome_timestamps=outcome_timestamps,
+        first_letter_index=first_letter_index,
     )
     main_figure.savefig(main_figure_output_path)
 
@@ -147,6 +149,7 @@ if __name__ == "__main__":
         primary_pos_proportion=0.05,
         pos_proportions=[0.01, 0.05, 0.1],
         lookahead_years=lookahead_years,
+        first_letter_index=0,
     )
 
     markdown_text = create_supplementary_from_markdown_artifacts(
