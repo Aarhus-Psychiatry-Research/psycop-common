@@ -103,7 +103,8 @@ if __name__ == "__main__":
     for outcome, best_experiment in outcomes.items():
         positive_rates = [0.08, 0.06, 0.04, 0.02, 0.01]
         eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(
-            experiment_name=best_experiment, model_type=outcome.lower() # type: ignore
+            experiment_name=best_experiment,
+            model_type=outcome.lower(),  # type: ignore
         )  # type: ignore
 
         df = generate_performance_by_ppr_table(  # type: ignore

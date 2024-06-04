@@ -65,9 +65,22 @@ def reverse_x_axis_categories(df: pd.DataFrame) -> pd.DataFrame:
     )
     return df
 
+
 def set_x_axis_categories(df: pd.DataFrame) -> pd.DataFrame:
-    df["unit_from_event_binned"] = pd.Categorical(df["unit_from_event_binned"],
-        categories=["0-6", "7-12", "13-18", "19-24", "25-30", "31-36", "37-42", "43-48", "49-54", "55+"],
+    df["unit_from_event_binned"] = pd.Categorical(
+        df["unit_from_event_binned"],
+        categories=[
+            "0-6",
+            "7-12",
+            "13-18",
+            "19-24",
+            "25-30",
+            "31-36",
+            "37-42",
+            "43-48",
+            "49-54",
+            "55+",
+        ],
         ordered=True,
     )
     return df
@@ -117,7 +130,7 @@ def scz_bp_plot_sensitivity_by_time_to_event(
     eval_ds: EvalDataset, ppr: float, groups_to_plot: Sequence[str] = ["BP", "SCZ"]
 ) -> pn.ggplot:
     plot_df = scz_bp_get_sensitivity_by_time_to_event_df(eval_ds=eval_ds, ppr=ppr)
-    plot_df = set_x_axis_categories(plot_df) # noqa: ERA001
+    plot_df = set_x_axis_categories(plot_df)  # noqa: ERA001
 
     p = _plot_metric_by_time_to_event(
         df=plot_df, metric="sensitivity", groups_to_plot=groups_to_plot
@@ -129,7 +142,9 @@ def scz_bp_plot_sensitivity_by_time_to_event(
 if __name__ == "__main__":
     best_experiment = "sczbp/test_bp_structured_text_ddpm"
     best_pos_rate = 0.04
-    eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=best_experiment, model_type="bp")
+    eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(
+        experiment_name=best_experiment, model_type="bp"
+    )
     eval_ds.outcome_timestamps.notna().sum()
 
     p = scz_bp_plot_sensitivity_by_time_to_event(

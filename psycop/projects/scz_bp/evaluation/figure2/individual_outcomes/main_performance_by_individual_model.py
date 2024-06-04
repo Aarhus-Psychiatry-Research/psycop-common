@@ -37,10 +37,11 @@ if __name__ == "__main__":
         best_pos_rate = 0.04
 
         best_eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(
-            experiment_name=best_experiment, model_type=diagnosis # type: ignore
+            experiment_name=best_experiment,
+            model_type=diagnosis,  # type: ignore
         )
 
-        panel_a = plot_scz_bp_auroc_by_data_type(modality2experiment_mapping, model_type=diagnosis) # type: ignore
+        panel_a = plot_scz_bp_auroc_by_data_type(modality2experiment_mapping, model_type=diagnosis)  # type: ignore
         panel_b = scz_bp_confusion_matrix_plot(
             y_true=best_eval_ds.y.copy(),  # type: ignore
             y_hat=best_eval_ds.y_hat_probs.copy(),  # type: ignore

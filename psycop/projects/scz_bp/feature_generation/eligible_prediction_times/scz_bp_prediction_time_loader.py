@@ -67,7 +67,12 @@ class SczBpCohort(CohortDefiner):
 
     @staticmethod
     def _get_filtering_steps() -> Iterable[PredictionTimeFilter]:
-        return (SczBpMinDateFilter(), SczBpTimeFromFirstVisitFilter(), SczBpPrevalentFilter(), SczBpWashoutMoveFilter())
+        return (
+            SczBpMinDateFilter(),
+            SczBpTimeFromFirstVisitFilter(),
+            SczBpPrevalentFilter(),
+            SczBpWashoutMoveFilter(),
+        )
 
 
 if __name__ == "__main__":

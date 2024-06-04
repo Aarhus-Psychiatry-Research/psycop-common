@@ -2,6 +2,7 @@
 positive predicted rates as columns, stratified by BP and SCZ"""
 
 from typing import Literal
+
 from psycop.projects.scz_bp.evaluation.configs import SCZ_BP_EVAL_OUTPUT_DIR
 from psycop.projects.scz_bp.evaluation.figure2.first_positive_prediction_to_outcome_by_ppr import (
     scz_bp_time_from_first_positive_prediction_to_outcome_table,
@@ -9,7 +10,6 @@ from psycop.projects.scz_bp.evaluation.figure2.first_positive_prediction_to_outc
 
 if __name__ == "__main__":
     pprs = [0.01, 0.02, 0.04, 0.06, 0.08]
-
 
     for diagnosis in ["scz", "bp"]:
         modality2experiment_mapping = modality2experiment = {
@@ -20,7 +20,10 @@ if __name__ == "__main__":
         }
 
         table = scz_bp_time_from_first_positive_prediction_to_outcome_table(
-            modality2experiment=modality2experiment_mapping, pprs=pprs, group_by_outcome=True, model_type=diagnosis # type: ignore
+            modality2experiment=modality2experiment_mapping,
+            pprs=pprs,
+            group_by_outcome=True,
+            model_type=diagnosis,  # type: ignore
         )
         table = table[table["outcome"] == diagnosis.upper()].drop(columns="outcome")
 

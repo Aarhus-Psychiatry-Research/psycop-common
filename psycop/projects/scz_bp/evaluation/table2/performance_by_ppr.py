@@ -102,7 +102,9 @@ def median_years_to_scz_and_bp_by_ppr(
 if __name__ == "__main__":
     best_experiment = "sczbp/test_tfidf_1000"
     positive_rates = [0.08, 0.06, 0.04, 0.02, 0.01]
-    eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=best_experiment, model_type="joint")
+    eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(
+        experiment_name=best_experiment, model_type="joint"
+    )
 
     df = generate_performance_by_ppr_table(  # type: ignore
         eval_dataset=eval_ds, positive_rates=positive_rates
@@ -116,4 +118,3 @@ if __name__ == "__main__":
 
     with (SCZ_BP_EVAL_OUTPUT_DIR / "table2.html").open("w") as f:
         f.write(df.to_html())
-
