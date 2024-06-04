@@ -26,9 +26,16 @@ grouped_by_outcome = label_by_outcome_type(pl.from_pandas(df_lab_result), group_
 grouped_by_outcome.filter(pl.col("outcome_type").is_null())
 
 # %%
+from psycop.projects.cvd.feature_generation.cohort_definition.eligible_prediction_times.single_filters import (
+    CVDWashoutMove,
+)
+
+filtered_after_move = CVDWashoutMove().apply(grouped_by_outcome.lazy()).collect()
+
+# %%
 limits = (datetime.datetime(2011, 1, 1), datetime.datetime(2021, 11, 22))
 p = (
-    pn.ggplot(grouped_by_outcome.fill_null("Unknown"), pn.aes(x="timestamp", fill="outcome_type"))
+    pn.ggplot(filtered_after_move, pn.aes(x="timestamp", fill="outcome_type"))
     + pn.geom_density(alpha=0.7, trim=True)
     # + pn.geom_histogram()
     + pn.geom_vline(xintercept=datetime.datetime(2013, 1, 1), color="black")
