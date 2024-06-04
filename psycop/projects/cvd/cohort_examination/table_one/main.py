@@ -133,7 +133,6 @@ patient_table_one = create_table(
 ############
 combined = pd.concat([visit_table_one, patient_table_one])
 
-
 # %%
 # %load_ext autoreload
 # %autoreload 2
