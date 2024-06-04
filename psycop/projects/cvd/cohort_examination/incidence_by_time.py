@@ -5,7 +5,7 @@
 # %%
 import datetime
 
-from psycop.projects.cvd.cohort_examination.test_incidence_by_time import label_by_outcome_type
+from psycop.projects.cvd.cohort_examination.label_by_outcome_type import label_by_outcome_type
 from psycop.projects.cvd.feature_generation.cohort_definition.cvd_cohort_definition import (
     get_first_cvd_indicator,
 )
