@@ -29,7 +29,7 @@ def create_patchwork_grid(
         # Makes debugging much easier
         bricks.append(pw.load_ggplot(plot, figsize=single_plot_dimensions))
 
-    alphabet = "abcdefghijklmnopqrstuvwxyz"[first_letter_index:]
+    alphabet = "abcdefghijklmnopqrstuvwxyz"
     rows = []
     current_row = []
 
