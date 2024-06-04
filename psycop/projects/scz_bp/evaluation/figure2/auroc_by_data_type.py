@@ -1,3 +1,5 @@
+from typing import Literal
+
 import pandas as pd
 import plotnine as pn
 import polars as pl
@@ -13,11 +15,15 @@ def get_auc_roc_df(y: pd.Series, y_hat_probs: pd.Series) -> pl.DataFrame:  # typ
     return pl.DataFrame({"fpr": fpr, "tpr": tpr})
 
 
-def scz_bp_auroc_by_data_type(modality2experiment_mapping: dict[str, str]) -> pl.DataFrame:
+def scz_bp_auroc_by_data_type(
+    modality2experiment_mapping: dict[str, str], model_type: Literal["joint", "scz", "bp"]
+) -> pl.DataFrame:
     auc_roc_dfs = []
     aucs: dict[str, float] = {}
     for modality, experiment_name in modality2experiment_mapping.items():
-        eval_df = scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=experiment_name)
+        eval_df = scz_bp_get_eval_ds_from_best_run_in_experiment(
+            experiment_name=experiment_name, model_type=model_type
+        )
         auc_roc_df = get_auc_roc_df(y=eval_df.y, y_hat_probs=eval_df.y_hat_probs).with_columns(  # type: ignore
             pl.lit(modality).alias("modality")
         )  # type: ignore
@@ -64,8 +70,12 @@ def scz_bp_make_group_auc_plot(roc_df: pl.DataFrame) -> pn.ggplot:
     )
 
 
-def plot_scz_bp_auroc_by_data_type(modality2experiment: dict[str, str]) -> pn.ggplot:
-    df = scz_bp_auroc_by_data_type(modality2experiment_mapping=modality2experiment)
+def plot_scz_bp_auroc_by_data_type(
+    modality2experiment: dict[str, str], model_type: Literal["joint", "scz", "bp"]
+) -> pn.ggplot:
+    df = scz_bp_auroc_by_data_type(
+        modality2experiment_mapping=modality2experiment, model_type=model_type
+    )
     return scz_bp_make_group_auc_plot(df)
 
 
@@ -75,7 +85,9 @@ if __name__ == "__main__":
         "Structured only ": "sczbp/structured_only",
         "Text only": "sczbp/text_only",
     }
-    df = scz_bp_auroc_by_data_type(modality2experiment_mapping=modality2experiment)
+    df = scz_bp_auroc_by_data_type(
+        modality2experiment_mapping=modality2experiment, model_type="joint"
+    )
     p = scz_bp_make_group_auc_plot(df)
     p + pn.theme(
         legend_position=(0.65, 0.25),

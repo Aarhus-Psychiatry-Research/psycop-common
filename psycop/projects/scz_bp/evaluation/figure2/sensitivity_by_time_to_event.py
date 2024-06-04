@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 import pandas as pd
 import plotnine as pn
 import polars as pl
@@ -12,13 +14,16 @@ from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
 
 
 def _plot_metric_by_time_to_event(
-    df: pd.DataFrame, metric: str, plot_combined: bool = False
+    df: pd.DataFrame, metric: str, groups_to_plot: Sequence[str]
 ) -> pn.ggplot:
     df["subset"] = df["subset"].replace({"bp": "BP", "scz": "SCZ", "both": "Combined"})
     df["subset"] = pd.Categorical(df["subset"], ["BP", "SCZ", "Combined"])
-    if not plot_combined:
-        df = df.query("subset != 'Combined'").copy()
-        df["subset"] = pd.Categorical(df["subset"], ["BP", "SCZ"])
+
+    outcome2color: dict[str, str] = {"BP": "#669BBC", "SCZ": "#A8C686"}
+    outcome2color = {group: outcome2color[group] for group in groups_to_plot}
+
+    df = df[df["subset"].isin(groups_to_plot)].copy()
+    df["subset"] = pd.Categorical(df["subset"], groups_to_plot)
 
     p = (
         pn.ggplot(
@@ -36,7 +41,7 @@ def _plot_metric_by_time_to_event(
         + pn.geom_point()
         + pn.geom_linerange(size=0.5)
         + pn.geom_line()
-        + pn.scale_color_manual(values=["#669BBC", "#A8C686", "#F3A712"])
+        + pn.scale_color_manual(values=list(outcome2color.values()))
         + pn.theme_minimal()
         + pn.theme(
             legend_position=(0.3, 0.92),
@@ -57,6 +62,26 @@ def reverse_x_axis_categories(df: pd.DataFrame) -> pd.DataFrame:
     df["unit_from_event_binned"] = df["unit_from_event_binned"].cat.set_categories(
         new_categories=categories,
         ordered=True,  # type: ignore
+    )
+    return df
+
+
+def set_x_axis_categories(df: pd.DataFrame) -> pd.DataFrame:
+    df["unit_from_event_binned"] = pd.Categorical(
+        df["unit_from_event_binned"],
+        categories=[
+            "0-6",
+            "7-12",
+            "13-18",
+            "19-24",
+            "25-30",
+            "31-36",
+            "37-42",
+            "43-48",
+            "49-54",
+            "55+",
+        ],
+        ordered=True,
     )
     return df
 
@@ -101,23 +126,32 @@ def scz_bp_get_sensitivity_by_time_to_event_df(eval_ds: EvalDataset, ppr: float)
     return pd.concat(dfs)
 
 
-def scz_bp_plot_sensitivity_by_time_to_event(eval_ds: EvalDataset, ppr: float) -> pn.ggplot:
+def scz_bp_plot_sensitivity_by_time_to_event(
+    eval_ds: EvalDataset, ppr: float, groups_to_plot: Sequence[str] = ["BP", "SCZ"]
+) -> pn.ggplot:
     plot_df = scz_bp_get_sensitivity_by_time_to_event_df(eval_ds=eval_ds, ppr=ppr)
-    plot_df = reverse_x_axis_categories(plot_df)
+    plot_df = set_x_axis_categories(plot_df)  # noqa: ERA001
 
-    p = _plot_metric_by_time_to_event(df=plot_df, metric="sensitivity") + pn.labs(
-        x="Months to outcome", y="Sensitivitiy", color="Predicted Positive Rate"
-    )
+    p = _plot_metric_by_time_to_event(
+        df=plot_df, metric="sensitivity", groups_to_plot=groups_to_plot
+    ) + pn.labs(x="Months to outcome", y="Sensitivitiy", color="Predicted Positive Rate")
 
     return p
 
 
 if __name__ == "__main__":
-    best_experiment = "sczbp/text_only"
+    best_experiment = "sczbp/test_bp_structured_text_ddpm"
     best_pos_rate = 0.04
-    eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=best_experiment)
+    eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(
+        experiment_name=best_experiment, model_type="bp"
+    )
+    eval_ds.outcome_timestamps.notna().sum()  # type: ignore
 
-    p = scz_bp_plot_sensitivity_by_time_to_event(eval_ds=eval_ds, ppr=best_pos_rate)
+    p = scz_bp_plot_sensitivity_by_time_to_event(
+        eval_ds=eval_ds.copy(),  # type: ignore
+        ppr=best_pos_rate,
+        groups_to_plot=["BP"],  # type: ignore
+    )
     p + pn.theme(
         legend_position=(0.4, 0.92),
         axis_text_x=pn.element_text(rotation=45, hjust=1),
