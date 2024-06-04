@@ -5,6 +5,7 @@
 # %%
 import datetime
 
+from psycop.projects.cvd.cohort_examination.test_incidence_by_time import label_by_outcome_type
 from psycop.projects.cvd.feature_generation.cohort_definition.cvd_cohort_definition import (
     get_first_cvd_indicator,
 )
@@ -13,15 +14,22 @@ from psycop.projects.cvd.feature_generation.cohort_definition.cvd_cohort_definit
 df_lab_result = get_first_cvd_indicator()
 
 # %%
-import pandas as pd
 import plotnine as pn
+import polars as pl
 
 from psycop.projects.t2d.paper_outputs.config import COLORS, FONT_SIZES, THEME
 
 # %%
+grouped_by_outcome = label_by_outcome_type(pl.from_pandas(df_lab_result), group_col="cause")
+
+# %%
+grouped_by_outcome.filter(pl.col("outcome_type").is_null())
+
+# %%
 p = (
-    pn.ggplot(df_lab_result, pn.aes(x="timestamp"))
-    + pn.geom_density(alpha=0.8, fill=COLORS.primary)
+    pn.ggplot(grouped_by_outcome.fill_null("Unknown"), pn.aes(x="timestamp", fill="outcome_type"))
+    # + pn.geom_density(alpha=0.7)
+    + pn.geom_histogram()
     + pn.geom_vline(xintercept=datetime.datetime(2013, 1, 1), color="black")
     + pn.theme_minimal()
     + pn.xlab("Date")
@@ -32,6 +40,7 @@ p = (
         axis_text_x=pn.element_text(size=FONT_SIZES.axis_tick_labels, angle=45, hjust=1),
         axis_text_y=pn.element_text(size=FONT_SIZES.axis_tick_labels),
     )
+    + pn.facet_wrap(facets="outcome_type", scales="free")
 )
 
 p
@@ -39,6 +48,6 @@ p
 # %%
 from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 
-p.save("Incident_CVD_by_time.png", dpi=600)
+p.save("Incident_CVD_by_time.png", dpi=600, width=15, height=10)
 
 # %%
