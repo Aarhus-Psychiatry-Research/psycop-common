@@ -35,19 +35,16 @@ def get_psychiatric_diagnosis_row_specs(col_names: list[str]) -> list[RowSpecifi
 
     return specs
 
+
 def get_split_by_id(pred_times: pl.DataFrame) -> pl.DataFrame:
     train_filter = RegionalFilter(splits_to_keep=["train", "val"])
     test_filter = RegionalFilter(splits_to_keep=["test"])
 
     train_data = (
-        train_filter.apply(pred_times.lazy())
-        .with_columns(pl.lit("train").alias("split"))
-        .collect()
+        train_filter.apply(pred_times.lazy()).with_columns(pl.lit("train").alias("split")).collect()
     )
     test_data = (
-        test_filter.apply(pred_times.lazy())
-        .with_columns(pl.lit("test").alias("split"))
-        .collect()
+        test_filter.apply(pred_times.lazy()).with_columns(pl.lit("test").alias("split")).collect()
     )
 
     df = pl.concat([train_data, test_data], how="vertical")
@@ -62,19 +59,16 @@ def get_split_by_id(pred_times: pl.DataFrame) -> pl.DataFrame:
     df = df.group_by("dw_ek_borger").agg(pl.col("split").first())
     return df
 
+
 def add_split(pred_times: pl.DataFrame) -> pl.DataFrame:
     train_filter = RegionalFilter(splits_to_keep=["train", "val"])
     test_filter = RegionalFilter(splits_to_keep=["test"])
 
     train_data = (
-        train_filter.apply(pred_times.lazy())
-        .with_columns(pl.lit("train").alias("split"))
-        .collect()
+        train_filter.apply(pred_times.lazy()).with_columns(pl.lit("train").alias("split")).collect()
     )
     test_data = (
-        test_filter.apply(pred_times.lazy())
-        .with_columns(pl.lit("test").alias("split"))
-        .collect()
+        test_filter.apply(pred_times.lazy()).with_columns(pl.lit("test").alias("split")).collect()
     )
 
     return pl.concat([train_data, test_data], how="vertical")

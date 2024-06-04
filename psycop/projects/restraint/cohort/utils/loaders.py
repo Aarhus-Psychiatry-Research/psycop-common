@@ -12,4 +12,6 @@ def load_coercion_timestamps() -> pd.DataFrame:
 
 
 def load_prediction_timestamps_deprecated() -> pd.DataFrame:
-    return sql_load("SELECT dw_ek_borger, datotid_start as timestamp_admission, datotid_slut as timestamp_discharge, pred_adm_day_count, pred_time as timestamp FROM fct.psycop_coercion_outcome_timestamps")
+    return sql_load(
+        "SELECT dw_ek_borger, datotid_start as timestamp_admission, datotid_slut as timestamp_discharge, pred_adm_day_count, pred_time as timestamp FROM fct.psycop_coercion_outcome_timestamps"
+    )

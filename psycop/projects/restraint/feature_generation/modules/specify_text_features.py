@@ -58,12 +58,9 @@ class TextFeatureSpecifier:
         return [
             OutcomeSpec(
                 value_frame=ValueFrame(
-                    sql_load(
-                    "SELECT *, 1 as value FROM fct.psycop_coercion_outcome_timestamps_2"
-                    )
-                    # RestraintCohortDefiner.get_outcome_timestamps()
-                    # .frame.to_pandas()
-                    # .assign(value=1)
+                    RestraintCohortDefiner.get_outcome_timestamps()
+                    .frame.to_pandas()
+                    .assign(value=1)
                     .rename(columns={"first_mechanical_restraint": "timestamp"})
                     .dropna(subset="timestamp"),
                     entity_id_col_name="dw_ek_borger",
