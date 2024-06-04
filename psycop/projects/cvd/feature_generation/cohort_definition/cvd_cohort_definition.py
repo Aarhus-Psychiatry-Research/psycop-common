@@ -67,5 +67,3 @@ if __name__ == "__main__":
     cohort = pl.read_parquet(
         "E:/shared_resources/cvd/feature_set/flattened_datasets/cvd_feature_set/cvd_feature_set.parquet"
     )
-
-    pass
