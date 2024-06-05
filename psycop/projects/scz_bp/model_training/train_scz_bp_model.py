@@ -12,5 +12,6 @@ if __name__ == "__main__":
         Path(__file__).parent
         / "config"
         / "individual_outcomes"
-        / "scz_structured_text_xgboost_ddpm.cfg"
+        / "test_set"
+        / "bp_structured_text.cfg"
     )

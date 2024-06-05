@@ -32,6 +32,7 @@ class SensitivityByTTEPlot(SingleRunPlot):
                 ),
             )
             + pn.scale_x_discrete(reverse=True)
+            + pn.expand_limits(y=0)
             + pn.geom_path(group=1, size=0.5)
             + pn.geom_point(size=1)
             + pn.geom_errorbar(width=0.1)
