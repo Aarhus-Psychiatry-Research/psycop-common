@@ -8,7 +8,11 @@ from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClien
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
     RegionalFilter,
 )
+from psycop.projects.cvd.cohort_examination.label_by_outcome_type import label_by_outcome_type
 from psycop.projects.cvd.cohort_examination.table_one.lib import RowSpecification
+from psycop.projects.cvd.feature_generation.cohort_definition.outcome_specification.combined import (
+    get_first_cvd_indicator,
+)
 
 run = MlflowClientWrapper().get_run(experiment_name="CVD", run_name="CVD layer 1, base")
 cfg = run.get_config()
@@ -124,6 +128,37 @@ patient_df = (
 patient_table_one = create_table(
     row_specs=patient_row_specs,  # type: ignore
     data=patient_df.fillna(0),
+    groupby_col_name="dataset",
+)
+
+# %%
+#################
+# Outcome table #
+#################
+outcome_data = get_first_cvd_indicator()
+
+# %%
+train_data = (
+    RegionalFilter(["train", "val"])
+    .apply(pl.from_pandas(outcome_data).lazy())
+    .with_columns(dataset=pl.lit("0. train"))
+)
+test_data = (
+    RegionalFilter(["test"])
+    .apply(pl.from_pandas(outcome_data).lazy())
+    .with_columns(dataset=pl.lit("test"))
+)
+
+outcome_combined = pl.concat([train_data, test_data], how="vertical").collect()
+
+# %%
+from psycop.projects.t2d.paper_outputs.dataset_description.table_one.table_one_lib import (
+    create_table,
+)
+
+outcome_table = create_table(
+    row_specs=[RowSpecification("outcome_type", "CVD by type", True)],  # type: ignore
+    data=label_by_outcome_type(outcome_combined, group_col="cause").to_pandas(),
     groupby_col_name="dataset",
 )
 

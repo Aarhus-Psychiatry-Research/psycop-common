@@ -22,9 +22,9 @@ def label_by_outcome_type(df: pl.DataFrame, group_col: str) -> pl.DataFrame:
         "Coronary angiography": ["UXAC85"],
         "Intracranial endovascular thrombolysis": ["KAAL10", "KAAL11"],
         "Other intracranial endovascular surgery": ["KAAL99"],
-        "A. iliaca": ["KPDE", "KPDF", "KPDH", "KPDM", "KPDP", "KPDQ"],
-        "A. femoralis": ["KPEE", "KPEF", "KPEH", "KPEN", "KPEP", "KPEQ"],
-        "A. poplitea and distal": [
+        "Iliac artery": ["KPDE", "KPDF", "KPDH", "KPDM", "KPDP", "KPDQ"],
+        "Femoral artery": ["KPEE", "KPEF", "KPEH", "KPEN", "KPEP", "KPEQ"],
+        "Popliteal artery and distal ": [
             "KPFE",
             "KPFG",
             "KPFH",
