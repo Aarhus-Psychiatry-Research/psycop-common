@@ -89,7 +89,7 @@ if __name__ == "__main__":
 
     plotnine_confusion_matrix(
             confusion_matrix_model(df=eval_df, positive_rate=best_pos_rate),
-            title="Performance Matrix",
-        ).save(save_dir)
+            title="Confusion Matrix",
+        ).save(save_dir / "confusion_matrix.png")
     
 
