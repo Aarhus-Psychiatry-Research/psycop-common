@@ -1375,3 +1375,23 @@ def bipolar_a_diagnosis(
         shak_sql_operator=shak_sql_operator,
         timestamp_purpose=timestamp_purpose,
     )
+
+
+@data_loaders.register("depressive_disorders_a_diagnosis")
+def depressive_disorders_a_diagnosis(
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    return from_contacts(
+        icd_code=["f32", "f33", "f34", "f38"],
+        code_col_name="adiagnose4kar",
+        wildcard_icd_code=True,
+        n_rows=n_rows,
+        shak_location_col=shak_location_col,
+        shak_code=shak_code,
+        shak_sql_operator=shak_sql_operator,
+        timestamp_purpose=timestamp_purpose,
+    )
