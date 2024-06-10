@@ -7,9 +7,9 @@ from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClien
 
 from psycop.common.model_evaluation.binary.global_performance.roc_auc import bootstrap_roc
 from psycop.projects.cvd.model_evaluation.single_run.auroc.model import AUROC
+from sklearn.metrics import roc_auc_score
 
-
-def auroc_plot(data: AUROC) -> pn.ggplot:
+def auroc_plot(data: AUROC, title: str = "AUROC") -> pn.ggplot:
     auroc_label = pn.annotate(
             "text",
             label=f"AUROC (95% CI): {data.mean:.2f} ({data.ci[0]:.2f}-{data.ci[1]:.2f})",
@@ -17,19 +17,31 @@ def auroc_plot(data: AUROC) -> pn.ggplot:
             y=0,
             ha="right",
             va="bottom",
-            size=10,
+            size=20,
         )
     
     p = (
             pn.ggplot(data.to_dataframe(), pn.aes(x="fpr", y="tpr"))
-            + pn.geom_path(size=1)
-            + pn.geom_line(pn.aes(y="tpr_upper"), linetype="dashed", color="grey")
-            + pn.geom_line(pn.aes(y="tpr_lower"), linetype="dashed", color="grey")
-            + pn.labs(x="1 - Specificity", y="Sensitivity")
+            + pn.geom_ribbon(pn.aes(x="fpr", ymin="tpr_lower", ymax="tpr_upper"), fill="#B7C8B5")
+            + pn.geom_line(pn.aes(x="fpr", y="tpr"), size=0.5, color="black")
+            # + pn.geom_line(pn.aes(y="tpr_upper"), linetype="dashed", color="grey")
+            # + pn.geom_line(pn.aes(y="tpr_lower"), linetype="dashed", color="grey")
+            + pn.labs(title=title, x="1 - Specificity", y="Sensitivity")
             + pn.xlim(0, 1)
             + pn.ylim(0, 1)
             + pn.geom_abline(intercept=0, slope=1, linetype="dotted")
             + auroc_label
+            + pn.theme_minimal()
+            + pn.theme(
+                axis_ticks=pn.element_blank(),
+                panel_grid_minor=pn.element_blank(),
+                text=(pn.element_text(family="Times New Roman")),
+                axis_text_x=pn.element_text(size=15),
+                axis_text_y=pn.element_text(size=15),
+                axis_title=pn.element_text(size=22),
+                plot_title=pn.element_text(size=30, ha="center"),
+                dpi=300,
+            )
         )
     
     return p
@@ -61,7 +73,7 @@ def auroc_model(df: pd.DataFrame, n_bootstraps: int = 5) -> AUROC:
     auc_se = np.std(aucs_bootstrapped) / np.sqrt(n_bootstraps)
     auc_ci = [auc_mean - 1.96 * auc_se, auc_mean + 1.96 * auc_se]
     
-    return AUROC(mean=auc_mean,  # type: ignore
+    return AUROC(mean=roc_auc_score(y_true=y, y_score=y_hat_probs),  # type: ignore
         ci=(auc_ci[0], auc_ci[1]),
         fpr=base_fpr,
         mean_tprs=mean_tprs,
