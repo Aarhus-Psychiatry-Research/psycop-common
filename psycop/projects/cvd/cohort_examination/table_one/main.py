@@ -2,7 +2,7 @@
 #################
 # Load the data #
 #################
-from typing import Sequence
+from collections.abc import Sequence
 
 import polars as pl
 
@@ -50,7 +50,7 @@ filled = resolve_and_fill_config(tmp_cfg, fill_cfg_with_defaults=True)
 from psycop.common.model_training_v2.loggers.terminal_logger import TerminalLogger
 
 pipeline: BaselinePreprocessingPipeline = filled["trainer"].preprocessing_pipeline
-pipeline._logger = TerminalLogger() # type: ignore
+pipeline._logger = TerminalLogger()  # type: ignore
 
 # Remove column steps
 pipeline.steps = [
@@ -180,7 +180,9 @@ patient_table_one = create_table(
 # Outcome table #
 #################
 outcome_data = pl.from_pandas(get_first_cvd_indicator())
-outcome_data_filtered = outcome_data.filter(pl.col("dw_ek_borger").is_in(flattened_combined.collect().get_column("dw_ek_borger")))
+outcome_data_filtered = outcome_data.filter(
+    pl.col("dw_ek_borger").is_in(flattened_combined.collect().get_column("dw_ek_borger"))
+)
 
 # %%
 train_data = (
