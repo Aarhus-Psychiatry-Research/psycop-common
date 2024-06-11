@@ -64,7 +64,10 @@ if __name__ == "__main__":
 
     eval_df = (
         MlflowClientWrapper()
-        .get_run(experiment_name="CVD hyperparam tuning, layer 2, xgboost, v2", run_name="Layer 2, hparam")
+        .get_run(
+            experiment_name="CVD hyperparam tuning, layer 2, xgboost, v2",
+            run_name="Layer 2, hparam",
+        )
         .eval_frame()
     )
     table = performance_by_ppr_view(

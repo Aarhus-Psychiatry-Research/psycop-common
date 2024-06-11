@@ -1,4 +1,8 @@
 # %%
+import polars as pl
+
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
+
 run = MlflowClientWrapper().get_run(experiment_name="CVD", run_name="CVD layer 1, base")
 cfg = run.get_config()
 
@@ -9,6 +13,10 @@ cfg = run.get_config()
 # %%
 import pathlib
 from tempfile import mkdtemp
+
+from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
+    BaselinePreprocessingPipeline,
+)
 
 tmp_cfg = pathlib.Path(mkdtemp()) / "tmp.cfg"
 cfg.to_disk(tmp_cfg)
@@ -28,8 +36,8 @@ filled = resolve_and_fill_config(tmp_cfg, fill_cfg_with_defaults=True)
 from psycop.common.model_training_v2.loggers.terminal_logger import TerminalLogger
 
 pipeline: BaselinePreprocessingPipeline = filled["trainer"].preprocessing_pipeline
-pipeline._logger = TerminalLogger() # type: ignore
-pipeline.steps[0].split_to_keep = ["train", "val", "test"] # Do not filter by region
+pipeline._logger = TerminalLogger()  # type: ignore
+pipeline.steps[0].split_to_keep = ["train", "val", "test"]  # type: ignore # Do not filter by region
 
 # %%
 flattened_data = pl.scan_parquet(cfg["trainer"]["training_data"]["paths"][0]).lazy()
