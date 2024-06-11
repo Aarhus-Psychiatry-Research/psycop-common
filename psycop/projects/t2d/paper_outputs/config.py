@@ -41,6 +41,7 @@ class Colors(ColorsPTC):
     secondary = "#01611E"
     tertiary = "#B05B00"
     quarternary = "#570018"
+    pentary = "darkgray"
     background = "lightgray"
 
     def color_scale(self) -> Sequence[str]:
