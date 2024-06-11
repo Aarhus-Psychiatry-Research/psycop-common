@@ -20,8 +20,9 @@ class PreprocessingPipeline(ABC, SupportsLoggerMixin):
 
 @BaselineRegistry.preprocessing.register("baseline_preprocessing_pipeline")
 class BaselinePreprocessingPipeline(PreprocessingPipeline):
-    def __init__(self, *args: PresplitStep) -> None:
+    def __init__(self, eager: bool = False, *args: PresplitStep) -> None:
         self.steps = list(args)
+        self.eager = eager
 
     def _get_column_stats_string(self, data: pl.LazyFrame) -> str:
         return f"""
@@ -35,6 +36,11 @@ class BaselinePreprocessingPipeline(PreprocessingPipeline):
 
         for step in self.steps:
             data = step.apply(data)
+            if self.eager:
+                collected_data = data.collect()
+                self.logger.info(
+                    f"Number of rows after {step.__class__.__name__}: {len(collected_data)}"
+                )
 
         self.logger.info(f"Column stats after preprocessing: {self._get_column_stats_string(data)}")
 

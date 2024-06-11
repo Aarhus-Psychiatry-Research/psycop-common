@@ -30,8 +30,8 @@ from psycop.projects.cvd.model_evaluation.single_run.performance_by_ppr.model im
 from psycop.projects.cvd.model_evaluation.single_run.performance_by_ppr.view import (
     performance_by_ppr_view,
 )
-from psycop.projects.cvd.model_evaluation.single_run_main import single_run_main
-from psycop.projects.cvd.model_evaluation.single_run_robustness import single_run_robustness
+from psycop.projects.cvd.paper_outputs.single_run_main import single_run_main
+from psycop.projects.cvd.paper_outputs.single_run_robustness import single_run_robustness
 
 
 def markdown_artifacts(
