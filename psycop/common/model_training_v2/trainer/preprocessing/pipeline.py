@@ -20,7 +20,7 @@ class PreprocessingPipeline(ABC, SupportsLoggerMixin):
 
 @BaselineRegistry.preprocessing.register("baseline_preprocessing_pipeline")
 class BaselinePreprocessingPipeline(PreprocessingPipeline):
-    def __init__(self, eager: bool = False, *args: PresplitStep) -> None:
+    def __init__(self, *args: PresplitStep, eager: bool = False) -> None:
         self.steps = list(args)
         self.eager = eager
 
