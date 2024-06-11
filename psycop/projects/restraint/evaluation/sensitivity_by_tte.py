@@ -39,17 +39,19 @@ def plotnine_sensitivity_bby_tte(df: pd.DataFrame, title: str = "Sensitivity by 
         ordered=True,  # type: ignore
     )
 
+    df = df[df.unit_from_event_binned != "49+"]
+
     p = (
         pn.ggplot(
             df,
             pn.aes(
-                x="unit_from_event_binned", y="sensitivity", ymin="ci_lower", ymax="ci_upper", color="actual_positive_rate"
+                x="unit_from_event_binned", y="sensitivity", ymin="ci_lower", ymax="ci_upper", color="actual_positive_rate", shape="actual_positive_rate"
             ),
         )
         + pn.scale_x_discrete(reverse=True)
-        + pn.geom_point(size=2)
+        + pn.geom_point(size=2.5)
         + pn.geom_errorbar(width=0.05)
-        + pn.labs(x="Hours to outcome", y="Sensitivity", title=title, color="Positive rate")
+        + pn.labs(x="Hours to outcome", y="Sensitivity", title=title, color="Positive rate", shape="Positive rate")
         + pn.theme_minimal()
         + pn.theme(
             axis_text_x=pn.element_text(size=15, angle=45, hjust=1),
@@ -79,15 +81,10 @@ def sensitivity_by_tte_model(
     pprs: Sequence[float] = (0.01, 0.03, 0.05),
 ) -> pd.DataFrame:
     eval_dataset = (
-        parse_timestamp_from_uuid(parse_dw_ek_borger_from_uuid(eval_df)).join(
-            outcome_timestamps, on="dw_ek_borger", suffix="_outcome", how="left"
+        parse_timestamp_from_uuid(parse_dw_ek_borger_from_uuid(eval_df)).with_columns(pl.col("timestamp").dt.cast_time_unit("ns")).join(
+            outcome_timestamps, left_on=["dw_ek_borger", "timestamp"], right_on=["dw_ek_borger", "pred_time"], suffix="_outcome", how="left"
         )
-    )
-
-    eval_dataset = eval_dataset.filter( # FILTER PROPERLY!!!!!!!!!!!!!!!
-            (pl.col("timestamp_outcome") > pl.col("datotid_start"))
-            & (pl.col("timestamp_outcome") < pl.col("datotid_slut"))
-        ).to_pandas()
+    ).to_pandas()
     
     dfs = []
     for ppr in pprs:
@@ -99,7 +96,7 @@ def sensitivity_by_tte_model(
             time_one=eval_dataset["timestamp"],
             time_two=eval_dataset["timestamp_outcome"],
             direction="t2-t1",
-            bins=range(0, 60, 12),
+            bins=range(0, 49, 8),
             bin_unit="h",
             bin_continuous_input=True,
         )
@@ -121,7 +118,7 @@ if __name__ == "__main__":
     eval_df = MlflowClientWrapper().get_best_run_from_experiment(
             experiment_name=best_experiment, metric="all_oof_BinaryAUROC"
         ).eval_frame().frame
-    outcome_timestamps = pl.DataFrame(sql_load("SELECT dw_ek_borger, datotid_start, datotid_slut, first_mechanical_restraint as timestamp FROM fct.psycop_coercion_outcome_timestamps_2"))
+    outcome_timestamps = pl.DataFrame(sql_load("SELECT pred_times.dw_ek_borger, pred_time, first_mechanical_restraint as timestamp FROM fct.psycop_coercion_outcome_timestamps as pred_times LEFT JOIN fct.psycop_coercion_outcome_timestamps_2 as outc_times ON (pred_times.dw_ek_borger = outc_times.dw_ek_borger AND pred_times.datotid_start = outc_times.datotid_start)").drop_duplicates())
 
     plotnine_sensitivity_bby_tte(
             sensitivity_by_tte_model(df=eval_df, outcome_timestamps=outcome_timestamps)
