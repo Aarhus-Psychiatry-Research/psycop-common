@@ -6,13 +6,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 import polars as pl
-from timeseriesflattener import (
-    OutcomeSpec,
-    PredictorSpec,
-    StaticFrame,
-    StaticSpec,
-    ValueFrame,
-)
+from timeseriesflattener import OutcomeSpec, PredictorSpec, StaticFrame, StaticSpec, ValueFrame
 from timeseriesflattener.aggregators import HasValuesAggregator, MaxAggregator
 
 from psycop.common.feature_generation.loaders.raw.load_visits import (
@@ -21,18 +15,10 @@ from psycop.common.feature_generation.loaders.raw.load_visits import (
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_prediction_time_loader import (
     SczBpCohort,
 )
-from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_1 import (
-    SczBpLayer1,
-)
-from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_2 import (
-    SczBpLayer2,
-)
-from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_3 import (
-    SczBpLayer3,
-)
-from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_4 import (
-    SczBpLayer4,
-)
+from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_1 import SczBpLayer1
+from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_2 import SczBpLayer2
+from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_3 import SczBpLayer3
+from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_4 import SczBpLayer4
 from psycop.projects.scz_bp.feature_generation.feature_layers.value_specification import (
     ValueSpecification,
 )

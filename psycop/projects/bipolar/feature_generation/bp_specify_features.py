@@ -10,18 +10,10 @@ from timeseriesflattener.aggregators import MaxAggregator
 from psycop.projects.bipolar.cohort_definition.diagnosis_timestamps.first_bipolar_diagnosis import (
     get_first_bipolar_diagnosis,
 )
-from psycop.projects.bipolar.feature_generation.feature_layers.bp_layer_1 import (
-    BpLayer1,
-)
-from psycop.projects.bipolar.feature_generation.feature_layers.bp_layer_2 import (
-    BpLayer2,
-)
-from psycop.projects.bipolar.feature_generation.feature_layers.bp_layer_3 import (
-    BpLayer3,
-)
-from psycop.projects.bipolar.feature_generation.feature_layers.bp_layer_4 import (
-    BpLayer4,
-)
+from psycop.projects.bipolar.feature_generation.feature_layers.bp_layer_1 import BpLayer1
+from psycop.projects.bipolar.feature_generation.feature_layers.bp_layer_2 import BpLayer2
+from psycop.projects.bipolar.feature_generation.feature_layers.bp_layer_3 import BpLayer3
+from psycop.projects.bipolar.feature_generation.feature_layers.bp_layer_4 import BpLayer4
 from psycop.projects.bipolar.feature_generation.feature_layers.value_specification import (
     ValueSpecification,
 )
@@ -52,9 +44,7 @@ class BpFeatureSpecifier:
                     entity_id_col_name="dw_ek_borger",
                     value_timestamp_col_name="timestamp",
                 ),
-                lookahead_distances=make_timedeltas_from_zero(
-                    look_days=[10_000]
-                ),
+                lookahead_distances=make_timedeltas_from_zero(look_days=[10_000]),
                 fallback=0,
                 aggregators=[MaxAggregator()],
             )
@@ -66,10 +56,7 @@ class BpFeatureSpecifier:
         if max_layer not in BpFeatureLayers:
             raise ValueError(f"Layer {max_layer} not supported.")
 
-        feature_specs: list[Sequence[ValueSpecification]] = [            
-            self._get_outcome_specs(),
-        ]
-
+        feature_specs: list[Sequence[ValueSpecification]] = [self._get_outcome_specs()]
 
         for layer in range(1, max_layer + 1):
             feature_specs.append(
