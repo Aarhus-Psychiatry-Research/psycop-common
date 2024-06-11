@@ -58,7 +58,7 @@ facet_plot = (
     + pn.facet_wrap(facets="outcome_type", scales="free")
     + pn.geom_vline(xintercept=datetime.datetime(2013, 1, 1), color="black", linetype="dashed")
 )
-facet_plot
+facet_plot  # noqa: B018
 
 
 # %%
@@ -80,12 +80,12 @@ distribution_plot = (
     + pn.geom_vline(xintercept=datetime.datetime(2013, 1, 1), color="black", linetype="dashed")
 )
 
-distribution_plot
+distribution_plot  # noqa: B018
 
 
 # %%
 from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 
-p.save("Incident_CVD_by_time.png", dpi=600, width=15, height=10)
+distribution_plot.save("Incident_CVD_by_time.png", dpi=600, width=15, height=10)
 
 # %%
