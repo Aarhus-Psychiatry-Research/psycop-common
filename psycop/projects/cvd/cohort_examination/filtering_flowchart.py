@@ -28,8 +28,8 @@ filled = resolve_and_fill_config(tmp_cfg, fill_cfg_with_defaults=True)
 from psycop.common.model_training_v2.loggers.terminal_logger import TerminalLogger
 
 pipeline: BaselinePreprocessingPipeline = filled["trainer"].preprocessing_pipeline
-pipeline._logger = TerminalLogger()  # type: ignore
-pipeline.steps[0].split_to_keep = ["train", "val", "test"]  # Do not filter by region
+pipeline._logger = TerminalLogger() # type: ignore
+pipeline.steps[0].split_to_keep = ["train", "val", "test"] # Do not filter by region
 
 # %%
 flattened_data = pl.scan_parquet(cfg["trainer"]["training_data"]["paths"][0]).lazy()

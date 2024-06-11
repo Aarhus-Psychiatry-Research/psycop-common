@@ -1,6 +1,5 @@
 # type: ignore
 import pathlib
-import pickle as pkl
 import re
 
 import pandas as pd
@@ -16,7 +15,7 @@ def cvd_parse_static_feature(full_string: str) -> str:
 
     feature_capitalised = feature_name[0].upper() + feature_name[1:]
 
-    manual_overrides = {"Age_in_years": "Age (years)"}
+    manual_overrides = {"Age_days_fallback_0": "Age", "_sex_female_fallback_0": "Female"}
 
     if feature_capitalised in manual_overrides:
         feature_capitalised = manual_overrides[feature_capitalised]
@@ -24,13 +23,13 @@ def cvd_parse_static_feature(full_string: str) -> str:
 
 
 def cvd_parse_temporal_feature(full_string: str) -> str:
-    feature_name = re.findall(r"pred_(.*)?_within", full_string)[0]
-    if "_disorders" in feature_name:
+    feature_name = re.findall(r"pred_layer_\d_(.*)?_within", full_string)[0]
+    if "_" in feature_name:
         words = feature_name.split("_")
         words[0] = words[0].capitalize()
         feature_name = " ".join(word for word in words)
 
-    lookbehind = re.findall(r"within_(.*)?_days", full_string)[0]
+    lookbehind = re.findall(r"within_0_to_(.*)?_days", full_string)[0]
     resolve_multiple = re.findall(r"days_(.*)?_fallback", full_string)[0]
 
     remove = [r"_layer_\d_*"]
@@ -88,4 +87,4 @@ if __name__ == "__main__":
     )
     pl.Config.set_tbl_rows(100)
 
-    pathlib.Path("cvd_feature_importances").write_text(feat_imp.to_html())
+    pathlib.Path("cvd_feature_importances.html").write_text(feat_imp.to_html())
