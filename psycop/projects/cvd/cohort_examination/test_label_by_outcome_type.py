@@ -28,6 +28,6 @@ class Ex:
 def test_grouping_by_outcome_type(example: Ex) -> None:
     df = pl.DataFrame({"diagnosis_code": [example.given]})
 
-    result = label_by_outcome_type(df)
+    result = label_by_outcome_type(df, group_col="diagnosis_code")
 
     assert result.get_column("outcome_type").unique().to_list() == [example.then]
