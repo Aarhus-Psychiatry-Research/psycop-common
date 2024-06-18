@@ -2,9 +2,15 @@
 #################
 # Load the data #
 #################
+from collections.abc import Sequence
+
 import polars as pl
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
+from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
+    BaselinePreprocessingPipeline,
+)
+from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
     RegionalFilter,
 )
@@ -17,12 +23,50 @@ from psycop.projects.cvd.feature_generation.cohort_definition.outcome_specificat
 run = MlflowClientWrapper().get_run(experiment_name="CVD", run_name="CVD layer 1, base")
 cfg = run.get_config()
 
+# %%
+##########################
+# Preprocessing pipeline #
+##########################
+# %%
+import pathlib
+from tempfile import mkdtemp
+
+tmp_cfg = pathlib.Path(mkdtemp()) / "tmp.cfg"
+cfg.to_disk(tmp_cfg)
+
+# %%
+from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
+from psycop.projects.cvd.model_training.populate_cvd_registry import populate_with_cvd_registry
+
+populate_baseline_registry()
+populate_with_cvd_registry()
+
+# %%
+from psycop.common.model_training_v2.config.config_utils import resolve_and_fill_config
+
+filled = resolve_and_fill_config(tmp_cfg, fill_cfg_with_defaults=True)
+
+# %%
+from psycop.common.model_training_v2.loggers.terminal_logger import TerminalLogger
+
+pipeline: BaselinePreprocessingPipeline = filled["trainer"].preprocessing_pipeline
+pipeline._logger = TerminalLogger()  # type: ignore
+
+# Remove column steps
+pipeline.steps = [
+    step
+    for step in pipeline.steps
+    if "filter" in step.__class__.__name__.lower()
+    and "column" not in step.__class__.__name__.lower()
+    and "regional" not in step.__class__.__name__.lower()
+]
+
 # Add train/test labels. Compute-intensive solution, but good enough for now.
-flattened_data = pl.read_parquet(cfg["trainer"]["training_data"]["paths"][0])
+flattened_data = pl.from_pandas(
+    pipeline.apply(pl.scan_parquet(cfg["trainer"]["training_data"]["paths"][0]))
+).lazy()
 train_data = (
-    RegionalFilter(["train", "val"])
-    .apply(flattened_data.lazy())
-    .with_columns(dataset=pl.lit("0. train"))
+    RegionalFilter(["train", "val"]).apply(flattened_data).with_columns(dataset=pl.lit("0. train"))
 )
 test_data = (
     RegionalFilter(["test"]).apply(flattened_data.lazy()).with_columns(dataset=pl.lit("test"))
@@ -135,17 +179,20 @@ patient_table_one = create_table(
 #################
 # Outcome table #
 #################
-outcome_data = get_first_cvd_indicator()
+outcome_data = pl.from_pandas(get_first_cvd_indicator())
+outcome_data_filtered = outcome_data.filter(
+    pl.col("dw_ek_borger").is_in(flattened_combined.collect().get_column("dw_ek_borger"))
+)
 
 # %%
 train_data = (
     RegionalFilter(["train", "val"])
-    .apply(pl.from_pandas(outcome_data).lazy())
+    .apply(outcome_data_filtered.lazy())
     .with_columns(dataset=pl.lit("0. train"))
 )
 test_data = (
     RegionalFilter(["test"])
-    .apply(pl.from_pandas(outcome_data).lazy())
+    .apply(outcome_data_filtered.lazy())
     .with_columns(dataset=pl.lit("test"))
 )
 
@@ -161,15 +208,5 @@ outcome_table = create_table(
     data=label_by_outcome_type(outcome_combined, group_col="cause").to_pandas(),
     groupby_col_name="dataset",
 )
-
-# %%
-############
-# Combined #
-############
-combined = pd.concat([visit_table_one, patient_table_one])
-
-# %%
-# %load_ext autoreload
-# %autoreload 2
 
 # %%
