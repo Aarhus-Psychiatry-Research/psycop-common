@@ -7,8 +7,7 @@ from psycop.projects.cvd.cohort_examination.table_one.facade import table_one
 
 
 class CVDArtifactFacade(Protocol):
-    def __call__(self, output_dir: Path) -> None:
-        ...
+    def __call__(self, output_dir: Path) -> None: ...
 
 
 if __name__ == "__main__":
