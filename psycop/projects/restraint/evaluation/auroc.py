@@ -18,6 +18,7 @@ def auroc_plot(data: AUROC, title: str = "AUROC") -> pn.ggplot:
             ha="right",
             va="bottom",
             size=20,
+            family="Times New Roman",
         )
     
     p = (

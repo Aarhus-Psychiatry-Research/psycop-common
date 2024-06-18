@@ -13,7 +13,7 @@ from psycop.common.model_training.training_output.dataclasses import (
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import ConfusionMatrix
 from psycop.common.test_utils.str_to_df import str_to_df
 
-def plotnine_confusion_matrix(matrix: ConfusionMatrix, title: str) -> pn.ggplot:
+def plotnine_confusion_matrix(matrix: ConfusionMatrix, title: str = "Confusion Matrix") -> pn.ggplot:
     df = str_to_df(
         f"""true,pred,estimate,metric
 +,+,{matrix.true_positives}," ",
@@ -34,8 +34,8 @@ def plotnine_confusion_matrix(matrix: ConfusionMatrix, title: str) -> pn.ggplot:
     p = (
         pn.ggplot(df, pn.aes(x="true", y="pred", fill="fill"))
         + pn.geom_tile(pn.aes(width=0.95, height=0.95))
-        + pn.geom_text(pn.aes(label="metric"), size=20, color="white")
-        + pn.geom_text(pn.aes(label="estimate"), size=25, color="white", fontweight="bold")
+        + pn.geom_text(pn.aes(label="metric"), size=20, color="white", family="Times New Roman")
+        + pn.geom_text(pn.aes(label="estimate"), size=25, color="white", fontweight="bold", family="Times New Roman")
         + pn.theme(
                 axis_line=pn.element_blank(),
                 axis_ticks=pn.element_blank(),
@@ -88,8 +88,6 @@ if __name__ == "__main__":
         ).eval_frame().frame.to_pandas()
 
     plotnine_confusion_matrix(
-            confusion_matrix_model(df=eval_df, positive_rate=best_pos_rate),
-            title="Confusion Matrix",
-        ).save(save_dir / "confusion_matrix.png")
+            confusion_matrix_model(df=eval_df, positive_rate=best_pos_rate)).save(save_dir / "confusion_matrix.png")
     
 
