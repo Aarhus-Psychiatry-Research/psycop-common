@@ -4,6 +4,7 @@ from tempfile import mkdtemp
 
 import polars as pl
 
+from psycop.common.global_utils.cache import shared_cache
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import PsycopMlflowRun
 from psycop.common.model_training_v2.config.config_utils import resolve_and_fill_config
 from psycop.common.model_training_v2.loggers.terminal_logger import TerminalLogger
@@ -28,6 +29,7 @@ class TableOneModel(ValidatedFrame[pl.LazyFrame]):
     pred_time_uuid_col_name: str = "pred_time_uuid"
 
 
+@shared_cache.cache
 def _train_test_column(
     flattened_data: pl.LazyFrame, train_filter: PresplitStep, test_filter: PresplitStep
 ) -> pl.LazyFrame:
@@ -43,17 +45,20 @@ def _train_test_column(
     return flattened_combined
 
 
+@shared_cache.cache
 def _preprocessed_data(data_path: str, pipeline: BaselinePreprocessingPipeline) -> pl.LazyFrame:
     data = pl.scan_parquet(data_path)
     preprocessed = pipeline.apply(data)
     return pl.from_pandas(preprocessed).lazy()
 
 
+@shared_cache.cache
 def _first_outcome_data(data: pl.LazyFrame) -> pl.LazyFrame:
     first = get_first_cvd_indicator()
     return data.join(pl.from_pandas(first).lazy(), on="dw_ek_borger", how="left")
 
 
+@shared_cache.cache
 def table_one_model(run: PsycopMlflowRun, sex_col_name: str) -> TableOneModel:
     cfg = run.get_config()
 
