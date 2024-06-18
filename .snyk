@@ -64,4 +64,17 @@ ignore:
           Vulnerability in wandb, which we do not use. Exception approved via
           Slack conversation in snyk-alerts channel on 2024-05-27.
         created: 2024-05-27T06:59:50.944Z
+  SNYK-PYTHON-PYTORCHLIGHTNING-7218866:
+    - '*':
+        reason: >-
+          Vulnerability in pytorch lightning if exposing lightning.app endpoints 
+          which we do not. Exception approved via
+          Slack conversation in programming channel on 2024-06-12.
+        created: 2024-06-18T06:59:50.944Z
+  SNYK-PYTHON-TORCH-7231127:
+    - '*':
+        reason: >-
+          Vulnerability in torch if training multi-node, which we do not. Exception approved via
+          Slack conversation in programming channel on 2024-06-18.
+        created: 2024-06-18T06:59:50.944Z
 patch: {}
