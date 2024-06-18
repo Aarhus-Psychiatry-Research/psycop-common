@@ -79,6 +79,15 @@ def table_one_model(run: PsycopMlflowRun, sex_col_name: str) -> TableOneModel:
 
     pipeline: BaselinePreprocessingPipeline = filled["trainer"].preprocessing_pipeline
     pipeline._logger = TerminalLogger()  # type: ignore
+    pipeline.steps = [
+        step
+        for step in pipeline.steps
+        if "filter" in step.__class__.__name__.lower()  # Only keep potential row filters
+        and "column"
+        not in step.__class__.__name__.lower()  # Do not filter columns (e.g. keep timestamps for further processing)
+        and "regional"
+        not in step.__class__.__name__.lower()  # Do not filter on region (happens when adding split labels)
+    ]
 
     preprocessed_visits = _preprocessed_data(cfg["trainer"]["training_data"]["paths"][0], pipeline)
     split = _train_test_column(
