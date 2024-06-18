@@ -102,9 +102,7 @@ def _visit_frame(model: TableOneModel) -> pl.DataFrame:
     )
 
     table = _create_table(
-        row_specs=specs,
-        data=columns_to_keep.collect().to_pandas().fillna(0),
-        groupby_col_name="age_grouped",
+        row_specs=specs, data=columns_to_keep.to_pandas().fillna(0), groupby_col_name="age_grouped"
     )
     table["age_grouped"] = pd.Series(
         bin_continuous_data(table["pred_age_in_years"], bins=[18, *list(range(19, 90, 10))])[0]
@@ -141,7 +139,7 @@ def _patient_frame(model: TableOneModel) -> pl.DataFrame:
             pl.col("dataset").first().alias("dataset"),
         )
         .select([model.sex_col_name, model.outcome_col_name, "first_contact_timestamp", "dataset"])
-    ).collect()
+    )
 
     patient_df_labelled = label_by_outcome_type(patient_df, group_col="cause")
 

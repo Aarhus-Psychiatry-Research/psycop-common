@@ -34,8 +34,12 @@ def _train_test_column(
     flattened_data: pl.DataFrame, train_filter: PresplitStep, test_filter: PresplitStep
 ) -> pl.DataFrame:
     """Adds a 'dataset' column to the dataframe, indicating whether the row is in the train or test set."""
-    train_data = train_filter.apply(flattened_data.lazy()).with_columns(dataset=pl.lit("0. train"))
-    test_data = test_filter.apply(flattened_data.lazy()).with_columns(dataset=pl.lit("test"))
+    train_data = (
+        train_filter.apply(flattened_data.lazy()).with_columns(dataset=pl.lit("0. train")).collect()
+    )
+    test_data = (
+        test_filter.apply(flattened_data.lazy()).with_columns(dataset=pl.lit("test")).collect()
+    )
 
     flattened_combined = pl.concat([train_data, test_data], how="vertical").rename(
         {"prediction_time_uuid": "pred_time_uuid"}
