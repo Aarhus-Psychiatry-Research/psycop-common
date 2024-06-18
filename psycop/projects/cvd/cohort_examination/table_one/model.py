@@ -15,10 +15,15 @@ from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_spli
     RegionalFilter,
 )
 from psycop.common.types.validated_frame import ValidatedFrame
+from psycop.projects.cvd.feature_generation.cohort_definition.outcome_specification.combined import (
+    get_first_cvd_indicator,
+)
 
 
 @dataclass(frozen=True)
 class TableOneModel(ValidatedFrame[pl.LazyFrame]):
+    outcome_col_name: str
+    sex_col_name: str
     dataset_col_name: str = "dataset"
     pred_time_uuid_col_name: str = "pred_time_uuid"
 
@@ -44,7 +49,12 @@ def _preprocessed_data(data_path: str, pipeline: BaselinePreprocessingPipeline) 
     return pl.from_pandas(preprocessed).lazy()
 
 
-def table_one_model(run: PsycopMlflowRun) -> TableOneModel:
+def _first_outcome_data(data: pl.LazyFrame) -> pl.LazyFrame:
+    first = get_first_cvd_indicator()
+    return data.join(pl.from_pandas(first).lazy(), on="dw_ek_borger", how="left")
+
+
+def table_one_model(run: PsycopMlflowRun, sex_col_name: str) -> TableOneModel:
     cfg = run.get_config()
 
     tmp_cfg = pathlib.Path(mkdtemp()) / "tmp.cfg"
@@ -74,4 +84,13 @@ def table_one_model(run: PsycopMlflowRun) -> TableOneModel:
     split = _train_test_column(
         preprocessed_visits, RegionalFilter(["train", "val"]), RegionalFilter(["test"])
     )
-    return TableOneModel(split, allow_extra_columns=True)
+    with_outcome = _first_outcome_data(split)
+
+    return TableOneModel(
+        with_outcome.with_columns(
+            (pl.col("pred_age_days_fallback_0") / 365.25).alias("pred_age_in_years")
+        ),
+        allow_extra_columns=True,
+        outcome_col_name=cfg["trainer"]["outcome_col_name"],
+        sex_col_name=sex_col_name,
+    )

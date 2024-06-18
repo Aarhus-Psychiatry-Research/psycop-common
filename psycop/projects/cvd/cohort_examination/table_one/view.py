@@ -4,7 +4,12 @@ from dataclasses import dataclass
 from typing import Optional, Union
 
 import pandas as pd
+import polars as pl
 from tableone import TableOne
+
+from psycop.common.model_evaluation.utils import bin_continuous_data
+from psycop.projects.cvd.cohort_examination.label_by_outcome_type import label_by_outcome_type
+from psycop.projects.cvd.cohort_examination.table_one.model import TableOneModel
 
 
 @dataclass
@@ -18,7 +23,7 @@ class RowSpecification:
     nonnormal: bool = False
 
 
-def get_psychiatric_diagnosis_row_specs(readable_col_names: list[str]) -> list[RowSpecification]:
+def _get_psychiatric_diagnosis_row_specs(readable_col_names: list[str]) -> list[RowSpecification]:
     # Get diagnosis columns
     pattern = re.compile(r".+f\d_disorders")
     columns = sorted(
@@ -47,7 +52,7 @@ def get_psychiatric_diagnosis_row_specs(readable_col_names: list[str]) -> list[R
     return specs
 
 
-def create_table(
+def _create_table(
     row_specs: Sequence[RowSpecification],
     data: pd.DataFrame,
     groupby_col_name: str,
@@ -75,3 +80,82 @@ def create_table(
     )
 
     return table_one.tableone
+
+
+def _visit_frame(model: TableOneModel) -> pl.DataFrame:
+    specs = [
+        RowSpecification(source_col_name="pred_age_in_years", readable_name="Age", nonnormal=True),
+        RowSpecification(
+            source_col_name="age_grouped", readable_name="Age grouped", categorical=True
+        ),
+        RowSpecification(
+            source_col_name="pred__sex_female_fallback_0",
+            readable_name="Female",
+            categorical=True,
+            values_to_display=[1],
+        ),
+        *_get_psychiatric_diagnosis_row_specs(readable_col_names=model.frame.columns),
+    ]
+
+    columns_to_keep = model.frame.select(
+        [r.source_col_name for r in specs if r.source_col_name not in ["age_grouped"]] + ["dataset"]
+    )
+
+    table = _create_table(
+        row_specs=specs,
+        data=columns_to_keep.collect().to_pandas().fillna(0),
+        groupby_col_name="age_grouped",
+    )
+    table["age_grouped"] = pd.Series(
+        bin_continuous_data(table["pred_age_in_years"], bins=[18, *list(range(19, 90, 10))])[0]
+    ).astype(str)
+
+    return pl.from_pandas(table)
+
+
+def _patient_frame(model: TableOneModel) -> pl.DataFrame:
+    patient_row_specs = [
+        RowSpecification(
+            source_col_name=model.sex_col_name,
+            readable_name="Female",
+            categorical=True,
+            values_to_display=[1],
+        ),
+        RowSpecification(
+            source_col_name=model.outcome_col_name,
+            readable_name="Incident CVD",
+            categorical=True,
+            values_to_display=[1],
+        ),
+        RowSpecification(
+            source_col_name="outcome_type", readable_name="CVD by type", categorical=True
+        ),
+    ]
+
+    patient_df = (
+        model.frame.groupby("dw_ek_borger")
+        .agg(
+            pl.col(model.sex_col_name).first().alias(model.sex_col_name),
+            pl.col(model.outcome_col_name).max().alias(model.outcome_col_name),
+            pl.col("timestamp").min().alias("first_contact_timestamp"),
+            pl.col("dataset").first().alias("dataset"),
+        )
+        .select([model.sex_col_name, model.outcome_col_name, "first_contact_timestamp", "dataset"])
+    ).collect()
+
+    patient_df_labelled = label_by_outcome_type(patient_df, group_col="cause")
+
+    return pl.from_pandas(
+        _create_table(
+            patient_row_specs,
+            data=patient_df_labelled.to_pandas().fillna(0),
+            groupby_col_name="dataset",
+        )
+    )
+
+
+def table_one_view(model: TableOneModel) -> pl.DataFrame:
+    visit_frame = _visit_frame(model)
+    patient_frame = _patient_frame(model)
+
+    return pl.concat([visit_frame, patient_frame], how="vertical")
