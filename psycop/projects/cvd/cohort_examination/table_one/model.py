@@ -22,7 +22,7 @@ from psycop.projects.cvd.feature_generation.cohort_definition.outcome_specificat
 
 
 @dataclass(frozen=True)
-class TableOneModel(ValidatedFrame[pl.LazyFrame]):
+class TableOneModel(ValidatedFrame[pl.DataFrame]):
     outcome_col_name: str
     sex_col_name: str
     dataset_col_name: str = "dataset"
@@ -31,10 +31,10 @@ class TableOneModel(ValidatedFrame[pl.LazyFrame]):
 
 @shared_cache.cache
 def _train_test_column(
-    flattened_data: pl.LazyFrame, train_filter: PresplitStep, test_filter: PresplitStep
-) -> pl.LazyFrame:
+    flattened_data: pl.DataFrame, train_filter: PresplitStep, test_filter: PresplitStep
+) -> pl.DataFrame:
     """Adds a 'dataset' column to the dataframe, indicating whether the row is in the train or test set."""
-    train_data = train_filter.apply(flattened_data).with_columns(dataset=pl.lit("0. train"))
+    train_data = train_filter.apply(flattened_data.lazy()).with_columns(dataset=pl.lit("0. train"))
     test_data = test_filter.apply(flattened_data.lazy()).with_columns(dataset=pl.lit("test"))
 
     flattened_combined = pl.concat([train_data, test_data], how="vertical").rename(
@@ -46,16 +46,16 @@ def _train_test_column(
 
 
 @shared_cache.cache
-def _preprocessed_data(data_path: str, pipeline: BaselinePreprocessingPipeline) -> pl.LazyFrame:
+def _preprocessed_data(data_path: str, pipeline: BaselinePreprocessingPipeline) -> pl.DataFrame:
     data = pl.scan_parquet(data_path)
     preprocessed = pipeline.apply(data)
-    return pl.from_pandas(preprocessed).lazy()
+    return pl.from_pandas(preprocessed)
 
 
 @shared_cache.cache
-def _first_outcome_data(data: pl.LazyFrame) -> pl.LazyFrame:
+def _first_outcome_data(data: pl.DataFrame) -> pl.DataFrame:
     first = get_first_cvd_indicator()
-    return data.join(pl.from_pandas(first).lazy(), on="dw_ek_borger", how="left")
+    return data.join(pl.from_pandas(first), on="dw_ek_borger", how="left")
 
 
 @shared_cache.cache
