@@ -12,7 +12,9 @@ class RowSpecification:
     source_col_name: str
     readable_name: str
     categorical: bool = False
-    values_to_display: Optional[Sequence[Union[int, float, str]]] = None
+    values_to_display: Optional[Sequence[Union[int, float, str]]] = (
+        None  # Which categories to display.
+    )
     nonnormal: bool = False
 
 
@@ -53,16 +55,6 @@ def create_table(
 ) -> pd.DataFrame:
     """Unpacks a sequence of row specs into the format used by TableOne"""
     source_col_names = [r.source_col_name for r in row_specs]
-    categorical_col_names = [r.source_col_name for r in row_specs if r.categorical]
-    nonnormal_col_names = [r.source_col_name for r in row_specs if r.nonnormal]
-    readable_col_names = {r.source_col_name: r.readable_name for r in row_specs}
-
-    limit_columns = {
-        r.source_col_name: r.values_to_display[0] for r in row_specs if r.values_to_display
-    }
-    order_columns = {
-        r.source_col_name: r.values_to_display for r in row_specs if r.values_to_display
-    }
 
     print(f"Adding columns {source_col_names}")
 
@@ -73,12 +65,12 @@ def create_table(
     table_one = TableOne(  # type: ignore
         data=data,
         columns=source_col_names,
-        categorical=categorical_col_names,
+        categorical=[r.source_col_name for r in row_specs if r.categorical],
         groupby=groupby_col_name,
-        nonnormal=nonnormal_col_names,
-        rename=readable_col_names,
-        limit=limit_columns,
-        order=order_columns,
+        nonnormal=[r.source_col_name for r in row_specs if r.nonnormal],
+        rename={r.source_col_name: r.readable_name for r in row_specs},
+        limit={r.source_col_name: r.values_to_display[0] for r in row_specs if r.values_to_display},
+        order={r.source_col_name: r.values_to_display for r in row_specs if r.values_to_display},
         pval=pval,
     )
 

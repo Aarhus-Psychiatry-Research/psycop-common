@@ -1,0 +1,77 @@
+import pathlib
+from dataclasses import dataclass
+from tempfile import mkdtemp
+
+import polars as pl
+
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import PsycopMlflowRun
+from psycop.common.model_training_v2.config.config_utils import resolve_and_fill_config
+from psycop.common.model_training_v2.loggers.terminal_logger import TerminalLogger
+from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
+    BaselinePreprocessingPipeline,
+)
+from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
+from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
+    RegionalFilter,
+)
+from psycop.common.types.validated_frame import ValidatedFrame
+
+
+@dataclass(frozen=True)
+class TableOneModel(ValidatedFrame[pl.LazyFrame]):
+    dataset_col_name: str = "dataset"
+    pred_time_uuid_col_name: str = "pred_time_uuid"
+
+
+def _train_test_column(
+    flattened_data: pl.LazyFrame, train_filter: PresplitStep, test_filter: PresplitStep
+) -> pl.LazyFrame:
+    """Adds a 'dataset' column to the dataframe, indicating whether the row is in the train or test set."""
+    train_data = train_filter.apply(flattened_data).with_columns(dataset=pl.lit("0. train"))
+    test_data = test_filter.apply(flattened_data.lazy()).with_columns(dataset=pl.lit("test"))
+
+    flattened_combined = pl.concat([train_data, test_data], how="vertical").rename(
+        {"prediction_time_uuid": "pred_time_uuid"}
+    )
+    # TD: Check if the rename is needed
+
+    return flattened_combined
+
+
+def _preprocessed_data(data_path: str, pipeline: BaselinePreprocessingPipeline) -> pl.LazyFrame:
+    data = pl.scan_parquet(data_path)
+    preprocessed = pipeline.apply(data)
+    return pl.from_pandas(preprocessed).lazy()
+
+
+def table_one_model(run: PsycopMlflowRun) -> TableOneModel:
+    cfg = run.get_config()
+
+    tmp_cfg = pathlib.Path(mkdtemp()) / "tmp.cfg"
+    cfg.to_disk(tmp_cfg)
+
+    from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
+    from psycop.projects.cvd.model_training.populate_cvd_registry import populate_with_cvd_registry
+
+    populate_baseline_registry()
+    populate_with_cvd_registry()
+
+    filled = resolve_and_fill_config(tmp_cfg, fill_cfg_with_defaults=True)
+
+    pipeline: BaselinePreprocessingPipeline = filled["trainer"].preprocessing_pipeline
+    pipeline._logger = TerminalLogger()  # type: ignore
+
+    # Remove column steps
+    pipeline.steps = [
+        step
+        for step in pipeline.steps
+        if "filter" in step.__class__.__name__.lower()
+        and "column" not in step.__class__.__name__.lower()
+        and "regional" not in step.__class__.__name__.lower()
+    ]
+
+    preprocessed_visits = _preprocessed_data(cfg["trainer"]["training_data"]["paths"][0], pipeline)
+    split = _train_test_column(
+        preprocessed_visits, RegionalFilter(["train", "val"]), RegionalFilter(["test"])
+    )
+    return TableOneModel(split, allow_extra_columns=True)

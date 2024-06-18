@@ -15,66 +15,15 @@ from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_spli
     RegionalFilter,
 )
 from psycop.projects.cvd.cohort_examination.label_by_outcome_type import label_by_outcome_type
-from psycop.projects.cvd.cohort_examination.table_one.lib import RowSpecification
+from psycop.projects.cvd.cohort_examination.table_one.facade import table_one
+from psycop.projects.cvd.cohort_examination.table_one.model import table_one_model
+from psycop.projects.cvd.cohort_examination.table_one.view import RowSpecification
 from psycop.projects.cvd.feature_generation.cohort_definition.outcome_specification.combined import (
     get_first_cvd_indicator,
 )
 
 run = MlflowClientWrapper().get_run(experiment_name="CVD", run_name="CVD layer 1, base")
-cfg = run.get_config()
-
-# %%
-##########################
-# Preprocessing pipeline #
-##########################
-# %%
-import pathlib
-from tempfile import mkdtemp
-
-tmp_cfg = pathlib.Path(mkdtemp()) / "tmp.cfg"
-cfg.to_disk(tmp_cfg)
-
-# %%
-from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
-from psycop.projects.cvd.model_training.populate_cvd_registry import populate_with_cvd_registry
-
-populate_baseline_registry()
-populate_with_cvd_registry()
-
-# %%
-from psycop.common.model_training_v2.config.config_utils import resolve_and_fill_config
-
-filled = resolve_and_fill_config(tmp_cfg, fill_cfg_with_defaults=True)
-
-# %%
-from psycop.common.model_training_v2.loggers.terminal_logger import TerminalLogger
-
-pipeline: BaselinePreprocessingPipeline = filled["trainer"].preprocessing_pipeline
-pipeline._logger = TerminalLogger()  # type: ignore
-
-# Remove column steps
-pipeline.steps = [
-    step
-    for step in pipeline.steps
-    if "filter" in step.__class__.__name__.lower()
-    and "column" not in step.__class__.__name__.lower()
-    and "regional" not in step.__class__.__name__.lower()
-]
-
-# Add train/test labels. Compute-intensive solution, but good enough for now.
-flattened_data = pl.from_pandas(
-    pipeline.apply(pl.scan_parquet(cfg["trainer"]["training_data"]["paths"][0]))
-).lazy()
-train_data = (
-    RegionalFilter(["train", "val"]).apply(flattened_data).with_columns(dataset=pl.lit("0. train"))
-)
-test_data = (
-    RegionalFilter(["test"]).apply(flattened_data.lazy()).with_columns(dataset=pl.lit("test"))
-)
-
-flattened_combined = pl.concat([train_data, test_data], how="vertical").rename(
-    {"prediction_time_uuid": "pred_time_uuid"}
-)
+model = table_one_model(run)
 
 # %%
 ####################
@@ -82,7 +31,9 @@ flattened_combined = pl.concat([train_data, test_data], how="vertical").rename(
 ####################
 import pandas as pd
 
-from psycop.projects.cvd.cohort_examination.table_one.lib import get_psychiatric_diagnosis_row_specs
+from psycop.projects.cvd.cohort_examination.table_one.view import (
+    get_psychiatric_diagnosis_row_specs,
+)
 
 visit_row_specs = [
     RowSpecification(source_col_name="pred_age_in_years", readable_name="Age", nonnormal=True),
