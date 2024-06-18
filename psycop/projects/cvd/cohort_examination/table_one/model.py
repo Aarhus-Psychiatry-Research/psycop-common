@@ -30,15 +30,19 @@ class TableOneModel(ValidatedFrame[pl.DataFrame]):
 
 
 @shared_cache.cache
-def _train_test_column(
-    flattened_data: pl.DataFrame, train_filter: PresplitStep, test_filter: PresplitStep
-) -> pl.DataFrame:
+def _train_test_column(flattened_data: pl.DataFrame) -> pl.DataFrame:
     """Adds a 'dataset' column to the dataframe, indicating whether the row is in the train or test set."""
     train_data = (
-        train_filter.apply(flattened_data.lazy()).with_columns(dataset=pl.lit("0. train")).collect()
+        RegionalFilter(["train", "val"])
+        .apply(flattened_data.lazy())
+        .with_columns(dataset=pl.lit("0. train"))
+        .collect()
     )
     test_data = (
-        test_filter.apply(flattened_data.lazy()).with_columns(dataset=pl.lit("test")).collect()
+        RegionalFilter(["test"])
+        .apply(flattened_data.lazy())
+        .with_columns(dataset=pl.lit("test"))
+        .collect()
     )
 
     flattened_combined = pl.concat([train_data, test_data], how="vertical").rename(
@@ -90,9 +94,7 @@ def table_one_model(run: PsycopMlflowRun, sex_col_name: str) -> TableOneModel:
     ]
 
     preprocessed_visits = _preprocessed_data(cfg["trainer"]["training_data"]["paths"][0], pipeline)
-    split = _train_test_column(
-        preprocessed_visits, RegionalFilter(["train", "val"]), RegionalFilter(["test"])
-    )
+    split = _train_test_column(preprocessed_visits)
     with_outcome = _first_outcome_data(split)
 
     return TableOneModel(

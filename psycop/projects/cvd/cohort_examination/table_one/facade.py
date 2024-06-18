@@ -12,4 +12,4 @@ def table_one(
 ):
     model = table_one_model(run=run, sex_col_name=sex_col_name)
     view = table_one_view(model=model)
-    view.write_csv(file=output_dir / "table_one.csv")
+    view.to_csv(output_dir / f"{run.name}.csv")

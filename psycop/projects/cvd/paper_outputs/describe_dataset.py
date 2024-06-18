@@ -6,8 +6,9 @@ from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClien
 from psycop.projects.cvd.cohort_examination.table_one.facade import table_one
 
 
-class CVDArtifactWriter(Protocol):
-    def __call__(self, output_dir: Path) -> None: ...
+class CVDArtifactFacade(Protocol):
+    def __call__(self, output_dir: Path) -> None:
+        ...
 
 
 if __name__ == "__main__":
@@ -15,7 +16,7 @@ if __name__ == "__main__":
     output_path = Path("dataset_name")
     output_path.mkdir(exist_ok=True)
 
-    artifacts: Sequence[CVDArtifactWriter] = [
+    artifacts: Sequence[CVDArtifactFacade] = [
         lambda output_dir: table_one(run=run, output_dir=output_dir)
     ]
     for artifact in artifacts:

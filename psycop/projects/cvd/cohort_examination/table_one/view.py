@@ -7,6 +7,7 @@ import pandas as pd
 import polars as pl
 from tableone import TableOne
 
+from psycop.common.global_utils.cache import shared_cache
 from psycop.common.model_evaluation.utils import bin_continuous_data
 from psycop.projects.cvd.cohort_examination.label_by_outcome_type import label_by_outcome_type
 from psycop.projects.cvd.cohort_examination.table_one.model import TableOneModel
@@ -17,9 +18,9 @@ class RowSpecification:
     source_col_name: str
     readable_name: str
     categorical: bool = False
-    values_to_display: Optional[Sequence[Union[int, float, str]]] = (
-        None  # Which categories to display.
-    )
+    values_to_display: Optional[
+        Sequence[Union[int, float, str]]
+    ] = None  # Which categories to display.
     nonnormal: bool = False
 
 
@@ -52,6 +53,7 @@ def _get_psychiatric_diagnosis_row_specs(readable_col_names: list[str]) -> list[
     return specs
 
 
+@shared_cache.cache
 def _create_table(
     row_specs: Sequence[RowSpecification],
     data: pd.DataFrame,
@@ -82,7 +84,7 @@ def _create_table(
     return table_one.tableone
 
 
-def _visit_frame(model: TableOneModel) -> pl.DataFrame:
+def _visit_frame(model: TableOneModel) -> pd.DataFrame:
     specs = [
         RowSpecification(source_col_name="pred_age_in_years", readable_name="Age", nonnormal=True),
         RowSpecification(
@@ -101,17 +103,16 @@ def _visit_frame(model: TableOneModel) -> pl.DataFrame:
         [r.source_col_name for r in specs if r.source_col_name not in ["age_grouped"]] + ["dataset"]
     )
 
-    table = _create_table(
-        row_specs=specs, data=columns_to_keep.to_pandas().fillna(0), groupby_col_name="age_grouped"
-    )
-    table["age_grouped"] = pd.Series(
-        bin_continuous_data(table["pred_age_in_years"], bins=[18, *list(range(19, 90, 10))])[0]
+    data = columns_to_keep.to_pandas().fillna(0)
+    data["age_grouped"] = pd.Series(
+        bin_continuous_data(data["pred_age_in_years"], bins=[18, *list(range(19, 90, 10))])[0]
     ).astype(str)
+    table = _create_table(row_specs=specs, data=data, groupby_col_name="dataset")
 
-    return pl.from_pandas(table)
+    return table
 
 
-def _patient_frame(model: TableOneModel) -> pl.DataFrame:
+def _patient_frame(model: TableOneModel) -> pd.DataFrame:
     patient_row_specs = [
         RowSpecification(
             source_col_name=model.sex_col_name,
@@ -130,30 +131,25 @@ def _patient_frame(model: TableOneModel) -> pl.DataFrame:
         ),
     ]
 
-    patient_df = (
-        model.frame.groupby("dw_ek_borger")
-        .agg(
-            pl.col(model.sex_col_name).first().alias(model.sex_col_name),
-            pl.col(model.outcome_col_name).max().alias(model.outcome_col_name),
-            pl.col("timestamp").min().alias("first_contact_timestamp"),
-            pl.col("dataset").first().alias("dataset"),
-        )
-        .select([model.sex_col_name, model.outcome_col_name, "first_contact_timestamp", "dataset"])
+    patient_df = model.frame.groupby("dw_ek_borger").agg(
+        pl.col(model.sex_col_name).first().alias(model.sex_col_name),
+        pl.col(model.outcome_col_name).max().alias(model.outcome_col_name),
+        pl.col("timestamp").min().alias("first_contact_timestamp"),
+        pl.col("dataset").first().alias("dataset"),
+        pl.col("cause").first().alias("outcome_cause"),
     )
 
-    patient_df_labelled = label_by_outcome_type(patient_df, group_col="cause")
+    patient_df_labelled = label_by_outcome_type(patient_df, group_col="outcome_cause")
 
-    return pl.from_pandas(
-        _create_table(
-            patient_row_specs,
-            data=patient_df_labelled.to_pandas().fillna(0),
-            groupby_col_name="dataset",
-        )
+    return _create_table(
+        patient_row_specs,
+        data=patient_df_labelled.to_pandas().fillna(0),
+        groupby_col_name="dataset",
     )
 
 
-def table_one_view(model: TableOneModel) -> pl.DataFrame:
+def table_one_view(model: TableOneModel) -> pd.DataFrame:
     visit_frame = _visit_frame(model)
     patient_frame = _patient_frame(model)
 
-    return pl.concat([visit_frame, patient_frame], how="vertical")
+    return pd.concat([visit_frame, patient_frame], axis=0)
