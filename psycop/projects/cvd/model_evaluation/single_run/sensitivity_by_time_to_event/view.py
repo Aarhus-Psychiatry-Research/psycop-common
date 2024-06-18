@@ -18,7 +18,7 @@ class SensitivityByTTEPlot(SingleRunPlot):
 
     def __call__(self) -> pn.ggplot:
         df = self.data.to_pandas()
-        categories = df["unit_from_event_binned"].dtype.categories[::-1]  # type: ignore
+        categories = df["unit_from_event_binned"].dtype.categories  # type: ignore
         df["unit_from_event_binned"] = df["unit_from_event_binned"].cat.set_categories(
             new_categories=categories,
             ordered=True,  # type: ignore
@@ -31,7 +31,7 @@ class SensitivityByTTEPlot(SingleRunPlot):
                     x="unit_from_event_binned", y="sensitivity", ymin="ci_lower", ymax="ci_upper"
                 ),
             )
-            + pn.scale_x_discrete(reverse=True)
+            + pn.scale_x_discrete()
             + pn.expand_limits(y=0)
             + pn.geom_path(group=1, size=0.5)
             + pn.geom_point(size=1)
