@@ -76,7 +76,6 @@ def generate_feature_description_df(
     for col in df.columns:
         parsed_col = column_name_parser(col)
         n_unique = df[col].n_unique()
-        proportion_missing = round(df[col].is_nan().mean(), 2)  # type: ignore
         mean = round(df[col].drop_nans().mean(), 2)  # type: ignore
         proportion_using_fallback = get_value_proportion(df[col], parsed_col.fallback)
 
@@ -88,7 +87,6 @@ def generate_feature_description_df(
             "Resolve multiple": parsed_col.resolve_multiple_strategy,
             "Fallback strategy": parsed_col.fallback,
             "Static": parsed_col.is_static,
-            "Proportion missing": proportion_missing,
             "Mean": mean,
             "N. unique": n_unique,
             "Proportion using fallback": proportion_using_fallback,

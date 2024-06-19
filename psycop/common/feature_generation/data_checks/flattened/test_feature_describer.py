@@ -65,7 +65,6 @@ def test_generate_feature_description_df():
             "Resolve multiple": ["N/A", "max", "mean"],
             "Fallback strategy": ["nan", "0", "nan"],
             "Static": [True, False, False],
-            "Proportion missing": [0.33, 0.0, 0.0],
             "Mean": [0.5, 0.33, 2.0],
             "N. unique": [3, 2, 3],
             "Proportion using fallback": [0.33, 0.67, 0.0],
