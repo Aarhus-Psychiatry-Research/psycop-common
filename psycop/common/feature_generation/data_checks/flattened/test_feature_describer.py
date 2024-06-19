@@ -55,7 +55,8 @@ def test_parse_predictor_column_name(predictor_column_example: PredictorColumnEx
 
 def test_tsflattener_v2_is_static():
     assert (
-        tsflattener_v2_column_is_static("pred_value_1_within_0_to_730_days_mean_fallback_nan") is False
+        tsflattener_v2_column_is_static("pred_value_1_within_0_to_730_days_mean_fallback_nan")
+        is False
     )
     assert tsflattener_v2_column_is_static("pred_female_fallback_nan") is True
 
