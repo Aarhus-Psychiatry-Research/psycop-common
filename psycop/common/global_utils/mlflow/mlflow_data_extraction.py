@@ -71,6 +71,10 @@ class PsycopMlflowRun(Run):
     ) -> "PsycopMlflowRun":
         return cls(run_info=run._info, run_data=run._data, run_inputs=run._inputs, client=client)
 
+    @property
+    def name(self) -> str:
+        return self._info._run_name  # type: ignore
+
     def get_config(self) -> Config:
         cfg_path = self.download_artifact(artifact_name="config.cfg", save_location=None)
         return Config().from_disk(cfg_path)
