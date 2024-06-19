@@ -10,15 +10,22 @@ from scipy.stats import truncnorm
 from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
     generate_performance_by_ppr_table,
 )
-from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
+from psycop.common.model_evaluation.patchwork.patchwork_grid import (
+    create_patchwork_grid,
+)
 from psycop.projects.forced_admission_inpatient.model_eval.model_description.performance.performance_by_ppr import (
     _get_num_of_unique_outcome_events,  # type: ignore
+)
+from psycop.projects.forced_admission_inpatient.model_eval.model_description.performance.performance_by_ppr import (
     _get_number_of_outcome_events_with_at_least_one_true_positve,  # type: ignore
 )
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
     ForcedAdmissionInpatientPipelineRun,
 )
-from psycop.projects.forced_admission_outpatient.model_eval.config import COLORS, FA_PN_THEME
+from psycop.projects.forced_admission_outpatient.model_eval.config import (
+    COLORS,
+    FA_PN_THEME,
+)
 
 
 def _sample_float_from_truncated_log_normal(
@@ -54,12 +61,12 @@ def _sample_int_from_truncated_normal(
 def sample_cost_benefit_estimates(n: int = 10000) -> pd.DataFrame:
     # sample intervention cost 100 times - a integer from a normal distribution with mean 500 and std 100 and a lower bound of 0
     cost_of_intervention = _sample_int_from_truncated_normal(
-        mean_cost=500, std_cost=200, lower_bound=200, n=n
+        mean_cost=1000, std_cost=200, lower_bound=200, n=n
     )
 
     # sample efficiency of intervention - a float from a log-normal distribution with mean 0.5 and bounds 0.1 and 0.9
     efficiency_of_intervention = _sample_float_from_truncated_log_normal(
-        mean_efficiency=0.15, lower_bound=0.01, upper_bound=0.99, n=n
+        mean_efficiency=0.23, lower_bound=0.01, upper_bound=0.99, n=n
     )
 
     # sample savings from prevented outcome - a integer from a normal distribution with mean 100000 and std 25000
@@ -325,7 +332,7 @@ def fa_cost_benefit_from_monte_carlo_simulations(
     run: ForcedAdmissionInpatientPipelineRun,
     per_true_positive: bool,
     min_alert_days: None | int = 30,
-    positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
+    positive_rates: Sequence[float] = [0.9, 0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
     n: int = 10000,
 ) -> pn.ggplot:
     df = sample_cost_benefit_estimates(n=n)
@@ -405,7 +412,7 @@ if __name__ == "__main__":
     )
 
     fa_cost_benefit_from_monte_carlo_simulations(
-        run=get_best_eval_pipeline(), per_true_positive=True
+        run=get_best_eval_pipeline(), per_true_positive=False
     )
 
     fa_cost_benefit_by_ratio_and_ppr(
