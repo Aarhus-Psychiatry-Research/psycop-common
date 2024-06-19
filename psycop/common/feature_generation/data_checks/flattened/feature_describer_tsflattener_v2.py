@@ -22,13 +22,6 @@ def tsflattener_v2_column_is_static(col_name: str) -> bool:
     return str_match not in col_name
 
 
-def get_value_proportion(series: pl.Series, value: str) -> float:
-    """Get proportion of series that is equal to the value argument."""
-    if value == "nan":
-        return round(series.is_nan().mean(), 2)  # type: ignore
-    return round(series.eq(float(value)).mean(), 2)  # type: ignore
-
-
 def parse_predictor_column_name(
     col_name: str,
     is_static: Callable[[str], bool] = tsflattener_v2_column_is_static,
@@ -77,7 +70,7 @@ def generate_feature_description_df(
         parsed_col = column_name_parser(col)
         n_unique = df[col].n_unique()
         mean = round(df[col].drop_nans().mean(), 2)  # type: ignore
-        proportion_using_fallback = get_value_proportion(df[col], parsed_col.fallback)
+        proportion_using_fallback = round(df[col].eq(float(parsed_col.fallback)).mean(), 2)  # type: ignore
 
         feature_description = {
             "Feature name": parsed_col.feature_name,
