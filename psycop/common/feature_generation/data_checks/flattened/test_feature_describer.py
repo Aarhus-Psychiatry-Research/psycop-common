@@ -1,5 +1,3 @@
-from dataclasses import dataclass
-
 import numpy as np
 import polars as pl
 import pytest
@@ -11,16 +9,6 @@ from psycop.common.feature_generation.data_checks.flattened.feature_describer_ts
     parse_predictor_column_name,
     tsflattener_v2_column_is_static,
 )
-
-
-@dataclass
-class PredictorColumnExample:
-    col_name: str
-    feature_name: str
-    fallback: str
-    time_interval_start: str
-    time_interval_end: str
-    resolve_multiple_strategy: str
 
 
 @pytest.mark.parametrize(
@@ -48,7 +36,7 @@ class PredictorColumnExample:
         ),
     ],
 )
-def test_parse_predictor_column_name(predictor_column_example: PredictorColumnExample):
+def test_parse_predictor_column_name(predictor_column_example: ParsedPredictorColumn):
     parsed_col = parse_predictor_column_name(predictor_column_example.col_name)
     assert parsed_col == predictor_column_example
 
