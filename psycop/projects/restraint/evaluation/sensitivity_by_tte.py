@@ -12,24 +12,7 @@ from psycop.common.model_training.training_output.dataclasses import get_predict
 
 import polars as pl
 
-
-def parse_timestamp_from_uuid(df: pl.DataFrame, output_col_name: str = "timestamp") -> pl.DataFrame:
-    return df.with_columns(
-        pl.col("pred_time_uuid")
-        .str.split("-")
-        .list.slice(1)
-        .list.join("-")
-        .str.strptime(pl.Datetime)
-        .alias(output_col_name)
-    )
-
-
-def parse_dw_ek_borger_from_uuid(
-    df: pl.DataFrame, output_col_name: str = "dw_ek_borger"
-) -> pl.DataFrame:
-    return df.with_columns(
-        pl.col("pred_time_uuid").str.split("-").list.first().cast(pl.Int64).alias(output_col_name)
-    )
+from psycop.projects.restraint.evaluation.evaluation_utils import parse_dw_ek_borger_from_uuid, parse_timestamp_from_uuid
 
 
 def plotnine_sensitivity_by_tte(df: pd.DataFrame, title: str = "Sensitivity by Time to Event") -> pn.ggplot:
