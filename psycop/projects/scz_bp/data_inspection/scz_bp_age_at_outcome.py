@@ -7,6 +7,7 @@ import polars as pl
 
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
+    RegionalFilter,
     _get_regional_split_df,  # type: ignore
 )
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_eligible_config import (
@@ -32,17 +33,24 @@ if __name__ == "__main__":
     )
     birthday_df = pl.from_pandas(birthdays())
 
-    train_val_ids = (
-        _get_regional_split_df().filter(pl.col("region").is_in(["øst", "vest"])).collect()
+    age_df = first_diagnosis.join(birthday_df, on="dw_ek_borger", how="inner").with_columns(
+        ((pl.col("timestamp") - pl.col("date_of_birth")).dt.days() / 365).alias("age")
     )
 
-    age_df = (
-        first_diagnosis.join(birthday_df, on="dw_ek_borger", how="inner")
-        .filter(pl.col("dw_ek_borger").is_in(train_val_ids.get_column("dw_ek_borger")))
-        .with_columns(
-            ((pl.col("timestamp") - pl.col("date_of_birth")).dt.days() / 365).alias("age")
-        )
+    train_val_df = (
+        RegionalFilter(splits_to_keep=["train", "val"])
+        .apply(age_df.lazy())
+        .collect()
+        .with_columns(split=pl.lit("train"))
     )
+    test_df = (
+        RegionalFilter(splits_to_keep=["test"])
+        .apply(age_df.lazy())
+        .collect()
+        .with_columns(split=pl.lit("test"))
+    )
+
+    age_df = pl.concat([train_val_df, test_df], how="vertical")
 
     age_df.filter(pl.col("source") == "bp")["age"].describe()
     age_df.filter(pl.col("source") == "scz")["age"].describe()
@@ -78,6 +86,15 @@ if __name__ == "__main__":
     ).group_by("age_bin").count().sort(by="age_bin")
 
     age_df.group_by(pl.col("age").round(0)).count().sort("count")
+    (
+        pn.ggplot(age_df, pn.aes(x="age", fill="split"))
+        + pn.geom_density(alpha=0.5)
+        + pn.geom_vline(xintercept=18, linetype="dashed")
+        + pn.facet_wrap("~source")
+        + pn.theme_minimal()
+        + pn.theme(legend_position="bottom")
+    )
+    age_df.to_pandas().groupby("split")["age"].describe()
 
     (
         pn.ggplot(age_df, pn.aes(x="age"))

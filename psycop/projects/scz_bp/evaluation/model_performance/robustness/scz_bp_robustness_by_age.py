@@ -16,7 +16,7 @@ def scz_bp_auroc_by_age(eval_ds: EvalDataset) -> pn.ggplot:
         bin_continuous_input=True,
         confidence_interval=True,
     )
-
+    df = df[df["age_binned"] != "61+"]
     p = scz_bp_plot_robustness(
         df,
         x_column="age_binned",

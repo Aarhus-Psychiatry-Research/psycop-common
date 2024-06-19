@@ -17,6 +17,7 @@ def create_patchwork_grid(
     panel_letter_size: Literal[
         "xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large"
     ] = "x-large",
+    first_letter_index: int = 0,
 ) -> pw.Bricks:
     """Create a grid from a sequence of ggplot objects."""
     print_a4_ratio(plots, single_plot_dimensions, n_in_row)
@@ -35,7 +36,7 @@ def create_patchwork_grid(
     for i in range(len(bricks)):
         # Add the letter
         if add_subpanels_letters:
-            bricks[i].set_index(alphabet[i].upper(), size=panel_letter_size)
+            bricks[i].set_index(alphabet[first_letter_index:][i].upper(), size=panel_letter_size)
 
         # Add it to the row
         current_row.append(bricks[i])

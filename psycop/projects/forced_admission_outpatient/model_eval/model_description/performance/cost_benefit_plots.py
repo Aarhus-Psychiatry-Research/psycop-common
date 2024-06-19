@@ -374,7 +374,7 @@ def fa_cost_benefit_from_monte_carlo_simulations(
     if per_true_positive:
         grid_output_path = (
             run.paper_outputs.paths.figures
-            / "fa_outpatient_mc_cost_benefit_estimates_per_positives_outomces.png"
+            / "fa_outpatient_mc_cost_benefit_estimates_per_positives_outcomes.png"
         )
         grid.savefig(grid_output_path)
     else:
@@ -416,11 +416,12 @@ if __name__ == "__main__":
     )
 
     fa_cost_benefit_from_monte_carlo_simulations(
-        run=get_best_eval_pipeline(), per_true_positive=False,
+        run=get_best_eval_pipeline(), per_true_positive=False, min_alert_days=30
     )
 
     fa_cost_benefit_by_ratio_and_ppr(
         run=get_best_eval_pipeline(),
-        per_true_positive=True,
-        cost_benefit_ratios=[500, 100, 40, 20, 10, 6, 3],
+        per_true_positive=False,
+        min_alert_days=30,
+        cost_benefit_ratios=[40, 20, 10, 6, 3],
     )

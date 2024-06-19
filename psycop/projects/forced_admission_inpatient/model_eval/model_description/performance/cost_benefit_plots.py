@@ -370,13 +370,16 @@ def fa_cost_benefit_from_monte_carlo_simulations(
     if per_true_positive:
         grid_output_path = (
             run.paper_outputs.paths.figures
-            / "fa_inpatient_mc_cost_benefit_per_positives_outomces.png"
+            / "fa_inpatient_mc_cost_benefit_per_positives_outcomes.png"
         )
         grid.savefig(grid_output_path)
     else:
-        grid_output_path = (
-            run.paper_outputs.paths.figures / "fa_inpatient_mc_cost_benefit_per_unique_outcomes.png"
+        file_name = (
+            f"fa_inpatient_mc_cost_benefit_per_unique_outcomes_min_days_{min_alert_days}.png"
+            if min_alert_days is not None
+            else "fa_inpatient_mc_cost_benefit_per_unique_outcomes.png"
         )
+        grid_output_path = run.paper_outputs.paths.figures / file_name
         grid.savefig(grid_output_path)
 
     return p
@@ -412,9 +415,12 @@ if __name__ == "__main__":
     )
 
     fa_cost_benefit_from_monte_carlo_simulations(
-        run=get_best_eval_pipeline(), per_true_positive=False
+        run=get_best_eval_pipeline(), per_true_positive=False, min_alert_days=30
     )
 
     fa_cost_benefit_by_ratio_and_ppr(
-        run=get_best_eval_pipeline(), per_true_positive=True, cost_benefit_ratios=[40, 20, 10, 6, 3]
+        run=get_best_eval_pipeline(),
+        per_true_positive=False,
+        min_alert_days=30,
+        cost_benefit_ratios=[40, 20, 10, 6, 3],
     )

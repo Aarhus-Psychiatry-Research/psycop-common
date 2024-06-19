@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 import pandas as pd
 import patchworklib as pw
 import plotnine as pn
@@ -13,12 +15,67 @@ from psycop.projects.forced_admission_outpatient.utils.pipeline_objects import (
 msg = Printer(timestamp=True)
 
 
-def _get_prediction_times_with_outcome_shared_by_n_other(
-    eval_dataset: EvalDataset, n: int
+def _is_ones_then_zeros(seq: Sequence[int]) -> bool:
+    change_occurred = False
+    for i in range(1, len(seq)):
+        if seq[i] != seq[i - 1]:
+            if change_occurred:  # If the sequence changed more than once
+                return False
+            change_occurred = True
+    if seq[0] == 1 and seq[-1] == 0:
+        return True
+    return False
+
+
+def _is_zeros_then_ones(seq: Sequence[int]) -> bool:
+    change_occurred = False
+    for i in range(1, len(seq)):
+        if seq[i] != seq[i - 1]:
+            if change_occurred:  # If the sequence changed more than once
+                return False
+            change_occurred = True
+    if seq[0] == 0 and seq[-1] == 1:
+        return True
+    return False
+
+
+def _get_prediction_times_with_outcome_shared_more_than_one_prediction_time(
+    eval_dataset: EvalDataset, pos_rate: float = BEST_POS_RATE
 ) -> pd.DataFrame:
     # Generate df
     positives_series, _ = eval_dataset.get_predictions_for_positive_rate(
-        desired_positive_rate=BEST_POS_RATE
+        desired_positive_rate=pos_rate
+    )
+
+    df = pd.DataFrame(
+        {
+            "id": eval_dataset.ids,
+            "y": eval_dataset.y,
+            "y_pred": positives_series,
+            "y_hat_probs": eval_dataset.y_hat_probs.squeeze(),
+            "pred_timestamps": eval_dataset.pred_timestamps,
+            "outcome_timestamps": eval_dataset.outcome_timestamps,
+        }
+    )
+
+    df = df.dropna(subset=["outcome_timestamps"])
+
+    df["outcome_uuid"] = df["id"].astype(str) + df["outcome_timestamps"].astype(str)
+
+    # remove all rows with an outcome_uuid that only appears once
+    outcome_uuid_counts = df["outcome_uuid"].value_counts()
+
+    filtered_df = df[df["outcome_uuid"].isin(outcome_uuid_counts[outcome_uuid_counts > 1].index)]
+
+    return filtered_df
+
+
+def _get_prediction_times_with_outcome_shared_by_n_other(
+    eval_dataset: EvalDataset, n: int, pos_rate: float = BEST_POS_RATE
+) -> pd.DataFrame:
+    # Generate df
+    positives_series, _ = eval_dataset.get_predictions_for_positive_rate(
+        desired_positive_rate=pos_rate
     )
 
     df = pd.DataFrame(
@@ -234,6 +291,72 @@ def plot_tpr_and_time_to_event_for_cases_wtih_multiple_pred_times_per_outcome(
     return grid
 
 
+def prediction_stability_for_cases_with_multiple_pred_times_per_outcome(
+    eval_dataset: EvalDataset,
+    save: bool = True,
+    positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
+) -> pd.DataFrame:
+    df_list = []
+
+    for pos_rate in positive_rates:
+        df = _get_prediction_times_with_outcome_shared_more_than_one_prediction_time(
+            eval_dataset, pos_rate
+        )
+
+        df["pred_time_order"] = (
+            df.groupby("outcome_uuid")["pred_timestamps"].rank(method="first").astype(int)
+        )
+
+        # create empty lists for each possible type of prediction sequence
+        only_ones = []
+        only_zeros = []
+        ones_then_zeros = []
+        zeros_then_ones = []
+        mixed = []
+
+        for outcome_uuid in df["outcome_uuid"].unique():
+            outcome_predictions = df[df["outcome_uuid"] == outcome_uuid]["y_pred"].tolist()
+
+            if all(pred == 0 for pred in outcome_predictions):
+                only_zeros.append(outcome_uuid)
+            elif all(pred == 1 for pred in outcome_predictions):
+                only_ones.append(outcome_uuid)
+            elif (
+                outcome_predictions[0] == 1
+                and outcome_predictions[-1] == 0
+                or _is_ones_then_zeros(outcome_predictions)
+            ):
+                ones_then_zeros.append(outcome_uuid)
+            elif _is_zeros_then_ones(outcome_predictions):
+                zeros_then_ones.append(outcome_uuid)
+            else:
+                mixed.append(outcome_uuid)
+
+        counts = {
+            "stable_true_positive": len(only_ones),
+            "stable_false_negative": len(only_zeros),
+            "true_positve_to_false_negative": len(ones_then_zeros),
+            "false_negative_to_true_positive": len(zeros_then_ones),
+            "unstable": len(mixed),
+            "positive_rate": pos_rate,
+        }
+
+        pos_rate_df = pd.DataFrame(counts, index=[0])
+
+        df_list.append(pos_rate_df)
+
+    full_df = pd.concat(df_list)
+
+    if save:
+        table_output_path = (
+            run.paper_outputs.paths.figures
+            / "fa_inpatient_prediction_stability_for_outcomes_with_multiple_pred_times.png"
+        )
+        full_df.to_csv(table_output_path, index=False)
+
+    return full_df
+
+
 if __name__ == "__main__":
     from psycop.projects.forced_admission_outpatient.model_eval.selected_runs import (
         get_best_eval_pipeline,
@@ -242,6 +365,8 @@ if __name__ == "__main__":
     run = get_best_eval_pipeline()
     eval_dataset = run.pipeline_outputs.get_eval_dataset()
     max_n = 10
+
+    prediction_stability_for_cases_with_multiple_pred_times_per_outcome(eval_dataset=eval_dataset)
 
     plot_model_outputs_over_time_for_cases_multiple_pred_times_per_outcome(
         run, eval_dataset, max_n, ppr=BEST_POS_RATE

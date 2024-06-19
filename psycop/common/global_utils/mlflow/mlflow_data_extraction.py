@@ -1,15 +1,18 @@
+import pickle
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
 import mlflow
 import polars as pl
+import sklearn
 from confection import Config
 from mlflow.entities import Run
 from mlflow.entities.run_data import RunData
 from mlflow.entities.run_info import RunInfo
 from mlflow.entities.run_inputs import RunInputs
 from mlflow.tracking import MlflowClient
+from sklearn.pipeline import Pipeline
 
 from psycop.common.types.validated_frame import ValidatedFrame
 from psycop.common.types.validator_rules import ColumnExistsRule, ColumnTypeRule, ValidatorRule
@@ -68,9 +71,16 @@ class PsycopMlflowRun(Run):
     ) -> "PsycopMlflowRun":
         return cls(run_info=run._info, run_data=run._data, run_inputs=run._inputs, client=client)
 
+    @property
+    def name(self) -> str:
+        return self._info._run_name  # type: ignore
+
     def get_config(self) -> Config:
         cfg_path = self.download_artifact(artifact_name="config.cfg", save_location=None)
         return Config().from_disk(cfg_path)
+
+    def sklearn_pipeline(self) -> Pipeline:
+        return pickle.load(self.download_artifact("sklearn_pipe.pkl").open("rb"))
 
     def eval_frame(self) -> EvalFrame:
         eval_df_path = self.download_artifact(artifact_name="eval_df.parquet", save_location=None)
