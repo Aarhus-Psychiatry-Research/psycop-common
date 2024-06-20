@@ -4,6 +4,7 @@ from typing import Any, Callable
 
 import polars as pl
 
+import psycop as ps
 from psycop.common.cohort_definition import CohortDefiner, StepDelta
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
     MlflowClientWrapper,
@@ -24,6 +25,7 @@ from psycop.projects.cvd.model_training.populate_cvd_registry import populate_wi
 run = MlflowClientWrapper().get_run(experiment_name="CVD", run_name="CVD layer 1, base")
 
 
+@ps.shared_cache.cache
 def _step_delta_lines(
     cohort_definer: CohortDefiner,
     flattened_data: pl.LazyFrame,
