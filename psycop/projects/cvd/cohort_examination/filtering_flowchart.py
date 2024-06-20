@@ -30,8 +30,7 @@ def _step_delta_lines(
     cohort_definer: CohortDefiner,
     flattened_data: pl.LazyFrame,
     preprocessing_pipeline: PreprocessingPipeline,
-    outcome_matcher: pl.Expr,
-) -> Sequence[str]:
+) -> Sequence[StepDelta]:
     cohort = cohort_definer.get_filtered_prediction_times_bundle()
     steps = cohort.filter_steps
 
@@ -58,14 +57,7 @@ def _step_delta_lines(
         )
         i += 1
 
-    def _stepdelta_line(prior: StepDelta, cur: StepDelta) -> str:
-        return f"{cur.step_name}: Dropped {prior.n_prediction_times_before - cur.n_prediction_times_after}\n\t Remaining: {cur.n_prediction_times_after}"
-
-    lines = [_stepdelta_line(prior, cur) for prior, cur in zip(steps, steps[1:])]
-
-    lines.append(f"With outcome: {flattened_data.filter(outcome_matcher).count()}")
-    lines.append(f"Without outcome: {flattened_data.filter(outcome_matcher.not_()).count()}")
-    return lines
+    return steps
 
 
 def filtering_flowchart_facade(
@@ -81,12 +73,22 @@ def filtering_flowchart_facade(
     pipeline._logger = TerminalLogger()  # type: ignore
     pipeline.steps[0].split_to_keep = ["train", "val", "test"]  # type: ignore # Do not filter by region
 
-    lines = _step_delta_lines(
+    flattened_data = pl.scan_parquet(cfg["trainer"]["training_data"]["paths"][0]).lazy()
+
+    step_deltas = _step_delta_lines(
         cohort_definer=cohort_definer,
-        flattened_data=pl.scan_parquet(cfg["trainer"]["training_data"]["paths"][0]).lazy(),
+        flattened_data=flattened_data,
         preprocessing_pipeline=pipeline,
-        outcome_matcher=(pl.col(cfg["trainer"]["outcome_col_name"]) == pl.lit(1)),
     )
+
+    def _stepdelta_line(prior: StepDelta, cur: StepDelta) -> str:
+        return f"{cur.step_name}: Dropped {prior.n_prediction_times_before - cur.n_prediction_times_after}\n\t Remaining: {cur.n_prediction_times_after}"
+
+    lines = [_stepdelta_line(prior, cur) for prior, cur in zip(step_deltas, step_deltas[1:])]
+
+    outcome_matcher = pl.col(cfg["trainer"]["outcome_col_name"]) == pl.lit(1)
+    lines.append(f"With outcome: {flattened_data.filter(outcome_matcher).count()}")
+    lines.append(f"Without outcome: {flattened_data.filter(outcome_matcher.not_()).count()}")
 
     # Output to a file
     (output_dir / "filtering_flowchart.txt").write_text("\n".join(lines))
