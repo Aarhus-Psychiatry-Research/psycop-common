@@ -1,62 +1,101 @@
-# %%
+import pathlib
+from collections.abc import Sequence
+from typing import Any, Callable
+
 import polars as pl
 
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
-
-run = MlflowClientWrapper().get_run(experiment_name="CVD", run_name="CVD layer 1, base")
-cfg = run.get_config()
-
-# %%
-##########################
-# Preprocessing pipeline #
-##########################
-# %%
-import pathlib
-from tempfile import mkdtemp
-
+from psycop.common.cohort_definition import CohortDefiner, StepDelta
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
+    MlflowClientWrapper,
+    PsycopMlflowRun,
+    filled_cfg_from_run,
+)
+from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     BaselinePreprocessingPipeline,
+    PreprocessingPipeline,
 )
-
-tmp_cfg = pathlib.Path(mkdtemp()) / "tmp.cfg"
-cfg.to_disk(tmp_cfg)
-
-# %%
-from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
+from psycop.projects.cvd.feature_generation.cohort_definition.cvd_cohort_definition import (
+    CVDCohortDefiner,
+)
 from psycop.projects.cvd.model_training.populate_cvd_registry import populate_with_cvd_registry
 
-populate_baseline_registry()
-populate_with_cvd_registry()
+run = MlflowClientWrapper().get_run(experiment_name="CVD", run_name="CVD layer 1, base")
 
-# %%
-from psycop.common.model_training_v2.config.config_utils import resolve_and_fill_config
 
-filled = resolve_and_fill_config(tmp_cfg, fill_cfg_with_defaults=True)
+def _step_delta_lines(
+    cohort_definer: CohortDefiner,
+    flattened_data: pl.LazyFrame,
+    preprocessing_pipeline: PreprocessingPipeline,
+    outcome_matcher: pl.Expr,
+) -> Sequence[str]:
+    cohort = cohort_definer.get_filtered_prediction_times_bundle()
+    steps = cohort.filter_steps
 
-from psycop.common.model_training_v2.loggers.terminal_logger import TerminalLogger
+    prior = len(flattened_data.collect())
+    print(f"Rows in CohortDefiner: {prior}")
 
-pipeline: BaselinePreprocessingPipeline = filled["trainer"].preprocessing_pipeline
-pipeline._logger = TerminalLogger()  # type: ignore
-pipeline.steps[0].split_to_keep = ["train", "val", "test"]  # type: ignore # Do not filter by region
+    i = len(steps)
+    for step in preprocessing_pipeline.steps:
+        flattened_data = step.apply(flattened_data.lazy())
+        post_step_rows = len(flattened_data.collect())
 
-# %%
-flattened_data = pl.scan_parquet(cfg["trainer"]["training_data"]["paths"][0]).lazy()
+        diff = prior - post_step_rows
+        print(f"Rows dropped by {step.__class__.__name__}: {diff}")
+        prior = post_step_rows
+        steps.append(
+            StepDelta(
+                step_index=i,
+                step_name=step.__class__.__name__,
+                n_prediction_times_after=post_step_rows,
+                n_prediction_times_before=prior,
+                n_ids_after=len(flattened_data.collect()),  # TD: Worth?
+                n_ids_before=prior,  # TD: Worth?
+            )
+        )
+        i += 1
 
-prior = len(flattened_data.collect())
-print(f"Rows in CohortDefiner: {prior}")
-for step in pipeline.steps:
-    flattened_data = step.apply(flattened_data)
-    post_step_rows = len(flattened_data.collect())
+    def _stepdelta_line(prior: StepDelta, cur: StepDelta) -> str:
+        return f"{cur.step_name}: Dropped {prior.n_prediction_times_before - cur.n_prediction_times_after}\n\t Remaining: {cur.n_prediction_times_after}"
 
-    diff = prior - post_step_rows
-    print(f"Rows dropped by {step.__class__.__name__}: {diff}")
-    prior = post_step_rows
+    lines = [_stepdelta_line(prior, cur) for prior, cur in zip(steps, steps[1:])]
 
-outcome_col_name = cfg["trainer"]["outcome_col_name"]
-with_cvd = flattened_data.filter(pl.col(outcome_col_name) == pl.lit(1)).collect()
-without_cvd = flattened_data.filter(pl.col(outcome_col_name) == pl.lit(0)).collect()
+    lines.append(f"With outcome: {flattened_data.filter(outcome_matcher).count()}")
+    lines.append(f"Without outcome: {flattened_data.filter(outcome_matcher.not_()).count()}")
+    return lines
 
-print(f"End_rows: {len(flattened_data.collect())}")
-print(f"With CVD: {len(with_cvd)}")
-print(f"Without CVD: {len(without_cvd)}")
-# %%
+
+def filtering_flowchart_facade(
+    cohort_definer: CohortDefiner,
+    run: PsycopMlflowRun,
+    output_dir: pathlib.Path,
+    outcome_matcher: pl.Expr,
+):
+    cfg = run.get_config()
+
+    filled = filled_cfg_from_run(
+        run, populate_registry_fns=[populate_baseline_registry, populate_with_cvd_registry]
+    )
+
+    pipeline: BaselinePreprocessingPipeline = filled["trainer"].preprocessing_pipeline
+    pipeline._logger = TerminalLogger()  # type: ignore
+    pipeline.steps[0].split_to_keep = ["train", "val", "test"]  # type: ignore # Do not filter by region
+
+    step_deltas = _step_delta_lines(
+        cohort_definer=cohort_definer,
+        flattened_data=pl.scan_parquet(cfg["trainer"]["training_data"]["paths"][0]).lazy(),
+        preprocessing_pipeline=pipeline,
+        outcome_matcher=(pl.col(cfg["trainer"]["outcome_col_name"]) == pl.lit(1)),
+    )
+
+    # Output to a file
+    (output_dir / "filtering_flowchart.txt").write_text("\n".join(lines))
+
+
+if __name__ == "__main__":
+    filtering_flowchart_facade(
+        cohort_definer=CVDCohortDefiner(),
+        run=MlflowClientWrapper().get_run(experiment_name="CVD", run_name="CVD layer 1, base"),
+        output_dir=pathlib.Path("/tmp/cvd-filtering-flowchart"),
+        outcome_matcher=pl.col("outcome") == pl.lit(1),
+    )
