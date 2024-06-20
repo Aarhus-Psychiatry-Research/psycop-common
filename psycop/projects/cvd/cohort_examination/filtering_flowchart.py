@@ -11,6 +11,7 @@ from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
     filled_cfg_from_run,
 )
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
+from psycop.common.model_training_v2.loggers.terminal_logger import TerminalLogger
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     BaselinePreprocessingPipeline,
     PreprocessingPipeline,
@@ -37,7 +38,7 @@ def _step_delta_lines(
 
     i = len(steps)
     for step in preprocessing_pipeline.steps:
-        flattened_data = step.apply(flattened_data.lazy())
+        flattened_data = step.apply(flattened_data)
         post_step_rows = len(flattened_data.collect())
 
         diff = prior - post_step_rows
@@ -49,8 +50,8 @@ def _step_delta_lines(
                 step_name=step.__class__.__name__,
                 n_prediction_times_after=post_step_rows,
                 n_prediction_times_before=prior,
-                n_ids_after=len(flattened_data.collect()),  # TD: Worth?
-                n_ids_before=prior,  # TD: Worth?
+                n_ids_after=0,
+                n_ids_before=0,
             )
         )
         i += 1
@@ -66,10 +67,7 @@ def _step_delta_lines(
 
 
 def filtering_flowchart_facade(
-    cohort_definer: CohortDefiner,
-    run: PsycopMlflowRun,
-    output_dir: pathlib.Path,
-    outcome_matcher: pl.Expr,
+    cohort_definer: CohortDefiner, run: PsycopMlflowRun, output_dir: pathlib.Path
 ):
     cfg = run.get_config()
 
@@ -81,7 +79,7 @@ def filtering_flowchart_facade(
     pipeline._logger = TerminalLogger()  # type: ignore
     pipeline.steps[0].split_to_keep = ["train", "val", "test"]  # type: ignore # Do not filter by region
 
-    step_deltas = _step_delta_lines(
+    lines = _step_delta_lines(
         cohort_definer=cohort_definer,
         flattened_data=pl.scan_parquet(cfg["trainer"]["training_data"]["paths"][0]).lazy(),
         preprocessing_pipeline=pipeline,
@@ -97,5 +95,4 @@ if __name__ == "__main__":
         cohort_definer=CVDCohortDefiner(),
         run=MlflowClientWrapper().get_run(experiment_name="CVD", run_name="CVD layer 1, base"),
         output_dir=pathlib.Path("/tmp/cvd-filtering-flowchart"),
-        outcome_matcher=pl.col("outcome") == pl.lit(1),
     )
