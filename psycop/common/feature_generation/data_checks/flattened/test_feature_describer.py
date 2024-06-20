@@ -36,7 +36,7 @@ from psycop.common.feature_generation.data_checks.flattened.feature_describer_ts
         ),
     ],
 )
-def testparse_predictor_column_name(predictor_column_example: ParsedPredictorColumn):
+def test_parse_predictor_column_name(predictor_column_example: ParsedPredictorColumn):
     parsed_col = parse_predictor_column_name(predictor_column_example.col_name)
     assert parsed_col == predictor_column_example
 
