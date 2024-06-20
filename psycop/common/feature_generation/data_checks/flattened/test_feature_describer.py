@@ -5,8 +5,8 @@ from polars.testing import assert_frame_equal
 
 from psycop.common.feature_generation.data_checks.flattened.feature_describer_tsflattener_v2 import (
     ParsedPredictorColumn,
-    _parse_predictor_column_name,
     generate_feature_description_df,
+    parse_predictor_column_name,
     tsflattener_v2_column_is_static,
 )
 
@@ -36,8 +36,8 @@ from psycop.common.feature_generation.data_checks.flattened.feature_describer_ts
         ),
     ],
 )
-def test_parse_predictor_column_name(predictor_column_example: ParsedPredictorColumn):
-    parsed_col = _parse_predictor_column_name(predictor_column_example.col_name)
+def testparse_predictor_column_name(predictor_column_example: ParsedPredictorColumn):
+    parsed_col = parse_predictor_column_name(predictor_column_example.col_name)
     assert parsed_col == predictor_column_example
 
 
@@ -72,6 +72,6 @@ def test_generate_feature_description_df():
     )
 
     feature_description = generate_feature_description_df(
-        df, column_name_parser=_parse_predictor_column_name
+        df, column_name_parser=parse_predictor_column_name
     )
     assert_frame_equal(feature_description, expected)
