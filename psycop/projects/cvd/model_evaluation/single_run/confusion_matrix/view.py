@@ -5,6 +5,7 @@ import plotnine as pn
 
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import ConfusionMatrix
 from psycop.common.test_utils.str_to_df import str_to_df
+from psycop.projects.clozapine.model_eval.config import COLORS
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
 from psycop.projects.t2d.paper_outputs.config import FONT_SIZES
 
@@ -30,6 +31,7 @@ class ConfusionMatrixPlot(SingleRunPlot):
 
         df["true"] = pd.Categorical(df["true"], ["+", "-", " "])
         df["pred"] = pd.Categorical(df["pred"], ["+", "-", " "])
+        df["fill"] = ["1", "1", "1", "1", "2", "2", "2", "2"]
 
         p = (
             pn.ggplot(df, pn.aes(x="true", y="pred", fill="estimate"))
@@ -47,6 +49,7 @@ class ConfusionMatrixPlot(SingleRunPlot):
             )
             + pn.scale_y_discrete(reverse=True)
             + pn.labs(x=f"Actual {self.outcome_label}", y=f"Predicted {self.outcome_label}")
+            + pn.scale_fill_manual(values=[COLORS.bg_primary, COLORS.bg_secondary])
         )
 
         return p

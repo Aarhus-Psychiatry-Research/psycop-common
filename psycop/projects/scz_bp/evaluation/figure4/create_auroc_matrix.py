@@ -10,6 +10,7 @@ from psycop.common.model_evaluation.binary.performance_by_type.auroc_by_outcome 
 )
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 from psycop.projects.scz_bp.dataset_description.scz_bp_table_one import SczBpTableOne
+from psycop.projects.scz_bp.evaluation.configs import SCZ_BP_EVAL_OUTPUT_DIR
 
 
 def scz_bp_validation_outcomes() -> list[EvaluationFrame]:
@@ -18,9 +19,9 @@ def scz_bp_validation_outcomes() -> list[EvaluationFrame]:
 
     meta_df = meta_df.rename(
         {
-            "meta_scz_diagnosis_within_0_to_1825_days_max_fallback_0": "scz_diagnosis",
-            "meta_bp_diagnosis_within_0_to_1825_days_max_fallback_0": "bp_diagnosis",
-            "outc_first_scz_or_bp_within_0_to_1825_days_max_fallback_0": "first_diagnosis",
+            "meta_scz_diagnosis_within_0_to_1825_days_max_fallback_0": "Schizophrenia",
+            "meta_bp_diagnosis_within_0_to_1825_days_max_fallback_0": "Bipolar disorder",
+            "outc_first_scz_or_bp_within_0_to_1825_days_max_fallback_0": "First schizophrenia or bipolar disorder diagnosis",
         }
     )
 
@@ -33,35 +34,55 @@ def scz_bp_validation_outcomes() -> list[EvaluationFrame]:
 
     return [
         EvaluationFrame(
-            df=meta_df.select(["pred_time_uuid", "scz_diagnosis"]), outcome_col_name="scz_diagnosis"
+            df=meta_df.select(["pred_time_uuid", "Schizophrenia"]), outcome_col_name="Schizophrenia"
         ),
         EvaluationFrame(
-            df=meta_df.select(["pred_time_uuid", "first_diagnosis"]),
-            outcome_col_name="first_diagnosis",
+            df=meta_df.select(
+                ["pred_time_uuid", "First schizophrenia or bipolar disorder diagnosis"]
+            ),
+            outcome_col_name="First schizophrenia or bipolar disorder diagnosis",
         ),
         EvaluationFrame(
-            df=meta_df.select(["pred_time_uuid", "bp_diagnosis"]), outcome_col_name="bp_diagnosis"
+            df=meta_df.select(["pred_time_uuid", "Bipolar disorder"]),
+            outcome_col_name="Bipolar disorder",
         ),
     ]
 
 
 if __name__ == "__main__":
     populate_baseline_registry()
-    m = auroc_by_outcome(
-        model_names=["sczbp/scz_only", "sczbp/structured_text_xgboost_ddpm", "sczbp/bp_only"],
-        validation_outcomes=scz_bp_validation_outcomes(),
-    )
 
-    m = m.replace(
-        {
-            "sczbp/scz_only": "Schizophrenia",
-            "sczbp/structured_text_xgboost_ddpm": "Any diagnosis",
-            "sczbp/bp_only": "Bipolar disorder",
-            "scz_diagnosis": "Schizophrenia",
-            "first_diagnosis": "Any diagnosis",
-            "bp_diagnosis": "Bipolar disorder",
-        }
-    )
+    best_train_model_name_mapping = {
+        "sczbp/scz_structured_text_xgboost": "Schizophrenia only ",
+        "sczbp/structured_text_xgboost_ddpm": "Joint model",
+        "sczbp/bp_structured_text_xgboost": "Bipolar disorder only",
+    }
 
-    p = plot_auroc_by_outcome(m)
-    print(m)
+    best_test_model_name_mapping = {
+        "sczbp/test_scz_structured_text_ddpm": "Schizophrenia only",
+        "sczbp/test_tfidf_1000": "Joint model",
+        "sczbp/test_bp_structured_text_ddpm": "Bipolar disorder only",
+    }
+    validation_outcomes = scz_bp_validation_outcomes()
+
+    for split, mapping in {
+        "Train": best_train_model_name_mapping,
+        "Test": best_test_model_name_mapping,
+    }.items():
+        m = auroc_by_outcome(
+            model_names=(list(mapping.keys())), validation_outcomes=validation_outcomes
+        )
+        m = m.replace(mapping)
+        m = m.pivot(columns="validation_outcome", index="model_name", values="estimate")
+        m = m.sort_index(ascending=False)
+        # reverse order of columns to get scz first
+        m = m[
+            [
+                "Schizophrenia",
+                "First schizophrenia or bipolar disorder diagnosis",
+                "Bipolar disorder",
+            ]
+        ]
+
+        with (SCZ_BP_EVAL_OUTPUT_DIR / f"{split}_auroc_matrix.html").open("w") as f:
+            m.to_html(f)
