@@ -96,5 +96,5 @@ if __name__ == "__main__":
     filtering_flowchart_facade(
         cohort_definer=CVDCohortDefiner(),
         run=MlflowClientWrapper().get_run(experiment_name="CVD", run_name="CVD layer 1, base"),
-        output_dir=pathlib.Path("/tmp/cvd-filtering-flowchart"),
+        output_dir=pathlib.Path(),
     )
