@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 import polars as pl
+from torch import Value
 
 
 @dataclass
@@ -22,6 +23,15 @@ def tsflattener_v2_column_is_static(col_name: str) -> bool:
     return str_match not in col_name
 
 
+def _get_match_group(regex: str, string: str) -> str:
+    match = re.search(regex, string)
+    if match is None:
+        raise ValueError(
+            f"No match found for {string}. All temporal columns should match, and column is not identified as static. Either adjust regex to match, or adjust static/temporal rule."
+        )
+    return match.group(1)
+
+
 def parse_predictor_column_name(
     col_name: str,
     is_static: Callable[[str], bool] = tsflattener_v2_column_is_static,
@@ -32,23 +42,26 @@ def parse_predictor_column_name(
     time_interval_format_regex: str = r"to_[0-9]+_([a-z]+)_",
     resolve_multiple_strategy_regex: str = r"([a-z]+)_fallback",
 ) -> ParsedPredictorColumn:
-    col_is_static = is_static(col_name)
-    feature_name = re.search(feature_name_regex, col_name).group(1)  # type: ignore
-    fallback = re.search(fallback_regex, col_name).group(1)  # type: ignore
-    time_interval_start = (
-        re.search(time_interval_start_regex, col_name).group(1) if not col_is_static else "N/A"  # type: ignore
-    )
-    time_interval_end = (
-        re.search(time_interval_end_regex, col_name).group(1) if not col_is_static else "N/A"  # type: ignore
-    )
-    time_interval_format = (
-        re.search(time_interval_format_regex, col_name).group(1) if not col_is_static else "N/A"  # type: ignore
-    )
-    resolve_multiple_strategy = (
-        re.search(resolve_multiple_strategy_regex, col_name).group(1)  # type: ignore
-        if not col_is_static
-        else "N/A"
-    )
+    feature_name = _get_match_group(feature_name_regex, col_name)
+    fallback = _get_match_group(fallback_regex, col_name)
+
+    if is_static(col_name):
+        return ParsedPredictorColumn(
+            col_name=col_name,
+            feature_name=feature_name,
+            fallback=fallback,
+            time_interval_start="N/A",
+            time_interval_end="N/A",
+            time_interval_format="N/A",
+            resolve_multiple_strategy="N/A",
+            is_static=True,
+        )
+
+    time_interval_start = _get_match_group(time_interval_start_regex, col_name)
+    time_interval_end = _get_match_group(time_interval_end_regex, col_name)
+    time_interval_format = _get_match_group(time_interval_format_regex, col_name)
+    resolve_multiple_strategy = _get_match_group(resolve_multiple_strategy_regex, col_name)
+
     return ParsedPredictorColumn(
         col_name=col_name,
         feature_name=feature_name,
