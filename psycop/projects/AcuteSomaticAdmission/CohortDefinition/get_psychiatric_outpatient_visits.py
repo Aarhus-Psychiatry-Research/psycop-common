@@ -28,4 +28,4 @@ def get_outpatient_visits_to_psychiatry(write: bool = False) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    df_test = get_outpatient_visits_to_psychiatry()
+    get_outpatient_visits_to_psychiatry()

@@ -20,6 +20,7 @@ from psycop.projects.AcuteSomaticAdmission.CohortDefinition.eligible_config impo
 class SomaticAdmissionMinDateFilter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         after_df = df.filter(pl.col("timestamp") > MIN_DATE)
+        
         return after_df
 
 
@@ -27,6 +28,7 @@ class SomaticAdmissionMinAgeFilter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         df = add_age(df.collect()).lazy()
         after_df = df.filter(pl.col(AGE_COL_NAME) >= MIN_AGE)
+
         return after_df
 
 
@@ -45,13 +47,12 @@ class SomaticAdmissionTimestampsLoader(BaselineDataLoader):
     def load(self) -> pl.LazyFrame:
         return pl.from_pandas(get_contacts_to_somatic_emergency()).lazy()
 
-#Dette buger jeg
 class SomaticAdmissionWashoutPriorSomaticAdmission(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         not_within_two_years_from_acute_somatic_contact = QuarantineFilter(
             entity_id_col_name="dw_ek_borger",
             quarantine_timestamps_loader=SomaticAdmissionTimestampsLoader(),
-            quarantine_interval_days=730,
+            quarantine_interval_days=1,
             timestamp_col_name="timestamp",
         ).apply(df)
 
