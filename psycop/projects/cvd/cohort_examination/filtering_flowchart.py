@@ -5,7 +5,7 @@ from typing import Any, Callable
 import polars as pl
 
 import psycop as ps
-from psycop.common.cohort_definition import CohortDefiner, StepDelta
+from psycop.common.cohort_definition import CohortDefiner, FilteredPredictionTimeBundle, StepDelta
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
     MlflowClientWrapper,
     PsycopMlflowRun,
@@ -19,6 +19,7 @@ from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
 )
 from psycop.projects.cvd.feature_generation.cohort_definition.cvd_cohort_definition import (
     CVDCohortDefiner,
+    cvd_pred_filtering,
 )
 from psycop.projects.cvd.model_training.populate_cvd_registry import populate_with_cvd_registry
 
@@ -26,13 +27,12 @@ run = MlflowClientWrapper().get_run(experiment_name="CVD", run_name="CVD layer 1
 
 
 @ps.shared_cache.cache
-def _step_delta_lines(
-    cohort_definer: CohortDefiner,
+def _apply_preprocessing_pipeline(
+    pre_steps: Sequence[StepDelta] | None,
     flattened_data: pl.LazyFrame,
     preprocessing_pipeline: PreprocessingPipeline,
-) -> Sequence[StepDelta]:
-    cohort = cohort_definer.get_filtered_prediction_times_bundle()
-    steps = cohort.filter_steps
+) -> tuple[Sequence[StepDelta], pl.LazyFrame]:
+    steps = list(pre_steps) if pre_steps is not None else []
 
     prior = len(flattened_data.collect())
     print(f"Rows in CohortDefiner: {prior}")
@@ -57,11 +57,13 @@ def _step_delta_lines(
         )
         i += 1
 
-    return steps
+    return steps, flattened_data
 
 
 def filtering_flowchart_facade(
-    cohort_definer: CohortDefiner, run: PsycopMlflowRun, output_dir: pathlib.Path
+    prediction_time_bundle: FilteredPredictionTimeBundle,
+    run: PsycopMlflowRun,
+    output_dir: pathlib.Path,
 ):
     cfg = run.get_config()
 
@@ -75,8 +77,8 @@ def filtering_flowchart_facade(
 
     flattened_data = pl.scan_parquet(cfg["trainer"]["training_data"]["paths"][0]).lazy()
 
-    step_deltas = _step_delta_lines(
-        cohort_definer=cohort_definer,
+    step_deltas, flattened_data = _apply_preprocessing_pipeline(
+        pre_steps=prediction_time_bundle.filter_steps,
         flattened_data=flattened_data,
         preprocessing_pipeline=pipeline,
     )
@@ -87,8 +89,8 @@ def filtering_flowchart_facade(
     lines = [_stepdelta_line(prior, cur) for prior, cur in zip(step_deltas, step_deltas[1:])]
 
     outcome_matcher = pl.col(cfg["trainer"]["outcome_col_name"]) == pl.lit(1)
-    lines.append(f"With outcome: {flattened_data.filter(outcome_matcher).count()}")
-    lines.append(f"Without outcome: {flattened_data.filter(outcome_matcher.not_()).count()}")
+    lines.append(f"With outcome: {len(flattened_data.filter(outcome_matcher).collect())}")
+    lines.append(f"Without outcome: {len(flattened_data.filter(outcome_matcher.not_()).collect())}")
 
     # Output to a file
     (output_dir / "filtering_flowchart.txt").write_text("\n".join(lines))
@@ -96,7 +98,7 @@ def filtering_flowchart_facade(
 
 if __name__ == "__main__":
     filtering_flowchart_facade(
-        cohort_definer=CVDCohortDefiner(),
+        prediction_time_bundle=cvd_pred_filtering(),
         run=MlflowClientWrapper().get_run(experiment_name="CVD", run_name="CVD layer 1, base"),
         output_dir=pathlib.Path(),
     )
