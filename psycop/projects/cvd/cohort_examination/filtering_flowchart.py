@@ -93,7 +93,7 @@ def filtering_flowchart_facade(
     lines.append(f"Without outcome: {len(flattened_data.filter(outcome_matcher.not_()).collect())}")
 
     # Output to a file
-    (output_dir / "filtering_flowchart.md").write_text("\n".join(lines))
+    (output_dir / "filtering_flowchart.csv").write_text("\n".join(lines))
 
 
 if __name__ == "__main__":
