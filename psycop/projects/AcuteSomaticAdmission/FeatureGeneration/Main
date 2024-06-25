@@ -9,9 +9,11 @@ from typing import Literal
 from psycop.common.feature_generation.application_modules.chunked_feature_generation import (
     ChunkedFeatureGenerator,
 )
+""" Nedenstående kode er hvis der er brug for DeepChecks - hvilket vi ikke bruger bla pga sikkerhedsrisiko
 from psycop.common.feature_generation.application_modules.describe_flattened_dataset import (
     save_flattened_dataset_description_to_disk,
 )
+"""
 from psycop.common.feature_generation.application_modules.flatten_dataset import (
     create_flattened_dataset_tsflattener_v1,
 )
@@ -32,10 +34,9 @@ from psycop.projects.AcuteSomaticAdmission.FeatureGeneration.modules.specify_fea
 )
 
 
-"""
+""" 
 from psycop.projects.AcuteSomaticAdmission.FeatureGeneration.modules.specify_text_features import (
     TextFeatureSpecifier,
-
 )
 """
 
@@ -117,11 +118,13 @@ def main(
         flattened_df=flattened_df, project_info=project_info, feature_set_dir=feature_set_dir
     )
 
+    """ Nedenstående kode er hvis der er brug for DeepChecks - hvilket vi ikke bruger bla pga sikkerhedsrisiko
     save_flattened_dataset_description_to_disk(
         project_info=project_info,
         feature_specs=feature_specs,  # type: ignore
         feature_set_dir=feature_set_dir,
-    )
+    )"""
+
     return feature_set_dir
 
 
@@ -155,6 +158,6 @@ if __name__ == "__main__":
         limited_feature_set=True,
         lookbehind_180d_mean=False,
         washout_on_prior_somatic_contacts=True,
-        feature_set_name="Lim_set_for_debug",
+        feature_set_name="lim_set_for_debug",
         generate_in_chunks=False,
     )
