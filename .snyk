@@ -64,4 +64,55 @@ ignore:
           Vulnerability in wandb, which we do not use. Exception approved via
           Slack conversation in snyk-alerts channel on 2024-05-27.
         created: 2024-05-27T06:59:50.944Z
+  SNYK-PYTHON-PYTORCHLIGHTNING-7218866:
+    - '*':
+        reason: >-
+          Vulnerability in pytorch lightning if exposing lightning.app
+          endpoints  which we do not. Exception approved via Slack conversation
+          in programming channel on 2024-06-12.
+        created: 2024-06-18T06:59:50.944Z
+  SNYK-PYTHON-TORCH-7231127:
+    - '*':
+        reason: >-
+          Vulnerability in torch if training multi-node, which we do not.
+          Exception approved via Slack conversation in programming channel on
+          2024-06-18.
+        created: 2024-06-18T06:59:50.944Z
+  SNYK-PYTHON-MLFLOW-7210332:
+    - '*':
+        reason: 'See Slack #programming for 25/06/2024'
+        created: 2024-06-25T11:57:53.860Z
+  SNYK-PYTHON-MLFLOW-7210311:
+    - '*':
+        reason: 'See Slack #programming for 25/06/2024'
+        created: 2024-06-25T11:59:14.109Z
+  SNYK-PYTHON-MLFLOW-7210309:
+    - '*':
+        reason: 'See Slack #programming for 25/06/2024'
+        created: 2024-06-25T11:59:14.109Z
+  SNYK-PYTHON-MLFLOW-7210300:
+    - '*':
+        reason: 'See Slack #programming for 25/06/2024'
+        created: 2024-06-25T11:59:14.109Z
+  SNYK-PYTHON-MLFLOW-7210331:
+    - '*':
+        reason: 'See Slack #programming for 25/06/2024'
+        created: 2024-06-25T11:59:14.109Z
+  SNYK-PYTHON-MLFLOW-7210333:
+    - '*':
+        reason: 'See Slack #programming for 25/06/2024'
+        created: 2024-06-25T11:59:14.109Z
+  SNYK-PYTHON-MLFLOW-7210334:
+    - '*':
+        reason: 'See Slack #programming for 25/06/2024'
+        created: 2024-06-25T11:59:14.109Z
+  SNYK-PYTHON-MLFLOW-7210335:
+    - '*':
+        reason: 'See Slack #programming for 25/06/2024'
+        created: 2024-06-25T11:59:14.109Z
+  SNYK-PYTHON-MLFLOW-7210336:
+    - '*':
+        reason: 'See Slack #programming for 25/06/2024'
+        created: 2024-06-25T11:59:14.109Z
+
 patch: {}

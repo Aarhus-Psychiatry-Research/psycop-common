@@ -21,7 +21,7 @@ def test_fit_bow_model():
 
     df = text_preprocessing(df, text_column_name="text")
 
-    bow = fit_text_model("bow", df["text"], min_df=0, max_df=1, ngram_range=(1, 1), max_features=1)
+    bow = fit_text_model("bow", df["text"], min_df=1, max_df=1, ngram_range=(1, 1), max_features=1)
     transformed = bow.transform(df["text"])
     transformed = transformed.toarray()  # type: ignore
 
@@ -45,7 +45,7 @@ def test_fit_tfidf_model():
     df = text_preprocessing(df, text_column_name="text")
 
     tfidf = fit_text_model(
-        "tfidf", df["text"], min_df=0, max_df=1, ngram_range=(1, 1), max_features=1
+        "tfidf", df["text"], min_df=1, max_df=1, ngram_range=(1, 1), max_features=1
     )
     transformed = tfidf.transform(df["text"])
     transformed = transformed.toarray()  # type: ignore
