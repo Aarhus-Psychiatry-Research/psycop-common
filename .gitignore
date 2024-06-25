@@ -208,4 +208,3 @@ mlruns/*
 # Ignore testmon database
 .testmon*
 *.db
-*.txt
