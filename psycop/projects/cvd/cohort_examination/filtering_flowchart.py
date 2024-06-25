@@ -5,7 +5,7 @@ from typing import Any, Callable
 import polars as pl
 
 import psycop as ps
-from psycop.common.cohort_definition import CohortDefiner, FilteredPredictionTimeBundle, StepDelta
+from psycop.common.cohort_definition import FilteredPredictionTimeBundle, StepDelta
 from psycop.common.global_utils.cache import shared_cache
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
     MlflowClientWrapper,
