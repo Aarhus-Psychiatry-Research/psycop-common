@@ -26,7 +26,7 @@ if __name__ == "__main__":
         eligible_prediction_times_frame=BipolarCohortDefiner.get_prediction_times(
             interval_days=200
         ),
-        feature_specs=BpFeatureSpecifier().get_feature_specs(max_layer=4, lookbehind_days=[300]),
+        feature_specs=BpFeatureSpecifier().get_feature_specs(max_layer=1, lookbehind_days=[300]),
         n_workers=10,
         do_dataset_description=False,
         feature_set_name="structured_predictors_4_layers_interval_days_100",

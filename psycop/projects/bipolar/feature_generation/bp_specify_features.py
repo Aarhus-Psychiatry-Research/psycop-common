@@ -44,11 +44,14 @@ class BpFeatureSpecifier:
 
     def _get_outcome_specs(self) -> list[ValueSpecification]:
         log.info("-------- Generating outcome specs --------")
-
+           
+        pred_times = get_first_bipolar_diagnosis()
+        pred_times["bp_diagnosis"] = 1
+    
         return [
             OutcomeSpec(
                 value_frame=ValueFrame(
-                    init_df=get_first_bipolar_diagnosis(),
+                    init_df=pred_times,
                     entity_id_col_name="dw_ek_borger",
                     value_timestamp_col_name="timestamp",
                 ),
