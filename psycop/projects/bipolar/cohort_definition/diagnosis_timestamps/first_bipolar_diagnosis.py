@@ -1,9 +1,7 @@
 import pandas as pd
 import polars as pl
 
-from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
-    bipolar_a_diagnosis,
-)
+from psycop.common.feature_generation.loaders.raw.load_diagnoses import bipolar_a_diagnosis
 
 
 def get_first_bipolar_diagnosis(add_value_col: bool = False) -> pd.DataFrame:

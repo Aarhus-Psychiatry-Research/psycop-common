@@ -11,17 +11,12 @@ from timeseriesflattener import (
 from timeseriesflattener.v1.aggregation_fns import count, maximum
 from timeseriesflattener.v1.feature_specs.group_specs import NamedDataframe
 
-from psycop.common.feature_generation.loaders.raw.load_demographic import (
-    birthdays,
-    sex_female,
-)
+from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
 from psycop.common.feature_generation.loaders.raw.load_medications import (
     antidepressives,
     antipsychotics,
 )
-from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
-    systolic_blood_pressure,
-)
+from psycop.common.feature_generation.loaders.raw.load_structured_sfi import systolic_blood_pressure
 from psycop.projects.bipolar.feature_generation.feature_layers.bp_feature_layer import (
     BpFeatureLayer,
 )

@@ -7,7 +7,7 @@ def parse_timestamp_from_uuid(df: pl.DataFrame, output_col_name: str = "timestam
         .str.split("-")
         .list.slice(1)
         .list.join("-")
-        .str.strptime(pl.Datetime, format="%Y-%m-%d-%H-%M-%S")
+        .str.to_datetime(format="%Y-%m-%d %H:%M:%S%.f")
         .alias(output_col_name)
     )
 

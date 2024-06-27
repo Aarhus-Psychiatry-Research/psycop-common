@@ -58,13 +58,13 @@ def test_rules_without_columns_error():
 def test_rules_for_non_attr_col_name():
     @dataclass(frozen=True)
     class RulesWithSeparateColName(ValidatedFrame[pl.DataFrame]):
-        frame: pl.DataFrame = pl.DataFrame({"non_attr_col_name": [1]})  # noqa: RUF009
+        frame: pl.DataFrame
         test_col_name: str = "non_attr_col_name"
         test_col_rules: Sequence[ValidatorRule] = (ColumnTypeRule(pl.Int64),)
         allow_extra_columns: bool = True
 
     # Should not raise an error, since column name is gotten from the value of the "test_col_name" attribute
-    RulesWithSeparateColName()
+    RulesWithSeparateColName(frame=pl.DataFrame({"non_attr_col_name": [1]}))
 
 
 def test_should_error_if_unspecified_column_and_not_allow_extra():
