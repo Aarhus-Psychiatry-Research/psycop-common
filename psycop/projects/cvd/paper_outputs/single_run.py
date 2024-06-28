@@ -3,6 +3,7 @@ import re
 from collections.abc import Sequence
 from os import write
 from pathlib import Path
+from typing import Protocol
 
 import plotnine as pn
 import polars as pl
@@ -21,8 +22,12 @@ from psycop.common.model_evaluation.markdown.md_objects import (
     MarkdownTable,
     create_supplementary_from_markdown_artifacts,
 )
+from psycop.projects.cvd.cohort_examination.filtering_flowchart import filtering_flowchart_facade
+from psycop.projects.cvd.cohort_examination.incidence_by_time.facade import incidence_by_time_facade
+from psycop.projects.cvd.cohort_examination.table_one.facade import table_one_facade
 from psycop.projects.cvd.feature_generation.cohort_definition.cvd_cohort_definition import (
     cvd_outcome_timestamps,
+    cvd_pred_filtering,
 )
 from psycop.projects.cvd.model_evaluation.single_run.performance_by_ppr.model import (
     performance_by_ppr_model,
@@ -30,11 +35,17 @@ from psycop.projects.cvd.model_evaluation.single_run.performance_by_ppr.model im
 from psycop.projects.cvd.model_evaluation.single_run.performance_by_ppr.view import (
     performance_by_ppr_view,
 )
-from psycop.projects.cvd.paper_outputs.single_run_main import single_run_main
-from psycop.projects.cvd.paper_outputs.single_run_robustness import single_run_robustness
+from psycop.projects.cvd.model_evaluation.single_run.single_run_main import single_run_main
+from psycop.projects.cvd.model_evaluation.single_run.single_run_robustness import (
+    single_run_robustness,
+)
 
 
-def markdown_artifacts(
+class CVDArtifactFacade(Protocol):
+    def __call__(self, output_dir: Path) -> None: ...
+
+
+def markdown_artifacts_facade(
     outcome_label: str,
     eval_df: EvalFrame,
     outcome_timestamps: OutcomeTimestampFrame,
@@ -112,20 +123,7 @@ def markdown_artifacts(
     return artifacts
 
 
-if __name__ == "__main__":
-    import coloredlogs
-
-    coloredlogs.install(  # type: ignore
-        level="INFO",
-        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-        datefmt="%Y/%m/%d %H:%M:%S",
-    )
-
-    run_name = "Layer 1"
-    output_path = Path(__file__).parent / run_name
-    output_path.mkdir(exist_ok=True)
-
-    run = MlflowClientWrapper().get_run("baseline_v2_cvd", run_name)
+def single_run_facade(output_path: Path, run: PsycopMlflowRun) -> None:
     cfg = run.get_config()
     eval_frame = run.eval_frame()
 
@@ -137,7 +135,7 @@ if __name__ == "__main__":
         "@estimator_steps"
     ]
 
-    artifacts = markdown_artifacts(
+    artifacts = markdown_artifacts_facade(
         outcome_label="CVD",
         eval_df=eval_frame,
         outcome_timestamps=cvd_outcome_timestamps(),
@@ -160,5 +158,27 @@ if __name__ == "__main__":
         figure_title_prefix="Figure",
     )
 
-    logging.info(f"Writing to {output_path}")
-    (output_path / "Report.md").write_text(markdown_text)
+    (Path() / "Report.md").write_text(markdown_text)
+
+    non_markdown_artifacts: Sequence[CVDArtifactFacade] = [
+        lambda output_dir: table_one_facade(run=run, output_dir=output_dir),
+        lambda output_dir: incidence_by_time_facade(output_dir=output_dir),
+        lambda output_dir: filtering_flowchart_facade(
+            prediction_time_bundle=cvd_pred_filtering(), run=run, output_dir=output_dir
+        ),
+    ]
+    for artifact in non_markdown_artifacts:
+        artifact(output_path)
+
+
+if __name__ == "__main__":
+    import coloredlogs
+
+    coloredlogs.install(  # type: ignore
+        level="INFO",
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+        datefmt="%Y/%m/%d %H:%M:%S",
+    )
+
+    run = MlflowClientWrapper().get_run("CVD", "CVD layer 1, base")
+    single_run_facade(Path(), run)
