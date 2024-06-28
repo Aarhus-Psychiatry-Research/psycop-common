@@ -5,12 +5,14 @@ from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClien
 from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
 )
-from psycop.projects.bipolar.feature_generation.inspect_feature_sets import load_bp_feature_set
+from psycop.projects.bipolar.feature_generation.inspect_feature_sets import (
+    load_bp_feature_set,
+)
 
 
 def prepare_eval_data_for_pca() -> pd.DataFrame:
     # Load eval data
-    best_experiment = "bipolar_test"
+    best_experiment = "bipolar_full_test"
     eval_data = (
         MlflowClientWrapper()
         .get_best_run_from_experiment(experiment_name=best_experiment, metric="all_oof_BinaryAUROC")
