@@ -19,7 +19,11 @@ from sklearn.pipeline import Pipeline
 
 from psycop.common.model_training_v2.config.config_utils import resolve_and_fill_config
 from psycop.common.types.validated_frame import ValidatedFrame
-from psycop.common.types.validator_rules import ColumnExistsRule, ColumnTypeRule, ValidatorRule
+from psycop.common.types.validator_rules import (
+    ColumnExistsRule,
+    ColumnTypeRule,
+    ValidatorRule,
+)
 
 
 @dataclass(frozen=True)
