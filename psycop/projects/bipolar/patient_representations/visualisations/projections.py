@@ -1,9 +1,12 @@
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
+import plotly.offline
 
 from psycop.projects.bipolar.patient_representations.pca import perform_pca
-from psycop.projects.bipolar.patient_representations.utils import prepare_eval_data_for_pca
+from psycop.projects.bipolar.patient_representations.utils import (
+    prepare_eval_data_for_pca,
+)
 
 
 def plot_patient_projections():
@@ -19,6 +22,9 @@ def plot_patient_projections():
         title="Patient Projections",
         labels={"component_1": "Component 1", "component_2": "Component 2"},
     )
+    # add a legend
+    fig.update_traces(marker=dict(size=5))
+    fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
 
     fig.show()
 
