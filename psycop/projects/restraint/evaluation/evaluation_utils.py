@@ -91,3 +91,13 @@ def parse_dw_ek_borger_from_uuid(
     return df.with_columns(
         pl.col("pred_time_uuid").str.split("-").list.first().cast(pl.Int64).alias(output_col_name)
     )
+
+
+def add_age(df: pl.DataFrame, birthdays: pl.DataFrame, age_col_name: str = "age") -> pl.DataFrame:
+    df = df.join(birthdays, on="dw_ek_borger", how="left")
+    df = df.with_columns(
+        ((pl.col("timestamp") - pl.col("date_of_birth")).dt.days()).alias(age_col_name)
+    )
+    df = df.with_columns((pl.col(age_col_name) / 365.25).alias(age_col_name))
+
+    return df
