@@ -33,16 +33,16 @@ RUN npm install -g @withgraphite/graphite-cli@stable
 RUN pip install uv
 
 COPY test-requirements.txt .
-RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r test-requirements.txt --no_compile
+RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r test-requirements.txt --no-compile
 
 COPY dev-requirements.txt .
-RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r dev-requirements.txt --no_compile
+RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r dev-requirements.txt --no-compile
 
 COPY gpu-requirements.txt .
-RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r gpu-requirements.txt --no_compile
+RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r gpu-requirements.txt --no-compile
 
 COPY requirements.txt .
-RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r requirements.txt --no_compile
+RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r requirements.txt --no-compile
 
 # Install lefthook (git hooks, e.g. pre-commit)
 RUN curl -1sLf 'https://dl.cloudsmith.io/public/evilmartians/lefthook/setup.deb.sh' | bash
