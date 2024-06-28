@@ -24,8 +24,8 @@ jobs:
       - name: Install dependencies
         shell: bash
         run: |
-          pip install invoke==2.1.0
-          inv install-requirements
+          pip install invoke==2.1.0 uv
+          inv install-requirements --uv
 
       - name: Run static type checker
         id: pyright
