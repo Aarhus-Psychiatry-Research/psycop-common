@@ -30,8 +30,20 @@ def prepare_eval_data_for_pca() -> pd.DataFrame:
     # merge df onto eval_data on prediction_time_uuid
     df = eval_data.merge(df, on="prediction_time_uuid", how="left")
 
-    df["pred"] = get_predictions_for_positive_rate(
-        y_hat_probs=df["y_hat"], desired_positive_rate=0.05
+    df["prediction"] = get_predictions_for_positive_rate(
+        y_hat_probs=df["y_hat_prob"], desired_positive_rate=0.05
     )[0]
 
+    df["prediction"] = df["prediction"].astype(int)
+    df["y"] = df["y"].astype(int)
+    df["prediction_type"] = None
+    df.loc[(df["prediction"] == 1) & (df["y"] == 1), "prediction_type"] = "TP"
+    df.loc[(df["prediction"] == 1) & (df["y"] == 0), "prediction_type"] = "FP"
+    df.loc[(df["prediction"] == 0) & (df["y"] == 0), "prediction_type"] = "TN"
+    df.loc[(df["prediction"] == 0) & (df["y"] == 1), "prediction_type"] = "FN"
+
     return df
+
+
+if __name__ == "__main__":
+    df = prepare_eval_data_for_pca()
