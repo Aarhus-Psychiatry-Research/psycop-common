@@ -15,8 +15,8 @@ if __name__ == "__main__":
     populate_with_bp_registry()
     OptunaHyperParameterOptimization().from_file(
         (Path(__file__).parent / "bp_baseline.cfg"),
-        study_name="bipolar_model_training_v1",
-        n_trials=20,
+        study_name="bipolar_model_training_wip",
+        n_trials=100,
         n_jobs=15,
         direction="maximize",
         catch=(),  # type: ignore

@@ -3,15 +3,15 @@ import polars as pl
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR, TEXT_EMBEDDINGS_DIR
 
 
-def load_scz_bp_feature_set(feature_set_name: str) -> pl.DataFrame:
+def load_bp_feature_set(feature_set_name: str) -> pl.DataFrame:
     feature_set_dir = (
         OVARTACI_SHARED_DIR
-        / "scz_bp"
-        / "initial_feature_set"
+        / "bipolar"
         / "flattened_datasets"
         / feature_set_name
+        / f"{feature_set_name}.parquet"
     )
-    return pl.read_parquet(feature_set_dir / "train.parquet")
+    return pl.read_parquet(feature_set_dir)
 
 
 def load_embedded_text(name: str) -> pl.DataFrame:
@@ -19,6 +19,6 @@ def load_embedded_text(name: str) -> pl.DataFrame:
 
 
 if __name__ == "__main__":
-    for p in TEXT_EMBEDDINGS_DIR.glob("text_embeddings_*"):
-        df = load_embedded_text(p.name)
-        print(f"Feature set: {p} \n\nShape = {df.shape}")
+    df = load_bp_feature_set("structured_predictors_2_layer_interval_days_100")
+
+    
