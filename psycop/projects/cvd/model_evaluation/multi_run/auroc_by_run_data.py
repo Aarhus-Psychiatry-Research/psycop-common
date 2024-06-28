@@ -29,7 +29,8 @@ def _run_auroc_with_ci(df: pl.DataFrame, n_bootstraps: int = 5) -> pl.DataFrame:
     )
 
 
-def get(runs: Sequence[RunSelector]) -> pl.DataFrame:
+@shared_cache.cache()
+def model(runs: Sequence[RunSelector]) -> pl.DataFrame:
     eval_dfs = [
         MlflowClientWrapper()
         .get_run(r.experiment_name, r.run_name)
@@ -50,7 +51,7 @@ if __name__ == "__main__":
         datefmt="%Y/%m/%d %H:%M:%S",
     )
 
-    result = get(
+    result = model(
         runs=[
             RunSelector(experiment_name="baseline_v2_cvd", run_name="Layer 1"),
             RunSelector(
