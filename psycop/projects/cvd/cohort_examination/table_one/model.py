@@ -48,8 +48,6 @@ def _train_test_column(flattened_data: pl.DataFrame) -> pl.DataFrame:
     flattened_combined = pl.concat([train_data, test_data], how="vertical").rename(
         {"prediction_time_uuid": "pred_time_uuid"}
     )
-    # TD: Check if the rename is needed
-
     return flattened_combined
 
 
