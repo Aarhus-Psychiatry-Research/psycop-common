@@ -63,7 +63,7 @@ class MinimalTestData(BaselineDataLoader):
     def load(self) -> LazyFrame:
         rows = [MinimalTestRow.col_str()]
         for i in range(self.n):
-            outcome = 1 if i % 2 == 0 else 0
+            outcome = 1 if i < self.n // 2 else 0
             rows.append(
                 MinimalTestRow(
                     pred_time_uuid=i + 1,
@@ -71,7 +71,7 @@ class MinimalTestData(BaselineDataLoader):
                     pred_1=1,
                     outcome=outcome,
                     outcome_val=outcome,
-                    pred_age=99,
+                    pred_age=1 if i == 0 else 99,
                 ).to_str()
             )
 

@@ -97,7 +97,7 @@ def test_v2_calibrated_crossval_model_pipeline(tmp_path: Path):
             training_data=MinimalTestData(n=20),
             outcome_col_name="outcome",
             preprocessing_pipeline=BaselinePreprocessingPipeline(
-                AgeFilter(min_age=4, max_age=99, age_col_name="pred_age")
+                AgeFilter(min_age=0, max_age=99, age_col_name="pred_age")
             ),
             task=BinaryClassificationTask(
                 task_pipe=BinaryClassificationPipeline(
