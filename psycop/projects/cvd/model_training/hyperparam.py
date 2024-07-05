@@ -9,20 +9,17 @@ from psycop.common.model_training_v2.hyperparameter_suggester.optuna_hyperparame
 )
 from psycop.projects.cvd.model_training.populate_cvd_registry import populate_with_cvd_registry
 
-if __name__ == "__main__":
-    populate_baseline_registry()
-    populate_with_cvd_registry()
 
-    cfg = confection.Config().from_disk(Path(__file__).parent / "cvd_baseline.cfg")
-
+def hyperparameter_search(cfg: confection.Config):
     cfg["trainer"]["task"]["task_pipe"]["sklearn_pipe"]["*"]["model"] = {
         "@estimator_steps_suggesters": "xgboost_suggester"
     }
 
     # Set run name
     for i in reversed([1, 2, 3, 4]):
-        name = f"CVD hyperparam tuning, layer {i}, xgboost, v2"
-        cfg["logger"]["*"]["mlflow"]["experiment_name"] = name
+        cfg["logger"]["*"]["mlflow"]["experiment_name"] = (
+            f"CVD hyperparam tuning, layer {i}, xgboost, v2"
+        )
 
         layer_regex = "|".join([str(i) for i in range(1, i + 1)])
 
@@ -32,10 +29,19 @@ if __name__ == "__main__":
 
         OptunaHyperParameterOptimization().from_cfg(
             cfg,
-            study_name=name,
+            study_name=cfg["logger"]["*"]["mlflow"]["experiment_name"],
             n_trials=150,
             n_jobs=10,
             direction="maximize",
             catch=(Exception,),
             custom_populate_registry_fn=populate_with_cvd_registry,
         )
+
+
+if __name__ == "__main__":
+    populate_baseline_registry()
+    populate_with_cvd_registry()
+
+    cfg = confection.Config().from_disk(Path(__file__).parent / "cvd_baseline.cfg")
+
+    hyperparameter_search(cfg)
