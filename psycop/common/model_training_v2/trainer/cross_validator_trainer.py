@@ -44,8 +44,6 @@ class CrossValidatorTrainer(BaselineTrainer):
 
             X_train = X_train.drop(columns=self.group_col_name)
             self.task.train(X_train, y_train, y_col_name=self.outcome_col_name)
-            # TD: Are we training the same model for each fold? Does that mean that it can memorise from the previous fold?
-            # We can just try doing a deepcopy and seeing if we get different results
 
             y_hat_prob = self.task.predict_proba(X_train)
 
