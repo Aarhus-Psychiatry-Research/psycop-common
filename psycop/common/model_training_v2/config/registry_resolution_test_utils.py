@@ -163,7 +163,7 @@ def get_registered_functions(
     functions = []
     for registry_name, registry in container_registry.to_dict().items():
         for registered_function_name in registry.get_all():
-            if registry_name in exclude:
+            if any(exclude in registered_function_name for exclude in exclude):
                 continue
             functions.append(
                 RegisteredCallable(
