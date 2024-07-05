@@ -68,7 +68,7 @@ class MinimalTestData(BaselineDataLoader):
                 MinimalTestRow(
                     pred_time_uuid=i + 1,
                     dw_ek_borger=i + 1,
-                    pred_1=1,
+                    pred_1=outcome,
                     outcome=outcome,
                     outcome_val=outcome,
                     pred_age=1 if i == 0 else 99,
