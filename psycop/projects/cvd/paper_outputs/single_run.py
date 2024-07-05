@@ -9,6 +9,9 @@ import plotnine as pn
 import polars as pl
 
 from psycop.common.cohort_definition import OutcomeTimestampFrame, PredictionTimeFrame
+from psycop.common.feature_generation.data_checks.flattened.feature_describer_tsflattener_v2 import (
+    generate_feature_description_df,
+)
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
 from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits_to_psychiatry
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
@@ -45,14 +48,14 @@ class CVDArtifactFacade(Protocol):
     def __call__(self, output_dir: Path) -> None: ...
 
 
-def markdown_artifacts_facade(
+def _markdown_artifacts_facade(
+    output_path: Path,
     outcome_label: str,
     eval_df: EvalFrame,
     outcome_timestamps: OutcomeTimestampFrame,
     sex_df: pl.DataFrame,
     all_visits_df: pl.DataFrame,
     birthdays_df: pl.DataFrame,
-    write_path: Path,
     estimator_type: str,
     primary_pos_proportion: float,
     pos_proportions: Sequence[float],
@@ -60,7 +63,7 @@ def markdown_artifacts_facade(
     first_letter_index: int,
 ) -> Sequence[MarkdownArtifact]:
     # Main figure
-    main_figure_output_path = write_path / f"{outcome_label}_main_figure.png"
+    main_figure_output_path = output_path / f"{outcome_label}_main_figure.png"
     main_figure = single_run_main(
         eval_frame=eval_df,
         desired_positive_rate=primary_pos_proportion,
@@ -71,14 +74,14 @@ def markdown_artifacts_facade(
     main_figure.savefig(main_figure_output_path)
 
     # Robustness figure
-    robustness_figure_output_path = write_path / f"{outcome_label}_robustness_figure.png"
+    robustness_figure_output_path = output_path / f"{outcome_label}_robustness_figure.png"
     robustness_figure = single_run_robustness(
         eval_frame=eval_df, sex_df=sex_df, all_visits_df=all_visits_df, birthdays=birthdays_df
     )
     robustness_figure.savefig(robustness_figure_output_path)
 
     # Performance by PPR
-    performance_by_ppr_output_path = write_path / f"{outcome_label}_performance_by_ppr.csv"
+    performance_by_ppr_output_path = output_path / f"{outcome_label}_performance_by_ppr.csv"
     performance_by_ppr_table = performance_by_ppr_view(
         performance_by_ppr_model(
             eval_df=eval_df, positive_rates=pos_proportions, outcome_timestamps=outcome_timestamps
@@ -93,13 +96,13 @@ def markdown_artifacts_facade(
             title=f"Performance of {estimator_type} at a {pos_rate_percent} predicted positive rate with {lookahead_years} years of lookahead",
             file_path=main_figure_output_path,
             description=f"**A**: Receiver operating characteristics (ROC) curve. **B**: Confusion matrix. PPV: Positive predictive value. NPV: Negative predictive value. **C**: Sensitivity by months from prediction time to event, stratified by desired predicted positive rate (PPR). Note that the numbers do not match those in Table 1, since all prediction times with insufficient lookahead distance have been dropped. **D**: Time (years) from the first positive prediction to the patient having developed {outcome_label} at a {pos_rate_percent}% predicted positive rate (PPR). The dashed line represents the median time, and the solid line represents the prediction time.",
-            relative_to_path=write_path,
+            relative_to_path=output_path,
         ),
         MarkdownFigure(
             title=f"Robustness of {estimator_type} at a {pos_rate_percent} predicted positive rate with {lookahead_years} years of lookahead",
             file_path=robustness_figure_output_path,
             description="Robustness of the model across stratifications. Blue line is the area under the receiver operating characteristics curve. Grey bars represent the proportion of visits that are present in each group. Error bars are 95%-confidence intervals from 100-fold bootstrap.",
-            relative_to_path=write_path,
+            relative_to_path=output_path,
         ),
         MarkdownTable.from_filepath(
             title=f"Performance of {estimator_type} with {lookahead_years} years of lookahead by predicted positive rate (PPR). Numbers are physical contacts.",
@@ -135,14 +138,14 @@ def single_run_facade(output_path: Path, run: PsycopMlflowRun) -> None:
         "@estimator_steps"
     ]
 
-    artifacts = markdown_artifacts_facade(
+    artifacts = _markdown_artifacts_facade(
         outcome_label="CVD",
         eval_df=eval_frame,
         outcome_timestamps=cvd_outcome_timestamps(),
         sex_df=pl.from_pandas(sex_female()),
         all_visits_df=pl.from_pandas(physical_visits_to_psychiatry()),
         birthdays_df=pl.from_pandas(birthdays()),
-        write_path=output_path,
+        output_path=output_path,
         estimator_type=estimator_type,
         primary_pos_proportion=0.05,
         pos_proportions=[0.01, 0.05, 0.1],
@@ -169,6 +172,10 @@ def single_run_facade(output_path: Path, run: PsycopMlflowRun) -> None:
     ]
     for artifact in non_markdown_artifacts:
         artifact(output_path)
+
+    feature_description = generate_feature_description_df(df=eval_frame.frame)
+    data = feature_description.to_pandas().to_html()
+    (output_path / "feature_description.html").write_text(data)
 
 
 if __name__ == "__main__":
