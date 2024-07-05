@@ -35,7 +35,6 @@ def plotnine_auroc_by_age(df: pd.DataFrame, title: str = "AUROC by Age") -> pn.g
             dpi=300,
         )
         + pn.scale_x_discrete()
-        + pn.geom_text(pn.aes(label="n_in_bin"), nudge_y=-0.8, size=17, fontweight="bold", color="white")
         + pn.scale_fill_manual(values=["#669BBC", "#A8C686", "#669BBC", "#A8C686", "#669BBC", "#A8C686", "#669BBC", "#A8C686", "#669BBC", "#A8C686"])
     )
 
@@ -75,5 +74,5 @@ if __name__ == "__main__":
     birthdays=pl.from_pandas(birthdays())
 
     plotnine_auroc_by_age(
-            auroc_by_age_model(df=df, birthdays=birthdays, bins=[18, *range(20, 80, 10)])).save(save_dir / "auroc_by_age.png")
+            auroc_by_age_model(df=df, birthdays=birthdays, bins=[18, *range(20, 70, 10)])).save(save_dir / "auroc_by_age.png")
     

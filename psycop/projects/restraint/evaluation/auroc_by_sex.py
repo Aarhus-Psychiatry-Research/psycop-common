@@ -17,7 +17,7 @@ def plotnine_auroc_by_sex(df: pd.DataFrame, title: str = "AUROC by Sex") -> pn.g
     p = (
         pn.ggplot(df, pn.aes(x="sex", y="auroc"))
         + pn.geom_bar(
-            pn.aes(x="sex", y="proportion_of_n", fill="sex"), stat="identity"
+            pn.aes(x="sex", y="proportion_of_n", fill="sex"), stat="identity",
         )
         + pn.geom_path(group=1, size=1)
         + pn.labs(x="Sex", y="AUROC", title=title)
@@ -32,9 +32,9 @@ def plotnine_auroc_by_sex(df: pd.DataFrame, title: str = "AUROC by Sex") -> pn.g
             axis_title=pn.element_text(size=22),
             plot_title=pn.element_text(size=30, ha="center"),
             dpi=300,
+            figure_size=(4, 5)
         )
         + pn.scale_x_discrete()
-        + pn.geom_text(pn.aes(label="n_in_bin"), nudge_y=-0.8, size=17, fontweight="bold", color="white")
         + pn.scale_fill_manual(values=["#669BBC", "#A8C686", "#F3A712"])
     )
 
