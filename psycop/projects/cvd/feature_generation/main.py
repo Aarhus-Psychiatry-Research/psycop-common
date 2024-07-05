@@ -31,7 +31,12 @@ from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     f8_disorders,
     f9_disorders,
 )
-from psycop.common.feature_generation.loaders.raw.load_lab_results import hba1c, hdl, ldl
+from psycop.common.feature_generation.loaders.raw.load_lab_results import (
+    hba1c,
+    hdl,
+    ldl,
+    total_cholesterol,
+)
 from psycop.common.feature_generation.loaders.raw.load_medications import (
     top_10_weight_gaining_antipsychotics,
 )
@@ -129,6 +134,7 @@ if __name__ == "__main__":
             top_10_weight_gaining_antipsychotics,
             hdl,
         ],
+        7: [total_cholesterol],
     }
 
     feature_specs = []

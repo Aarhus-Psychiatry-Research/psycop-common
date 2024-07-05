@@ -333,6 +333,9 @@ def fasting_ldl(
 def alat(n_rows: int | None = None, values_to_load: str = "numerical_and_coerce") -> pd.DataFrame:
     return blood_sample(blood_sample_id="NPU19651", n_rows=n_rows, values_to_load=values_to_load)
 
+@data_loaders.register("total_cholesterol")
+def total_cholesterol(n_rows: int | None = None, values_to_load: str = "numerical_and_coerce") -> pd.DataFrame:
+    return blood_sample(blood_sample_id="NPU01566", n_rows=n_rows, values_to_load=values_to_load)
 
 @data_loaders.register("asat")
 def asat(n_rows: int | None = None, values_to_load: str = "numerical_and_coerce") -> pd.DataFrame:
