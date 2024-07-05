@@ -382,6 +382,7 @@ def peripheral_artery_disease(
         shak_code=shak_code,
         shak_sql_operator=shak_sql_operator,
         timestamp_purpose=timestamp_purpose,
+        keep_code_col=True,
     )
 
 
