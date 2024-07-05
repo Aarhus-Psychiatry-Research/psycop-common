@@ -1,6 +1,5 @@
-from pyexpat import features
-
 import confection
+from pyexpat import features
 
 
 def train_with_score2(cfg: confection.Config):
