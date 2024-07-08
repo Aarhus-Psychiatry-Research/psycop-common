@@ -1,21 +1,27 @@
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
-import plotnine as pn
 import pandas as pd
+import plotnine as pn
 import polars as pl
 
 from psycop.common.feature_generation.loaders.raw import sql_load
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
-from psycop.common.model_evaluation.binary.time.timedelta_data import get_sensitivity_by_timedelta_df
-from psycop.common.model_training.training_output.dataclasses import get_predictions_for_positive_rate
+from psycop.common.model_evaluation.binary.time.timedelta_data import (
+    get_sensitivity_by_timedelta_df,
+)
+from psycop.common.model_training.training_output.dataclasses import (
+    get_predictions_for_positive_rate,
+)
+from psycop.projects.restraint.evaluation.evaluation_utils import (
+    parse_dw_ek_borger_from_uuid,
+    parse_timestamp_from_uuid,
+)
 
-import polars as pl
 
-from psycop.projects.restraint.evaluation.evaluation_utils import parse_dw_ek_borger_from_uuid, parse_timestamp_from_uuid
-
-
-def plotnine_sensitivity_by_tte(df: pd.DataFrame, title: str = "Sensitivity by Time to Event") -> pn.ggplot:
+def plotnine_sensitivity_by_tte(
+    df: pd.DataFrame, title: str = "Sensitivity by Time to Event"
+) -> pn.ggplot:
     categories = df["unit_from_event_binned"].dtype.categories[::-1]  # type: ignore
     df["unit_from_event_binned"] = df["unit_from_event_binned"].cat.set_categories(
         new_categories=categories,
@@ -28,18 +34,28 @@ def plotnine_sensitivity_by_tte(df: pd.DataFrame, title: str = "Sensitivity by T
         pn.ggplot(
             df,
             pn.aes(
-                x="unit_from_event_binned", y="sensitivity", ymin="ci_lower", ymax="ci_upper", color="actual_positive_rate", shape="actual_positive_rate"
+                x="unit_from_event_binned",
+                y="sensitivity",
+                ymin="ci_lower",
+                ymax="ci_upper",
+                color="actual_positive_rate",
+                shape="actual_positive_rate",
             ),
         )
         + pn.scale_x_discrete(reverse=True)
         + pn.geom_point(size=2.5)
         + pn.geom_errorbar(width=0.05)
-        + pn.labs(x="Hours to outcome", y="Sensitivity", title=title, color="Positive rate", shape="Positive rate")
+        + pn.labs(
+            x="Hours to outcome",
+            y="Sensitivity",
+            title=title,
+            color="Positive rate",
+            shape="Positive rate",
+        )
         + pn.theme_minimal()
         + pn.theme(
-            axis_text_x=pn.element_text(size=15), #, angle=45, hjust=1),
+            axis_text_x=pn.element_text(size=15),
             axis_text_y=pn.element_text(size=15),
-            # legend_text=pn.element_text(size=11),
             legend_position=(0.35, 0.9),
             legend_title_align="center",
             axis_ticks=pn.element_blank(),
@@ -59,16 +75,20 @@ def plotnine_sensitivity_by_tte(df: pd.DataFrame, title: str = "Sensitivity by T
 
 
 def sensitivity_by_tte_model(
-    df: pl.DataFrame,
-    outcome_timestamps: pl.DataFrame,
-    pprs: Sequence[float] = (0.01, 0.03, 0.05),
+    df: pl.DataFrame, outcome_timestamps: pl.DataFrame, pprs: Sequence[float] = (0.01, 0.03, 0.05)
 ) -> pd.DataFrame:
     eval_dataset = (
-        parse_timestamp_from_uuid(parse_dw_ek_borger_from_uuid(df)).with_columns(pl.col("timestamp").dt.cast_time_unit("ns")).join(
-            outcome_timestamps, left_on=["dw_ek_borger", "timestamp"], right_on=["dw_ek_borger", "pred_time"], suffix="_outcome", how="left"
+        parse_timestamp_from_uuid(parse_dw_ek_borger_from_uuid(df))
+        .with_columns(pl.col("timestamp").dt.cast_time_unit("ns"))
+        .join(
+            outcome_timestamps,
+            left_on=["dw_ek_borger", "timestamp"],
+            right_on=["dw_ek_borger", "pred_time"],
+            suffix="_outcome",
+            how="left",
         )
     ).to_pandas()
-    
+
     dfs = []
     for ppr in pprs:
         df = get_sensitivity_by_timedelta_df(
@@ -97,12 +117,18 @@ if __name__ == "__main__":
     save_dir.mkdir(parents=True, exist_ok=True)
 
     best_experiment = "restraint_text_hyper"
-    eval_df = MlflowClientWrapper().get_best_run_from_experiment(
-            experiment_name=best_experiment, metric="all_oof_BinaryAUROC"
-        ).eval_frame().frame
-    outcome_timestamps = pl.DataFrame(sql_load("SELECT pred_times.dw_ek_borger, pred_time, first_mechanical_restraint as timestamp FROM fct.psycop_coercion_outcome_timestamps as pred_times LEFT JOIN fct.psycop_coercion_outcome_timestamps_2 as outc_times ON (pred_times.dw_ek_borger = outc_times.dw_ek_borger AND pred_times.datotid_start = outc_times.datotid_start)").drop_duplicates())
+    eval_df = (
+        MlflowClientWrapper()
+        .get_best_run_from_experiment(experiment_name=best_experiment, metric="all_oof_BinaryAUROC")
+        .eval_frame()
+        .frame
+    )
+    outcome_timestamps = pl.DataFrame(
+        sql_load(
+            "SELECT pred_times.dw_ek_borger, pred_time, first_mechanical_restraint as timestamp FROM fct.psycop_coercion_outcome_timestamps as pred_times LEFT JOIN fct.psycop_coercion_outcome_timestamps_2 as outc_times ON (pred_times.dw_ek_borger = outc_times.dw_ek_borger AND pred_times.datotid_start = outc_times.datotid_start)"
+        ).drop_duplicates()
+    )
 
     plotnine_sensitivity_by_tte(
-            sensitivity_by_tte_model(df=eval_df, outcome_timestamps=outcome_timestamps)
-        ).save(save_dir / "sensitivity_by_tte.png")
-    
+        sensitivity_by_tte_model(df=eval_df, outcome_timestamps=outcome_timestamps)
+    ).save(save_dir / "sensitivity_by_tte.png")

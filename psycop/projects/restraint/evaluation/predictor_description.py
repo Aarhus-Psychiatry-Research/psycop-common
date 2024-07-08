@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 from typing import Callable
 
@@ -6,19 +7,19 @@ import polars.selectors as cs
 from confection import Config
 
 from psycop.common.feature_generation.data_checks.flattened.feature_describer_tsflattener_v2 import (
-    ParsedPredictorColumn, generate_feature_description_df, parse_predictor_column_name, tsflattener_v2_column_is_static
+    ParsedPredictorColumn,
+    generate_feature_description_df,
+    parse_predictor_column_name,
+    tsflattener_v2_column_is_static,
 )
 from psycop.common.feature_generation.data_checks.utils import save_df_to_pretty_html_table
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 from psycop.common.model_training_v2.loggers.dummy_logger import DummyLogger
 
-import re
 
 def get_filtered_prediction_times(cfg: Config) -> pl.DataFrame:
-    data = BaselineRegistry.resolve({"data": cfg["trainer"]["training_data"]})[
-        "data"
-    ].load()
+    data = BaselineRegistry.resolve({"data": cfg["trainer"]["training_data"]})["data"].load()
 
     preprocessing_pipeline = BaselineRegistry().resolve(
         {"pipe": cfg["trainer"]["preprocessing_pipeline"]}
@@ -27,6 +28,7 @@ def get_filtered_prediction_times(cfg: Config) -> pl.DataFrame:
     preprocessed_all_splits: pl.DataFrame = pl.from_pandas(preprocessing_pipeline.apply(data))
 
     return preprocessed_all_splits
+
 
 def parse_predictor_column_name_v1(
     col_name: str,
@@ -64,13 +66,25 @@ def parse_predictor_column_name_v1(
     )
 
 
-
 if __name__ == "__main__":
-        cfg = Config().from_disk(Path(__file__).parent / "predictor_description.cfg")
+    cfg = Config().from_disk(Path(__file__).parent / "predictor_description.cfg")
 
-        populate_baseline_registry()
-      
-        filtered_dataset = get_filtered_prediction_times(cfg).select(cs.starts_with("pred_")).rename({"pred_adm_day_count": "pred_admission_day_fallback_nan"})
+    populate_baseline_registry()
 
-        predictor_description_df = generate_feature_description_df(df=filtered_dataset, column_name_parser=lambda c: parse_predictor_column_name(c, time_interval_end_regex=r"_within(.*?)[0-9]+", time_interval_format_regex=r"_within_[0-9]+_([a-z]+)"))
-        predictor_description_df.write_csv(Path(__file__).parent / "tables" / "predictor_description.html")
+    filtered_dataset = (
+        get_filtered_prediction_times(cfg)
+        .select(cs.starts_with("pred_"))
+        .rename({"pred_adm_day_count": "pred_admission_day_fallback_nan"})
+    )
+
+    predictor_description_df = generate_feature_description_df(
+        df=filtered_dataset,
+        column_name_parser=lambda c: parse_predictor_column_name(
+            c,
+            time_interval_end_regex=r"_within(.*?)[0-9]+",
+            time_interval_format_regex=r"_within_[0-9]+_([a-z]+)",
+        ),
+    )
+    predictor_description_df.write_csv(
+        Path(__file__).parent / "tables" / "predictor_description.html"
+    )

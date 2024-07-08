@@ -9,14 +9,14 @@ from psycop.common.model_evaluation.binary.time.periodic_data import roc_auc_by_
 from psycop.projects.restraint.evaluation.evaluation_utils import parse_timestamp_from_uuid
 
 
-def plotnine_auroc_by_month(df: pd.DataFrame, title: str = "AUROC by Month of the Year") -> pn.ggplot:
+def plotnine_auroc_by_month(
+    df: pd.DataFrame, title: str = "AUROC by Month of the Year"
+) -> pn.ggplot:
     df["proportion_of_n"] = df["n_in_bin"] / df["n_in_bin"].sum()
 
     p = (
         pn.ggplot(df, pn.aes(x="time_bin", y="auroc"))
-        + pn.geom_bar(
-            pn.aes(x="time_bin", y="proportion_of_n", fill="time_bin"), stat="identity"
-        )
+        + pn.geom_bar(pn.aes(x="time_bin", y="proportion_of_n", fill="time_bin"), stat="identity")
         + pn.geom_path(group=1, size=1)
         + pn.labs(x="Month", y="AUROC", title=title)
         + pn.ylim(0, 1)
@@ -32,7 +32,22 @@ def plotnine_auroc_by_month(df: pd.DataFrame, title: str = "AUROC by Month of th
             dpi=300,
         )
         + pn.scale_x_discrete()
-        + pn.scale_fill_manual(values=["#669BBC", "#A8C686", "#669BBC", "#A8C686", "#669BBC", "#A8C686", "#669BBC", "#A8C686", "#669BBC", "#A8C686", "#669BBC", "#A8C686"])
+        + pn.scale_fill_manual(
+            values=[
+                "#669BBC",
+                "#A8C686",
+                "#669BBC",
+                "#A8C686",
+                "#669BBC",
+                "#A8C686",
+                "#669BBC",
+                "#A8C686",
+                "#669BBC",
+                "#A8C686",
+                "#669BBC",
+                "#A8C686",
+            ]
+        )
     )
 
     if "ci_lower" in df.columns:
@@ -43,19 +58,18 @@ def plotnine_auroc_by_month(df: pd.DataFrame, title: str = "AUROC by Month of th
 
 
 def auroc_by_month(df: pl.DataFrame) -> pd.DataFrame:
-    eval_df = (
-        parse_timestamp_from_uuid(df).to_pandas()
+    eval_df = parse_timestamp_from_uuid(df).to_pandas()
+
+    df = pl.DataFrame(
+        roc_auc_by_periodic_time_df(
+            labels=eval_df["y"],
+            y_hat_probs=eval_df["y_hat_prob"],
+            timestamps=eval_df["timestamp"],
+            bin_period="M",
+        )
     )
 
-    df = pl.DataFrame(roc_auc_by_periodic_time_df(
-        labels=eval_df["y"],
-        y_hat_probs=eval_df["y_hat_prob"],
-        timestamps=eval_df["timestamp"],
-        bin_period="M",
-    ))
-
     return df.to_pandas()
-
 
 
 if __name__ == "__main__":
@@ -64,9 +78,11 @@ if __name__ == "__main__":
 
     best_experiment = "restraint_text_hyper"
     best_pos_rate = 0.05
-    df = MlflowClientWrapper().get_best_run_from_experiment(
-            experiment_name=best_experiment, metric="all_oof_BinaryAUROC"
-        ).eval_frame().frame
+    df = (
+        MlflowClientWrapper()
+        .get_best_run_from_experiment(experiment_name=best_experiment, metric="all_oof_BinaryAUROC")
+        .eval_frame()
+        .frame
+    )
 
     plotnine_auroc_by_month(auroc_by_month(df=df)).save(save_dir / "auroc_by_month.png")
-    

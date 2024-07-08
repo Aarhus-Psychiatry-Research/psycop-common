@@ -1,5 +1,5 @@
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
 import pandas as pd
 import plotnine as pn
@@ -9,7 +9,11 @@ from psycop.common.feature_generation.loaders.raw.load_demographic import birthd
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.projects.cvd.model_evaluation.single_run.auroc_by.auroc_by_model import auroc_by_model
 from psycop.projects.cvd.model_evaluation.single_run.auroc_by.auroc_by_view import auroc_by_view
-from psycop.projects.restraint.evaluation.evaluation_utils import add_age, parse_dw_ek_borger_from_uuid, parse_timestamp_from_uuid
+from psycop.projects.restraint.evaluation.evaluation_utils import (
+    add_age,
+    parse_dw_ek_borger_from_uuid,
+    parse_timestamp_from_uuid,
+)
 
 
 def plotnine_auroc_by_age(df: pd.DataFrame, title: str = "AUROC by Age") -> pn.ggplot:
@@ -35,7 +39,20 @@ def plotnine_auroc_by_age(df: pd.DataFrame, title: str = "AUROC by Age") -> pn.g
             dpi=300,
         )
         + pn.scale_x_discrete()
-        + pn.scale_fill_manual(values=["#669BBC", "#A8C686", "#669BBC", "#A8C686", "#669BBC", "#A8C686", "#669BBC", "#A8C686", "#669BBC", "#A8C686"])
+        + pn.scale_fill_manual(
+            values=[
+                "#669BBC",
+                "#A8C686",
+                "#669BBC",
+                "#A8C686",
+                "#669BBC",
+                "#A8C686",
+                "#669BBC",
+                "#A8C686",
+                "#669BBC",
+                "#A8C686",
+            ]
+        )
     )
 
     if "ci_lower" in df.columns:
@@ -45,21 +62,24 @@ def plotnine_auroc_by_age(df: pd.DataFrame, title: str = "AUROC by Age") -> pn.g
     return p
 
 
-def auroc_by_age_model(df: pl.DataFrame, birthdays: pl.DataFrame, bins: Sequence[float]) -> pd.DataFrame:
+def auroc_by_age_model(
+    df: pl.DataFrame, birthdays: pl.DataFrame, bins: Sequence[float]
+) -> pd.DataFrame:
     eval_df = (
         add_age(parse_timestamp_from_uuid(parse_dw_ek_borger_from_uuid(df)), birthdays)
     ).to_pandas()
 
-    df = pl.DataFrame(auroc_by_model(
-        input_values=eval_df["age"],
-        y=eval_df["y"],
-        y_hat_probs=eval_df["y_hat_prob"],
-        input_name="age",
-        bins=bins,
-    ))
+    df = pl.DataFrame(
+        auroc_by_model(
+            input_values=eval_df["age"],
+            y=eval_df["y"],
+            y_hat_probs=eval_df["y_hat_prob"],
+            input_name="age",
+            bins=bins,
+        )
+    )
 
     return df.to_pandas()
-
 
 
 if __name__ == "__main__":
@@ -68,11 +88,14 @@ if __name__ == "__main__":
 
     best_experiment = "restraint_text_hyper"
     best_pos_rate = 0.05
-    df = MlflowClientWrapper().get_best_run_from_experiment(
-            experiment_name=best_experiment, metric="all_oof_BinaryAUROC"
-        ).eval_frame().frame
-    birthdays=pl.from_pandas(birthdays())
+    df = (
+        MlflowClientWrapper()
+        .get_best_run_from_experiment(experiment_name=best_experiment, metric="all_oof_BinaryAUROC")
+        .eval_frame()
+        .frame
+    )
+    birthdays = pl.from_pandas(birthdays())
 
     plotnine_auroc_by_age(
-            auroc_by_age_model(df=df, birthdays=birthdays, bins=[18, *range(20, 70, 10)])).save(save_dir / "auroc_by_age.png")
-    
+        auroc_by_age_model(df=df, birthdays=birthdays, bins=[18, *range(20, 70, 10)])
+    ).save(save_dir / "auroc_by_age.png")

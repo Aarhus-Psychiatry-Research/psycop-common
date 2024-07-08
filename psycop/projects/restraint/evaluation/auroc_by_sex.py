@@ -16,9 +16,7 @@ def plotnine_auroc_by_sex(df: pd.DataFrame, title: str = "AUROC by Sex") -> pn.g
 
     p = (
         pn.ggplot(df, pn.aes(x="sex", y="auroc"))
-        + pn.geom_bar(
-            pn.aes(x="sex", y="proportion_of_n", fill="sex"), stat="identity",
-        )
+        + pn.geom_bar(pn.aes(x="sex", y="proportion_of_n", fill="sex"), stat="identity")
         + pn.geom_path(group=1, size=1)
         + pn.labs(x="Sex", y="AUROC", title=title)
         + pn.ylim(0, 1)
@@ -32,7 +30,7 @@ def plotnine_auroc_by_sex(df: pd.DataFrame, title: str = "AUROC by Sex") -> pn.g
             axis_title=pn.element_text(size=22),
             plot_title=pn.element_text(size=30, ha="center"),
             dpi=300,
-            figure_size=(4, 5)
+            figure_size=(4, 5),
         )
         + pn.scale_x_discrete()
         + pn.scale_fill_manual(values=["#669BBC", "#A8C686", "#F3A712"])
@@ -47,22 +45,22 @@ def plotnine_auroc_by_sex(df: pd.DataFrame, title: str = "AUROC by Sex") -> pn.g
 
 def auroc_by_sex_model(df: pl.DataFrame, sex_df: pl.DataFrame) -> pd.DataFrame:
     eval_df = (
-        parse_dw_ek_borger_from_uuid(df)
-        .join(sex_df, on="dw_ek_borger", how="left")
+        parse_dw_ek_borger_from_uuid(df).join(sex_df, on="dw_ek_borger", how="left")
     ).to_pandas()
 
-    df = pl.DataFrame(auroc_by_model(
-        input_values=eval_df["sex_female"],
-        y=eval_df["y"],
-        y_hat_probs=eval_df["y_hat_prob"],
-        input_name="sex",
-        bin_continuous_input=False,
-    ))
+    df = pl.DataFrame(
+        auroc_by_model(
+            input_values=eval_df["sex_female"],
+            y=eval_df["y"],
+            y_hat_probs=eval_df["y_hat_prob"],
+            input_name="sex",
+            bin_continuous_input=False,
+        )
+    )
 
     return df.with_columns(
-            pl.when(pl.col("sex")).then(pl.lit("Female")).otherwise(pl.lit("Male")).alias("sex")
-        ).to_pandas()
-
+        pl.when(pl.col("sex")).then(pl.lit("Female")).otherwise(pl.lit("Male")).alias("sex")
+    ).to_pandas()
 
 
 if __name__ == "__main__":
@@ -71,11 +69,14 @@ if __name__ == "__main__":
 
     best_experiment = "restraint_text_hyper"
     best_pos_rate = 0.05
-    df = MlflowClientWrapper().get_best_run_from_experiment(
-            experiment_name=best_experiment, metric="all_oof_BinaryAUROC"
-        ).eval_frame().frame
-    sex_df=pl.from_pandas(sex_female())
+    df = (
+        MlflowClientWrapper()
+        .get_best_run_from_experiment(experiment_name=best_experiment, metric="all_oof_BinaryAUROC")
+        .eval_frame()
+        .frame
+    )
+    sex_df = pl.from_pandas(sex_female())
 
-    plotnine_auroc_by_sex(
-            auroc_by_sex_model(df=df, sex_df=sex_df)).save(save_dir / "auroc_by_sex.png")
-    
+    plotnine_auroc_by_sex(auroc_by_sex_model(df=df, sex_df=sex_df)).save(
+        save_dir / "auroc_by_sex.png"
+    )
