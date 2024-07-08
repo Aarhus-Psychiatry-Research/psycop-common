@@ -18,13 +18,15 @@ IncidenceByTimeModel = NewType("IncidenceByTimeModel", pl.DataFrame)
 def incidence_by_time_model() -> IncidenceByTimeModel:
     df_lab_result = get_first_cvd_indicator()
 
-    grouped_by_outcome = label_by_outcome_type(
-        pl.from_pandas(df_lab_result), group_col="cause"
-    ).with_columns(
-        pl.when(pl.col("outcome_type").str.contains("artery"))
-        .then(pl.lit("PAD"))
-        .otherwise("outcome_type")
-        .alias("outcome_type")
+    grouped_by_outcome = (
+        label_by_outcome_type(pl.from_pandas(df_lab_result), group_col="cause")
+        .with_columns(
+            pl.when(pl.col("outcome_type").str.contains("artery"))
+            .then(pl.lit("PAD"))
+            .otherwise("outcome_type")
+            .alias("outcome_type")
+        )
+        .filter(pl.col("outcome_type").is_null().not_())
     )
 
     filtered_after_move = CVDWashoutMove().apply(grouped_by_outcome.lazy()).collect()

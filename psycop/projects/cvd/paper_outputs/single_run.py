@@ -25,6 +25,10 @@ from psycop.common.model_evaluation.markdown.md_objects import (
     MarkdownTable,
     create_supplementary_from_markdown_artifacts,
 )
+from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
+from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema
+from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
+from psycop.common.model_training_v2.trainer.preprocessing.pipeline import PreprocessingPipeline
 from psycop.projects.cvd.cohort_examination.filtering_flowchart import filtering_flowchart_facade
 from psycop.projects.cvd.cohort_examination.incidence_by_time.facade import incidence_by_time_facade
 from psycop.projects.cvd.cohort_examination.table_one.facade import table_one_facade
@@ -45,7 +49,8 @@ from psycop.projects.cvd.model_evaluation.single_run.single_run_robustness impor
 
 
 class CVDArtifactFacade(Protocol):
-    def __call__(self, output_dir: Path) -> None: ...
+    def __call__(self, output_dir: Path) -> None:
+        ...
 
 
 def _markdown_artifacts_facade(
@@ -130,52 +135,56 @@ def single_run_facade(output_path: Path, run: PsycopMlflowRun) -> None:
     cfg = run.get_config()
     eval_frame = run.eval_frame()
 
-    lookahead_days_str = re.findall(r".+_within_(\d+)_days.+", cfg["trainer"]["outcome_col_name"])[
-        0
-    ]
-    lookahead_years = int(int(lookahead_days_str) / 365)
-    estimator_type = cfg["trainer"]["task"]["task_pipe"]["sklearn_pipe"]["*"]["model"][
-        "@estimator_steps"
-    ]
+    # lookahead_days_str = re.findall(r".+_to_(\d+)_days.+", cfg["trainer"]["outcome_col_name"])[0]
+    # lookahead_years = int(int(lookahead_days_str) / 365)
+    # estimator_type = cfg["trainer"]["task"]["task_pipe"]["sklearn_pipe"]["*"]["model"][
+    #     "@estimator_steps"
+    # ]
 
-    artifacts = _markdown_artifacts_facade(
-        outcome_label="CVD",
-        eval_df=eval_frame,
-        outcome_timestamps=cvd_outcome_timestamps(),
-        sex_df=pl.from_pandas(sex_female()),
-        all_visits_df=pl.from_pandas(physical_visits_to_psychiatry()),
-        birthdays_df=pl.from_pandas(birthdays()),
-        output_path=output_path,
-        estimator_type=estimator_type,
-        primary_pos_proportion=0.05,
-        pos_proportions=[0.01, 0.05, 0.1],
-        lookahead_years=lookahead_years,
-        first_letter_index=0,
-    )
+    # artifacts = _markdown_artifacts_facade(
+    #     outcome_label="CVD",
+    #     eval_df=eval_frame,
+    #     outcome_timestamps=cvd_outcome_timestamps(),
+    #     sex_df=pl.from_pandas(sex_female()),
+    #     all_visits_df=pl.from_pandas(physical_visits_to_psychiatry()),
+    #     birthdays_df=pl.from_pandas(birthdays()),
+    #     output_path=output_path,
+    #     estimator_type=estimator_type,
+    #     primary_pos_proportion=0.05,
+    #     pos_proportions=[0.01, 0.05, 0.1, 0.2],
+    #     lookahead_years=lookahead_years,
+    #     first_letter_index=0,
+    # )
 
-    markdown_text = create_supplementary_from_markdown_artifacts(
-        artifacts=artifacts,
-        first_table_index=1,
-        table_title_prefix="Table",
-        first_figure_index=1,
-        figure_title_prefix="Figure",
-    )
+    # markdown_text = create_supplementary_from_markdown_artifacts(
+    #     artifacts=artifacts,
+    #     first_table_index=1,
+    #     table_title_prefix="Table",
+    #     first_figure_index=1,
+    #     figure_title_prefix="Figure",
+    # )
 
-    (Path() / "Report.md").write_text(markdown_text)
+    # (output_path / "Report.md").write_text(markdown_text)
 
     non_markdown_artifacts: Sequence[CVDArtifactFacade] = [
-        lambda output_dir: table_one_facade(run=run, output_dir=output_dir),
-        lambda output_dir: incidence_by_time_facade(output_dir=output_dir),
-        lambda output_dir: filtering_flowchart_facade(
-            prediction_time_bundle=cvd_pred_filtering(), run=run, output_dir=output_dir
-        ),
+        lambda output_dir: table_one_facade(run=run, output_dir=output_dir)
+        # lambda output_dir: incidence_by_time_facade(output_dir=output_dir),
+        # lambda output_dir: filtering_flowchart_facade(
+        #     prediction_time_bundle=cvd_pred_filtering(), run=run, output_dir=output_dir
+        # )
     ]
     for artifact in non_markdown_artifacts:
         artifact(output_path)
 
-    feature_description = generate_feature_description_df(df=eval_frame.frame)
-    data = feature_description.to_pandas().to_html()
-    (output_path / "feature_description.html").write_text(data)
+    # resolved_cfg = BaselineSchema(**BaselineRegistry.resolve(cfg))
+    # training_data: pl.DataFrame = (
+    #     resolved_cfg.trainer.training_data.load()
+    #     .collect()
+    #     .drop(cfg["trainer"]["group_col_name"], "timestamp", cfg["trainer"]["uuid_col_name"])
+    # )  # type: ignore
+    # feature_description = generate_feature_description_df(df=training_data)
+    # data = feature_description.to_pandas().to_html()
+    # (output_path / "feature_description.html").write_text(data)
 
 
 if __name__ == "__main__":
@@ -187,5 +196,8 @@ if __name__ == "__main__":
         datefmt="%Y/%m/%d %H:%M:%S",
     )
 
-    run = MlflowClientWrapper().get_run("CVD", "CVD layer 1, base")
-    single_run_facade(Path(), run)
+    run_name = "CVD layer 1, base"
+    run = MlflowClientWrapper().get_run("CVD", run_name)
+    output_dir = Path() / "outputs" / run_name
+    output_dir.mkdir(exist_ok=True, parents=True)
+    single_run_facade(output_dir, run)

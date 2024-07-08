@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 import polars as pl
+from rich.pretty import pprint
 from torch import Value
 
 
@@ -27,7 +28,7 @@ def _get_match_group(regex: str, string: str) -> str:
     match = re.search(regex, string)
     if match is None:
         raise ValueError(
-            f"No match found for {string}. All temporal columns should match, and column is not identified as static. Either adjust regex to match, or adjust static/temporal rule."
+            f"Column '{string}' did not match regex: '{regex}'. All temporal columns should match, and column is not identified as static. Either adjust regex to match, or adjust static/temporal rule."
         )
     return match.group(1)
 
@@ -78,12 +79,26 @@ def generate_feature_description_df(
     df: pl.DataFrame,
     column_name_parser: Callable[[str], ParsedPredictorColumn] = parse_predictor_column_name,
 ) -> pl.DataFrame:
-    feature_rows = []
+    errors = []
+    parsed_cols: list[ParsedPredictorColumn] = []
     for col in df.columns:
-        parsed_col = column_name_parser(col)
-        n_unique = df[col].n_unique()
-        mean = round(df[col].drop_nans().mean(), 2)  # type: ignore
-        proportion_using_fallback = round(df[col].eq(float(parsed_col.fallback)).mean(), 2)  # type: ignore
+        try:
+            parsed_cols.append(column_name_parser(col))
+        except ValueError as e:
+            errors.append(e)
+            continue
+
+    if errors:
+        pprint(errors)
+        raise ValueError(errors)
+
+    feature_rows = []
+    for parsed_col in parsed_cols:
+        n_unique = df[parsed_col.col_name].n_unique()
+        mean = round(df[parsed_col.col_name].drop_nans().mean(), 2)  # type: ignore
+        proportion_using_fallback = round(
+            df[parsed_col.col_name].cast(pl.Float32).eq(float(parsed_col.fallback)).mean(), 2
+        )  # type: ignore
 
         feature_description = {
             "Feature name": parsed_col.feature_name,
@@ -98,5 +113,6 @@ def generate_feature_description_df(
             "Proportion using fallback": proportion_using_fallback,
         }
         feature_rows.append(feature_description)
+
     feature_description_df = pl.DataFrame(feature_rows)
     return feature_description_df.sort("Feature name")

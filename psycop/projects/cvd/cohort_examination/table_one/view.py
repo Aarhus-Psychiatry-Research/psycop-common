@@ -18,9 +18,9 @@ class RowSpecification:
     source_col_name: str
     readable_name: str
     categorical: bool = False
-    values_to_display: Optional[Sequence[Union[int, float, str]]] = (
-        None  # Which categories to display.
-    )
+    values_to_display: Optional[
+        Sequence[Union[int, float, str]]
+    ] = None  # Which categories to display.
     nonnormal: bool = False
 
 
@@ -91,7 +91,7 @@ def _visit_frame(model: TableOneModel) -> pd.DataFrame:
             source_col_name="age_grouped", readable_name="Age grouped", categorical=True
         ),
         RowSpecification(
-            source_col_name="pred__sex_female_fallback_0",
+            source_col_name="pred_sex_female_fallback_0",
             readable_name="Female",
             categorical=True,
             values_to_display=[1],

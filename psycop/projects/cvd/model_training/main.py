@@ -3,11 +3,15 @@ from pathlib import Path
 
 import confection
 
-from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
+from psycop.common.model_training_v2.config.populate_registry import (
+    populate_baseline_registry,
+)
 from psycop.projects.cvd.model_training.hyperparam import hyperparameter_search
 from psycop.projects.cvd.model_training.layers import train_cvd_layers
 from psycop.projects.cvd.model_training.lookbehinds import train_with_lookbehinds
-from psycop.projects.cvd.model_training.populate_cvd_registry import populate_with_cvd_registry
+from psycop.projects.cvd.model_training.populate_cvd_registry import (
+    populate_with_cvd_registry,
+)
 from psycop.projects.cvd.model_training.score2 import train_with_score2
 
 if __name__ == "__main__":

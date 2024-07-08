@@ -74,7 +74,7 @@ def filtering_flowchart_facade(
 
     pipeline: BaselinePreprocessingPipeline = filled["trainer"].preprocessing_pipeline
     pipeline._logger = TerminalLogger()  # type: ignore
-    pipeline.steps[0].split_to_keep = ["train", "val", "test"]  # type: ignore # Do not filter by region
+    pipeline.steps[0].splits_to_keep = ["train", "val", "test"]  # type: ignore # Do not filter by region
 
     flattened_data = pl.scan_parquet(cfg["trainer"]["training_data"]["paths"][0]).lazy()
 
@@ -85,13 +85,15 @@ def filtering_flowchart_facade(
     )
 
     def _stepdelta_line(prior: StepDelta, cur: StepDelta) -> str:
-        return f"{cur.step_name}: Dropped {prior.n_prediction_times_before - cur.n_prediction_times_after}\n\t Remaining: {cur.n_prediction_times_after}"
+        return f"{cur.step_name}: Dropped {prior.n_prediction_times_before - cur.n_prediction_times_after:,}\n\t Remaining: {cur.n_prediction_times_after:,}"
 
     lines = [_stepdelta_line(prior, cur) for prior, cur in zip(step_deltas, step_deltas[1:])]
 
     outcome_matcher = pl.col(cfg["trainer"]["outcome_col_name"]) == pl.lit(1)
-    lines.append(f"With outcome: {len(flattened_data.filter(outcome_matcher).collect())}")
-    lines.append(f"Without outcome: {len(flattened_data.filter(outcome_matcher.not_()).collect())}")
+    lines.append(f"With outcome: {len(flattened_data.filter(outcome_matcher).collect()):,}")
+    lines.append(
+        f"Without outcome: {len(flattened_data.filter(outcome_matcher.not_()).collect()):,}"
+    )
 
     # Output to a file
     (output_dir / "filtering_flowchart.csv").write_text("\n".join(lines))

@@ -11,26 +11,26 @@ from psycop.projects.cvd.model_training.populate_cvd_registry import populate_wi
 
 def train_cvd_layers(cfg: confection.Config):
     for layer in range(1, 5):
-        cfg = copy.deepcopy(cfg)
-        cfg["logger"]["*"]["mlflow"]["run_name"] = f"CVD layer {layer}, base"
+        layer_cfg = copy.deepcopy(cfg)
+        layer_cfg["logger"]["*"]["mlflow"]["run_name"] = f"CVD layer {layer}, base"
 
         layers = [str(i) for i in range(1, layer + 1)]
-        cfg["trainer"]["preprocessing_pipeline"]["*"]["layer_selector"]["keep_matching"] = (
-            f".+_layer_({'|'.join(layers)}).+"
-        )
+        layer_cfg["trainer"]["preprocessing_pipeline"]["*"]["layer_selector"][
+            "keep_matching"
+        ] = f".+_layer_({'|'.join(layers)}).+"
 
         logging.info(f"Training model with layers {layers}")
-        train_baseline_model_from_cfg(cfg=cfg)
+        train_baseline_model_from_cfg(cfg=layer_cfg)
 
         if layer == 1:
             aggs = ".+(mean|min|max).+"
-            cfg["trainer"]["preprocessing_pipeline"]["*"]["aggregation_selector"][
+            layer_cfg["trainer"]["preprocessing_pipeline"]["*"]["aggregation_selector"][
                 "keep_matching"
             ] = aggs
-            cfg["logger"]["*"]["mlflow"]["run_name"] = f"CVD layer {layer}, (mean, min, mx)"
+            layer_cfg["logger"]["*"]["mlflow"]["run_name"] = f"CVD layer {layer}, (mean, min, mx)"
 
             logging.info(f"Training model with {aggs}")
-            train_baseline_model_from_cfg(cfg=cfg)
+            train_baseline_model_from_cfg(cfg=layer_cfg)
 
 
 if __name__ == "__main__":

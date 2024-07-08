@@ -29,7 +29,7 @@ def hyperparameter_search(cfg: confection.Config):
 
         OptunaHyperParameterOptimization().from_cfg(
             cfg,
-            study_name=cfg["logger"]["*"]["mlflow"]["experiment_name"],
+            study_name=cfg["logger"]["*"]["mlflow"]["experiment_name"] + "_",
             n_trials=150,
             n_jobs=10,
             direction="maximize",

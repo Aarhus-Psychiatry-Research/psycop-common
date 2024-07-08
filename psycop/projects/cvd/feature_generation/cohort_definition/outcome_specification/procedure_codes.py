@@ -9,9 +9,7 @@ CVD_PROCEDURE_CODES = {
     "CABG": ["KFNA", "KFNB", "KFNC", "KFND", "KFNE"],
     "Intracranial endovascular thrombolysis": ["KAAL10", "KAAL11"],
     "Other intracranial endovascular surgery": ["KAAL99"],
-    "Iliac artery": ["KPDE", "KPDF", "KPDH", "KPDN", "KPDP", "KPDQ"],
-    "Femoral artery": ["KPEE", "KPEF", "KPEH", "KPEN", "KPEP", "KPEQ"],
-    "Popliteal artery and distal ": ["KPFE", "KPFG", "KPFH", "KPFN", "KPFP", "KPFQ"],
+    "PAD": ["KPDE", "KPDF", "KPDH", "KPDN", "KPDP", "KPDQ", "KPEE", "KPEF", "KPEH", "KPEN", "KPEP", "KPEQ", "KPFE", "KPFG", "KPFH", "KPFN", "KPFP", "KPFQ"],
     "Amputation": ["KNFQ", "KNGQ", "KNHQ"],
 }
 

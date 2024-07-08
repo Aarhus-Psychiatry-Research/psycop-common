@@ -33,3 +33,4 @@ def get_first_cvd_indicator() -> pd.DataFrame:
 
 if __name__ == "__main__":
     df = get_first_cvd_indicator()
+    pass
