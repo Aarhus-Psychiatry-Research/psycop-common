@@ -11,6 +11,7 @@ def train_with_score2(cfg: confection.Config):
     # Switch to logistic regression
     cfg["trainer"]["task"]["task_pipe"]["sklearn_pipe"]["*"] = {
         "imputer": {"@estimator_steps": "simple_imputation", "strategy": "mean"},
+        "scaler": {"@estimator_steps": "standard_scaler"},
         "model": {"@estimator_steps": "logistic_regression", "max_iter": 1000},
     }
 

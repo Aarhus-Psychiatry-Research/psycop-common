@@ -24,8 +24,6 @@ from psycop.projects.cvd.feature_generation.cohort_definition.cvd_cohort_definit
 )
 from psycop.projects.cvd.model_training.populate_cvd_registry import populate_with_cvd_registry
 
-run = MlflowClientWrapper().get_run(experiment_name="CVD", run_name="CVD layer 1, base")
-
 
 @shared_cache.cache
 def _apply_preprocessing_pipeline(
