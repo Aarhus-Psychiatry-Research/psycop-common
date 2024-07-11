@@ -33,7 +33,8 @@ class Colors:
     primary = "#0072B2"
     secondary = "#009E73"
     tertiary = "#D55E00"
-    background = "lightgray"
+    bg_primary = "lightgray"
+    bg_secondary = "darkgray"
 
 
 COLORS = Colors()

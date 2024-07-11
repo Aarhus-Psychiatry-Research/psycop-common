@@ -26,3 +26,9 @@ if __name__ == "__main__":
     Parallel(n_jobs=8)(
         delayed(fit_with_populated_registries)(cfg_file=cfg_path) for cfg_path in test_set_cfg_paths
     )
+    augmentation_paths = list(
+        (Path(__file__).parent / "config" / "individual_outcomes" / "augmentation").glob("*.cfg")
+    )
+    Parallel(n_jobs=2)(
+        delayed(fit_with_populated_registries)(cfg_file=cfg_path) for cfg_path in augmentation_paths
+    )

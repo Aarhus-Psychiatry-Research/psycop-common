@@ -1,5 +1,6 @@
 from collections.abc import Sequence
 from pathlib import Path
+from typing import Literal
 
 import polars as pl
 
@@ -45,12 +46,16 @@ populate_baseline_registry()
 populate_scz_bp_registry()
 
 
-def scz_bp_df_to_eval_df(df: pl.DataFrame) -> EvalDataset:
+def scz_bp_df_to_eval_df(
+    df: pl.DataFrame, model_type: Literal["joint", "scz", "bp"]
+) -> EvalDataset:
     return EvalDataset(
         ids=df["dw_ek_borger"].to_pandas(),
         pred_time_uuids=df["pred_time_uuid"].to_pandas(),
         pred_timestamps=df["timestamp"].to_pandas(),
-        outcome_timestamps=df["meta_time_of_diagnosis_fallback_nan"].to_pandas(),
+        outcome_timestamps=df["meta_time_of_diagnosis_fallback_nan"].to_pandas()
+        if model_type == "joint"
+        else df[f"meta_time_of_{model_type}_diagnosis_fallback_nan"].to_pandas(),
         y=df["y"].to_pandas(),
         y_hat_probs=df["y_hat_prob"].to_pandas(),
         age=df["pred_age_in_years"].to_pandas(),
@@ -105,7 +110,9 @@ def load_sczbp_metadata() -> pl.DataFrame:
     )
 
 
-def scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name: str) -> EvalDataset:
+def scz_bp_get_eval_ds_from_best_run_in_experiment(
+    experiment_name: str, model_type: Literal["joint", "scz", "bp"]
+) -> EvalDataset:
     best_run = MlflowClientWrapper().get_best_run_from_experiment(
         experiment_name=experiment_name, metric="all_oof_BinaryAUROC"
     )
@@ -126,7 +133,7 @@ def scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name: str) -> Eval
     df = min_eval_ds.frame.join(
         cohort_data, how="left", on=min_eval_ds.pred_time_uuid_col_name
     ).join(cohort_metadata, how="left", on=min_eval_ds.pred_time_uuid_col_name, validate="1:1")
-    return scz_bp_df_to_eval_df(df=df)
+    return scz_bp_df_to_eval_df(df=df, model_type=model_type)
 
 
 if __name__ == "__main__":
@@ -151,4 +158,4 @@ if __name__ == "__main__":
         ],
     ).rename({"prediction_time_uuid": "pred_time_uuid"})
     df = min_eval_ds.frame.join(cohort_metadata, how="left", on=min_eval_ds.pred_time_uuid_col_name)
-    eval_ds = scz_bp_df_to_eval_df(df=df)
+    eval_ds = scz_bp_df_to_eval_df(df=df, model_type="joint")

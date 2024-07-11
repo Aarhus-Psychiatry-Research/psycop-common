@@ -22,8 +22,13 @@ from psycop.projects.cvd.feature_generation.cohort_definition.outcome_specificat
 
 
 @shared_cache.cache()
+def cvd_pred_filtering() -> FilteredPredictionTimeBundle:
+    return CVDCohortDefiner().get_filtered_prediction_times_bundle()
+
+
+@shared_cache.cache()
 def cvd_pred_times() -> PredictionTimeFrame:
-    return CVDCohortDefiner().get_filtered_prediction_times_bundle().prediction_times
+    return cvd_pred_filtering().prediction_times
 
 
 @shared_cache.cache()
@@ -64,4 +69,6 @@ class CVDCohortDefiner(CohortDefiner):
 
 
 if __name__ == "__main__":
-    outcome_timestamps = CVDCohortDefiner.get_outcome_timestamps()
+    cohort = pl.read_parquet(
+        "E:/shared_resources/cvd/feature_set/flattened_datasets/cvd_feature_set/cvd_feature_set.parquet"
+    )

@@ -1,15 +1,16 @@
 import logging
 from collections.abc import Sequence
-from typing import NewType
 
 import numpy as np
 import polars as pl
 
+from psycop.common.global_utils.cache import shared_cache
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_evaluation.binary.global_performance.roc_auc import bootstrap_roc
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import RunSelector
 
 
+@shared_cache.cache()
 def _run_auroc_with_ci(df: pl.DataFrame, n_bootstraps: int = 5) -> pl.DataFrame:
     logging.info(f"Bootstrapping {df['run_name'][0]}")
     _, aucs_bootstrapped, _ = bootstrap_roc(
@@ -28,7 +29,8 @@ def _run_auroc_with_ci(df: pl.DataFrame, n_bootstraps: int = 5) -> pl.DataFrame:
     )
 
 
-def data(runs: Sequence[RunSelector]) -> pl.DataFrame:
+@shared_cache.cache()
+def model(runs: Sequence[RunSelector]) -> pl.DataFrame:
     eval_dfs = [
         MlflowClientWrapper()
         .get_run(r.experiment_name, r.run_name)
@@ -49,7 +51,7 @@ if __name__ == "__main__":
         datefmt="%Y/%m/%d %H:%M:%S",
     )
 
-    result = data(
+    result = model(
         runs=[
             RunSelector(experiment_name="baseline_v2_cvd", run_name="Layer 1"),
             RunSelector(
