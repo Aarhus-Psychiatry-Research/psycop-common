@@ -41,8 +41,9 @@ def combine_structured_and_text_outcome():  # noqa: ANN201
 
     combined_clozapine_outcome = earliest_outcome_df.set_index("dw_ek_borger")
     combined_clozapine_outcome["timestamp"] = combined_clozapine_outcome.apply(
-        select_timestamp, axis=1
-    )  # noqa ANN202
+        select_timestamp,
+        axis=1,  # noqa ANN202
+    )
     combined_clozapine_outcome.reset_index(inplace=True)  # noqa: PD002
 
     unique_dw_ek_borger_final = combined_clozapine_outcome["dw_ek_borger"].nunique()
