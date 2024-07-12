@@ -41,7 +41,7 @@ class PsycopConfig(confection.Config):
         """Get a value from the config.
 
         Args:
-            location (str): The location of the value to get. E.g. "trainer.training_data.paths.0"
+            location: The location of the value to get. E.g. "trainer.training_data.paths.0"
 
         Returns:
             Any: The value at the location.
@@ -64,8 +64,8 @@ class PsycopConfig(confection.Config):
         """Set a value in the config.
 
         Args:
-            location (str): The location of the value to set. E.g. "trainer.training_data.paths.0"
-            value (Any): The value to set.
+            location: The location of the value to set. E.g. "trainer.training_data.paths.0"
+            value: The value to set.
         """
         # Get the value at the location to check that it exists
         self.retrieve(location)
@@ -78,8 +78,8 @@ class PsycopConfig(confection.Config):
         """Add a value to the config.
 
         Args:
-            location (str): The location of the value to add. E.g. "trainer.training_data.paths.0"
-            value (Any): The value to add.
+            location: The location of the value to add. E.g. "trainer.training_data.paths.0"
+            value: The value to add.
         """
         *path, last = location.split(".")
 
@@ -90,7 +90,7 @@ class PsycopConfig(confection.Config):
         """Remove a value from the config.
 
         Args:
-            location (str): The location of the value to remove. E.g. "trainer.training_data.paths.0"
+            location: The location of the value to remove. E.g. "trainer.training_data.paths.0"
         """
         *path, second_to_last, last = location.split(".")
 
