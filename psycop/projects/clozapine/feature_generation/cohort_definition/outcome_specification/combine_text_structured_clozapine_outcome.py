@@ -30,14 +30,17 @@ def combine_structured_and_text_outcome():  # noqa: ANN201
         "dw_ek_borger"
     )
 
-    def select_timestamp(row):  # noqa: ANN001
-        dw_ek_borger = row.name
+    def select_timestamp(row: pd.Series) -> pd.Series:
+        dw_ek_borger = row["dw_ek_borger"]
         earliest_timestamp = row["timestamp"]
         if dw_ek_borger in post_october_2016_structured.index:
-            structured_timestamp = post_october_2016_structured.loc[dw_ek_borger, "timestamp"]
+            structured_row = post_october_2016_structured.loc[dw_ek_borger]
+            structured_timestamp = structured_row["timestamp"]
             if earliest_timestamp >= pd.Timestamp("2016-10-01"):
-                return structured_timestamp
-        return earliest_timestamp
+                return pd.Series(
+                    [structured_timestamp, structured_row["value"]], index=["timestamp", "value"]
+                )
+        return pd.Series([earliest_timestamp, pd.NA], index=["timestamp", "value"])
 
     combined_clozapine_outcome = earliest_outcome_df.set_index("dw_ek_borger")
     combined_clozapine_outcome["timestamp"] = combined_clozapine_outcome.apply(
