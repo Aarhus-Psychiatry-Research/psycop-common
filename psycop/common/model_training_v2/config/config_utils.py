@@ -71,7 +71,8 @@ class PsycopConfig(confection.Config):
         self.retrieve(location)
 
         # Set the value at the location
-        self.add(location, value)
+        *path, last = location.split(".")
+        reduce(operator.getitem, path, self)[last] = value
 
     def add(self, location: str, value: Any) -> None:
         """Add a value to the config.
