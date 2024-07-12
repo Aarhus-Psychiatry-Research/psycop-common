@@ -17,7 +17,10 @@ from mlflow.entities.run_inputs import RunInputs
 from mlflow.tracking import MlflowClient
 from sklearn.pipeline import Pipeline
 
-from psycop.common.model_training_v2.config.config_utils import resolve_and_fill_config
+from psycop.common.model_training_v2.config.config_utils import (
+    PsycopConfig,
+    resolve_and_fill_config,
+)
 from psycop.common.types.validated_frame import ValidatedFrame
 from psycop.common.types.validator_rules import ColumnExistsRule, ColumnTypeRule, ValidatorRule
 
@@ -79,9 +82,9 @@ class PsycopMlflowRun(Run):
     def name(self) -> str:
         return self._info._run_name  # type: ignore
 
-    def get_config(self) -> Config:
+    def get_config(self) -> PsycopConfig:
         cfg_path = self.download_artifact(artifact_name="config.cfg", save_location=None)
-        return Config().from_disk(cfg_path)
+        return PsycopConfig().from_disk(cfg_path)
 
     def sklearn_pipeline(self) -> Pipeline:
         return pickle.load(self.download_artifact("sklearn_pipe.pkl").open("rb"))
