@@ -124,7 +124,14 @@ class MlflowClientWrapper:
 
     def get_run(self, experiment_name: str, run_name: str) -> PsycopMlflowRun:
         runs = self._get_mlflow_runs_by_experiment(experiment_name=experiment_name)
-        return next(run for run in runs if run.info.run_name == run_name)
+
+        matches = [run for run in runs if run.info.run_name == run_name]
+        if not matches:
+            raise ValueError(f"No run in experiment {experiment_name} matches {run_name}")
+        if len(matches) != 1:
+            raise ValueError(f"Multiple runs in experiment {experiment_name} matches {run_name}")
+
+        return matches[0]
 
     def get_best_run_from_experiment(
         self, experiment_name: str, metric: str, larger_is_better: bool = True
@@ -143,7 +150,7 @@ class MlflowClientWrapper:
     def _get_mlflow_experiment_id_from_experiment_name(self, experiment_name: str) -> str:
         experiment = self.client.get_experiment_by_name(name=experiment_name)
         if experiment is None:
-            raise ValueError(f"{experiment_name} does not exist on MlFlow.")
+            raise ValueError(f"Experiment {experiment_name} does not exist on MlFlow.")
         return experiment.experiment_id
 
     def _get_mlflow_runs_by_experiment(self, experiment_name: str) -> Sequence[PsycopMlflowRun]:
