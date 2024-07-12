@@ -97,8 +97,9 @@ def generate_feature_description_df(
         n_unique = df[parsed_col.col_name].n_unique()
         mean = round(df[parsed_col.col_name].drop_nans().mean(), 2)  # type: ignore
         proportion_using_fallback = round(
-            df[parsed_col.col_name].cast(pl.Float32).eq(float(parsed_col.fallback)).mean(), 2
-        )  # type: ignore
+            df[parsed_col.col_name].cast(pl.Float32).eq(float(parsed_col.fallback)).mean(),  # type: ignore
+            2,
+        )
 
         feature_description = {
             "Feature name": parsed_col.feature_name,

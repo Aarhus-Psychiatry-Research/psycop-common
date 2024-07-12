@@ -25,7 +25,7 @@ def train_with_score2(cfg: confection.Config):
         "hdl",
         "total_cholesterol",
     ]
-    cfg["trainer"]["preprocessing_pipeline"]["*"]["layer_selector"][
-        "keep_matching"
-    ] = f".*({'|'.join(features_to_keep)}).*"
+    cfg["trainer"]["preprocessing_pipeline"]["*"]["layer_selector"]["keep_matching"] = (
+        f".*({'|'.join(features_to_keep)}).*"
+    )
     train_baseline_model_from_cfg(cfg)

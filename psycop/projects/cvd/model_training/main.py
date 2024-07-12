@@ -18,7 +18,7 @@ if __name__ == "__main__":
     cfg = confection.Config().from_disk(Path(__file__).parent / "cvd_baseline.cfg")
 
     train_with_score2(cfg=copy.deepcopy(cfg))
-    # train_cvd_layers(cfg=copy.deepcopy(cfg))
-    # hyperparameter_search(cfg=copy.deepcopy(cfg))
-    # train_with_lookbehinds(cfg=copy.deepcopy(cfg), lookbehinds=[90, 365, 730])
-    # logistic_regression_hyperparam(cfg=copy.deepcopy(cfg))
+    train_cvd_layers(cfg=copy.deepcopy(cfg))
+    hyperparameter_search(cfg=copy.deepcopy(cfg))
+    train_with_lookbehinds(cfg=copy.deepcopy(cfg), lookbehinds=[90, 365, 730])
+    logistic_regression_hyperparam(cfg=copy.deepcopy(cfg))

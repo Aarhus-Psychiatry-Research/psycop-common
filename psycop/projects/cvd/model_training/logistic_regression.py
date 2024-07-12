@@ -29,9 +29,9 @@ def logistic_regression_hyperparam(cfg: confection.Config):
 
         # Filter by layers
         layer_regex = "|".join([str(i) for i in range(1, i + 1)])
-        cfg["trainer"]["preprocessing_pipeline"]["*"]["layer_selector"][
-            "keep_matching"
-        ] = f".+_layer_({layer_regex}).+"
+        cfg["trainer"]["preprocessing_pipeline"]["*"]["layer_selector"]["keep_matching"] = (
+            f".+_layer_({layer_regex}).+"
+        )
 
         OptunaHyperParameterOptimization().from_cfg(
             cfg,

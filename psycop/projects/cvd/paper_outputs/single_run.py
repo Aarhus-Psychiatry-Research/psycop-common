@@ -49,8 +49,7 @@ from psycop.projects.cvd.model_evaluation.single_run.single_run_robustness impor
 
 
 class CVDArtifactFacade(Protocol):
-    def __call__(self, output_dir: Path) -> None:
-        ...
+    def __call__(self, output_dir: Path) -> None: ...
 
 
 def _markdown_artifacts_facade(

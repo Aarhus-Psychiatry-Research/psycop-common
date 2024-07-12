@@ -17,15 +17,15 @@ def hyperparameter_search(cfg: confection.Config):
 
     # Set run name
     for i in reversed([1, 2, 3, 4]):
-        cfg["logger"]["*"]["mlflow"][
-            "experiment_name"
-        ] = f"CVD hyperparam tuning, layer {i}, xgboost, v2"
+        cfg["logger"]["*"]["mlflow"]["experiment_name"] = (
+            f"CVD hyperparam tuning, layer {i}, xgboost, v2"
+        )
 
         layer_regex = "|".join([str(i) for i in range(1, i + 1)])
 
-        cfg["trainer"]["preprocessing_pipeline"]["*"]["layer_selector"][
-            "keep_matching"
-        ] = f".+_layer_({layer_regex}).+"
+        cfg["trainer"]["preprocessing_pipeline"]["*"]["layer_selector"]["keep_matching"] = (
+            f".+_layer_({layer_regex}).+"
+        )
 
         OptunaHyperParameterOptimization().from_cfg(
             cfg,

@@ -18,9 +18,9 @@ class RowSpecification:
     source_col_name: str
     readable_name: str
     categorical: bool = False
-    values_to_display: Optional[
-        Sequence[Union[int, float, str]]
-    ] = None  # Which categories to display.
+    values_to_display: Optional[Sequence[Union[int, float, str]]] = (
+        None  # Which categories to display.
+    )
     nonnormal: bool = False
 
 
