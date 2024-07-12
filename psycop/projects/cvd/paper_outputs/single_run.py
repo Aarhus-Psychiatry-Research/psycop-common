@@ -25,6 +25,10 @@ from psycop.common.model_evaluation.markdown.md_objects import (
     MarkdownTable,
     create_supplementary_from_markdown_artifacts,
 )
+from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
+from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema
+from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
+from psycop.common.model_training_v2.trainer.preprocessing.pipeline import PreprocessingPipeline
 from psycop.projects.cvd.cohort_examination.filtering_flowchart import filtering_flowchart_facade
 from psycop.projects.cvd.cohort_examination.incidence_by_time.facade import incidence_by_time_facade
 from psycop.projects.cvd.cohort_examination.table_one.facade import table_one_facade
@@ -130,9 +134,7 @@ def single_run_facade(output_path: Path, run: PsycopMlflowRun) -> None:
     cfg = run.get_config()
     eval_frame = run.eval_frame()
 
-    lookahead_days_str = re.findall(r".+_within_(\d+)_days.+", cfg["trainer"]["outcome_col_name"])[
-        0
-    ]
+    lookahead_days_str = re.findall(r".+_to_(\d+)_days.+", cfg["trainer"]["outcome_col_name"])[0]
     lookahead_years = int(int(lookahead_days_str) / 365)
     estimator_type = cfg["trainer"]["task"]["task_pipe"]["sklearn_pipe"]["*"]["model"][
         "@estimator_steps"
@@ -148,7 +150,7 @@ def single_run_facade(output_path: Path, run: PsycopMlflowRun) -> None:
         output_path=output_path,
         estimator_type=estimator_type,
         primary_pos_proportion=0.05,
-        pos_proportions=[0.01, 0.05, 0.1],
+        pos_proportions=[0.01, 0.05, 0.1, 0.2],
         lookahead_years=lookahead_years,
         first_letter_index=0,
     )
@@ -161,7 +163,7 @@ def single_run_facade(output_path: Path, run: PsycopMlflowRun) -> None:
         figure_title_prefix="Figure",
     )
 
-    (Path() / "Report.md").write_text(markdown_text)
+    (output_path / "Report.md").write_text(markdown_text)
 
     non_markdown_artifacts: Sequence[CVDArtifactFacade] = [
         lambda output_dir: table_one_facade(run=run, output_dir=output_dir),
@@ -173,7 +175,13 @@ def single_run_facade(output_path: Path, run: PsycopMlflowRun) -> None:
     for artifact in non_markdown_artifacts:
         artifact(output_path)
 
-    feature_description = generate_feature_description_df(df=eval_frame.frame)
+    resolved_cfg = BaselineSchema(**BaselineRegistry.resolve(cfg))
+    training_data: pl.DataFrame = (
+        resolved_cfg.trainer.training_data.load()  # type: ignore
+        .collect()
+        .drop(cfg["trainer"]["group_col_name"], "timestamp", cfg["trainer"]["uuid_col_name"])
+    )
+    feature_description = generate_feature_description_df(df=training_data)
     data = feature_description.to_pandas().to_html()
     (output_path / "feature_description.html").write_text(data)
 
@@ -187,5 +195,10 @@ if __name__ == "__main__":
         datefmt="%Y/%m/%d %H:%M:%S",
     )
 
-    run = MlflowClientWrapper().get_run("CVD", "CVD layer 1, base")
-    single_run_facade(Path(), run)
+    run_name = "CVD layer 1, base"
+    run = MlflowClientWrapper().get_best_run_from_experiment(
+        experiment_name="CVD, h, l-2, XGB", metric="all_oof_BinaryAUROC"
+    )
+    output_dir = Path() / "outputs" / run.name
+    output_dir.mkdir(exist_ok=True, parents=True)
+    single_run_facade(output_dir, run)
