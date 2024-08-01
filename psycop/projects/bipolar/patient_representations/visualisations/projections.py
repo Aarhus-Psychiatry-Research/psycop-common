@@ -13,6 +13,9 @@ def plot_patient_projections():
     df = prepare_eval_data_for_pca()
     pca_df = perform_pca(df)
 
+    # keep only patients with TN and TP
+    pca_df = pca_df[pca_df["prediction_type"].isin(["TN", "TP"])]
+
     # create a scatter plot of the PCA components with color based on prediction type
     fig = px.scatter(
         pca_df,
