@@ -19,7 +19,7 @@ def incidence_by_time_model() -> IncidenceByTimeModel:
     df_lab_result = get_first_cvd_indicator()
 
     grouped_by_outcome = (
-        label_by_outcome_type(pl.from_pandas(df_lab_result), group_col="cause")
+        label_by_outcome_type(pl.from_pandas(df_lab_result), procedure_col="cause")
         .with_columns(
             pl.when(pl.col("outcome_type").str.contains("artery"))
             .then(pl.lit("PAD"))

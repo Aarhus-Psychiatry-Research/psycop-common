@@ -95,6 +95,8 @@ def table_one_model(run: PsycopMlflowRun, sex_col_name: str) -> TableOneModel:
     split = _train_test_column(preprocessed_visits)
     with_outcome = _first_outcome_data(split)
 
+    # TD: Add more descriptive stats (see eTable 3)
+
     return TableOneModel(
         with_outcome.with_columns(
             (pl.col("pred_age_days_fallback_0") / 365.25).alias("pred_age_in_years")

@@ -24,33 +24,44 @@ class RowSpecification:
     nonnormal: bool = False
 
 
-def _get_psychiatric_diagnosis_row_specs(readable_col_names: list[str]) -> list[RowSpecification]:
+def psychiatric_fx_string_to_readable(c: str) -> str:
+    """Takes a string like 'f0_disorders' and returns a readable string like 'F0 - Organic disorders'"""
+    icd10_fx_to_readable = {
+        "f0": "Organic disorders",
+        "f1": "Substance abuse",
+        "f2": "Psychotic disorders",
+        "f3": "Mood disorders",
+        "f4": "Neurotic and stress-related",
+        "f5": "Eating and sleeping disorders",
+        "f6": "Personality disorders",
+        "f7": "Mental retardation",
+        "f8": "Developmental disorders",
+        "f9": "Child and adolescent disorders",
+    }
+
+    fx = re.findall(r"f\d+", c)[0]
+    readable_col_name = f"{fx.capitalize()} - {icd10_fx_to_readable[fx]}"
+    return readable_col_name
+
+
+def _get_psychiatric_diagnosis_row_specs(
+    readable_col_names: list[str], filter_regex: str = r"f\d+"
+) -> list[RowSpecification]:
     # Get diagnosis columns
-    pattern = re.compile(r".+f\d_disorders")
     columns = sorted(
-        [c for c in readable_col_names if pattern.search(c) and "mean" in c and "730" in c]
+        [
+            c
+            for c in readable_col_names
+            if re.compile(filter_regex).search(c) and "mean" in c and "730" in c
+        ]
     )
 
-    readable_col_names = []
+    fx2readable = {c: psychiatric_fx_string_to_readable(c) for c in columns}
 
-    for c in columns:
-        icd_10_fx = re.findall(r"f\d+", c)[0]
-        readable_col_name = f"{icd_10_fx.capitalize()} disorders"
-        readable_col_names.append(readable_col_name)
-
-    specs = []
-    for i, _ in enumerate(readable_col_names):
-        specs.append(
-            RowSpecification(
-                source_col_name=columns[i],
-                readable_name=readable_col_names[i],
-                categorical=True,
-                nonnormal=False,
-                values_to_display=[1],
-            )
-        )
-
-    return specs
+    return [
+        RowSpecification(source_col_name=fx, readable_name=readable_col_name, categorical=True)
+        for fx, readable_col_name in fx2readable.items()
+    ]
 
 
 @shared_cache.cache
@@ -87,14 +98,17 @@ def _create_table(
 def _visit_frame(model: TableOneModel) -> pd.DataFrame:
     specs = [
         RowSpecification(source_col_name="pred_age_in_years", readable_name="Age", nonnormal=True),
-        RowSpecification(
-            source_col_name="age_grouped", readable_name="Age grouped", categorical=True
-        ),
+        # RowSpecification(
+        #     source_col_name="age_grouped", readable_name="Age grouped", categorical=True
+        # ),
         RowSpecification(
             source_col_name="pred_sex_female_fallback_0",
             readable_name="Female",
             categorical=True,
             values_to_display=[1],
+        ),
+        RowSpecification(
+            source_col_name="outcome_type", readable_name="CVD by type", categorical=True
         ),
         *_get_psychiatric_diagnosis_row_specs(readable_col_names=model.frame.columns),
     ]
@@ -103,11 +117,18 @@ def _visit_frame(model: TableOneModel) -> pd.DataFrame:
         [r.source_col_name for r in specs if r.source_col_name not in ["age_grouped"]] + ["dataset"]
     )
 
-    data = columns_to_keep.to_pandas().fillna(0)
-    data["age_grouped"] = pd.Series(
-        bin_continuous_data(data["pred_age_in_years"], bins=[18, *list(range(19, 90, 10))])[0]
-    ).astype(str)
-    table = _create_table(row_specs=specs, data=data, groupby_col_name="dataset")
+    data = columns_to_keep.rename({"outcome_type": "outcome_cause"})
+    patient_df_labelled = label_by_outcome_type(
+        data, procedure_col="outcome_cause", output_col_name="outcome_type"
+    )
+
+    # data["age_grouped"] = pd.Series(
+    #     bin_continuous_data(data["pred_age_in_years"], bins=[18, *list(range(19, 90, 10))])[0]  # noqa: ERA001
+    # ).astype(str)
+
+    table = _create_table(
+        row_specs=specs, data=patient_df_labelled.to_pandas(), groupby_col_name="dataset"
+    )
 
     return table
 
@@ -139,7 +160,7 @@ def _patient_frame(model: TableOneModel) -> pd.DataFrame:
         pl.col("cause").first().alias("outcome_cause"),
     )
 
-    patient_df_labelled = label_by_outcome_type(patient_df, group_col="outcome_cause")
+    patient_df_labelled = label_by_outcome_type(patient_df, procedure_col="outcome_cause")
 
     return _create_table(
         patient_row_specs,
