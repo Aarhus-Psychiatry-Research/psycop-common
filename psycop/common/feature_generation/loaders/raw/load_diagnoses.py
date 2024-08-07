@@ -258,7 +258,6 @@ def type_2_diabetes(
         shak_code=shak_code,
         shak_sql_operator=shak_sql_operator,
         timestamp_purpose=timestamp_purpose,
-        keep_code_col=True,
     )
 
     df_filtered = keep_rows_where_diag_matches_t2d_diag(df=df, col_name="diagnosegruppestreng")
@@ -355,7 +354,6 @@ def atrial_fibrillation(
         shak_code=shak_code,
         shak_sql_operator=shak_sql_operator,
         timestamp_purpose=timestamp_purpose,
-        keep_code_col=True,
     )
 
     return df
@@ -436,7 +434,6 @@ def type_1_diabetes(
         shak_code=shak_code,
         shak_sql_operator=shak_sql_operator,
         timestamp_purpose=timestamp_purpose,
-        keep_code_col=True,
     )
 
     df_filtered = keep_rows_where_diag_matches_t1d_diag(df=df, col_name="diagnosegruppestreng")
@@ -459,7 +456,6 @@ def pectoral_angina(
         shak_code=shak_code,
         shak_sql_operator=shak_sql_operator,
         timestamp_purpose=timestamp_purpose,
-        keep_code_col=True,
     )
     return df
 
@@ -479,7 +475,6 @@ def chronic_kidney_failure(
         shak_code=shak_code,
         shak_sql_operator=shak_sql_operator,
         timestamp_purpose=timestamp_purpose,
-        keep_code_col=True,
     )
     return df
 
