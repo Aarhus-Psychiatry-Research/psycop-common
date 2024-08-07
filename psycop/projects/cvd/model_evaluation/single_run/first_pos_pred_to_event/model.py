@@ -3,7 +3,7 @@ from typing import NewType
 import pandas as pd
 import polars as pl
 
-from psycop.common.cohort_definition import OutcomeTimestampFrame, PredictionTimeFrame
+from psycop.common.cohort_definition import OutcomeTimestampFrame
 from psycop.common.global_utils.cache import shared_cache
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_time_from_first_positive_to_diagnosis_df,

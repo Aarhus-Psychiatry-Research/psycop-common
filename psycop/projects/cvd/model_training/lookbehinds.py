@@ -2,8 +2,6 @@ import logging
 from collections.abc import Sequence
 from pathlib import Path
 
-import confection
-
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
 from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry

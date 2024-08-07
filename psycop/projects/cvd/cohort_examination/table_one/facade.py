@@ -1,7 +1,5 @@
 from pathlib import Path
 
-import polars as pl
-
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import PsycopMlflowRun
 from psycop.projects.cvd.cohort_examination.table_one.model import table_one_model
 from psycop.projects.cvd.cohort_examination.table_one.view import table_one_view

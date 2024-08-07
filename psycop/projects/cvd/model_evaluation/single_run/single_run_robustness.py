@@ -2,26 +2,14 @@ import logging
 from typing import TYPE_CHECKING
 
 import patchworklib as pw
-import plotnine
 import polars as pl
 
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
 from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits_to_psychiatry
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
-    EvalFrame,
-    MlflowClientWrapper,
-    PsycopMlflowRun,
-)
-from psycop.common.model_evaluation.markdown.md_objects import MarkdownFigure
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame, MlflowClientWrapper
 from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
 from psycop.projects.cvd.model_evaluation.single_run.auroc_by.age_model import auroc_by_age_model
 from psycop.projects.cvd.model_evaluation.single_run.auroc_by.age_view import AUROCByAge
-from psycop.projects.cvd.model_evaluation.single_run.auroc_by.day_of_week_model import (
-    auroc_by_day_of_week_model,
-)
-from psycop.projects.cvd.model_evaluation.single_run.auroc_by.day_of_week_view import (
-    AUROCByDayOfWeekPlot,
-)
 from psycop.projects.cvd.model_evaluation.single_run.auroc_by.month_of_year_model import (
     auroc_by_month_of_year_model,
 )

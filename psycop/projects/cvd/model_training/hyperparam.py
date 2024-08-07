@@ -1,7 +1,4 @@
-from audioop import reverse
 from pathlib import Path
-
-import confection
 
 from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry

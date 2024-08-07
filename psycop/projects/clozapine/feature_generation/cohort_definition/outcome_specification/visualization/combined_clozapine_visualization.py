@@ -1,7 +1,6 @@
 import pandas as pd
 import plotnine as pn
 
-from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.projects.clozapine.feature_generation.cohort_definition.outcome_specification.combine_text_structured_clozapine_outcome import (
     combine_structured_and_text_outcome,
 )
