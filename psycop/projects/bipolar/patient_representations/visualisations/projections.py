@@ -4,14 +4,15 @@ import plotly.graph_objects as go
 import plotly.offline
 
 from psycop.projects.bipolar.patient_representations.pca import perform_pca
-from psycop.projects.bipolar.patient_representations.utils import (
-    prepare_eval_data_for_pca,
-)
+from psycop.projects.bipolar.patient_representations.utils import prepare_eval_data_for_pca
 
 
 def plot_patient_projections():
     df = prepare_eval_data_for_pca()
     pca_df = perform_pca(df)
+
+    # keep only patients with TN and TP
+    pca_df = pca_df[pca_df["prediction_type"].isin(["TN", "TP"])]
 
     # create a scatter plot of the PCA components with color based on prediction type
     fig = px.scatter(
@@ -22,9 +23,21 @@ def plot_patient_projections():
         title="Patient Projections",
         labels={"component_1": "Component 1", "component_2": "Component 2"},
     )
+
+    d_1 = {"size": 5}
+
+    d_2 = {
+        "name": "Prediction Type",
+        "orientation": "h",
+        "yanchor": "bottom",
+        "y": 1.02,
+        "xanchor": "right",
+        "x": 1,
+    }
+
     # add a legend
-    fig.update_traces(marker=dict(size=5))
-    fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
+    fig.update_traces(marker=d_1)
+    fig.update_layout(legend=d_2)
 
     fig.show()
 
