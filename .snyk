@@ -120,13 +120,13 @@ ignore:
           Vulnerability in pytorch lightning through the /v1/runs 
           API endpoint when extracting tar.gz files which we do not. 
           Exception approved via Slack conversation
-          in programming channel on 2024-08-xx.
+          in programming channel on 2024-08-05.
         created: 2024-08-01T15:45:50.944Z
   SNYK-PYTHON-NLTK-7411380:
     - '*':
         reason: >-
           Vulnerability in nltk which we do not use
           Exception approved via Slack conversation
-          in programming channel on 2024-08-xx.
+          in programming channel on 2024-08-05.
         created: 2024-08-01T15:50:53.944Z
 patch: {}
