@@ -340,6 +340,27 @@ def acute_myocardial_infarction(
     return df
 
 
+def atrial_fibrillation(
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    df = from_contacts(
+        icd_code="I48",
+        wildcard_icd_code=True,
+        n_rows=n_rows,
+        shak_location_col=shak_location_col,
+        shak_code=shak_code,
+        shak_sql_operator=shak_sql_operator,
+        timestamp_purpose=timestamp_purpose,
+        keep_code_col=True,
+    )
+
+    return df
+
+
 def SCORE2_CVD(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -421,6 +442,46 @@ def type_1_diabetes(
     df_filtered = keep_rows_where_diag_matches_t1d_diag(df=df, col_name="diagnosegruppestreng")
 
     return df_filtered
+
+
+def pectoral_angina(
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    df = from_contacts(
+        icd_code="I20",
+        wildcard_icd_code=True,
+        n_rows=n_rows,
+        shak_location_col=shak_location_col,
+        shak_code=shak_code,
+        shak_sql_operator=shak_sql_operator,
+        timestamp_purpose=timestamp_purpose,
+        keep_code_col=True,
+    )
+    return df
+
+
+def chronic_kidney_failure(
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    df = from_contacts(
+        icd_code="N18",
+        wildcard_icd_code=True,
+        n_rows=n_rows,
+        shak_location_col=shak_location_col,
+        shak_code=shak_code,
+        shak_sql_operator=shak_sql_operator,
+        timestamp_purpose=timestamp_purpose,
+        keep_code_col=True,
+    )
+    return df
 
 
 # Psychiatric diagnoses

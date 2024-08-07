@@ -19,6 +19,8 @@ from psycop.common.feature_generation.application_modules.generate_feature_set i
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
+    atrial_fibrillation,
+    chronic_kidney_failure,
     chronic_lung_disease,
     f0_disorders,
     f1_disorders,
@@ -30,6 +32,9 @@ from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     f7_disorders,
     f8_disorders,
     f9_disorders,
+    pectoral_angina,
+    type_1_diabetes,
+    type_2_diabetes,
 )
 from psycop.common.feature_generation.loaders.raw.load_lab_results import (
     hba1c,
@@ -38,12 +43,16 @@ from psycop.common.feature_generation.loaders.raw.load_lab_results import (
     total_cholesterol,
 )
 from psycop.common.feature_generation.loaders.raw.load_medications import (
+    antihypertensives,
     top_10_weight_gaining_antipsychotics,
 )
 from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
+    bmi,
+    height_in_cm,
     smoking_categorical,
     smoking_continuous,
     systolic_blood_pressure,
+    weight_in_kg,
 )
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.projects.cvd.feature_generation.cohort_definition.cvd_cohort_definition import (
@@ -134,7 +143,9 @@ if __name__ == "__main__":
             top_10_weight_gaining_antipsychotics,
             hdl,
         ],
-        7: [total_cholesterol],
+        5: [atrial_fibrillation, antihypertensives],
+        6: [type_1_diabetes, type_2_diabetes, weight_in_kg, height_in_cm, bmi],
+        7: [total_cholesterol, chronic_kidney_failure, pectoral_angina],
     }
 
     feature_specs = []
