@@ -56,7 +56,6 @@ from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
 )
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.projects.cvd.feature_generation.cohort_definition.cvd_cohort_definition import (
-    CVDCohortDefiner,
     cvd_outcome_timestamps,
     cvd_pred_times,
 )
@@ -66,7 +65,7 @@ def get_cvd_project_info() -> ProjectInfo:
     return ProjectInfo(project_name="cvd", project_path=OVARTACI_SHARED_DIR / "cvd" / "feature_set")
 
 
-def cvd_pred(
+def init_cvd_predictor(
     init_df: Callable[[], pd.DataFrame],
     layer: int,
     lookbehind_distances: Sequence[datetime.timedelta] = [
@@ -77,16 +76,18 @@ def cvd_pred(
         ts.MinAggregator(),
         ts.MaxAggregator(),
     ],
+    column_prefix: str = "pred_layer_{}",
+    entity_id_col_name: str = "dw_ek_borger",
 ) -> ts.PredictorSpec:
     return ts.PredictorSpec(
         value_frame=ts.ValueFrame(
             init_df=pl.from_pandas(init_df()).rename({"value": init_df.__name__}),
-            entity_id_col_name="dw_ek_borger",
+            entity_id_col_name=entity_id_col_name,
         ),
         lookbehind_distances=lookbehind_distances,
         aggregators=aggregation_fns,
         fallback=np.nan,
-        column_prefix=f"pred_layer_{layer}",
+        column_prefix=column_prefix.format(layer),
     )
 
 
@@ -152,7 +153,7 @@ if __name__ == "__main__":
     for layer, feature in feature_layers.items():
         for spec in feature:
             if isinstance(spec, Callable):
-                feature_specs.append(cvd_pred(init_df=spec, layer=layer))
+                feature_specs.append(init_cvd_predictor(init_df=spec, layer=layer))
             else:
                 feature_specs.append(spec)
 
