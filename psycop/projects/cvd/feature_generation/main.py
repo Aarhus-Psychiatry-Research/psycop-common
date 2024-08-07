@@ -3,9 +3,10 @@
 import datetime
 import functools
 import logging
+import multiprocessing
 from collections.abc import Mapping, Sequence
 from multiprocessing import Pool
-from typing import Callable
+from typing import Any, Callable
 
 import numpy as np
 import pandas as pd
@@ -65,7 +66,7 @@ def get_cvd_project_info() -> ProjectInfo:
     return ProjectInfo(project_name="cvd", project_path=OVARTACI_SHARED_DIR / "cvd" / "feature_set")
 
 
-def init_cvd_predictor(
+def _init_cvd_predictor(
     init_df: Callable[[], pd.DataFrame],
     layer: int,
     lookbehind_distances: Sequence[datetime.timedelta] = [
@@ -89,6 +90,14 @@ def init_cvd_predictor(
         fallback=np.nan,
         column_prefix=column_prefix.format(layer),
     )
+
+
+def callable_to_cvd_spec(
+    layer: int, spec: Any
+) -> ts.PredictorSpec | ts.OutcomeSpec | ts.StaticSpec | ts.TimeDeltaSpec:
+    if isinstance(spec, Callable):
+        return _init_cvd_predictor(init_df=spec, layer=layer)
+    return spec
 
 
 if __name__ == "__main__":
@@ -152,10 +161,7 @@ if __name__ == "__main__":
     feature_specs = []
     for layer, feature in feature_layers.items():
         for spec in feature:
-            if isinstance(spec, Callable):
-                feature_specs.append(init_cvd_predictor(init_df=spec, layer=layer))
-            else:
-                feature_specs.append(spec)
+            callable_to_cvd_spec(_init_cvd_predictor, feature_specs, layer, spec)
 
     generate_feature_set(
         project_info=get_cvd_project_info(),

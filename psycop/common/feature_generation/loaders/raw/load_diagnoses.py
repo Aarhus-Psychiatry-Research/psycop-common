@@ -262,7 +262,7 @@ def type_2_diabetes(
 
     df_filtered = keep_rows_where_diag_matches_t2d_diag(df=df, col_name="diagnosegruppestreng")
 
-    return df_filtered
+    return df_filtered.drop("diagnosegruppestreng", axis=0)
 
 
 def ischemic_stroke(
@@ -434,11 +434,12 @@ def type_1_diabetes(
         shak_code=shak_code,
         shak_sql_operator=shak_sql_operator,
         timestamp_purpose=timestamp_purpose,
+        keep_code_col=True,
     )
 
     df_filtered = keep_rows_where_diag_matches_t1d_diag(df=df, col_name="diagnosegruppestreng")
 
-    return df_filtered
+    return df_filtered.drop("diagnosegruppestreng", axis=0)
 
 
 def pectoral_angina(
