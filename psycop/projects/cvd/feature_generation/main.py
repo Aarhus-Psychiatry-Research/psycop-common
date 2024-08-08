@@ -6,6 +6,7 @@ import logging
 import multiprocessing
 import multiprocessing.pool
 from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
 from multiprocessing import Pool
 from typing import Any, Callable
 
@@ -71,6 +72,7 @@ def get_cvd_project_info() -> ProjectInfo:
 def _init_cvd_predictor(
     df_loader: Callable[[], pd.DataFrame],
     layer: int,
+    fallback: float | int,
     lookbehind_distances: Sequence[datetime.timedelta] = [
         datetime.timedelta(days=i) for i in [90, 365, 730]
     ],
@@ -89,7 +91,7 @@ def _init_cvd_predictor(
         ),
         lookbehind_distances=lookbehind_distances,
         aggregators=aggregation_fns,
-        fallback=np.nan,
+        fallback=fallback,
         column_prefix=column_prefix.format(layer),
     )
 
@@ -97,10 +99,34 @@ def _init_cvd_predictor(
 AnySpec = ts.PredictorSpec | ts.OutcomeSpec | ts.StaticSpec | ts.TimeDeltaSpec
 
 
-def callable_to_cvd_spec(pair: tuple[int, AnySpec | Callable[[], pd.DataFrame]]) -> AnySpec:
-    if isinstance(pair[1], Callable):
-        return _init_cvd_predictor(df_loader=pair[1], layer=pair[0])
-    return pair[1]
+@dataclass(frozen=True)
+class ContinuousSpec:
+    loader: Callable[[], pd.DataFrame]
+
+
+@dataclass(frozen=True)
+class BooleanSpec:
+    loader: Callable[[], pd.DataFrame]
+
+
+class CategoricalSpec:
+    loader: Callable[[], pd.DataFrame]
+
+
+def _pair_to_spec(
+    pair: tuple[int, AnySpec | BooleanSpec | ContinuousSpec | CategoricalSpec],
+) -> AnySpec:
+    layer = pair[0]
+    spec = pair[1]
+    match spec:
+        case ContinuousSpec():
+            return _init_cvd_predictor(df_loader=spec.loader, layer=layer, fallback=np.NaN)
+        case BooleanSpec():
+            return _init_cvd_predictor(df_loader=spec.loader, layer=layer, fallback=0.0)
+        case CategoricalSpec():
+            return _init_cvd_predictor(df_loader=spec.loader, layer=layer, fallback=np.NaN)
+        case ts.PredictorSpec() | ts.OutcomeSpec() | ts.StaticSpec() | ts.TimeDeltaSpec():
+            return spec
 
 
 if __name__ == "__main__":
@@ -139,8 +165,8 @@ if __name__ == "__main__":
                 output_name="age",
             ),
         ],
-        1: [ldl, systolic_blood_pressure],
-        2: [smoking_continuous, smoking_categorical],
+        1: [ContinuousSpec(ldl), ContinuousSpec(systolic_blood_pressure)],
+        2: [ContinuousSpec(smoking_continuous), CategoricalSpec(smoking_categorical)],
         3: [hba1c, chronic_lung_disease],
         4: [
             f0_disorders,
@@ -168,9 +194,7 @@ if __name__ == "__main__":
     # Run in parallel for faster loading
     logging.info("Loading specifications")
     with multiprocessing.Pool(processes=15) as pool:
-        specs = list(
-            tqdm(pool.imap(callable_to_cvd_spec, layer_spec_pairs), total=len(layer_spec_pairs))
-        )
+        specs = list(tqdm(pool.imap(_pair_to_spec, layer_spec_pairs), total=len(layer_spec_pairs)))
 
     logging.info("Generating feature set")
     generate_feature_set(

@@ -31,154 +31,7 @@ class ColumnOverride:
     category: RowCategory
     values_to_display: Sequence[int | float | str] | None
     override_name: str | None = None
-
-
-overrides = (
-    [
-        "categorical",
-        "Chronic lung disease",
-        "Top 10 weight gaining antipsychotics",
-        "Atrial fibrillation",
-        "Antihypertensives",
-        "",
-    ],
-)
-
-cvd_overrides = [
-    ColumnOverride(
-        "categorical",
-        categorical=True,
-        values_to_display=[1],
-        override_name=None,
-        category=RowCategory.diagnoses,
-    ),
-    ColumnOverride(
-        "lung",
-        categorical=True,
-        values_to_display=[1],
-        override_name=None,
-        category=RowCategory.diagnoses,
-    ),
-    ColumnOverride(
-        "antipsychotics",
-        categorical=True,
-        values_to_display=[1],
-        override_name=None,
-        category=RowCategory.medications,
-    ),
-    ColumnOverride(
-        "atrial",
-        categorical=True,
-        values_to_display=[1],
-        override_name=None,
-        category=RowCategory.diagnoses,
-    ),
-    ColumnOverride(
-        "antihypertensives",
-        categorical=True,
-        values_to_display=[1],
-        override_name=None,
-        category=RowCategory.medications,
-    ),
-    ColumnOverride(
-        "ldl",
-        categorical=False,
-        override_name="LDL",
-        category=RowCategory.lab_results,
-        values_to_display=None,
-    ),
-    ColumnOverride(
-        "systolic",
-        categorical=False,
-        override_name=None,
-        category=RowCategory.lab_results,
-        values_to_display=None,
-    ),
-    ColumnOverride(
-        "smoking_categorical",
-        categorical=True,
-        values_to_display=[1],
-        override_name=None,
-        category=RowCategory.demographics,
-    ),
-    ColumnOverride(
-        "smoking_continuous",
-        categorical=False,
-        override_name=None,
-        category=RowCategory.demographics,
-        values_to_display=None,
-    ),
-    ColumnOverride(
-        "hba1c",
-        categorical=False,
-        override_name="HbA1c",
-        category=RowCategory.lab_results,
-        values_to_display=None,
-    ),
-    ColumnOverride(
-        "hdl",
-        categorical=False,
-        override_name="HDL",
-        category=RowCategory.lab_results,
-        values_to_display=None,
-    ),
-    ColumnOverride(
-        "type_1_diabetes",
-        categorical=True,
-        values_to_display=[1],
-        override_name=None,
-        category=RowCategory.diagnoses,
-    ),
-    ColumnOverride(
-        "type_2_diabetes",
-        categorical=True,
-        values_to_display=[1],
-        override_name=None,
-        category=RowCategory.diagnoses,
-    ),
-    ColumnOverride(
-        "weight",
-        categorical=False,
-        override_name="Weight (kg)",
-        category=RowCategory.demographics,
-        values_to_display=None,
-    ),
-    ColumnOverride(
-        "height",
-        categorical=False,
-        override_name="Height (cm)",
-        category=RowCategory.demographics,
-        values_to_display=None,
-    ),
-    ColumnOverride(
-        "bmi",
-        categorical=False,
-        override_name="BMI",
-        category=RowCategory.demographics,
-        values_to_display=None,
-    ),
-    ColumnOverride(
-        "cholesterol",
-        categorical=False,
-        override_name="Total cholesterol",
-        category=RowCategory.lab_results,
-        values_to_display=None,
-    ),
-    ColumnOverride(
-        "kidney_failure",
-        categorical=True,
-        values_to_display=[1],
-        override_name=None,
-        category=RowCategory.diagnoses,
-    ),
-    ColumnOverride(
-        "angina",
-        categorical=True,
-        values_to_display=[1],
-        override_name=None,
-        category=RowCategory.diagnoses,
-    ),
-]
+    nonnormal: bool = False
 
 
 @dataclass
@@ -187,9 +40,9 @@ class RowSpecification:
     readable_name: str
     category: RowCategory
     categorical: bool = False
-    values_to_display: Optional[Sequence[Union[int, float, str]]] = (
-        None  # Which categories to display.
-    )
+    values_to_display: Optional[
+        Sequence[Union[int, float, str]]
+    ] = None  # Which categories to display.
     nonnormal: bool = False
 
 
@@ -297,6 +150,9 @@ def _apply_overrides(
                 spec.readable_name = override.override_name
             if override.values_to_display is not None:
                 spec.values_to_display = override.values_to_display
+            spec.categorical = override.categorical
+            spec.category = override.category
+            spec.nonnormal = override.nonnormal
     return spec
 
 
@@ -350,7 +206,7 @@ def _visit_frame(model: TableOneModel, overrides: Sequence[ColumnOverride]) -> p
     ]
 
     # Order by category
-    specs = sorted(specs, key=lambda x: x.category.value)
+    specs = sorted(specs, key=lambda x: f"{x.category.value}_{x.readable_name}")
 
     visits_labelled = (
         label_by_outcome_type(model.frame, procedure_col="cause", output_col_name="outcome_type")
