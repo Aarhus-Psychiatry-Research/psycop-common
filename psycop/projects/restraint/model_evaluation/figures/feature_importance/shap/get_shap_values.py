@@ -15,8 +15,6 @@ from psycop.projects.restraint.model_evaluation.utils.feature_name_to_readable i
 )
 from psycop.projects.restraint.utils.best_runs import Run
 
-shared_cache = Memory(location=".", verbose=0)  # noqa: F811
-
 
 def generate_shap_df_for_predictor_col(
     colname: str, X: pd.DataFrame, shap_values: list[float]
