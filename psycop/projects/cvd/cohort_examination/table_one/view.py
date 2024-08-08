@@ -1,3 +1,4 @@
+import enum
 import re
 from collections.abc import Sequence
 from dataclasses import dataclass
@@ -11,30 +12,184 @@ from psycop.common.feature_generation.data_checks.flattened.feature_describer_ts
     parse_predictor_column_name,
 )
 from psycop.common.global_utils.cache import shared_cache
-from psycop.common.model_evaluation.utils import bin_continuous_data
 from psycop.projects.cvd.cohort_examination.label_by_outcome_type import label_by_outcome_type
 from psycop.projects.cvd.cohort_examination.table_one.model import TableOneModel
+
+
+class RowCategory(enum.Enum):
+    demographics = enum.auto()
+    diagnoses = enum.auto()
+    lab_results = enum.auto()
+    medications = enum.auto()
+    outcome = enum.auto()
 
 
 @dataclass(frozen=True)
 class ColumnOverride:
     match_str: str
     categorical: bool
+    category: RowCategory
     values_to_display: Sequence[int | float | str] | None
-    override_name: str
+    override_name: str | None = None
 
 
-cvd_overrides = [ColumnOverride()]
+overrides = (
+    [
+        "categorical",
+        "Chronic lung disease",
+        "Top 10 weight gaining antipsychotics",
+        "Atrial fibrillation",
+        "Antihypertensives",
+        "",
+    ],
+)
+
+cvd_overrides = [
+    ColumnOverride(
+        "categorical",
+        categorical=True,
+        values_to_display=[1],
+        override_name=None,
+        category=RowCategory.diagnoses,
+    ),
+    ColumnOverride(
+        "lung",
+        categorical=True,
+        values_to_display=[1],
+        override_name=None,
+        category=RowCategory.diagnoses,
+    ),
+    ColumnOverride(
+        "antipsychotics",
+        categorical=True,
+        values_to_display=[1],
+        override_name=None,
+        category=RowCategory.medications,
+    ),
+    ColumnOverride(
+        "atrial",
+        categorical=True,
+        values_to_display=[1],
+        override_name=None,
+        category=RowCategory.diagnoses,
+    ),
+    ColumnOverride(
+        "antihypertensives",
+        categorical=True,
+        values_to_display=[1],
+        override_name=None,
+        category=RowCategory.medications,
+    ),
+    ColumnOverride(
+        "ldl",
+        categorical=False,
+        override_name="LDL",
+        category=RowCategory.lab_results,
+        values_to_display=None,
+    ),
+    ColumnOverride(
+        "systolic",
+        categorical=False,
+        override_name=None,
+        category=RowCategory.lab_results,
+        values_to_display=None,
+    ),
+    ColumnOverride(
+        "smoking_categorical",
+        categorical=True,
+        values_to_display=[1],
+        override_name=None,
+        category=RowCategory.demographics,
+    ),
+    ColumnOverride(
+        "smoking_continuous",
+        categorical=False,
+        override_name=None,
+        category=RowCategory.demographics,
+        values_to_display=None,
+    ),
+    ColumnOverride(
+        "hba1c",
+        categorical=False,
+        override_name="HbA1c",
+        category=RowCategory.lab_results,
+        values_to_display=None,
+    ),
+    ColumnOverride(
+        "hdl",
+        categorical=False,
+        override_name="HDL",
+        category=RowCategory.lab_results,
+        values_to_display=None,
+    ),
+    ColumnOverride(
+        "type_1_diabetes",
+        categorical=True,
+        values_to_display=[1],
+        override_name=None,
+        category=RowCategory.diagnoses,
+    ),
+    ColumnOverride(
+        "type_2_diabetes",
+        categorical=True,
+        values_to_display=[1],
+        override_name=None,
+        category=RowCategory.diagnoses,
+    ),
+    ColumnOverride(
+        "weight",
+        categorical=False,
+        override_name="Weight (kg)",
+        category=RowCategory.demographics,
+        values_to_display=None,
+    ),
+    ColumnOverride(
+        "height",
+        categorical=False,
+        override_name="Height (cm)",
+        category=RowCategory.demographics,
+        values_to_display=None,
+    ),
+    ColumnOverride(
+        "bmi",
+        categorical=False,
+        override_name="BMI",
+        category=RowCategory.demographics,
+        values_to_display=None,
+    ),
+    ColumnOverride(
+        "cholesterol",
+        categorical=False,
+        override_name="Total cholesterol",
+        category=RowCategory.lab_results,
+        values_to_display=None,
+    ),
+    ColumnOverride(
+        "kidney_failure",
+        categorical=True,
+        values_to_display=[1],
+        override_name=None,
+        category=RowCategory.diagnoses,
+    ),
+    ColumnOverride(
+        "angina",
+        categorical=True,
+        values_to_display=[1],
+        override_name=None,
+        category=RowCategory.diagnoses,
+    ),
+]
 
 
 @dataclass
 class RowSpecification:
     source_col_name: str
     readable_name: str
+    category: RowCategory
     categorical: bool = False
-    values_to_display: Optional[
-        Sequence[Union[int, float, str]]
-    ] = None  # Which categories to display.
+    values_to_display: Optional[Sequence[Union[int, float, str]]] = (
+        None  # Which categories to display.
+    )
     nonnormal: bool = False
 
 
@@ -73,7 +228,12 @@ def _psychiatric_diagnosis_row_specs(
     fx2readable = {c: psychiatric_fx_string_to_readable(c) for c in columns}
 
     return [
-        RowSpecification(source_col_name=fx, readable_name=readable_col_name, categorical=True)
+        RowSpecification(
+            source_col_name=fx,
+            readable_name=readable_col_name,
+            categorical=True,
+            category=RowCategory.diagnoses,
+        )
         for fx, readable_col_name in fx2readable.items()
     ]
 
@@ -122,9 +282,22 @@ def _other_predictor_row_specs(pred_col_names: Sequence[str]) -> list[RowSpecifi
             source_col_name=p.col_name,
             readable_name=_layered_feature_name_to_readable(p.feature_name),
             categorical=False,
+            category=RowCategory.diagnoses,
         )
         for p in parsed
     ]
+
+
+def _apply_overrides(
+    spec: RowSpecification, overrides: Sequence[ColumnOverride]
+) -> RowSpecification:
+    for override in overrides:
+        if override.match_str in spec.source_col_name:
+            if override.override_name is not None:
+                spec.readable_name = override.override_name
+            if override.values_to_display is not None:
+                spec.values_to_display = override.values_to_display
+    return spec
 
 
 def _is_prototype_column(column: str) -> bool:
@@ -132,44 +305,56 @@ def _is_prototype_column(column: str) -> bool:
     return "mean" in column and "730" in column
 
 
-def _visit_frame(model: TableOneModel) -> pd.DataFrame:
+def _visit_frame(model: TableOneModel, overrides: Sequence[ColumnOverride]) -> pd.DataFrame:
     prototype_columns = [c for c in model.frame.columns if _is_prototype_column(c)]
 
     specs = [
-        RowSpecification(source_col_name="pred_age_in_years", readable_name="Age", nonnormal=True),
-        # RowSpecification(
-        #     source_col_name="age_grouped", readable_name="Age grouped", categorical=True
-        # ),
-        RowSpecification(
-            source_col_name="pred_sex_female_fallback_0",
-            readable_name="Female",
-            categorical=True,
-            values_to_display=[1],
-        ),
-        RowSpecification(
-            source_col_name="outcome_type", readable_name="CVD by type", categorical=True
-        ),
-        *_psychiatric_diagnosis_row_specs(
-            fx_col_names=[c for c in prototype_columns if re.compile(r"f\d+").search(c)],
-            overrides=[
-                "categorical",
-                "Chronic lung disease",
-                "Top 10 weight gaining antipsychotics",
-                "Atrial fibrillation",
-                "Antihypertensives",
-                "",
-            ],
-        ),
-        *_other_predictor_row_specs(
-            pred_col_names=[c for c in prototype_columns if "disorders" not in c]
-        ),
+        _apply_overrides(c, overrides)
+        for c in [
+            RowSpecification(
+                source_col_name="pred_age_in_years",
+                readable_name="Age",
+                nonnormal=True,
+                category=RowCategory.demographics,
+            ),
+            # RowSpecification(
+            #     source_col_name="age_grouped", readable_name="Age grouped", categorical=True
+            # ),
+            RowSpecification(
+                source_col_name="pred_sex_female_fallback_0",
+                readable_name="Female",
+                categorical=True,
+                values_to_display=[1],
+                category=RowCategory.demographics,
+            ),
+            RowSpecification(
+                source_col_name=model.outcome_col_name,
+                readable_name="Incident CVD",
+                categorical=True,
+                values_to_display=[1],
+                category=RowCategory.outcome,
+            ),
+            RowSpecification(
+                source_col_name="outcome_type",
+                readable_name="CVD by type",
+                categorical=True,
+                category=RowCategory.outcome,
+            ),
+            *_psychiatric_diagnosis_row_specs(
+                fx_col_names=[c for c in prototype_columns if re.compile(r"f\d+").search(c)]
+            ),
+            *_other_predictor_row_specs(
+                pred_col_names=[c for c in prototype_columns if "disorders" not in c]
+            ),
+        ]
     ]
-    # TD: Add support for overrides to this function. Should mutate a rowspecification with the overrides if it matches the match string.
-    # * Should perhaps also help sort the categories, e.g. into demographics, lab results, diagnoses
+
+    # Order by category
+    specs = sorted(specs, key=lambda x: x.category.value)
 
     visits_labelled = (
         label_by_outcome_type(model.frame, procedure_col="cause", output_col_name="outcome_type")
-        .fill_null(0)  # Otherwise, aggregates of binary outcomes will give 1
+        .fill_null(0)  # Otherwise, binary outcomes will contain null and 1, which aggregates to 1
         .select(
             [r.source_col_name for r in specs if r.source_col_name not in ["age_grouped"]]
             + ["dataset"]
@@ -194,15 +379,20 @@ def _patient_frame(model: TableOneModel) -> pd.DataFrame:
             readable_name="Female",
             categorical=True,
             values_to_display=[1],
+            category=RowCategory.demographics,
         ),
         RowSpecification(
             source_col_name=model.outcome_col_name,
             readable_name="Incident CVD",
             categorical=True,
             values_to_display=[1],
+            category=RowCategory.outcome,
         ),
         RowSpecification(
-            source_col_name="outcome_type", readable_name="CVD by type", categorical=True
+            source_col_name="outcome_type",
+            readable_name="CVD by type",
+            categorical=True,
+            category=RowCategory.outcome,
         ),
     ]
 
@@ -223,8 +413,8 @@ def _patient_frame(model: TableOneModel) -> pd.DataFrame:
     )
 
 
-def table_one_view(model: TableOneModel) -> pd.DataFrame:
-    visit_frame = _visit_frame(model)
+def table_one_view(model: TableOneModel, overrides: Sequence[ColumnOverride]) -> pd.DataFrame:
+    visit_frame = _visit_frame(model, overrides)
     patient_frame = _patient_frame(model)
 
     return pd.concat([visit_frame, patient_frame], axis=0)
