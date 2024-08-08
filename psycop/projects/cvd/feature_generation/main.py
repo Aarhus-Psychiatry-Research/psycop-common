@@ -109,6 +109,7 @@ class BooleanSpec:
     loader: Callable[[], pd.DataFrame]
 
 
+@dataclass(frozen=True)
 class CategoricalSpec:
     loader: Callable[[], pd.DataFrame]
 
@@ -167,24 +168,34 @@ if __name__ == "__main__":
         ],
         1: [ContinuousSpec(ldl), ContinuousSpec(systolic_blood_pressure)],
         2: [ContinuousSpec(smoking_continuous), CategoricalSpec(smoking_categorical)],
-        3: [hba1c, chronic_lung_disease],
+        3: [ContinuousSpec(hba1c), ContinuousSpec(chronic_lung_disease)],
         4: [
-            f0_disorders,
-            f1_disorders,
-            f2_disorders,
-            f3_disorders,
-            f4_disorders,
-            f5_disorders,
-            f6_disorders,
-            f7_disorders,
-            f8_disorders,
-            f9_disorders,
-            top_10_weight_gaining_antipsychotics,
-            hdl,
+            BooleanSpec(f0_disorders),
+            BooleanSpec(f1_disorders),
+            BooleanSpec(f2_disorders),
+            BooleanSpec(f3_disorders),
+            BooleanSpec(f4_disorders),
+            BooleanSpec(f5_disorders),
+            BooleanSpec(f6_disorders),
+            BooleanSpec(f7_disorders),
+            BooleanSpec(f8_disorders),
+            BooleanSpec(f9_disorders),
+            BooleanSpec(top_10_weight_gaining_antipsychotics),
+            ContinuousSpec(hdl),
         ],
-        5: [atrial_fibrillation, antihypertensives],
-        6: [type_1_diabetes, type_2_diabetes, weight_in_kg, height_in_cm, bmi],
-        7: [total_cholesterol, chronic_kidney_failure, pectoral_angina],
+        5: [BooleanSpec(atrial_fibrillation), BooleanSpec(antihypertensives)],
+        6: [
+            BooleanSpec(type_1_diabetes),
+            BooleanSpec(type_2_diabetes),
+            ContinuousSpec(weight_in_kg),
+            ContinuousSpec(height_in_cm),
+            ContinuousSpec(bmi),
+        ],
+        7: [
+            ContinuousSpec(total_cholesterol),
+            BooleanSpec(chronic_kidney_failure),
+            BooleanSpec(pectoral_angina),
+        ],
     }
 
     layer_spec_pairs = [
