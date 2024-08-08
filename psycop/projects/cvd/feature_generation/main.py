@@ -4,6 +4,7 @@ import datetime
 import functools
 import logging
 import multiprocessing
+import multiprocessing.pool
 from collections.abc import Mapping, Sequence
 from multiprocessing import Pool
 from typing import Any, Callable
@@ -13,6 +14,7 @@ import pandas as pd
 import polars as pl
 import timeseriesflattener as ts
 from timeseriesflattener.v1.aggregation_fns import mean
+from tqdm import tqdm
 
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
     generate_feature_set,
@@ -67,7 +69,7 @@ def get_cvd_project_info() -> ProjectInfo:
 
 
 def _init_cvd_predictor(
-    init_df: Callable[[], pd.DataFrame],
+    df_loader: Callable[[], pd.DataFrame],
     layer: int,
     lookbehind_distances: Sequence[datetime.timedelta] = [
         datetime.timedelta(days=i) for i in [90, 365, 730]
@@ -82,7 +84,7 @@ def _init_cvd_predictor(
 ) -> ts.PredictorSpec:
     return ts.PredictorSpec(
         value_frame=ts.ValueFrame(
-            init_df=pl.from_pandas(init_df()).rename({"value": init_df.__name__}),
+            init_df=pl.from_pandas(df_loader()).rename({"value": df_loader.__name__}),
             entity_id_col_name=entity_id_col_name,
         ),
         lookbehind_distances=lookbehind_distances,
@@ -92,12 +94,13 @@ def _init_cvd_predictor(
     )
 
 
-def callable_to_cvd_spec(
-    layer: int, spec: Any
-) -> ts.PredictorSpec | ts.OutcomeSpec | ts.StaticSpec | ts.TimeDeltaSpec:
-    if isinstance(spec, Callable):
-        return _init_cvd_predictor(init_df=spec, layer=layer)
-    return spec
+AnySpec = ts.PredictorSpec | ts.OutcomeSpec | ts.StaticSpec | ts.TimeDeltaSpec
+
+
+def callable_to_cvd_spec(pair: tuple[int, AnySpec | Callable[[], pd.DataFrame]]) -> AnySpec:
+    if isinstance(pair[1], Callable):
+        return _init_cvd_predictor(df_loader=pair[1], layer=pair[0])
+    return pair[1]
 
 
 if __name__ == "__main__":
@@ -158,15 +161,22 @@ if __name__ == "__main__":
         7: [total_cholesterol, chronic_kidney_failure, pectoral_angina],
     }
 
-    feature_specs = []
-    for layer, feature in feature_layers.items():
-        for spec in feature:
-            callable_to_cvd_spec(_init_cvd_predictor, feature_specs, layer, spec)
+    layer_spec_pairs = [
+        (layer, spec) for layer, spec_list in feature_layers.items() for spec in spec_list
+    ]
 
+    # Run in parallel for faster loading
+    logging.info("Loading specifications")
+    with multiprocessing.Pool(processes=15) as pool:
+        specs = list(
+            tqdm(pool.imap(callable_to_cvd_spec, layer_spec_pairs), total=len(layer_spec_pairs))
+        )
+
+    logging.info("Generating feature set")
     generate_feature_set(
         project_info=get_cvd_project_info(),
         eligible_prediction_times_frame=cvd_pred_times(),
-        feature_specs=feature_specs,
+        feature_specs=specs,
         feature_set_name="cvd_feature_set",
         n_workers=10,
         step_size=datetime.timedelta(days=365),

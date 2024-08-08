@@ -7,10 +7,24 @@ import pandas as pd
 import polars as pl
 from tableone import TableOne
 
+from psycop.common.feature_generation.data_checks.flattened.feature_describer_tsflattener_v2 import (
+    parse_predictor_column_name,
+)
 from psycop.common.global_utils.cache import shared_cache
 from psycop.common.model_evaluation.utils import bin_continuous_data
 from psycop.projects.cvd.cohort_examination.label_by_outcome_type import label_by_outcome_type
 from psycop.projects.cvd.cohort_examination.table_one.model import TableOneModel
+
+
+@dataclass(frozen=True)
+class ColumnOverride:
+    match_str: str
+    categorical: bool
+    values_to_display: Sequence[int | float | str] | None
+    override_name: str
+
+
+cvd_overrides = [ColumnOverride()]
 
 
 @dataclass
@@ -18,9 +32,9 @@ class RowSpecification:
     source_col_name: str
     readable_name: str
     categorical: bool = False
-    values_to_display: Optional[Sequence[Union[int, float, str]]] = (
-        None  # Which categories to display.
-    )
+    values_to_display: Optional[
+        Sequence[Union[int, float, str]]
+    ] = None  # Which categories to display.
     nonnormal: bool = False
 
 
@@ -44,14 +58,14 @@ def psychiatric_fx_string_to_readable(c: str) -> str:
     return readable_col_name
 
 
-def _get_psychiatric_diagnosis_row_specs(
-    readable_col_names: list[str], filter_regex: str = r"f\d+"
+def _psychiatric_diagnosis_row_specs(
+    fx_col_names: list[str], filter_regex: str = r"f\d+"
 ) -> list[RowSpecification]:
     # Get diagnosis columns
     columns = sorted(
         [
             c
-            for c in readable_col_names
+            for c in fx_col_names
             if re.compile(filter_regex).search(c) and "mean" in c and "730" in c
         ]
     )
@@ -95,7 +109,32 @@ def _create_table(
     return table_one.tableone
 
 
+def _layered_feature_name_to_readable(layered_name: str) -> str:
+    no_layer = re.sub(r"layer_[0-9]+_", "", layered_name)
+    return no_layer.replace("_", " ").capitalize()
+
+
+def _other_predictor_row_specs(pred_col_names: Sequence[str]) -> list[RowSpecification]:
+    parsed = [parse_predictor_column_name(c) for c in pred_col_names]
+
+    return [
+        RowSpecification(
+            source_col_name=p.col_name,
+            readable_name=_layered_feature_name_to_readable(p.feature_name),
+            categorical=False,
+        )
+        for p in parsed
+    ]
+
+
+def _is_prototype_column(column: str) -> bool:
+    """Use only one permutation of each for the table"""
+    return "mean" in column and "730" in column
+
+
 def _visit_frame(model: TableOneModel) -> pd.DataFrame:
+    prototype_columns = [c for c in model.frame.columns if _is_prototype_column(c)]
+
     specs = [
         RowSpecification(source_col_name="pred_age_in_years", readable_name="Age", nonnormal=True),
         # RowSpecification(
@@ -110,16 +149,31 @@ def _visit_frame(model: TableOneModel) -> pd.DataFrame:
         RowSpecification(
             source_col_name="outcome_type", readable_name="CVD by type", categorical=True
         ),
-        *_get_psychiatric_diagnosis_row_specs(readable_col_names=model.frame.columns),
+        *_psychiatric_diagnosis_row_specs(
+            fx_col_names=[c for c in prototype_columns if re.compile(r"f\d+").search(c)],
+            overrides=[
+                "categorical",
+                "Chronic lung disease",
+                "Top 10 weight gaining antipsychotics",
+                "Atrial fibrillation",
+                "Antihypertensives",
+                "",
+            ],
+        ),
+        *_other_predictor_row_specs(
+            pred_col_names=[c for c in prototype_columns if "disorders" not in c]
+        ),
     ]
+    # TD: Add support for overrides to this function. Should mutate a rowspecification with the overrides if it matches the match string.
+    # * Should perhaps also help sort the categories, e.g. into demographics, lab results, diagnoses
 
-    columns_to_keep = model.frame.select(
-        [r.source_col_name for r in specs if r.source_col_name not in ["age_grouped"]] + ["dataset"]
-    )
-
-    data = columns_to_keep.rename({"outcome_type": "outcome_cause"})
-    patient_df_labelled = label_by_outcome_type(
-        data, procedure_col="outcome_cause", output_col_name="outcome_type"
+    visits_labelled = (
+        label_by_outcome_type(model.frame, procedure_col="cause", output_col_name="outcome_type")
+        .fill_null(0)  # Otherwise, aggregates of binary outcomes will give 1
+        .select(
+            [r.source_col_name for r in specs if r.source_col_name not in ["age_grouped"]]
+            + ["dataset"]
+        )
     )
 
     # data["age_grouped"] = pd.Series(
@@ -127,7 +181,7 @@ def _visit_frame(model: TableOneModel) -> pd.DataFrame:
     # ).astype(str)
 
     table = _create_table(
-        row_specs=specs, data=patient_df_labelled.to_pandas(), groupby_col_name="dataset"
+        row_specs=specs, data=visits_labelled.to_pandas(), groupby_col_name="dataset"
     )
 
     return table

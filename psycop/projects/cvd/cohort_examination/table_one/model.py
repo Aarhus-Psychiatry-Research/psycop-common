@@ -5,7 +5,10 @@ from tempfile import mkdtemp
 import polars as pl
 
 from psycop.common.global_utils.cache import shared_cache
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import PsycopMlflowRun
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
+    MlflowClientWrapper,
+    PsycopMlflowRun,
+)
 from psycop.common.model_training_v2.config.config_utils import resolve_and_fill_config
 from psycop.common.model_training_v2.loggers.terminal_logger import TerminalLogger
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
@@ -51,7 +54,6 @@ def _train_test_column(flattened_data: pl.DataFrame) -> pl.DataFrame:
     return flattened_combined
 
 
-@shared_cache().cache
 def _preprocessed_data(data_path: str, pipeline: BaselinePreprocessingPipeline) -> pl.DataFrame:
     data = pl.scan_parquet(data_path)
     preprocessed = pipeline.apply(data)

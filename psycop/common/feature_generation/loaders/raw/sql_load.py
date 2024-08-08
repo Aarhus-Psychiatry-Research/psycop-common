@@ -9,6 +9,8 @@ import urllib.parse
 import pandas as pd
 from sqlalchemy import create_engine, text
 
+from psycop.common.global_utils.cache import shared_cache
+
 log = logging.getLogger(__name__)
 
 
