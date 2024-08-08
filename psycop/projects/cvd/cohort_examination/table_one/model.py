@@ -11,7 +11,6 @@ from psycop.common.model_training_v2.loggers.terminal_logger import TerminalLogg
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     BaselinePreprocessingPipeline,
 )
-from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
     RegionalFilter,
 )

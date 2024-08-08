@@ -1,8 +1,7 @@
 import plotnine as pn
 import polars as pl
-from matplotlib import legend
 
-from psycop.projects.t2d.paper_outputs.config import COLORS, THEME, Colors
+from psycop.projects.t2d.paper_outputs.config import COLORS, THEME
 
 
 def plot(model: pl.DataFrame) -> pn.ggplot:

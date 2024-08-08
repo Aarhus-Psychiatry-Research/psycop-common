@@ -10,7 +10,6 @@ from psycop.common.feature_generation.application_modules.flatten_dataset import
     create_flattened_dataset,
 )
 from psycop.projects.restraint.cohort.restraint_cohort_definer import RestraintCohortDefiner
-from psycop.projects.restraint.cohort.utils.loaders import load_prediction_timestamps_deprecated
 from psycop.projects.restraint.feature_generation.modules.specify_text_features import (
     TextFeatureSpecifier,
 )

@@ -4,11 +4,10 @@ from functools import partial
 from multiprocessing import Pool
 from typing import NewType
 
-import numpy as np
 import pandas as pd
 import polars as pl
 
-from psycop.common.cohort_definition import OutcomeTimestampFrame, PredictionTimeFrame
+from psycop.common.cohort_definition import OutcomeTimestampFrame
 from psycop.common.global_utils.cache import shared_cache
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
@@ -17,7 +16,6 @@ from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
 from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
 )
-from psycop.common.types.validated_frame import ValidatedFrame
 from psycop.projects.cvd.model_evaluation.single_run.performance_by_ppr.days_from_first_positive_to_event import (
     days_from_first_positive_to_event,
 )

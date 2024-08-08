@@ -1,17 +1,13 @@
 """Main feature generation."""
 
 import datetime
-import functools
-import logging
-from collections.abc import Mapping, Sequence
-from multiprocessing import Pool
+from collections.abc import Sequence
 from typing import Callable
 
 import numpy as np
 import pandas as pd
 import polars as pl
 import timeseriesflattener as ts
-from timeseriesflattener.v1.aggregation_fns import mean
 
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
     generate_feature_set,
@@ -47,7 +43,6 @@ from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
 )
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.projects.cvd.feature_generation.cohort_definition.cvd_cohort_definition import (
-    CVDCohortDefiner,
     cvd_outcome_timestamps,
     cvd_pred_times,
 )
