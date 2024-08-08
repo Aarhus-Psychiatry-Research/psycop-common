@@ -84,6 +84,7 @@ def _init_cvd_predictor(
     column_prefix: str = "pred_layer_{}",
     entity_id_col_name: str = "dw_ek_borger",
 ) -> ts.PredictorSpec:
+    logging.info(f"Initialising {df_loader.__name__}")
     return ts.PredictorSpec(
         value_frame=ts.ValueFrame(
             init_df=pl.from_pandas(df_loader()).rename({"value": df_loader.__name__}),
@@ -114,20 +115,26 @@ class CategoricalSpec:
     loader: Callable[[], pd.DataFrame]
 
 
-def _pair_to_spec(
-    pair: tuple[int, AnySpec | BooleanSpec | ContinuousSpec | CategoricalSpec],
-) -> AnySpec:
-    layer = pair[0]
-    spec = pair[1]
-    match spec:
+@dataclass(frozen=True)
+class LayerSpecPair:
+    layer: int
+    spec: AnySpec | BooleanSpec | ContinuousSpec | CategoricalSpec
+
+
+def _pair_to_spec(pair: LayerSpecPair) -> AnySpec:
+    match pair.spec:
         case ContinuousSpec():
-            return _init_cvd_predictor(df_loader=spec.loader, layer=layer, fallback=np.NaN)
+            return _init_cvd_predictor(
+                df_loader=pair.spec.loader, layer=pair.layer, fallback=np.NaN
+            )
         case BooleanSpec():
-            return _init_cvd_predictor(df_loader=spec.loader, layer=layer, fallback=0.0)
+            return _init_cvd_predictor(df_loader=pair.spec.loader, layer=pair.layer, fallback=0.0)
         case CategoricalSpec():
-            return _init_cvd_predictor(df_loader=spec.loader, layer=layer, fallback=np.NaN)
+            return _init_cvd_predictor(
+                df_loader=pair.spec.loader, layer=pair.layer, fallback=np.NaN
+            )
         case ts.PredictorSpec() | ts.OutcomeSpec() | ts.StaticSpec() | ts.TimeDeltaSpec():
-            return spec
+            return pair.spec
 
 
 if __name__ == "__main__":
@@ -199,7 +206,7 @@ if __name__ == "__main__":
     }
 
     layer_spec_pairs = [
-        (layer, spec) for layer, spec_list in feature_layers.items() for spec in spec_list
+        LayerSpecPair(layer, spec) for layer, spec_list in feature_layers.items() for spec in spec_list
     ]
 
     # Run in parallel for faster loading

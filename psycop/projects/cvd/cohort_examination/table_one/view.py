@@ -46,7 +46,7 @@ class RowSpecification:
     nonnormal: bool = False
 
 
-def psychiatric_fx_string_to_readable(c: str) -> str:
+def _psychiatric_fx_string_to_readable(c: str) -> str:
     """Takes a string like 'f0_disorders' and returns a readable string like 'F0 - Organic disorders'"""
     icd10_fx_to_readable = {
         "f0": "Organic disorders",
@@ -78,7 +78,7 @@ def _psychiatric_diagnosis_row_specs(
         ]
     )
 
-    fx2readable = {c: psychiatric_fx_string_to_readable(c) for c in columns}
+    fx2readable = {c: _psychiatric_fx_string_to_readable(c) for c in columns}
 
     return [
         RowSpecification(
