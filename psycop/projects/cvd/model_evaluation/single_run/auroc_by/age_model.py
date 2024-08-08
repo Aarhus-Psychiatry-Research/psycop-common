@@ -23,7 +23,7 @@ def add_age(df: pl.DataFrame, birthdays: pl.DataFrame, age_col_name: str = "age"
     return df
 
 
-@shared_cache.cache()
+@shared_cache().cache()
 def auroc_by_age_model(
     eval_df: pl.DataFrame, birthdays: pl.DataFrame, bins: Sequence[float]
 ) -> AUROCByAgeDF:

@@ -28,7 +28,7 @@ class AUROC:
         )
 
 
-@shared_cache.cache()
+@shared_cache().cache()
 def auroc_model(eval_df: pl.DataFrame, n_bootstraps: int = 5) -> AUROC:
     eval_dataset = eval_df.to_pandas()
     y = eval_dataset["y"]

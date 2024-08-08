@@ -25,7 +25,7 @@ from psycop.projects.cvd.feature_generation.cohort_definition.cvd_cohort_definit
 from psycop.projects.cvd.model_training.populate_cvd_registry import populate_with_cvd_registry
 
 
-@shared_cache.cache
+@shared_cache().cache
 def _apply_preprocessing_pipeline(
     pre_steps: Sequence[StepDelta] | None,
     flattened_data: pl.LazyFrame,
