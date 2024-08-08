@@ -7,6 +7,7 @@ import polars as pl
 from psycop.common.global_utils.cache import shared_cache
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_evaluation.binary.global_performance.roc_auc import bootstrap_roc
+from psycop.common.model_training_v2.loggers.mlflow_logger import MLFlowLogger
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import RunSelector
 
 
@@ -29,14 +30,27 @@ def _run_auroc_with_ci(df: pl.DataFrame, n_bootstraps: int = 5) -> pl.DataFrame:
     )
 
 
-def get(runs: Sequence[RunSelector]) -> pl.DataFrame:
-    eval_dfs = [
-        MlflowClientWrapper()
-        .get_run(r.experiment_name, r.run_name)
+def _get_run(selector: RunSelector) -> pl.DataFrame:
+    client = MlflowClientWrapper()
+    if selector.run_name == "Best":
+        return (
+            client.get_best_run_from_experiment(
+                experiment_name=selector.experiment_name, metric="all_oof_BinaryAUROC"
+            )
+            .eval_frame()
+            .frame.with_columns(pl.lit(selector.experiment_name).alias("run_name"))
+        )
+
+    return (
+        client.get_run(selector.experiment_name, selector.run_name)
         .eval_frame()
-        .frame.with_columns(pl.lit(r.run_name).alias("run_name"))
-        for r in runs
-    ]
+        .frame.with_columns(pl.lit(selector.run_name).alias("run_name"))
+    )
+
+
+@shared_cache.cache()
+def model(runs: Sequence[RunSelector]) -> pl.DataFrame:
+    eval_dfs = [_get_run(r) for r in runs]
     run_performances = [_run_auroc_with_ci(df=df) for df in eval_dfs]
     return pl.concat(run_performances)
 
@@ -50,7 +64,7 @@ if __name__ == "__main__":
         datefmt="%Y/%m/%d %H:%M:%S",
     )
 
-    result = get(
+    result = model(
         runs=[
             RunSelector(experiment_name="baseline_v2_cvd", run_name="Layer 1"),
             RunSelector(

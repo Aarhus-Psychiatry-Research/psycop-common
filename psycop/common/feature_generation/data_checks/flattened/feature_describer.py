@@ -80,7 +80,7 @@ def create_unicode_hist(series: pd.Series) -> pd.Series:  # type: ignore
     # Now do value counts
     key_vector = np.array(list(UNICODE_HIST.keys()), dtype="float")
 
-    ucode_to_print = "".join([UNICODE_HIST[_find_nearest(key_vector, val)] for val in hist])
+    ucode_to_print = "".join([UNICODE_HIST[_find_nearest(key_vector, val)] for val in hist])  # type: ignore
 
     return pd.Series(ucode_to_print)
 
