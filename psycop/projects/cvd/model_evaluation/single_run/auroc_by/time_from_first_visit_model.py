@@ -13,7 +13,7 @@ from psycop.projects.cvd.model_evaluation.uuid_parsers import (
 TimeFromFirstVisitDF = NewType("TimeFromFirstVisitDF", pl.DataFrame)
 
 
-@shared_cache.cache()
+@shared_cache().cache()
 def auroc_by_time_from_first_visit_model(
     eval_frame: EvalFrame, all_visits_df: pl.DataFrame
 ) -> TimeFromFirstVisitDF:

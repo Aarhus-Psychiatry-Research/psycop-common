@@ -35,7 +35,7 @@ def generate_shap_df_for_predictor_col(
     return df
 
 
-@shared_cache.cache
+@shared_cache().cache
 def get_long_shap_df(X: pd.DataFrame, shap_values: list[float]) -> pd.DataFrame:
     predictor_cols = X.columns
     dfs = []
@@ -82,7 +82,7 @@ def generate_shap_values_from_pipe(
     return shap_values
 
 
-@shared_cache.cache
+@shared_cache().cache
 def get_shap_bundle_for_best_run(
     run: Run = BEST_DEV_RUN,
     n_rows: Optional[int] = 10_000,
@@ -143,7 +143,7 @@ if __name__ == "__main__":
     long_shap_df = shap_bundle.get_long_shap_df()  # type: ignore
 
 
-@shared_cache.cache
+@shared_cache().cache
 def generate_shap_values(
     features: pd.DataFrame, outcome: pd.DataFrame, pipeline: Pipeline
 ) -> bytes:

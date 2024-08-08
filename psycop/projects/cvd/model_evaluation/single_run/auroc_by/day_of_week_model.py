@@ -10,7 +10,7 @@ from psycop.projects.cvd.model_evaluation.uuid_parsers import parse_timestamp_fr
 AUROCByDayOfWeekDF = NewType("AUROCByDayOfWeekDF", pl.DataFrame)
 
 
-@shared_cache.cache()
+@shared_cache().cache()
 def auroc_by_day_of_week_model(eval_frame: EvalFrame) -> AUROCByDayOfWeekDF:
     eval_dataset = parse_timestamp_from_uuid(eval_frame.frame).to_pandas()
 

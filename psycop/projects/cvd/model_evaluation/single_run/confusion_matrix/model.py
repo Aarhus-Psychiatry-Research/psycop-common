@@ -11,7 +11,7 @@ from psycop.common.model_training.training_output.dataclasses import (
 )
 
 
-@shared_cache.cache()
+@shared_cache().cache()
 def confusion_matrix_model(
     eval_df: pl.DataFrame, desired_positive_rate: float = 0.05
 ) -> ConfusionMatrix:
