@@ -53,7 +53,7 @@ def _get_psychiatric_diagnosis_row_specs(readable_col_names: list[str]) -> list[
     return specs
 
 
-@shared_cache.cache
+@shared_cache().cache
 def _create_table(
     row_specs: Sequence[RowSpecification],
     data: pd.DataFrame,

@@ -15,8 +15,6 @@ from psycop.projects.restraint.model_evaluation.utils.feature_name_to_readable i
 )
 from psycop.projects.restraint.utils.best_runs import Run
 
-shared_cache = Memory(location=".", verbose=0)  # noqa: F811
-
 
 def generate_shap_df_for_predictor_col(
     colname: str, X: pd.DataFrame, shap_values: list[float]
@@ -35,7 +33,7 @@ def generate_shap_df_for_predictor_col(
     return df
 
 
-@shared_cache.cache
+@shared_cache().cache
 def get_long_shap_df(X: pd.DataFrame, shap_values: list[float]) -> pd.DataFrame:
     predictor_cols = X.columns
     dfs = []
@@ -82,7 +80,7 @@ def generate_shap_values_from_pipe(
     return shap_values
 
 
-@shared_cache.cache
+@shared_cache().cache
 def get_shap_bundle_for_best_run(
     run: Run = BEST_DEV_RUN,
     n_rows: Optional[int] = 10_000,
@@ -143,7 +141,7 @@ if __name__ == "__main__":
     long_shap_df = shap_bundle.get_long_shap_df()  # type: ignore
 
 
-@shared_cache.cache
+@shared_cache().cache
 def generate_shap_values(
     features: pd.DataFrame, outcome: pd.DataFrame, pipeline: Pipeline
 ) -> bytes:

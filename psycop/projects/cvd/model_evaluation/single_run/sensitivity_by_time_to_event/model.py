@@ -20,7 +20,7 @@ from psycop.projects.cvd.model_evaluation.uuid_parsers import (
 SensitivityByTTEDF = NewType("SensitivityByTTEDF", pl.DataFrame)
 
 
-@shared_cache.cache()
+@shared_cache().cache()
 def sensitivity_by_time_to_event_model(
     eval_df: pl.DataFrame,
     outcome_timestamps: OutcomeTimestampFrame,

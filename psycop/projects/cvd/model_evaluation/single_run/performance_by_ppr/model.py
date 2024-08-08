@@ -183,7 +183,7 @@ def _calculate_row(
 PerformanceByPPRModel = NewType("PerformanceByPPRModel", pl.DataFrame)
 
 
-@shared_cache.cache()
+@shared_cache().cache()
 def performance_by_ppr_model(
     eval_df: EvalFrame, positive_rates: Sequence[float], outcome_timestamps: OutcomeTimestampFrame
 ) -> PerformanceByPPRModel:
