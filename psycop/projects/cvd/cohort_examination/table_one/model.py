@@ -29,7 +29,7 @@ class TableOneModel(ValidatedFrame[pl.DataFrame]):
     pred_time_uuid_col_name: str = "pred_time_uuid"
 
 
-@shared_cache.cache
+@shared_cache().cache
 def _train_test_column(flattened_data: pl.DataFrame) -> pl.DataFrame:
     """Adds a 'dataset' column to the dataframe, indicating whether the row is in the train or test set."""
     train_data = (
@@ -51,20 +51,20 @@ def _train_test_column(flattened_data: pl.DataFrame) -> pl.DataFrame:
     return flattened_combined
 
 
-@shared_cache.cache
+@shared_cache().cache
 def _preprocessed_data(data_path: str, pipeline: BaselinePreprocessingPipeline) -> pl.DataFrame:
     data = pl.scan_parquet(data_path)
     preprocessed = pipeline.apply(data)
     return pl.from_pandas(preprocessed)
 
 
-@shared_cache.cache
+@shared_cache().cache
 def _first_outcome_data(data: pl.DataFrame) -> pl.DataFrame:
     first = get_first_cvd_indicator()
     return data.join(pl.from_pandas(first), on="dw_ek_borger", how="left")
 
 
-@shared_cache.cache
+@shared_cache().cache
 def table_one_model(run: PsycopMlflowRun, sex_col_name: str) -> TableOneModel:
     cfg = run.get_config()
 

@@ -14,7 +14,7 @@ from psycop.projects.cvd.feature_generation.cohort_definition.outcome_specificat
 IncidenceByTimeModel = NewType("IncidenceByTimeModel", pl.DataFrame)
 
 
-@shared_cache.cache()
+@shared_cache().cache()
 def incidence_by_time_model() -> IncidenceByTimeModel:
     df_lab_result = get_first_cvd_indicator()
 

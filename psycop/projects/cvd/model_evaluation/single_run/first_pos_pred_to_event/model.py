@@ -20,7 +20,7 @@ FirstPosPredToEventDF = NewType("FirstPosPredToEventDF", pl.DataFrame)
 # Contains columns "pred", "y", "id", "pred_timestamps", "outcome_timestamps"
 
 
-@shared_cache.cache()
+@shared_cache().cache()
 def first_positive_prediction_to_event_model(
     eval_df: pl.DataFrame,
     outcome_timestamps: OutcomeTimestampFrame,
