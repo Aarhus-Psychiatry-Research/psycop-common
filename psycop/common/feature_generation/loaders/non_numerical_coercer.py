@@ -3,6 +3,7 @@
 
 This function takes a df and coerces all strings into numerical.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

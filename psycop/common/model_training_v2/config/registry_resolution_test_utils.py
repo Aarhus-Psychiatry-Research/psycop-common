@@ -157,10 +157,14 @@ def _new_timestamped_cfg_to_disk(
     filled_cfg.to_disk(filepath)
 
 
-def get_registered_functions(container_registry: RegistryWithDict) -> Sequence[RegisteredCallable]:
+def get_registered_functions(
+    container_registry: RegistryWithDict, exclude: Sequence[str] = ()
+) -> Sequence[RegisteredCallable]:
     functions = []
     for registry_name, registry in container_registry.to_dict().items():
         for registered_function_name in registry.get_all():
+            if any(exclude in registered_function_name for exclude in exclude):
+                continue
             functions.append(
                 RegisteredCallable(
                     registry_name=registry_name,

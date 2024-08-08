@@ -8,8 +8,7 @@ from .unpack_annotations import get_pretty_type_str
 
 
 @dataclass(frozen=True)
-class MyType:
-    ...
+class MyType: ...
 
 
 @dataclass(frozen=True)
@@ -25,8 +24,8 @@ class UnpackExpectation:
         UnpackExpectation(Sequence[MyType], "Sequence[MyType]"),
         UnpackExpectation(Literal[1, 2, 3], "Literal[1, 2, 3]"),  # type: ignore
         UnpackExpectation(MyType, "MyType"),
-        UnpackExpectation(int | str, "int | str"),
-        UnpackExpectation(str | None, "str | None"),
+        UnpackExpectation(int | str, "int | str"),  # type: ignore
+        UnpackExpectation(str | None, "str | None"),  # type: ignore
     ],
 )
 def test_unpack_annotations(example: UnpackExpectation):

@@ -3,6 +3,7 @@
 Is growing quite a bit, loaders may have to be split out into separate
 files (e.g. psychiatric, cardiovascular, metabolic etc.) over time.
 """
+
 from __future__ import annotations
 
 import logging
@@ -310,7 +311,7 @@ def chronic_lung_disease(
         shak_code=shak_code,
         shak_sql_operator=shak_sql_operator,
         timestamp_purpose=timestamp_purpose,
-        keep_code_col=True,
+        keep_code_col=False,
     )
 
     return df
@@ -364,6 +365,25 @@ def SCORE2_CVD(
     df_filtered = only_SCORE2_CVD_diagnoses(df=df, col_name="diagnosegruppestreng")
 
     return df_filtered
+
+
+def peripheral_artery_disease(
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    return from_contacts(
+        icd_code=["I702", "I739"],
+        wildcard_icd_code=True,
+        n_rows=n_rows,
+        shak_location_col=shak_location_col,
+        shak_code=shak_code,
+        shak_sql_operator=shak_sql_operator,
+        timestamp_purpose=timestamp_purpose,
+        keep_code_col=True,
+    )
 
 
 @data_loaders.register("type_1_diabetes")

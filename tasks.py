@@ -15,7 +15,6 @@ inv --list
 If you do not wish to use invoke you can simply delete this file.
 """
 
-
 import multiprocessing  # noqa: I001
 from pathlib import Path
 
@@ -28,15 +27,17 @@ from psycop.automation.logger import echo_header, msg_type
 
 
 @task
-def install_requirements(c: Context):
+def install_requirements(c: Context, uv: bool = False):
     requirements_files = Path().parent.glob("*requirements.txt")
     requirements_string = " -r ".join([str(file) for file in requirements_files])
-    c.run(f"pip install --upgrade -r {requirements_string}")
+
+    package_manager = "pip" if not uv else "uv pip"
+    c.run(f"{package_manager} install --upgrade -r {requirements_string}")
 
     if on_ovartaci():
         # Install pytorch with cuda from private repo
         c.run(
-            "conda install --force-reinstall pytorch=2.1.0 pytorch-cuda=12.1 -c https://exrhel0371.it.rm.dk/api/repo/pytorch -c https://exrhel0371.it.rm.dk/api/repo/nvidia -c https://exrhel0371.it.rm.dk/api/repo/anaconda --override-channels --insecure -y",
+            "conda install --force-reinstall pytorch=2.2.0 pytorch-cuda=12.1 -c https://exrhel0371.it.rm.dk/api/repo/pytorch -c https://exrhel0371.it.rm.dk/api/repo/nvidia -c https://exrhel0371.it.rm.dk/api/repo/anaconda --override-channels --insecure -y",
             pty=NOT_WINDOWS,
         )
         test_pytorch_cuda(c)

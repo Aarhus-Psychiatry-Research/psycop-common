@@ -1,4 +1,5 @@
 """Example of how to inspect a dataset using the configs."""
+
 from psycop.common.model_training.config_schemas.conf_utils import load_app_cfg_as_pydantic
 from psycop.common.model_training.data_loader.utils import (
     load_and_filter_train_from_cfg,

@@ -1,4 +1,5 @@
 """Utility functions for model training."""
+
 from typing import Union
 
 import pandas as pd

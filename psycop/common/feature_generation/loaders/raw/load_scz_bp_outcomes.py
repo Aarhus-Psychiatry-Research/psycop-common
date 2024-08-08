@@ -1,4 +1,5 @@
 """Loaders scz-bp outcomes"""
+
 from typing import Literal
 
 import pandas as pd

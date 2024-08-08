@@ -1,6 +1,5 @@
 """Testing loading of coercion functions."""
 
-
 import psycop.common.feature_generation.loaders.raw.load_coercion as c
 
 if __name__ == "__main__":

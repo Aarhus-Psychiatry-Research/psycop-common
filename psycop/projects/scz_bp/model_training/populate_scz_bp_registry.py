@@ -10,9 +10,12 @@ def populate_scz_bp_registry():
         StandardScaler,
         standard_scaler_step,
     )
-    from psycop.projects.scz_bp.model_training.synthetic_cv_trainer.synthetic_cv_trainer import (
+    from psycop.projects.scz_bp.model_training.synthetic_trainer.synthetic_cv_trainer import (
         SyntheticCrossValidatorTrainer,
     )
-    from psycop.projects.scz_bp.model_training.synthetic_cv_trainer.synthetic_data_loader import (
+    from psycop.projects.scz_bp.model_training.synthetic_trainer.synthetic_data_loader import (
         SyntheticVerticalConcatenator,
+    )
+    from psycop.projects.scz_bp.model_training.synthetic_trainer.synthetic_split_trainer import (
+        SyntheticSplitTrainerSeparatePreprocessing,
     )

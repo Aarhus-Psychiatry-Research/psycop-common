@@ -49,9 +49,9 @@ def fa_outpatient_create_markdown_artifacts(
             description="Robustness of the model across stratifications. Blue line is the area under the receiver operating characteristics curve. Grey bars represent the proportion of visits that are present in each group. Error bars are 95%-confidence intervals from 100-fold bootstrap.",
             relative_to_path=relative_to,
         ),
-        MarkdownTable(
+        MarkdownTable.from_filepath(
             title=f"Performance of {pipeline.model_type} with {lookahead_days} days of lookahead by predicted positive rate (PPR). Numbers are physical contacts.",
-            file_path=pipeline.paper_outputs.paths.tables
+            table_path=pipeline.paper_outputs.paths.tables
             / pipeline.paper_outputs.artifact_names.performance_by_ppr,
             description="""**Predicted positive rate**: The proportion of contacts predicted positive by the model. Since the model outputs a predicted probability, this is a threshold set by us.
 **True prevalence**: The proportion of contacts that qualified for type 2 diabetes within the lookahead window.

@@ -23,6 +23,8 @@ if __name__ == "__main__":
     note_types = ["aktuelt_psykisk", "all_relevant"]
     model_names = ["dfm-encoder-large", "dfm-encoder-large-v1-finetuned", "tfidf-500", "tfidf-1000"]
 
+    prediction_times = SczBpCohort.get_filtered_prediction_times_bundle().prediction_times
+
     if not ONLY_KEYWORDS:
         for note_type in note_types:
             for model_name in model_names:
@@ -35,7 +37,7 @@ if __name__ == "__main__":
 
                 generate_feature_set(
                     project_info=project_info,
-                    eligible_prediction_times_frame=SczBpCohort.get_filtered_prediction_times_bundle().prediction_times,
+                    eligible_prediction_times_frame=prediction_times,
                     feature_specs=SczBpTextExperimentFeatures().get_feature_specs(
                         note_type=note_type, model_name=model_name, lookbehind_days=[730]
                     ),

@@ -1,4 +1,5 @@
 """Test custom preprocessing steps."""
+
 from psycop.common.model_training.config_schemas.debug import DebugConfSchema
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.common.model_training.data_loader.utils import load_and_filter_train_from_cfg

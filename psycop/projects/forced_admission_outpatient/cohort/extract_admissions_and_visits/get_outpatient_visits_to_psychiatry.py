@@ -3,15 +3,15 @@ Script for obtaining and writing all admission  and discharge timestamps
 for all admissions from 2012-2022. Handles LPR2 to LPR3 transition, duplicates
 and short term readmissions
 """
+
 from datetime import timedelta
 
 import pandas as pd
 
-from psycop.common.global_utils.sql.loader import sql_load
-from psycop.common.global_utils.sql.writer import write_df_to_sql
+from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 
 
-def get_outpatient_visits_to_psychiatry(write: bool = True) -> pd.DataFrame:
+def get_outpatient_visits_to_psychiatry() -> pd.DataFrame:
     # Load all physical visits data
     view = "[FOR_besoeg_fysiske_fremmoeder_inkl_2021_feb2022]"
     cols_to_keep = "datotid_start, datotid_slut, dw_ek_borger, psykambbesoeg AS pt_type"
@@ -29,16 +29,6 @@ def get_outpatient_visits_to_psychiatry(write: bool = True) -> pd.DataFrame:
     df["datotid_predict"] = df["datotid_start"] - timedelta(days=1)  # type: ignore
 
     df = df.drop_duplicates(subset=["dw_ek_borger", "datotid_predict"])
-
-    if write:
-        ROWS_PER_CHUNK = 5_000
-
-        write_df_to_sql(
-            df=df[["dw_ek_borger", "datotid_predict"]],  # type: ignore
-            table_name="all_outpatient_visits_processed_2012_2021",
-            if_exists="replace",
-            rows_per_chunk=ROWS_PER_CHUNK,
-        )
 
     return df[["dw_ek_borger", "datotid_predict"]]  # type: ignore
 

@@ -1,4 +1,5 @@
 """util functions to create table one"""
+
 import pandas as pd
 
 from psycop.common.model_training.application_modules.process_manager_setup import setup

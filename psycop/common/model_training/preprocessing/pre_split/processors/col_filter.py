@@ -1,4 +1,5 @@
 """Module for filtering columns before split."""
+
 import re
 
 import pandas as pd

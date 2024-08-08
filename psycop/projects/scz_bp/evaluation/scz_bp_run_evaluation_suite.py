@@ -1,5 +1,6 @@
 from collections.abc import Sequence
 from pathlib import Path
+from typing import Literal
 
 import polars as pl
 
@@ -28,21 +29,33 @@ from psycop.common.model_training_v2.config.baseline_schema import BaselineSchem
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 from psycop.common.model_training_v2.trainer.base_trainer import BaselineTrainer
 from psycop.common.model_training_v2.trainer.cross_validator_trainer import CrossValidatorTrainer
-from psycop.common.model_training_v2.trainer.split_trainer import SplitTrainer
+from psycop.common.model_training_v2.trainer.split_trainer import (
+    SplitTrainer,
+    SplitTrainerSeparatePreprocessing,
+)
 from psycop.projects.scz_bp.evaluation.minimal_eval_dataset import minimal_eval_dataset_from_path
-from psycop.projects.scz_bp.model_training.synthetic_cv_trainer.synthetic_cv_trainer import (
+from psycop.projects.scz_bp.model_training.populate_scz_bp_registry import populate_scz_bp_registry
+from psycop.projects.scz_bp.model_training.synthetic_trainer.synthetic_cv_trainer import (
     SyntheticCrossValidatorTrainer,
+)
+from psycop.projects.scz_bp.model_training.synthetic_trainer.synthetic_split_trainer import (
+    SyntheticSplitTrainerSeparatePreprocessing,
 )
 
 populate_baseline_registry()
+populate_scz_bp_registry()
 
 
-def scz_bp_df_to_eval_df(df: pl.DataFrame) -> EvalDataset:
+def scz_bp_df_to_eval_df(
+    df: pl.DataFrame, model_type: Literal["joint", "scz", "bp"]
+) -> EvalDataset:
     return EvalDataset(
         ids=df["dw_ek_borger"].to_pandas(),
         pred_time_uuids=df["pred_time_uuid"].to_pandas(),
         pred_timestamps=df["timestamp"].to_pandas(),
-        outcome_timestamps=df["meta_time_of_diagnosis_fallback_nan"].to_pandas(),
+        outcome_timestamps=df["meta_time_of_diagnosis_fallback_nan"].to_pandas()
+        if model_type == "joint"
+        else df[f"meta_time_of_{model_type}_diagnosis_fallback_nan"].to_pandas(),
         y=df["y"].to_pandas(),
         y_hat_probs=df["y_hat_prob"].to_pandas(),
         age=df["pred_age_in_years"].to_pandas(),
@@ -60,7 +73,11 @@ def _load_validation_data_from_schema(schema: BaselineSchema) -> pl.DataFrame:
     match schema.trainer:
         case CrossValidatorTrainer() | SyntheticCrossValidatorTrainer():
             return schema.trainer.training_data.load().collect()
-        case SplitTrainer():
+        case (
+            SplitTrainer()
+            | SplitTrainerSeparatePreprocessing()
+            | SyntheticSplitTrainerSeparatePreprocessing()
+        ):
             return schema.trainer.validation_data.load().collect()
         case BaselineTrainer():
             raise TypeError("That's an ABC, mate")
@@ -93,7 +110,9 @@ def load_sczbp_metadata() -> pl.DataFrame:
     )
 
 
-def scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name: str) -> EvalDataset:
+def scz_bp_get_eval_ds_from_best_run_in_experiment(
+    experiment_name: str, model_type: Literal["joint", "scz", "bp"]
+) -> EvalDataset:
     best_run = MlflowClientWrapper().get_best_run_from_experiment(
         experiment_name=experiment_name, metric="all_oof_BinaryAUROC"
     )
@@ -114,7 +133,7 @@ def scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name: str) -> Eval
     df = min_eval_ds.frame.join(
         cohort_data, how="left", on=min_eval_ds.pred_time_uuid_col_name
     ).join(cohort_metadata, how="left", on=min_eval_ds.pred_time_uuid_col_name, validate="1:1")
-    return scz_bp_df_to_eval_df(df=df)
+    return scz_bp_df_to_eval_df(df=df, model_type=model_type)
 
 
 if __name__ == "__main__":
@@ -139,4 +158,4 @@ if __name__ == "__main__":
         ],
     ).rename({"prediction_time_uuid": "pred_time_uuid"})
     df = min_eval_ds.frame.join(cohort_metadata, how="left", on=min_eval_ds.pred_time_uuid_col_name)
-    eval_ds = scz_bp_df_to_eval_df(df=df)
+    eval_ds = scz_bp_df_to_eval_df(df=df, model_type="joint")
