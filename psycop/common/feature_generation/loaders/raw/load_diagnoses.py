@@ -238,7 +238,20 @@ def type_2_diabetes(
     timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     df = from_contacts(
-        icd_code=["E11"],
+        icd_code=[
+            "E1",
+            "E16",
+            "O24",
+            "T383A",
+            "M142",
+            "G590",
+            "G632",
+            "H280",
+            "H334",
+            "H360",
+            "H450",
+            "N083",
+        ],
         wildcard_icd_code=True,
         n_rows=n_rows,
         shak_location_col=shak_location_col,
@@ -402,7 +415,20 @@ def type_1_diabetes(
     timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     df = from_contacts(
-        icd_code=["E10"],
+        icd_code=[
+            "E1",
+            "E16",
+            "O24",
+            "T383A",
+            "M142",
+            "G590",
+            "G632",
+            "H280",
+            "H334",
+            "H360",
+            "H450",
+            "N083",
+        ],
         wildcard_icd_code=True,
         n_rows=n_rows,
         shak_location_col=shak_location_col,

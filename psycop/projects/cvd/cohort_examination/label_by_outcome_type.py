@@ -11,14 +11,14 @@ def label_by_outcome_type(
     df: pl.DataFrame,
     procedure_col: str,
     output_col_name: str = "outcome_type",
-    label2procedures: dict[str, list[str]] = CVD_PROCEDURE_CODES,
+    type2procedures: dict[str, list[str]] = CVD_PROCEDURE_CODES,
 ) -> pl.DataFrame:
-    """Takes a dataframe with a column containing diagnosis codes and labels the outcome type based on the diagnosis code."""
+    """Takes a dataframe with a column containing diagnosis/procedure codes adds a new column with the outcome type based on the diagnosis code."""
 
     # Initialise an empty column
     df = df.with_columns(pl.lit(None).alias("outcome_type"))
 
-    for label, procedures in reversed(label2procedures.items()):
+    for label, procedures in reversed(type2procedures.items()):
         for substring in procedures:
             df = df.with_columns(
                 pl.when(pl.col(procedure_col).str.contains(substring))

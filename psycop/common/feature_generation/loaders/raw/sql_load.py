@@ -14,7 +14,6 @@ from psycop.common.global_utils.cache import shared_cache
 log = logging.getLogger(__name__)
 
 
-@shared_cache().cache  # TD: Remove before merge
 def sql_load(
     query: str,
     server: str = "BI-DPA-PROD",
