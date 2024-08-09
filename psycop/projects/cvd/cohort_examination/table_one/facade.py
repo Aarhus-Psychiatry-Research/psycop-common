@@ -18,5 +18,4 @@ def table_one_facade(
 
 
 if __name__ == "__main__":
-    fkdoapfkasp
     table_one_facade(Path(), MlflowClientWrapper().get_run("CVD", "CVD 1, base, XGB"))
