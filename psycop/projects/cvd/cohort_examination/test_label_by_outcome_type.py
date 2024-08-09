@@ -18,9 +18,9 @@ class Ex:
     [
         Ex(given="KFNG05A", then="PCI"),
         Ex(given="A:DI691", then="Stroke"),
-        Ex(given="A:DI509#+:AZAC2#+:ZDW10#B:DE109#B:DI214", then="AMI"),
+        Ex(given="A:DI509#+:AZAC2#+:ZDW10#B:DE109#B:DI214", then="MI"),
         Ex(given="A:DI639#+:AZAC2#B:DE780#B:DI109#B:DI489", then="Stroke"),
-        Ex(given="A:DI21#+:KPEG", then="AMI", intention="If overlapping, take the most severe."),
+        Ex(given="A:DI21#+:KPEG", then="MI", intention="If overlapping, take the most severe."),
     ],
     ids=lambda ex: ex.given,
 )
