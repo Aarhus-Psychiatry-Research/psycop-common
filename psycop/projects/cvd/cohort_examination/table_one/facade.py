@@ -16,37 +16,30 @@ from psycop.projects.cvd.cohort_examination.table_one.view import (
 
 cvd_overrides = [
     ColumnOverride(
-        "categorical",
-        categorical=True,
-        values_to_display=[1.0],
-        override_name=None,
-        category=RowCategory.diagnoses,
-    ),
-    ColumnOverride(
         "lung",
         categorical=True,
-        values_to_display=[1.0],
+        values_to_display=[1],
         override_name=None,
         category=RowCategory.diagnoses,
     ),
     ColumnOverride(
         "antipsychotics",
         categorical=True,
-        values_to_display=[1.0],
+        values_to_display=[1],
         override_name=None,
         category=RowCategory.medications,
     ),
     ColumnOverride(
         "atrial",
         categorical=True,
-        values_to_display=[1.0],
+        values_to_display=[1],
         override_name=None,
         category=RowCategory.diagnoses,
     ),
     ColumnOverride(
         "antihypertensives",
         categorical=True,
-        values_to_display=[1.0],
+        values_to_display=[1],
         override_name=None,
         category=RowCategory.medications,
     ),
@@ -63,18 +56,20 @@ cvd_overrides = [
         override_name=None,
         category=RowCategory.lab_results,
         values_to_display=None,
+        nonnormal=True,
     ),
     ColumnOverride(
         "smoking_categorical",
-        categorical=True,
-        values_to_display=None,
-        override_name=None,
+        categorical=False,  # The mean of the observations is not categorical
+        values_to_display=None,  # Perhaps this is the problem?
+        override_name="Smoking (daily/occasionally/prior/never)",
         category=RowCategory.demographics,
+        nonnormal=True,
     ),
     ColumnOverride(
         "smoking_continuous",
         categorical=False,
-        override_name=None,
+        override_name="Smoking (carton-years)",
         category=RowCategory.demographics,
         values_to_display=None,
     ),
@@ -95,14 +90,14 @@ cvd_overrides = [
     ColumnOverride(
         "type_1_diabetes",
         categorical=True,
-        values_to_display=[1.0],
+        values_to_display=[1],
         override_name=None,
         category=RowCategory.diagnoses,
     ),
     ColumnOverride(
         "type_2_diabetes",
         categorical=True,
-        values_to_display=[1.0],
+        values_to_display=[1],
         override_name=None,
         category=RowCategory.diagnoses,
     ),
@@ -112,6 +107,7 @@ cvd_overrides = [
         override_name="Weight (kg)",
         category=RowCategory.demographics,
         values_to_display=None,
+        nonnormal=True,
     ),
     ColumnOverride(
         "height",
@@ -119,6 +115,7 @@ cvd_overrides = [
         override_name="Height (cm)",
         category=RowCategory.demographics,
         values_to_display=None,
+        nonnormal=True,
     ),
     ColumnOverride(
         "bmi",
@@ -138,14 +135,14 @@ cvd_overrides = [
     ColumnOverride(
         "kidney_failure",
         categorical=True,
-        values_to_display=[1.0],
+        values_to_display=[1],
         override_name=None,
         category=RowCategory.diagnoses,
     ),
     ColumnOverride(
         "angina",
         categorical=True,
-        values_to_display=[1.0],
+        values_to_display=[1],
         override_name=None,
         category=RowCategory.diagnoses,
     ),
@@ -160,6 +157,7 @@ def table_one_facade(
 ):
     model = table_one_model(run=run, sex_col_name=sex_col_name)
     view = table_one_view(model=model, overrides=overrides)
+    view.to_excel(output_dir / "table_one.xlsx")
     view.to_csv(output_dir / "table_one.csv")
 
 

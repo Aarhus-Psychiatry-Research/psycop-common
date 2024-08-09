@@ -2,7 +2,7 @@ import enum
 import re
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Optional, Union
+from typing import Literal, Optional, Union
 
 import pandas as pd
 import polars as pl
@@ -86,6 +86,7 @@ def _psychiatric_diagnosis_row_specs(
             readable_name=readable_col_name,
             categorical=True,
             category=RowCategory.diagnoses,
+            values_to_display=[1],
         )
         for fx, readable_col_name in fx2readable.items()
     ]
@@ -105,9 +106,11 @@ def _create_table(
 
     for spec in row_specs:
         if spec.values_to_display and isinstance(spec.values_to_display[0], int):
-            data[spec.source_col_name] = data[spec.source_col_name].astype(int)
+            # If only an int should be displayed, it indicates that the column is categorical
+            # Fill NAs with 0, and cast to int
+            data[spec.source_col_name] = data[spec.source_col_name].fillna(0).astype(int)
 
-    table_one = TableOne(  # type: ignore
+    table_one = TableOne(
         data=data,
         columns=source_col_names,
         categorical=[r.source_col_name for r in row_specs if r.categorical],
@@ -153,6 +156,12 @@ def _apply_overrides(
             spec.categorical = override.categorical
             spec.category = override.category
             spec.nonnormal = override.nonnormal
+
+            spec.source_col_name = (
+                spec.source_col_name.replace("mean", "max")
+                if override.categorical
+                else spec.source_col_name
+            )
     return spec
 
 
@@ -208,13 +217,10 @@ def _visit_frame(model: TableOneModel, overrides: Sequence[ColumnOverride]) -> p
     # Order by category
     specs = sorted(specs, key=lambda x: f"{x.category.value}_{x.readable_name}")
 
-    visits_labelled = (
-        label_by_outcome_type(model.frame, procedure_col="cause", output_col_name="outcome_type")
-        .fill_null(0)  # Otherwise, binary outcomes will contain null and 1, which aggregates to 1
-        .select(
-            [r.source_col_name for r in specs if r.source_col_name not in ["age_grouped"]]
-            + ["dataset"]
-        )
+    visits_labelled = label_by_outcome_type(
+        model.frame, procedure_col="cause", output_col_name="outcome_type"
+    ).select(
+        [r.source_col_name for r in specs if r.source_col_name not in ["age_grouped"]] + ["dataset"]
     )
 
     # data["age_grouped"] = pd.Series(
@@ -263,9 +269,7 @@ def _patient_frame(model: TableOneModel) -> pd.DataFrame:
     patient_df_labelled = label_by_outcome_type(patient_df, procedure_col="outcome_cause")
 
     return _create_table(
-        patient_row_specs,
-        data=patient_df_labelled.to_pandas().fillna(0),
-        groupby_col_name="dataset",
+        patient_row_specs, data=patient_df_labelled.to_pandas(), groupby_col_name="dataset"
     )
 
 

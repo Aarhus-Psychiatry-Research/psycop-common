@@ -247,9 +247,9 @@ def smoking_categorical(mapping: dict[str, int] | None = None) -> pd.DataFrame:
     """Smoking as a categorical variable. See mapping within the function for definition, or provide your own."""
     if mapping is None:
         mapping = {
-            "Ryger dagligt": 6,
-            "Ryger": 5,
-            "Ryger lejlighedsvis": 4,
+            "Ryger dagligt": 4,
+            "Ryger": 4,
+            "Ryger lejlighedsvis": 3,
             "Andet": 3,
             "Andet (f.eks. snus, e-cigaretter mv.)": 3,
             "Eks ryger": 2,

@@ -175,7 +175,7 @@ if __name__ == "__main__":
         ],
         1: [ContinuousSpec(ldl), ContinuousSpec(systolic_blood_pressure)],
         2: [ContinuousSpec(smoking_continuous), CategoricalSpec(smoking_categorical)],
-        3: [ContinuousSpec(hba1c), ContinuousSpec(chronic_lung_disease)],
+        3: [ContinuousSpec(hba1c), CategoricalSpec(chronic_lung_disease)],
         4: [
             BooleanSpec(f0_disorders),
             BooleanSpec(f1_disorders),
@@ -206,7 +206,9 @@ if __name__ == "__main__":
     }
 
     layer_spec_pairs = [
-        LayerSpecPair(layer, spec) for layer, spec_list in feature_layers.items() for spec in spec_list
+        LayerSpecPair(layer, spec)
+        for layer, spec_list in feature_layers.items()
+        for spec in spec_list
     ]
 
     # Run in parallel for faster loading
