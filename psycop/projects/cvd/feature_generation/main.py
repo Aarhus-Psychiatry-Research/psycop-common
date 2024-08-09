@@ -23,6 +23,7 @@ from psycop.common.feature_generation.application_modules.generate_feature_set i
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
+    angina,
     atrial_fibrillation,
     chronic_kidney_failure,
     chronic_lung_disease,
@@ -36,7 +37,6 @@ from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     f7_disorders,
     f8_disorders,
     f9_disorders,
-    pectoral_angina,
     type_1_diabetes,
     type_2_diabetes,
 )
@@ -201,7 +201,7 @@ if __name__ == "__main__":
         7: [
             ContinuousSpec(total_cholesterol),
             BooleanSpec(chronic_kidney_failure),
-            BooleanSpec(pectoral_angina),
+            BooleanSpec(angina),
         ],
     }
 
