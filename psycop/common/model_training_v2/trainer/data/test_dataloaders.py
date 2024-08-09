@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from logging.config import dictConfig
 from pathlib import Path
 
 import polars as pl

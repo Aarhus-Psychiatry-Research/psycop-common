@@ -1,5 +1,3 @@
-from collections.abc import Sequence
-
 import polars as pl
 
 from psycop.projects.cvd.feature_generation.cohort_definition.outcome_specification.procedure_codes import (

@@ -16,7 +16,7 @@ pre-commit:
   commands:
     format:
       glob: "*.{py}"
-      run: ruff format --fix-only . # Do not fail on pre-commit
+      run: ruff format . # Do not fail on pre-commit
       stage_fixed: true
     lint:
       glob: "*.{py}"

@@ -5,7 +5,6 @@ from typing import Literal, Optional
 import pandas as pd
 import polars as pl
 import shap
-from joblib import Memory
 from sklearn.pipeline import Pipeline
 
 from psycop.common.global_utils.cache import shared_cache

@@ -1,4 +1,3 @@
-import pandas as pd
 import polars as pl
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper

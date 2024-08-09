@@ -1,8 +1,6 @@
 """Table with models as rows and time from first positive to outcome at different
 positive predicted rates as columns, stratified by BP and SCZ"""
 
-from typing import Literal
-
 from psycop.projects.scz_bp.evaluation.configs import SCZ_BP_EVAL_OUTPUT_DIR
 from psycop.projects.scz_bp.evaluation.figure2.first_positive_prediction_to_outcome_by_ppr import (
     scz_bp_time_from_first_positive_prediction_to_outcome_table,

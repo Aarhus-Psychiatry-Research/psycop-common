@@ -7,8 +7,7 @@ import polars as pl
 
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
-    RegionalFilter,
-    _get_regional_split_df,  # type: ignore
+    RegionalFilter,  # type: ignore
 )
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_eligible_config import (
     N_DAYS_WASHIN,

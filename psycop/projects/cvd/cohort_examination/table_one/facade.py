@@ -1,18 +1,11 @@
-from collections.abc import Sequence
 from pathlib import Path
-
-import polars as pl
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
     MlflowClientWrapper,
     PsycopMlflowRun,
 )
 from psycop.projects.cvd.cohort_examination.table_one.model import table_one_model
-from psycop.projects.cvd.cohort_examination.table_one.view import (
-    ColumnOverride,
-    RowCategory,
-    cvd_table_one,
-)
+from psycop.projects.cvd.cohort_examination.table_one.view import cvd_table_one
 
 
 def table_one_facade(
@@ -25,4 +18,5 @@ def table_one_facade(
 
 
 if __name__ == "__main__":
+    fkdoapfkasp
     table_one_facade(Path(), MlflowClientWrapper().get_run("CVD", "CVD 1, base, XGB"))

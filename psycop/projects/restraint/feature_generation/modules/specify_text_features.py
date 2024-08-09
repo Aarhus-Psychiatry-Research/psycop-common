@@ -18,7 +18,6 @@ from timeseriesflattener import (
 from timeseriesflattener.aggregators import HasValuesAggregator, MeanAggregator
 
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
-from psycop.common.feature_generation.loaders.raw import sql_load
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
 from psycop.common.global_utils.paths import TEXT_EMBEDDINGS_DIR
 from psycop.projects.restraint.cohort.restraint_cohort_definer import RestraintCohortDefiner

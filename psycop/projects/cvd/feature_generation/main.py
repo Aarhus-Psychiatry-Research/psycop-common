@@ -1,20 +1,16 @@
 """Main feature generation."""
 
 import datetime
-import functools
 import logging
 import multiprocessing
-import multiprocessing.pool
-from collections.abc import Mapping, Sequence
+from collections.abc import Sequence
 from dataclasses import dataclass
-from multiprocessing import Pool
-from typing import Any, Callable
+from typing import Callable
 
 import numpy as np
 import pandas as pd
 import polars as pl
 import timeseriesflattener as ts
-from timeseriesflattener.v1.aggregation_fns import mean
 from tqdm import tqdm
 
 from psycop.common.feature_generation.application_modules.generate_feature_set import (

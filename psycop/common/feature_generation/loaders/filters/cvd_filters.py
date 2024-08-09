@@ -2,7 +2,6 @@ import pandas as pd
 
 from psycop.common.feature_generation.loaders.filters.diabetes_filters import (
     keep_rows_where_col_name_matches_pattern,
-    remove_rows_where_col_name_matches_pattern,
 )
 
 

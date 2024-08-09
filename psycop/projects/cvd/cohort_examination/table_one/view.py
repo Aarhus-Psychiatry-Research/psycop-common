@@ -2,7 +2,7 @@ import enum
 import re
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Literal, Optional, Union
+from typing import Optional, Union
 
 import pandas as pd
 import polars as pl
