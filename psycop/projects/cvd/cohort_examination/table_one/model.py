@@ -50,7 +50,6 @@ def _train_test_column(flattened_data: pl.DataFrame) -> pl.DataFrame:
     return flattened_combined
 
 
-@shared_cache().cache
 def _preprocessed_data(data_path: str, pipeline: BaselinePreprocessingPipeline) -> pl.DataFrame:
     data = pl.scan_parquet(data_path)
     preprocessed = pipeline.apply(data)
