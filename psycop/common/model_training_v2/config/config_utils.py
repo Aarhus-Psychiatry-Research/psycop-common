@@ -76,7 +76,7 @@ class PsycopConfig(confection.Config):
         return self
 
     def add(self, location: str, value: Any) -> "PsycopConfig":
-        """Add a value to the config.
+        """Add a value to the config. Can add values multiple layers deep.
 
         Args:
             location: The location of the value to add. E.g. "trainer.training_data.paths.0"
