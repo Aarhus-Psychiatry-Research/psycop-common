@@ -11,10 +11,10 @@ from psycop.projects.cvd.model_training.populate_cvd_registry import populate_wi
 def train_cvd_layers(cfg: PsycopConfig):
     for layer in range(1, 5):
         layer_cfg = copy.deepcopy(cfg)
-        layer_cfg.mutate("logger.*.mlflow.run_name", f"CVD layer {layer}, base")
+        layer_cfg.mut("logger.*.mlflow.run_name", f"CVD layer {layer}, base")
 
         layers = [str(i) for i in range(1, layer + 1)]
-        layer_cfg.mutate(
+        layer_cfg.mut(
             "trainer.preprocessing_pipeline.*",
             {"layer_selector": {"keep_matching": f".+_layer_({'|'.join(layers)}).+"}},
         )
@@ -27,7 +27,7 @@ def train_cvd_layers(cfg: PsycopConfig):
             layer_cfg.add(
                 "trainer.preprocessing_pipeline.*.aggregation_selector.keep_matching", aggs
             )
-            layer_cfg.mutate("logger.*.mlflow.run_name", f"CVD layer {layer}, (mean, min, mx)")
+            layer_cfg.mut("logger.*.mlflow.run_name", f"CVD layer {layer}, (mean, min, mx)")
 
             logging.info(f"Training model with {aggs}")
             train_baseline_model_from_cfg(cfg=layer_cfg)
