@@ -60,8 +60,8 @@ class PsycopConfig(confection.Config):
 
         return current
 
-    def mutate(self, location: str, value: Any) -> "PsycopConfig":
-        """Set a value in the config.
+    def mut(self, location: str, value: Any) -> "PsycopConfig":
+        """Mutate a value in the config. Errors if the value does not exist, ensuring no silent failures.
 
         Args:
             location: The location of the value to set. E.g. "trainer.training_data.paths.0"
@@ -101,8 +101,8 @@ class PsycopConfig(confection.Config):
 
         return self
 
-    def remove(self, location: str) -> "PsycopConfig":
-        """Remove a value from the config.
+    def rem(self, location: str) -> "PsycopConfig":
+        """Remove a value from the config. Errors if the value does not exist, ensuring no silent failures.
 
         Args:
             location: The location of the value to remove. E.g. "trainer.training_data.paths.0"

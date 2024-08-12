@@ -9,7 +9,7 @@ from psycop.projects.cvd.model_training.populate_cvd_registry import populate_wi
 
 
 def logistic_regression_hyperparam(cfg: PsycopConfig):
-    cfg.mutate(
+    cfg.mut(
         "trainer.task.task_pipe.sklearn_pipe.*.model",
         {
             "@estimator_steps_suggesters": "logistic_regression_suggester",
@@ -23,15 +23,15 @@ def logistic_regression_hyperparam(cfg: PsycopConfig):
         ("scaler", {"@estimator_steps": "standard_scaler"}),
         *cfg.retrieve("trainer.task.task_pipe.sklearn_pipe.*").items(),
     ]
-    cfg.mutate("trainer.task.task_pipe.sklearn_pipe.*", dict(pipe_items))
+    cfg.mut("trainer.task.task_pipe.sklearn_pipe.*", dict(pipe_items))
 
     # Set run name
     for i in reversed([1, 2, 3, 4]):
-        cfg.mutate("logger.*.mlflow.experiment_name", f"CVD, h, l-{i}, logR")
+        cfg.mut("logger.*.mlflow.experiment_name", f"CVD, h, l-{i}, logR")
 
         # Filter by layers
         layer_regex = "|".join([str(i) for i in range(1, i + 1)])
-        cfg.mutate(
+        cfg.mut(
             "trainer.preprocessing_pipeline.*.layer_selector.keep_matching",
             f".+_layer_({layer_regex}).+",
         )

@@ -10,21 +10,19 @@ def test_set(cfg: PsycopConfig):
     outcome_col_name = cfg.retrieve("trainer.outcome_col_name")
     preprocessing_pipeline = cfg.retrieve("trainer.preprocessing_pipeline")
 
-    # Set run name
-    cfg.mutate("logger.*.mlflow.experiment_name", "CVD, test-set")
-
-    # Clear unused keys from base config
+    # Setup for test set
     cfg = (
-        cfg.mutate("trainer.@trainers", "split_trainer_separate_preprocessing")
-        .remove("trainer.outcome_col_name")  # Split for train and test
-        .remove("trainer.preprocessing_pipeline")  # Split for train and test)
+        cfg.mut("logger.*.mlflow.experiment_name", "CVD, test-set")
+        .mut("trainer.@trainers", "split_trainer_separate_preprocessing")
+        .rem("trainer.outcome_col_name")
+        .rem("trainer.preprocessing_pipeline")
     )
 
     # Handle training set setup
     cfg = (
         cfg.add("trainer.training_outcome_col_name", outcome_col_name)
         .add("trainer.training_preprocessing_pipeline", preprocessing_pipeline)
-        .mutate(
+        .mut(
             "trainer.training_preprocessing_pipeline.*.split_filter.splits_to_keep",
             ["train", "val"],
         )
@@ -35,9 +33,9 @@ def test_set(cfg: PsycopConfig):
         cfg.add(  # Handle validation dataset
             "trainer.validation_data", cfg.retrieve("trainer.training_data")
         )
-        .mutate("trainer.validation_outcome_col_name", outcome_col_name)
+        .mut("trainer.validation_outcome_col_name", outcome_col_name)
         .add("trainer.validation_preprocessing_pipeline", preprocessing_pipeline)
-        .mutate("trainer.validation_preprocessing_pipeline.*.split_filter.splits_to_keep", ["test"])
+        .mut("trainer.validation_preprocessing_pipeline.*.split_filter.splits_to_keep", ["test"])
     )
 
     train_baseline_model_from_cfg(cfg)
