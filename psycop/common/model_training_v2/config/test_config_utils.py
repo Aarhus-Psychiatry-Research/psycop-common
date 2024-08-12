@@ -37,3 +37,19 @@ def test_remove():
     cfg.remove("a.b.c")
 
     assert cfg["a"] == {"b": {}}
+
+
+def test_remove_errors_if_not_present():
+    cfg = PsycopConfig({"a": {"b": {"c": 1}}})
+
+    with pytest.raises(KeyError, match=".*d.*"):
+        cfg.remove("a.b.d")
+
+
+def test_add_multilayer():
+    """Add a value multiple layers deep."""
+    cfg = PsycopConfig({"a": {}})
+
+    cfg.add("a.b.d", 2)
+
+    assert cfg["a"]["b"]["d"] == 2

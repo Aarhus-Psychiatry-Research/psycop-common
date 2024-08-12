@@ -60,7 +60,7 @@ class PsycopConfig(confection.Config):
 
         return current
 
-    def mutate(self, location: str, value: Any) -> None:
+    def mutate(self, location: str, value: Any) -> "PsycopConfig":
         """Set a value in the config.
 
         Args:
@@ -73,8 +73,9 @@ class PsycopConfig(confection.Config):
         # Set the value at the location
         *path, last = location.split(".")
         reduce(operator.getitem, path, self)[last] = value
+        return self
 
-    def add(self, location: str, value: Any) -> None:
+    def add(self, location: str, value: Any) -> "PsycopConfig":
         """Add a value to the config.
 
         Args:
@@ -83,10 +84,24 @@ class PsycopConfig(confection.Config):
         """
         *path, last = location.split(".")
 
-        # Add the value at the location
-        reduce(operator.getitem, path, self)[last].append(value)
+        # Go through each layer. If it does not exist, create it as an empty dict.
+        cur = self
+        for layer in path:
+            try:
+                cur = cur[layer]
+            except KeyError:
+                cur[layer] = {}
+                cur = cur[layer]
 
-    def remove(self, location: str) -> None:
+        # Add the value at the location
+        try:
+            cur[last] = value
+        except KeyError as e:
+            raise ValueError(f"At {location}, unable to add value.") from e
+
+        return self
+
+    def remove(self, location: str) -> "PsycopConfig":
         """Remove a value from the config.
 
         Args:
@@ -96,6 +111,7 @@ class PsycopConfig(confection.Config):
 
         # Remove the value at the location
         reduce(operator.getitem, path, self)[second_to_last].pop(last)
+        return self
 
     def from_disk(
         self,
