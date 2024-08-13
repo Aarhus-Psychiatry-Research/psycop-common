@@ -1,10 +1,8 @@
 import pathlib
 from collections.abc import Sequence
-from typing import Any, Callable
 
 import polars as pl
 
-import psycop as ps
 from psycop.common.cohort_definition import FilteredPredictionTimeBundle, StepDelta
 from psycop.common.global_utils.cache import shared_cache
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
@@ -19,13 +17,12 @@ from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     PreprocessingPipeline,
 )
 from psycop.projects.cvd.feature_generation.cohort_definition.cvd_cohort_definition import (
-    CVDCohortDefiner,
     cvd_pred_filtering,
 )
 from psycop.projects.cvd.model_training.populate_cvd_registry import populate_with_cvd_registry
 
 
-@shared_cache.cache
+@shared_cache().cache
 def _apply_preprocessing_pipeline(
     pre_steps: Sequence[StepDelta] | None,
     flattened_data: pl.LazyFrame,

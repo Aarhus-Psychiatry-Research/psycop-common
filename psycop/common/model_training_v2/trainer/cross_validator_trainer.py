@@ -1,4 +1,3 @@
-from collections.abc import Iterator
 from dataclasses import dataclass
 from typing import Any
 
@@ -16,7 +15,7 @@ from psycop.common.model_training_v2.trainer.task.base_metric import BaselineMet
 from psycop.common.model_training_v2.trainer.task.base_task import BaselineTask
 
 
-@shared_cache.cache()
+@shared_cache().cache()
 def cached_folds(
     n_splits: int,
     X: pd.DataFrame,

@@ -4,10 +4,10 @@ from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 
 def train_with_score2(cfg: PsycopConfig):
     # Set run name
-    cfg.mutate("logger.*.mlflow.run_name", "CVD, logistic regression, SCORE2")
+    cfg.mut("logger.*.mlflow.run_name", "CVD, logistic regression, SCORE2")
 
     # Switch to logistic regression
-    cfg.mutate(
+    cfg.mut(
         "trainer.task.task_pipe.sklearn_pipe.*",
         {
             "imputer": {"@estimator_steps": "simple_imputation", "strategy": "mean"},
@@ -26,7 +26,7 @@ def train_with_score2(cfg: PsycopConfig):
         "hdl",
         "total_cholesterol",
     ]
-    cfg.mutate(
+    cfg.mut(
         "trainer.preprocessing_pipeline.*",
         {"layer_selector": {"keep_matching": f".*({'|'.join(features_to_keep)}).*"}},
     )

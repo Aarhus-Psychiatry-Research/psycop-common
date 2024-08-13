@@ -1,7 +1,5 @@
-from collections.abc import Sequence
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 import plotnine as pn
 import polars as pl
@@ -9,7 +7,6 @@ import polars as pl
 from psycop.common.feature_generation.loaders.raw import sql_load
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
-    get_sensitivity_by_timedelta_df,
     get_time_from_first_positive_to_diagnosis_df,
 )
 from psycop.common.model_training.training_output.dataclasses import (

@@ -1,7 +1,6 @@
 import pandas as pd
 import plotnine as pn
 
-from psycop.projects.scz_bp.evaluation.configs import Colors
 from psycop.projects.t2d.paper_outputs.config import COLORS, FONT_SIZES, THEME
 
 

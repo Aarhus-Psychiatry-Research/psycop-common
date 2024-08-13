@@ -21,17 +21,17 @@ from psycop.projects.cvd.feature_generation.cohort_definition.outcome_specificat
 )
 
 
-@shared_cache.cache()
+@shared_cache().cache()
 def cvd_pred_filtering() -> FilteredPredictionTimeBundle:
     return CVDCohortDefiner().get_filtered_prediction_times_bundle()
 
 
-@shared_cache.cache()
+@shared_cache().cache()
 def cvd_pred_times() -> PredictionTimeFrame:
     return cvd_pred_filtering().prediction_times
 
 
-@shared_cache.cache()
+@shared_cache().cache()
 def cvd_outcome_timestamps() -> OutcomeTimestampFrame:
     return CVDCohortDefiner().get_outcome_timestamps()
 

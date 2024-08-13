@@ -1,14 +1,11 @@
-import logging
 import re
 from collections.abc import Sequence
-from os import write
 from pathlib import Path
 from typing import Protocol
 
-import plotnine as pn
 import polars as pl
 
-from psycop.common.cohort_definition import OutcomeTimestampFrame, PredictionTimeFrame
+from psycop.common.cohort_definition import OutcomeTimestampFrame
 from psycop.common.feature_generation.data_checks.flattened.feature_describer_tsflattener_v2 import (
     generate_feature_description_df,
 )
@@ -27,8 +24,6 @@ from psycop.common.model_evaluation.markdown.md_objects import (
 )
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema
-from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
-from psycop.common.model_training_v2.trainer.preprocessing.pipeline import PreprocessingPipeline
 from psycop.projects.cvd.cohort_examination.filtering_flowchart import filtering_flowchart_facade
 from psycop.projects.cvd.cohort_examination.incidence_by_time.facade import incidence_by_time_facade
 from psycop.projects.cvd.cohort_examination.table_one.facade import table_one_facade

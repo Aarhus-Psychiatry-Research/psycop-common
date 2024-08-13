@@ -8,8 +8,6 @@ from typing import Any, Callable
 
 import mlflow
 import polars as pl
-import sklearn
-from confection import Config
 from mlflow.entities import Run
 from mlflow.entities.run_data import RunData
 from mlflow.entities.run_info import RunInfo

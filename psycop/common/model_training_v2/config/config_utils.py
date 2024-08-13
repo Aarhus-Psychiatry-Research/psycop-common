@@ -60,8 +60,8 @@ class PsycopConfig(confection.Config):
 
         return current
 
-    def mutate(self, location: str, value: Any) -> None:
-        """Set a value in the config.
+    def mut(self, location: str, value: Any) -> "PsycopConfig":
+        """Mutate a value in the config. Errors if the value does not exist, ensuring no silent failures.
 
         Args:
             location: The location of the value to set. E.g. "trainer.training_data.paths.0"
@@ -73,9 +73,10 @@ class PsycopConfig(confection.Config):
         # Set the value at the location
         *path, last = location.split(".")
         reduce(operator.getitem, path, self)[last] = value
+        return self
 
-    def add(self, location: str, value: Any) -> None:
-        """Add a value to the config.
+    def add(self, location: str, value: Any) -> "PsycopConfig":
+        """Add a value to the config. Can add values multiple layers deep.
 
         Args:
             location: The location of the value to add. E.g. "trainer.training_data.paths.0"
@@ -83,11 +84,25 @@ class PsycopConfig(confection.Config):
         """
         *path, last = location.split(".")
 
-        # Add the value at the location
-        reduce(operator.getitem, path, self)[last].append(value)
+        # Go through each layer. If it does not exist, create it as an empty dict.
+        cur = self
+        for layer in path:
+            try:
+                cur = cur[layer]
+            except KeyError:
+                cur[layer] = {}
+                cur = cur[layer]
 
-    def remove(self, location: str) -> None:
-        """Remove a value from the config.
+        # Add the value at the location
+        try:
+            cur[last] = value
+        except KeyError as e:
+            raise ValueError(f"At {location}, unable to add value.") from e
+
+        return self
+
+    def rem(self, location: str) -> "PsycopConfig":
+        """Remove a value from the config. Errors if the value does not exist, ensuring no silent failures.
 
         Args:
             location: The location of the value to remove. E.g. "trainer.training_data.paths.0"
@@ -96,6 +111,7 @@ class PsycopConfig(confection.Config):
 
         # Remove the value at the location
         reduce(operator.getitem, path, self)[second_to_last].pop(last)
+        return self
 
     def from_disk(
         self,
