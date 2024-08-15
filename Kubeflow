@@ -22,5 +22,8 @@ RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r gpu-requirements
 COPY requirements.txt .
 RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r requirements.txt --no-compile
 
+# Ensure pyright is installed from npm
+RUN pyright --help
+
 ENV UV_SYSTEM_PYTHON=1
 COPY . /app
