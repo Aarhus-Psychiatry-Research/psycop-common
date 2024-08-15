@@ -1,4 +1,4 @@
-name: docker-publish
+name: kubeflow-publish
 on:
   push:
     tags:
@@ -12,7 +12,7 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
-    concurrency: docker-publish
+    concurrency: kubeflow-publish
     steps:
       - uses: actions/checkout@v4
 
