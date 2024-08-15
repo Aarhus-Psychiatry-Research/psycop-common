@@ -41,10 +41,6 @@ RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r gpu-requirements
 COPY requirements.txt .
 RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r requirements.txt --no-compile
 
-# Install lefthook (git hooks, e.g. pre-commit)
-RUN curl -1sLf 'https://dl.cloudsmith.io/public/evilmartians/lefthook/setup.deb.sh' | bash
-RUN apt install lefthook
-
 # Set the working directory to /app
 WORKDIR /app
 VOLUME psycop-common

@@ -1,7 +1,3 @@
-# Setup lefthook
-git init
-lefthook install
-
 # Disable Graphite pager
 gt user pager --disable
 
