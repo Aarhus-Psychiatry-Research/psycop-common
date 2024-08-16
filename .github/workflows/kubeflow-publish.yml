@@ -50,4 +50,4 @@ jobs:
           push: true
           platforms: linux/amd64
           file: Kubeflow
-          tags: aarhus-psychiatry-research/psycop-common-kubeflow:latest
+          tags: ghcr.io/aarhus-psychiatry-research/psycop-common-kubeflow:latest
