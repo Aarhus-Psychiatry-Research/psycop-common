@@ -3,6 +3,8 @@ USER root
 
 # Install system requirements
 RUN apt-get update
+RUN apt-get install build-essential -y
+RUN apt-get install gcc -y
 
 # Install Python packages
 ENV UV_SYSTEM_PYTHON=1
@@ -14,6 +16,7 @@ RUN pip install uv
 COPY gpu-requirements.txt .
 RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r gpu-requirements.txt --no-compile
 
+# Add build-essential for psutil
 COPY requirements.txt .
 RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r requirements.txt --no-compile
 

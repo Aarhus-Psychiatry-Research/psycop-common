@@ -46,8 +46,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          # Push only on main branch
-          push: ${{ github.ref == 'refs/heads/main' }}
+          # TODO: Push only on main branch, # ${{ github.ref == 'refs/heads/main' }}
+          push: true
           platforms: linux/amd64
           file: Kubeflow
           tags: ${{ steps.meta.outputs.tags }}
