@@ -48,4 +48,3 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | tee /etc/apt/truste
 
 # Switch back to root user
 USER $NB_USER
-COPY . /home/psycop-common/
