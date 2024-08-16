@@ -56,13 +56,13 @@ def check_any_item_in_list_has_str(list_of_str: list[Any], str_: str) -> bool:
     return any(str_ in item for item in list_of_str)
 
 
-@pytest.fixture()
+@pytest.fixture
 def synth_prediction_times() -> pd.DataFrame:
     """Load the prediction times."""
     return load_synth_prediction_times()
 
 
-@pytest.fixture()
+@pytest.fixture
 def synth_outcome() -> pd.DataFrame:
     """Load the synth outcome times."""
     return load_synth_outcome()
