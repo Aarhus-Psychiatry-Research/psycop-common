@@ -12,7 +12,7 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
-    concurrency: kubeflow-publish
+    # Re-enable: concurrency: kubeflow-publish
     steps:
       - uses: actions/checkout@v4
 
