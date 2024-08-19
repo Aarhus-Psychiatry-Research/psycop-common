@@ -3,8 +3,8 @@ USER root
 
 # Install system requirements
 RUN apt-get update
-RUN apt install build-essential -y
-RUN apt install unixodbc -y
+RUN apt-get install build-essential -y
+RUN apt-get install gcc -y
 
 # Install Python packages
 ENV UV_SYSTEM_PYTHON=1
@@ -12,22 +12,25 @@ RUN pip install uv
 
 # Mount a cache dir for faster repeated installs. Only mounts during build.
 # Do not compile the python packages, only compile them at runtime.
+# Heaviest requirements first, to preserve cache hits.
+COPY gpu-requirements.txt .
+RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r gpu-requirements.txt --no-compile
+
+# Add build-essential for psutil
+COPY requirements.txt .
+RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r requirements.txt --no-compile
+
 COPY test-requirements.txt .
 RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r test-requirements.txt --no-compile
 
 COPY dev-requirements.txt .
 RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r dev-requirements.txt --no-compile
 
-COPY gpu-requirements.txt .
-RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r gpu-requirements.txt --no-compile
-
-COPY requirements.txt .
-RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r requirements.txt --no-compile
-
 # Ensure pyright is installed from npm since npm is not accessible at runtime
 RUN pyright --help
 
 # Install SQL driver
+RUN apt install build-essential -y
 RUN \
     if ! [[ "18.04 20.04 22.04 23.04 24.04" == *"$(lsb_release -rs)"* ]]; then \
     echo "Ubuntu $(lsb_release -rs) is not currently supported."; \
@@ -43,5 +46,5 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | tee /etc/apt/truste
     && /bin/bash -c "source ~/.bashrc" \
     && apt-get install -y unixodbc-dev
 
+# Switch back to root user
 USER $NB_USER
-COPY . /workspaces/psycop-common/
