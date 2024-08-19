@@ -40,7 +40,7 @@ def sql_load(
         >>> sql = "SELECT * FROM [fct]." + view
         >>> df = sql_load(sql, chunksize = None)
     """
-    driver = "SQL Server"
+    driver = "ODBC Driver 18 for SQL Server"
     params = urllib.parse.quote(
         f"DRIVER={driver};SERVER={server};DATABASE={database};Trusted_Connection=yes"
     )
