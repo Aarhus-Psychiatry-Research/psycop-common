@@ -1,5 +1,4 @@
-from pathlib import Path
-
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
 from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
@@ -16,6 +15,7 @@ def test_set(cfg: PsycopConfig):
         .mut("trainer.@trainers", "split_trainer_separate_preprocessing")
         .rem("trainer.outcome_col_name")
         .rem("trainer.preprocessing_pipeline")
+        .rem("trainer.n_splits")
     )
 
     # Handle training set setup
@@ -33,7 +33,7 @@ def test_set(cfg: PsycopConfig):
         cfg.add(  # Handle validation dataset
             "trainer.validation_data", cfg.retrieve("trainer.training_data")
         )
-        .mut("trainer.validation_outcome_col_name", outcome_col_name)
+        .add("trainer.validation_outcome_col_name", outcome_col_name)
         .add("trainer.validation_preprocessing_pipeline", preprocessing_pipeline)
         .mut("trainer.validation_preprocessing_pipeline.*.split_filter.splits_to_keep", ["test"])
     )
@@ -45,4 +45,4 @@ if __name__ == "__main__":
     populate_baseline_registry()
     populate_with_cvd_registry()
 
-    test_set(PsycopConfig().from_disk(Path(__file__).parent / "cvd_baseline.cfg"))
+    test_set(MlflowClientWrapper().get_run("CVD, h, l-2, XGB", "classy-wren-652").get_config())
