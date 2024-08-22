@@ -24,8 +24,7 @@ class BaselineTrainer(ABC, SupportsLoggerMixin):
     task: BaselineTask
 
     @abstractmethod
-    def train(self) -> TrainingResult:
-        ...
+    def train(self) -> TrainingResult: ...
 
     def _log_sklearn_pipe(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

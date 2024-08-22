@@ -1,4 +1,5 @@
 """Full configuration schema."""
+
 from typing import Optional
 
 from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel

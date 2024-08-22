@@ -1,17 +1,28 @@
+import pathlib
+import pickle
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
+from tempfile import mkdtemp
+from typing import Any, Callable
 
 import mlflow
 import polars as pl
+import sklearn
 from confection import Config
 from mlflow.entities import Run
 from mlflow.entities.run_data import RunData
 from mlflow.entities.run_info import RunInfo
 from mlflow.entities.run_inputs import RunInputs
 from mlflow.tracking import MlflowClient
+from sklearn.pipeline import Pipeline
 
+from psycop.common.model_training_v2.config.config_utils import (
+    PsycopConfig,
+    resolve_and_fill_config,
+)
 from psycop.common.types.validated_frame import ValidatedFrame
+from psycop.common.types.validator_rules import ColumnExistsRule, ColumnTypeRule, ValidatorRule
 
 
 @dataclass(frozen=True)
@@ -23,6 +34,31 @@ class MlflowAllMetricsFrame(ValidatedFrame[pl.DataFrame]):
     value_col_name: str = "value"
 
     allow_extra_columns = False
+
+
+@dataclass(frozen=True)
+class EvalFrame(ValidatedFrame[pl.DataFrame]):
+    y_col_name: str = "y"
+    y_hat_prob_col_name: str = "y_hat_prob"
+    pred_time_uuid_col_name: str = "pred_time_uuid"
+
+    frame: pl.DataFrame
+
+    pred_time_uuid_col_rules: Sequence[ValidatorRule] = (
+        ColumnExistsRule(),
+        ColumnTypeRule(expected_type=pl.Utf8),
+    )
+    # pred_time_uuid: a string of the form "{citizen id}-%Y-%m-%d-%H-%M-%S", e.g. "98573-2021-01-01-00-00-00"
+
+    y_col_rules: Sequence[ValidatorRule] = (
+        ColumnExistsRule(),
+        ColumnTypeRule(expected_type=pl.Int64),
+    )
+
+    y_hat_prob_col_rules: Sequence[ValidatorRule] = (
+        ColumnExistsRule(),
+        ColumnTypeRule(expected_type=pl.Float64),
+    )
 
 
 class PsycopMlflowRun(Run):
@@ -42,9 +78,20 @@ class PsycopMlflowRun(Run):
     ) -> "PsycopMlflowRun":
         return cls(run_info=run._info, run_data=run._data, run_inputs=run._inputs, client=client)
 
-    def get_config(self) -> Config:
+    @property
+    def name(self) -> str:
+        return self._info._run_name  # type: ignore
+
+    def get_config(self) -> PsycopConfig:
         cfg_path = self.download_artifact(artifact_name="config.cfg", save_location=None)
-        return Config().from_disk(cfg_path)
+        return PsycopConfig().from_disk(cfg_path)
+
+    def sklearn_pipeline(self) -> Pipeline:
+        return pickle.load(self.download_artifact("sklearn_pipe.pkl").open("rb"))
+
+    def eval_frame(self) -> EvalFrame:
+        eval_df_path = self.download_artifact(artifact_name="eval_df.parquet", save_location=None)
+        return EvalFrame(frame=pl.read_parquet(eval_df_path), allow_extra_columns=False)
 
     def download_artifact(self, artifact_name: str, save_location: str | None = None) -> Path:
         """Download an artifact from a run. Returns the path to the downloaded artifact.
@@ -78,6 +125,17 @@ class MlflowClientWrapper:
 
         return MlflowAllMetricsFrame(frame=metrics_df, allow_extra_columns=False)
 
+    def get_run(self, experiment_name: str, run_name: str) -> PsycopMlflowRun:
+        runs = self._get_mlflow_runs_by_experiment(experiment_name=experiment_name)
+
+        matches = [run for run in runs if run.info.run_name == run_name]
+        if not matches:
+            raise ValueError(f"No run in experiment {experiment_name} matches {run_name}")
+        if len(matches) != 1:
+            raise ValueError(f"Multiple runs in experiment {experiment_name} matches {run_name}")
+
+        return matches[0]
+
     def get_best_run_from_experiment(
         self, experiment_name: str, metric: str, larger_is_better: bool = True
     ) -> PsycopMlflowRun:
@@ -95,7 +153,7 @@ class MlflowClientWrapper:
     def _get_mlflow_experiment_id_from_experiment_name(self, experiment_name: str) -> str:
         experiment = self.client.get_experiment_by_name(name=experiment_name)
         if experiment is None:
-            raise ValueError(f"{experiment_name} does not exist on MlFlow.")
+            raise ValueError(f"Experiment {experiment_name} does not exist on MlFlow.")
         return experiment.experiment_id
 
     def _get_mlflow_runs_by_experiment(self, experiment_name: str) -> Sequence[PsycopMlflowRun]:
@@ -116,3 +174,17 @@ if __name__ == "__main__":
         )
         .get_config()
     )
+
+
+def filled_cfg_from_run(
+    run: PsycopMlflowRun, populate_registry_fns: Sequence[Callable[[], None]]
+) -> dict[str, Any]:
+    cfg = run.get_config()
+    for populate_registry_fn in populate_registry_fns:
+        populate_registry_fn()
+
+    tmp_cfg = pathlib.Path(mkdtemp()) / "tmp.cfg"
+    cfg.to_disk(tmp_cfg)
+    filled = resolve_and_fill_config(tmp_cfg, fill_cfg_with_defaults=True)
+
+    return filled

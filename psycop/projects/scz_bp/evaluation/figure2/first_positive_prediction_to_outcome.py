@@ -1,3 +1,6 @@
+from collections.abc import Sequence
+from dataclasses import dataclass
+
 import pandas as pd
 import plotnine as pn
 
@@ -32,7 +35,7 @@ def scz_bp_first_pred_to_event(eval_ds: EvalDataset, ppr: float) -> pn.ggplot:
         # + pn.geom_histogram(binwidth=1, fill="orange") # noqa: ERA001
         + pn.geom_density()
         + pn.xlab("Years from first positive prediction\n to event")
-        + pn.scale_x_reverse(breaks=range(int(plot_df["years_from_pred_to_event"].max() + 1)))
+        # + pn.scale_x_reverse(breaks=range(int(plot_df["years_from_pred_to_event"].max() + 1))) # noqa: ERA001
         + pn.ylab("n")
         + pn.geom_vline(xintercept=median_years, linetype="dashed", size=1)
         + pn.geom_text(
@@ -44,13 +47,20 @@ def scz_bp_first_pred_to_event(eval_ds: EvalDataset, ppr: float) -> pn.ggplot:
     return p
 
 
-def scz_bp_first_pred_to_event_stratified(eval_ds: EvalDataset, ppr: float) -> pn.ggplot:
+@dataclass
+class PlotDfWithAnnotations:
+    df: pd.DataFrame
+    annotation_dict: dict[str, float]
+
+
+def scz_bp_first_pred_to_event_stratified(
+    eval_ds: EvalDataset, ppr: float
+) -> PlotDfWithAnnotations:
     outcome2timestamp = {
         "SCZ": eval_ds.custom_columns["time_of_scz_diagnosis"],  # type: ignore
         "BP": eval_ds.custom_columns["time_of_bp_diagnosis"],  # type: ignore
         #   "both": eval_ds.outcome_timestamps, # noqa: ERA001# noqa: ERA001
     }
-    outcome2color = {"BP": "#669BBC", "SCZ": "#A8C686"}
 
     dfs: list[pd.DataFrame] = []
     annotation_dict: dict[str, float] = {}
@@ -62,27 +72,45 @@ def scz_bp_first_pred_to_event_stratified(eval_ds: EvalDataset, ppr: float) -> p
                 "id": eval_ds.ids.copy(),
                 "pred_timestamps": eval_ds.pred_timestamps.copy(),
                 "outcome_timestamps": timestamps.copy(),  # type: ignore
+                "outcome": outcome,
             }
         )
         plot_df = get_time_from_first_positive_to_diagnosis_df(input_df=df)
         median_years = plot_df["years_from_pred_to_event"].median()
         annotation_dict[outcome] = median_years
-        plot_df["outcome"] = outcome + f" median: {median_years:.1f}"
+        plot_df["outcome_annotated"] = outcome + f" median: {median_years:.1f}"
         dfs.append(plot_df)
 
     plot_df = pd.concat(dfs)
+    return PlotDfWithAnnotations(df=plot_df, annotation_dict=annotation_dict)
+
+
+def plot_scz_bp_first_pred_to_event_stratified(
+    eval_ds: EvalDataset, ppr: float, groups_to_plot: Sequence[str] = ["BP", "SCZ"]
+) -> pn.ggplot:
+    df_with_annotations = scz_bp_first_pred_to_event_stratified(eval_ds=eval_ds, ppr=ppr)
+    plot_df = df_with_annotations.df
+    annotation_dict = df_with_annotations.annotation_dict
+
+    # filter to only include the groups of interest
+    plot_df = plot_df[plot_df["outcome"].isin(groups_to_plot)]
+    annotation_dict = {group: annotation_dict[group] for group in groups_to_plot}
+
+    outcome2color: dict[str, str] = {"BP": "#669BBC", "SCZ": "#A8C686"}
+    outcome2color = {group: outcome2color[group] for group in groups_to_plot}
 
     p = (
-        pn.ggplot(plot_df, pn.aes(x="years_from_pred_to_event", fill="outcome"))  # type: ignore
+        pn.ggplot(plot_df, pn.aes(x="years_from_pred_to_event", fill="outcome_annotated"))  # type: ignore
         # + pn.geom_histogram(binwidth=1, alpha=0.7) # noqa: ERA001
         + pn.geom_density(alpha=0.8)
         + pn.xlab("Years from first positive prediction to event")
-        + pn.scale_x_reverse(breaks=range(int(plot_df["years_from_pred_to_event"].max() + 1)))
+        # + pn.scale_x_reverse(breaks=range(int(plot_df["years_from_pred_to_event"].max() + 1))) # noqa: ERA001
+        + pn.scale_x_continuous(breaks=range(int(plot_df["years_from_pred_to_event"].max() + 1)))
         + pn.scale_fill_manual(values=list(outcome2color.values()))
         + pn.ylab("Density")
         + pn.theme_minimal()
         + pn.theme(
-            legend_position=(0.35, 0.80),
+            legend_position=(0.7, 0.80),
             legend_direction="vertical",
             legend_title=pn.element_blank(),
             legend_text=pn.element_text(size=11),
@@ -101,9 +129,13 @@ def scz_bp_first_pred_to_event_stratified(eval_ds: EvalDataset, ppr: float) -> p
 
 
 if __name__ == "__main__":
-    best_experiment = "sczbp/structured_text"
+    best_experiment = "sczbp/test_tfidf_1000"
     best_pos_rate = 0.04
-    eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=best_experiment)
+    eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(
+        experiment_name=best_experiment, model_type="joint"
+    )
 
     # p = scz_bp_first_pred_to_event(eval_ds=eval_ds, ppr=best_pos_rate) # noqa: ERA001
-    p = scz_bp_first_pred_to_event_stratified(eval_ds=eval_ds, ppr=best_pos_rate)
+    p = plot_scz_bp_first_pred_to_event_stratified(
+        eval_ds=eval_ds, ppr=best_pos_rate, groups_to_plot=["BP"]
+    )

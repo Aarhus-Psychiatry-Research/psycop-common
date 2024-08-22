@@ -1,4 +1,5 @@
 """Recommended logger to use."""
+
 import logging
 from datetime import datetime
 

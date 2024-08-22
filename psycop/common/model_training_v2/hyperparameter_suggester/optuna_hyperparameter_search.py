@@ -3,7 +3,7 @@ import re
 import traceback
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Callable, Literal
 
 import joblib
 import optuna
@@ -19,6 +19,7 @@ from psycop.common.model_training_v2.hyperparameter_suggester.hyperparameter_sug
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_suggester import (
     Suggester,
 )
+from psycop.common.model_training_v2.trainer.task.base_metric import CalculatedMetric
 
 from ..config.populate_registry import populate_baseline_registry
 
@@ -66,23 +67,30 @@ class OptunaHyperParameterOptimization:
                 ):
                     cfg_copy[key] = BaselineRegistry.resolve({key: value})[key]
                 else:
-                    cfg_copy[
-                        key
-                    ] = OptunaHyperParameterOptimization()._resolve_only_registries_matching_regex(
-                        cfg=value, regex_string=regex_string
+                    cfg_copy[key] = (
+                        OptunaHyperParameterOptimization()._resolve_only_registries_matching_regex(cfg=value, regex_string=regex_string)
                     )
         return cfg_copy
 
     @staticmethod
-    def _optuna_objective(trial: Trial, cfg_with_resolved_suggesters: dict[str, Any]) -> float:
+    def _optuna_objective(
+        trial: Trial,
+        cfg_with_resolved_suggesters: dict[str, Any],
+        custom_populate_registry_fn: None | Callable[[], None],
+    ) -> float:
         concrete_config = suggest_hyperparams_from_cfg(
             base_cfg=cfg_with_resolved_suggesters, trial=trial
         )
 
         populate_baseline_registry()
-        concrete_config_schema = BaselineSchema(**BaselineRegistry.resolve(concrete_config))
+        if custom_populate_registry_fn:
+            custom_populate_registry_fn()
 
+        concrete_config_schema = BaselineSchema(**BaselineRegistry.resolve(concrete_config))
         concrete_config_schema.logger.log_config(Config(concrete_config))
+        concrete_config_schema.logger.log_metric(
+            CalculatedMetric(name="trial_number", value=trial.number)
+        )
 
         try:
             run_result = concrete_config_schema.trainer.train()
@@ -100,6 +108,7 @@ class OptunaHyperParameterOptimization:
         n_trials: int,
         catch: tuple[type[Exception]],
         cfg_with_resolved_suggesters: dict[str, Any],
+        custom_populate_registry_fn: None | Callable[[], None],
     ) -> Study:
         study = optuna.create_study(
             direction=direction,
@@ -110,7 +119,9 @@ class OptunaHyperParameterOptimization:
 
         study.optimize(
             lambda trial: OptunaHyperParameterOptimization()._optuna_objective(
-                trial=trial, cfg_with_resolved_suggesters=cfg_with_resolved_suggesters
+                trial=trial,
+                cfg_with_resolved_suggesters=cfg_with_resolved_suggesters,
+                custom_populate_registry_fn=custom_populate_registry_fn,
             ),
             n_trials=n_trials,
             catch=catch,
@@ -118,15 +129,15 @@ class OptunaHyperParameterOptimization:
         return study
 
     @staticmethod
-    def from_file(
-        cfg_file: Path,
+    def from_cfg(
+        cfg: Config,
         n_trials: int,
         n_jobs: int,
         study_name: str,
         direction: Literal["maximize", "minimize"],
         catch: tuple[type[Exception]],
+        custom_populate_registry_fn: None | Callable[[], None],
     ) -> Sequence[Study]:
-        cfg = Config().from_disk(cfg_file)
         cfg_with_resolved_suggesters = (
             OptunaHyperParameterOptimization()._resolve_only_registries_matching_regex(
                 cfg=cfg, regex_string="^@.*suggesters$"
@@ -151,7 +162,31 @@ class OptunaHyperParameterOptimization:
                 study_name=study_name,
                 catch=catch,
                 cfg_with_resolved_suggesters=cfg_with_resolved_suggesters,
+                custom_populate_registry_fn=custom_populate_registry_fn,
             )
             for _ in range(n_jobs)
         )
+
         return studies  # type: ignore
+
+    @staticmethod
+    def from_file(
+        cfg_file: Path,
+        n_trials: int,
+        n_jobs: int,
+        study_name: str,
+        direction: Literal["maximize", "minimize"],
+        catch: tuple[type[Exception]],
+        custom_populate_registry_fn: None | Callable[[], None] = None,
+    ) -> Sequence[Study]:
+        cfg = Config().from_disk(cfg_file)
+        studies = OptunaHyperParameterOptimization.from_cfg(
+            n_trials=n_trials,
+            n_jobs=n_jobs,
+            study_name=study_name,
+            direction=direction,
+            catch=catch,
+            cfg=cfg,
+            custom_populate_registry_fn=custom_populate_registry_fn,
+        )
+        return studies

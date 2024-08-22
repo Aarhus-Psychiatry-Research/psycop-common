@@ -2,7 +2,6 @@
 The main config for sequence models.
 """
 
-
 from pathlib import Path
 
 from confection import Config

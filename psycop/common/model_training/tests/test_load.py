@@ -1,6 +1,5 @@
 """Testing of loader functions."""
 
-
 import pandas as pd
 import pytest
 

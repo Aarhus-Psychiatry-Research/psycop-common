@@ -4,7 +4,7 @@ from tqdm import tqdm
 
 from psycop.common.cohort_definition import (
     CohortDefiner,
-    FilteredPredictionTimeBundle,
+    PredictionTimeFrame,
     filter_prediction_times,
 )
 from psycop.common.feature_generation.loaders.raw.load_visits import (
@@ -34,7 +34,7 @@ def generate_timestamps(
 
 class BipolarCohortDefiner(CohortDefiner):
     @staticmethod
-    def get_bipolar_cohort(interval_days: int = 30) -> FilteredPredictionTimeBundle:
+    def get_bipolar_prediction_times(interval_days: int = 30) -> PredictionTimeFrame:
         bipolar_diagnosis_timestamps = pl.from_pandas(get_first_bipolar_diagnosis())
 
         filtered_bipolar_diagnosis_timestamps = filter_prediction_times(
@@ -87,12 +87,12 @@ class BipolarCohortDefiner(CohortDefiner):
                 [(row["dw_ek_borger"], timestamp) for timestamp in timestamps]
             )
 
-            result_df = pd.DataFrame(timestamps_per_patient, columns=["patient_id", "timestamp"])
+            result_df = pd.DataFrame(timestamps_per_patient, columns=["dw_ek_borger", "timestamp"])
 
-        filtered_bipolar_diagnosis_timestamps.prediction_times.frame = result_df  # type: ignore
+        prediction_times = PredictionTimeFrame(frame=pl.DataFrame(result_df))  # type: ignore
 
-        return filtered_bipolar_diagnosis_timestamps
+        return prediction_times
 
 
 if __name__ == "__main__":
-    df = BipolarCohortDefiner.get_bipolar_cohort()
+    df = BipolarCohortDefiner.get_bipolar_prediction_times()

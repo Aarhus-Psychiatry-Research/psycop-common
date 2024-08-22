@@ -20,7 +20,6 @@ B) Patients
 - N prediction times (outpatient contacts)
 """
 
-
 """Part B
 
 - get filtered IDs
@@ -36,12 +35,12 @@ from tableone import TableOne
 
 from psycop.common.feature_generation.loaders.raw.load_demographic import sex_female
 from psycop.common.feature_generation.loaders.raw.load_visits import admissions
-from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.model_evaluation.utils import bin_continuous_data
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
+from psycop.common.model_training_v2.loggers.dummy_logger import DummyLogger
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
-    _get_regional_split_df,  # type: ignore
+    RegionalFilter,  # type: ignore
 )
 from psycop.projects.scz_bp.feature_generation.outcome_specification.add_time_from_first_visit import (
     time_of_first_contact_to_psychiatry,
@@ -75,13 +74,19 @@ class SczBpTableOne:
         - Sex
         - Age
         - Psychiatric diagnoses 2 years prior to contact (all main ICD-10 F categories)
-        - Diagnosis of BP within 3 years from the contact
-        - Diagnosis of SCZ within 3 years from the contact
+        - Diagnosis of BP within 5 years from the contact
+        - Diagnosis of SCZ within 5 years from the contact
         - Number of admissions 2 years prior to the contact
         """
         row_specifications = [
             RowSpecification(
-                source_col_name="pred_sex_female_layer_1",
+                source_col_name="outc_first_scz_or_bp_within_0_to_1825_days_max_fallback_0",
+                readable_name="Positive prediction time",
+                categorical=True,
+                values_to_display=[1],
+            ),
+            RowSpecification(
+                source_col_name="meta_sex_female_fallback_0",
                 readable_name="Female",
                 categorical=True,
                 values_to_display=[1],
@@ -90,29 +95,29 @@ class SczBpTableOne:
                 source_col_name="age_grouped", readable_name="Age grouped", categorical=True
             ),
             RowSpecification(
-                source_col_name="pred_age_in_years", readable_name="Age", nonnormal=True
+                source_col_name="meta_age_years_fallback_nan", readable_name="Age", nonnormal=True
             ),
             RowSpecification(
-                source_col_name="meta_bp_within_3_years_within_1095_days_maximum_fallback_0_dichotomous",
-                readable_name="Incident BP within 3 years",
+                source_col_name="meta_bp_diagnosis_within_0_to_1825_days_max_fallback_0",
+                readable_name="Incident BP within 5 years",
                 categorical=True,
                 values_to_display=[1],
             ),
             RowSpecification(
-                source_col_name="meta_scz_within_3_years_within_1095_days_maximum_fallback_0_dichotomous",
-                readable_name="Incident SCZ within 3 years",
+                source_col_name="meta_scz_diagnosis_within_0_to_1825_days_max_fallback_0",
+                readable_name="Incident SCZ within 5 years",
                 categorical=True,
                 values_to_display=[1],
             ),
             RowSpecification(
-                source_col_name="pred_admissions_layer_2_within_730_days_count_fallback_0",
+                source_col_name="meta_n_admissions_within_0_to_730_days_count_fallback_0",
                 readable_name="N. admissions prior 2 years",
                 nonnormal=True,
             ),
             *self.get_psychiatric_diagnosis_row_specs(col_names=pred_times.columns),
         ]
 
-        age_bins = [18, *list(range(19, 90, 10))]
+        age_bins: list[int] = [15, 18, *list(range(20, 61, 10))]
 
         pd_pred_times = (
             SczBpTableOne.add_split(pred_times)
@@ -128,7 +133,7 @@ class SczBpTableOne:
         )
 
         pd_pred_times["age_grouped"] = pd.Series(
-            bin_continuous_data(pd_pred_times["pred_age_in_years"], bins=age_bins)[0]
+            bin_continuous_data(pd_pred_times["meta_age_years_fallback_nan"], bins=age_bins)[0]
         ).astype(str)
 
         return create_table(
@@ -138,9 +143,7 @@ class SczBpTableOne:
     @staticmethod
     def get_psychiatric_diagnosis_row_specs(col_names: list[str]) -> list[RowSpecification]:
         pattern = re.compile(r"pred_f\d_disorders")
-        columns = sorted(
-            [c for c in col_names if pattern.search(c) and "boolean" in c and "730" in c]
-        )
+        columns = sorted([c for c in col_names if pattern.search(c) and "730" in c])
 
         readable_col_names = []
 
@@ -164,6 +167,7 @@ class SczBpTableOne:
         return specs
 
     def make_section_B(self, pred_times: pl.DataFrame) -> pd.DataFrame:
+        """By patients"""
         df = pl.DataFrame(pred_times["dw_ek_borger"].unique())
 
         fns = [
@@ -175,10 +179,12 @@ class SczBpTableOne:
             SczBpTableOne.add_time_from_first_contact_to_scz_diagnosis,
             partial(SczBpTableOne.add_n_prediction_times, pred_times=pred_times),
             SczBpTableOne.add_n_admissions,
-            SczBpTableOne.add_split,
         ]
         for fn in fns:
             df = fn(df)
+
+        split_by_id = SczBpTableOne.get_split_by_id(pred_times=pred_times)
+        df = split_by_id.join(df, on="dw_ek_borger", how="left")
 
         df = df.select(pl.exclude("first_contact", "dw_ek_borger"))
         categorical = ["sex_female", "Incident BP", "Incident SCZ"]
@@ -199,24 +205,15 @@ class SczBpTableOne:
         ).tableone
 
     def get_filtered_prediction_times(self) -> pl.DataFrame:
-        # TODO: load from flattened df to get the actual filtered values
         data = BaselineRegistry.resolve({"data": self.cfg["trainer"]["training_data"]})[
             "data"
         ].load()
 
         preprocessing_pipeline = BaselineRegistry().resolve(
             {"pipe": self.cfg["trainer"]["preprocessing_pipeline"]}
-        )
-
-        preprocessed_all_splits: pl.DataFrame = pl.from_pandas(
-            preprocessing_pipeline["pipe"].apply(data)
-        )
-
-        # check if all_splits and preprocessed.. are differnet
-        all_splits = data.select(pl.col("^meta.*$"), "prediction_time_uuid").collect()
-        preprocessed_all_splits = preprocessed_all_splits.join(
-            all_splits, on="prediction_time_uuid", how="left"
-        )
+        )["pipe"]
+        preprocessing_pipeline._logger = DummyLogger()
+        preprocessed_all_splits: pl.DataFrame = pl.from_pandas(preprocessing_pipeline.apply(data))
 
         return preprocessed_all_splits
 
@@ -291,20 +288,50 @@ class SczBpTableOne:
         return df.join(admissions_pr_id, on="dw_ek_borger", how="left")
 
     @staticmethod
-    def add_split(df: pl.DataFrame) -> pl.DataFrame:
-        # CHANGE THIS
-        split_df = (
-            _get_regional_split_df()
+    def get_split_by_id(pred_times: pl.DataFrame) -> pl.DataFrame:
+        train_filter = RegionalFilter(splits_to_keep=["train", "val"])
+        test_filter = RegionalFilter(splits_to_keep=["test"])
+
+        train_data = (
+            train_filter.apply(pred_times.lazy())
+            .with_columns(pl.lit("train").alias("split"))
             .collect()
-            .with_columns(
-                pl.when(pl.col("region").is_in(["øst", "vest"]))
-                .then(pl.lit("Train"))
-                .otherwise(pl.lit("test"))
-                .alias("split")
-            )
-            .select("dw_ek_borger", "split")
         )
-        return df.join(split_df, on="dw_ek_borger", how="left")
+        test_data = (
+            test_filter.apply(pred_times.lazy())
+            .with_columns(pl.lit("test").alias("split"))
+            .collect()
+        )
+
+        df = pl.concat([train_data, test_data], how="vertical")
+        any_id_in_multiple_splits = (
+            df.group_by("dw_ek_borger")
+            .agg(pl.col("split").n_unique().alias("n_splits_per_id"))
+            .filter(pl.col("n_splits_per_id") > 1)
+        )
+        if not any_id_in_multiple_splits.is_empty():
+            raise ValueError("Some patients are in multiple splits.")
+
+        df = df.group_by("dw_ek_borger").agg(pl.col("split").first())
+        return df
+
+    @staticmethod
+    def add_split(pred_times: pl.DataFrame) -> pl.DataFrame:
+        train_filter = RegionalFilter(splits_to_keep=["train", "val"])
+        test_filter = RegionalFilter(splits_to_keep=["test"])
+
+        train_data = (
+            train_filter.apply(pred_times.lazy())
+            .with_columns(pl.lit("train").alias("split"))
+            .collect()
+        )
+        test_data = (
+            test_filter.apply(pred_times.lazy())
+            .with_columns(pl.lit("test").alias("split"))
+            .collect()
+        )
+
+        return pl.concat([train_data, test_data], how="vertical")
 
 
 def descriptive_stats_by_lookahead(cfg: Config) -> pl.DataFrame:
@@ -312,8 +339,6 @@ def descriptive_stats_by_lookahead(cfg: Config) -> pl.DataFrame:
 
     lookahead_distances = [365, 365 * 2, 365 * 3, 365 * 4, 365 * 5]
     cfg_copy = cfg.copy()
-    del cfg_copy["trainer"]["preprocessing_pipeline"]["*"]["outcome_selector"]
-    del cfg_copy["trainer"]["preprocessing_pipeline"]["*"]["column_prefix_count_expectation"]
 
     dfs = []
     for lookahead_distance in lookahead_distances:
@@ -323,9 +348,11 @@ def descriptive_stats_by_lookahead(cfg: Config) -> pl.DataFrame:
         preprocessing_pipeline = BaselineRegistry().resolve(
             {"pipe": cfg_copy["trainer"]["preprocessing_pipeline"]}
         )
+        preprocessing_pipeline = preprocessing_pipeline["pipe"]
+        preprocessing_pipeline._logger = DummyLogger()
         d = {}
 
-        preprocessed_data: pl.DataFrame = pl.from_pandas(preprocessing_pipeline["pipe"].apply(data))
+        preprocessed_data: pl.DataFrame = pl.from_pandas(preprocessing_pipeline.apply(data))
 
         positive_prediction_times = preprocessed_data.select(
             pl.col(f"^outc.*{lookahead_distance}.*$")
@@ -354,15 +381,19 @@ def descriptive_stats_by_lookahead(cfg: Config) -> pl.DataFrame:
 
 if __name__ == "__main__":
     populate_baseline_registry()
-    cfg_path = Path(__file__).parent.parent / "model_training" / "config" / "scz_bp_baseline.cfg"
-    save_dir = OVARTACI_SHARED_DIR / "scz_bp" / "dataset_description"
+    cfg_path = Path(__file__).parent / "eval_config.cfg"
+    save_dir = Path(__file__).parent / "tables"
     save_dir.mkdir(parents=True, exist_ok=True)
 
     cfg = Config().from_disk(cfg_path)
     resolved_cfg = BaselineRegistry().resolve(cfg)
 
-    descriptive_stats_by_lookahead(cfg=cfg)
+    # desc_stats = descriptive_stats_by_lookahead(cfg=cfg) # noqa: ERA001
 
-    # tables = SczBpTableOne(cfg=cfg).make_tables() # noqa: ERA001
-    # tables[0].to_csv(save_dir / "table_1_prediction_times.csv") # noqa: ERA001
-    # tables[1].to_csv(save_dir / "table_1_patients.csv") # noqa: ERA001
+    tables = SczBpTableOne(cfg=cfg).make_tables()  # noqa: ERA001
+    with (save_dir / "table_1_prediction_times.html").open("w") as f:
+        f.write(tables[0].to_html())
+    with (save_dir / "table_1_patients.html").open("w") as f:
+        f.write(tables[1].to_html())
+    tables[0].to_csv(save_dir / "table_1_prediction_times.csv", sep=";")  # noqa: ERA001
+    tables[1].to_csv(save_dir / "table_1_patients.csv", sep=";")  # noqa: ERA001

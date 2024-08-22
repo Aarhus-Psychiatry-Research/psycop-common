@@ -2,60 +2,62 @@ from pathlib import Path
 
 import pandas as pd
 
+from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.common.feature_generation.utils import write_df_to_file
 
 
 def process_df_from_disk():  # noqa: ANN201
-    raw_text_df = pd.read_parquet(
-        "E:/shared_resources/clozapine/text_outcome/raw_text_outcome_clozapine_v2.parquet"
-    )
+    view = "[raw_text_df_clozapine_outcome]"
+    sql = "SELECT * FROM [fct]." + view
+
+    raw_text_df = sql_load(sql)
 
     rows_no_text_on_matched_word = pd.read_parquet(
         "E:/shared_resources/clozapine/text_outcome/rows_no_text_on_matched_word_v1.parquet"
     )
 
     validated_text_outcome_clozapine = pd.read_parquet(
-        "E:/shared_resources/clozapine/text_outcome/validated_text_outcome_clozapine_v33.parquet"
+        "E:/shared_resources/clozapine/text_outcome/validated_text_outcome_clozapine_v157.parquet"
     )
 
     unsure_text_outcome_clozapine = pd.read_parquet(
-        "E:/shared_resources/clozapine/text_outcome/unsure_text_outcome_clozapine_v23.parquet"
+        "E:/shared_resources/clozapine/text_outcome/unsure_text_outcome_clozapine_v144.parquet"
     )
 
     no_text_outcome_df = pd.read_parquet(
-        "E:/shared_resources/clozapine/text_outcome/no_text_outcome_clozapine_v27.parquet"
+        "E:/shared_resources/clozapine/text_outcome/no_text_outcome_clozapine_v136.parquet"
     )
 
     # remove rows from already checked cpr/rows -
     #  Condition for 'rows_no_text_on_matched_word' - specific rows
     condition_no_text_matched_words = (
-        raw_text_df[["dw_ek_borger", "timestamp"]]
+        raw_text_df[["dw_ek_borger", "timestamp"]]  # type: ignore
         .isin(rows_no_text_on_matched_word[["dw_ek_borger", "timestamp"]].to_dict(orient="list"))
         .all(axis=1)
     )
 
     condition_no_text = (
-        raw_text_df[["dw_ek_borger", "timestamp"]]
+        raw_text_df[["dw_ek_borger", "timestamp"]]  # type: ignore
         .isin(no_text_outcome_df[["dw_ek_borger", "timestamp"]].to_dict(orient="list"))
         .all(axis=1)
     )
 
     # Condition for 'unsure_text_df' - specific rows
     condition_unsure = (
-        raw_text_df[["dw_ek_borger", "timestamp"]]
+        raw_text_df[["dw_ek_borger", "timestamp"]]  # type: ignore
         .isin(unsure_text_outcome_clozapine[["dw_ek_borger", "timestamp"]].to_dict(orient="list"))
         .all(axis=1)
     )
 
     # condition for "validated text outcome clozapine"- remove all rows for specific dw_ek_borger
     condition_validated_text = (
-        raw_text_df[["dw_ek_borger"]]
+        raw_text_df[["dw_ek_borger"]]  # type: ignore
         .isin(validated_text_outcome_clozapine[["dw_ek_borger"]].to_dict(orient="list"))
         .all(axis=1)
     )
 
     # Apply the conditions to filter rows in raw_text_df
-    raw_text_df = raw_text_df[
+    raw_text_df = raw_text_df[  # type: ignore
         ~condition_no_text_matched_words
         & ~condition_no_text
         & ~condition_unsure
@@ -131,7 +133,10 @@ def read_and_validate_text_for_clozapine_outcome(  # noqa: ANN201
                     "E:/shared_resources/clozapine/text_outcome/validated_text_outcome_clozapine.parquet"
                 )
                 new_file_path = get_next_version_file_path(file_path)
-                write_df_to_file(df=validated_text_outcome_clozapine, file_path=new_file_path)
+
+                columns_to_save = ["dw_ek_borger", "timestamp"]
+                df_to_save_val = validated_text_outcome_clozapine[columns_to_save]
+                write_df_to_file(df=df_to_save_val, file_path=new_file_path)
 
                 print("saved a new version of validated_text_outcome_clozapine to disk.")
 
@@ -146,7 +151,11 @@ def read_and_validate_text_for_clozapine_outcome(  # noqa: ANN201
                     "E:/shared_resources/clozapine/text_outcome/no_text_outcome_clozapine.parquet"
                 )
                 new_file_path = get_next_version_file_path(file_path)
-                write_df_to_file(df=no_text_outcome_df, file_path=new_file_path)
+
+                columns_to_save = ["dw_ek_borger", "timestamp"]
+                df_to_save_no_text = no_text_outcome_df[columns_to_save]
+                write_df_to_file(df=df_to_save_no_text, file_path=new_file_path)
+
                 print("saved a new version of no_text_outcome_clozapine to disk.")
 
         elif choice == "unsure":
@@ -161,8 +170,10 @@ def read_and_validate_text_for_clozapine_outcome(  # noqa: ANN201
                 file_path = Path(
                     "E:/shared_resources/clozapine/text_outcome/unsure_text_outcome_clozapine.parquet"
                 )
-                new_file_path = get_next_version_file_path(file_path)
-                write_df_to_file(df=unsure_text_outcome_clozapine, file_path=new_file_path)
+                columns_to_save = ["dw_ek_borger", "timestamp"]
+                df_to_save_unsure = unsure_text_outcome_clozapine[columns_to_save]
+                write_df_to_file(df=df_to_save_unsure, file_path=new_file_path)  # type: ignore
+
                 print("saved a new version of unsured_text_outcome_clozapine to disk.")
 
         elif choice == "skip":
@@ -196,24 +207,3 @@ if __name__ == "__main__":
         unsure_text_outcome_clozapine,
         no_text_outcome_df,
     )
-
-    # if completlely finished, save all dfs
-
-    file_path = Path(
-        "E:/shared_resources/clozapine/text_outcome/validated_text_outcome_clozapine.parquet"
-    )
-    new_file_path = get_next_version_file_path(file_path)
-    write_df_to_file(df=validated_text_outcome_clozapine, file_path=new_file_path)
-    print("saved a new version of validated_text_outcome_clozapine to disk.")
-
-    file_path = Path("E:/shared_resources/clozapine/text_outcome/no_text_outcome_clozapine.parquet")
-    new_file_path = get_next_version_file_path(file_path)
-    write_df_to_file(df=no_text_outcome_df, file_path=new_file_path)
-    print("saved a new version of no_text_outcome_clozapine to disk.")
-
-    file_path = Path(
-        "E:/shared_resources/clozapine/text_outcome/unsure_text_outcome_clozapine.parquet"
-    )
-    new_file_path = get_next_version_file_path(file_path)
-    write_df_to_file(df=unsure_text_outcome_clozapine, file_path=new_file_path)
-    print("saved a new version of unsured_text_outcome_clozapine to disk.")

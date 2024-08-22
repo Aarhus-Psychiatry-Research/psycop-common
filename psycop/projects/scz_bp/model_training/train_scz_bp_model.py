@@ -6,10 +6,12 @@ from psycop.projects.scz_bp.model_training.populate_scz_bp_registry import popul
 
 if __name__ == "__main__":
     populate_baseline_registry()
-    populate_scz_bp_registry()  # noqa: ERA001
+    populate_scz_bp_registry()
+    # train_baseline_model(Path(__file__).parent / "config" / "individual_outcomes" / "bp_structured_text_xgboost_ddpm.cfg") # noqa: ERA001
     train_baseline_model(
         Path(__file__).parent
         / "config"
-        / "main"
-        / "scz_bp_structured_text_Best_xgboost_synthcity.cfg"
+        / "individual_outcomes"
+        / "test_set"
+        / "bp_structured_text.cfg"
     )

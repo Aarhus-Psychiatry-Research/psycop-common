@@ -1,18 +1,14 @@
 """Functions for validating raw data - in the sense of data returned from a
 loader."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
-from deepchecks.tabular import Dataset
-from deepchecks.tabular.suites import data_integrity
 from wasabi import Printer
 
-from psycop.common.feature_generation.data_checks.flattened.data_integrity import (
-    get_failed_check_names,
-)
 from psycop.common.feature_generation.data_checks.flattened.feature_describer import (
     create_unicode_hist,
 )
@@ -114,8 +110,7 @@ def validate_raw_data(
     deviation_threshold_ratio: float | None = 4.0,
     deviation_variation_column: str | None = "median_absolute_deviation",
 ) -> None:
-    """Validates raw data from SQL database (or any dataframe, really). Runs
-    data integrity checks from deepchecks, and calculates summary statistics.
+    """Validates raw data from SQL database (or any dataframe, really). Calculates summary statistics.
     Summary statistics are saved as a table with one row for each column. Rows
     are colored yellow if the 99th/1st percentile exceeds.
 
@@ -149,19 +144,6 @@ def validate_raw_data(
     id_col_name = "dw_ek_borger" if "dw_ek_borger" in df.columns else None
     if timestamp_col_name or id_col_name is None:
         raise ValueError("Dataframe must contain `timestamp` and `dw_ek_borger` columns.")
-
-    # Deepchecks
-    d_set = Dataset(
-        df=df, index_name=id_col_name, datetime_name=timestamp_col_name, cat_features=[]
-    )
-    integ_suite = data_integrity(timeout=0)
-
-    with msg.loading("Running data integrity checks..."):
-        suite_results = integ_suite.run(d_set)
-        suite_results.save_as_html(str(save_path / "data_integrity.html"))
-        failed_checks["data_integrity"] = get_failed_check_names(suite_results)
-
-    msg.good("Finished data integrity checks.")
 
     # Data description
     data_columns = [col for col in df.columns if col not in [id_col_name, timestamp_col_name]]

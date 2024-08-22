@@ -1,5 +1,6 @@
 """Class for formatting values before split, e.g. assigning datetime, removing
 negative values etc."""
+
 import numpy as np
 import pandas as pd
 
