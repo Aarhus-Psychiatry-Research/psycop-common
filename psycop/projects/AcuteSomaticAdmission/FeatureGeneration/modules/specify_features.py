@@ -74,6 +74,23 @@ from psycop.common.feature_generation.loaders.raw.load_lab_results import (
     p_paliperidone,
     p_paracetamol,
     p_risperidone,
+    hba1c,
+    scheduled_glc,
+    unscheduled_p_glc,
+    fasting_p_glc,
+    triglycerides,
+    fasting_triglycerides,
+    hdl,
+    ldl,
+    fasting_ldl,
+    alat,
+    asat,
+    lymphocytes,
+    leukocytes,
+    crp,
+    creatinine,
+    egfr,
+    albumine_creatinine_ratio,
 )
 from psycop.common.feature_generation.loaders.raw.load_medications import (
     alcohol_abstinence,
@@ -96,12 +113,59 @@ from psycop.common.feature_generation.loaders.raw.load_medications import (
     risperidone_depot,
     second_gen_antipsychotics,
     zuclopenthixol_depot,
+    top_10_weight_gaining_antipsychotics,
+    sedative_antipsychotics,
+    non_sedative_antipsychotics,
+    benzodiazepines,
+    benzodiazepine_related_sleeping_agents,
+    pregabaline,
+    hypnotics_and_rivotril,
+    mood_stabilisers,
+    nervous_system_medications,
+    ssri,
+    snri,
+    tca,
+    selected_nassa,
+    valproate,
+    lamotrigine,
+    dementia_medications,
+    anti_epileptics,
+    alimentary_medications,
+    blood_medications,
+    cardiovascular_medications,
+    dermatological_medications,
+    genito_sex_medications,
+    hormonal_medications,
+    antiinfectives,
+    antineoplastic,
+    musculoskeletal_medications,
+    antiparasitic,
+    respiratory_medications,
+    sensory_medications,
+    various_medications,
+    diuretics,
+    statins,
+    antihypertensives,
+    diuretics,
+    gerd_drugs,
 )
 from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
     broeset_violence_checklist,
     hamilton_d17,
     mas_m,
     selvmordsrisiko,
+    height_in_cm,
+    weight_in_kg,
+    bmi,
+    no_temporary_leave,
+    temporary_leave,
+    supervised_temporary_leave,
+    unsupervised_temporary_leave,
+    systolic_blood_pressure,
+    diastolic_blood_pressure,
+    pulse,
+    smoking_continuous,
+    smoking_categorical,
 )
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
@@ -111,18 +175,9 @@ from psycop.projects.AcuteSomaticAdmission.CohortDefinition.get_somatic_emergenc
     get_contacts_to_somatic_emergency,
 )
 
-
-"""
-Eriks kode
-from psycop.projects.forced_admission_inpatient.cohort.extract_admissions_and_visits.get_forced_admissions import (
-    forced_admissions_onset_timestamps,
-)
-"""
-
-log = logging.getLogger(__name__)
-
 from psycop.common.feature_generation.loaders.raw.load_visits import admissions
 
+log = logging.getLogger(__name__)
 
 class SpecSet(BaseModel):
     """A set of unresolved specs, ready for resolving."""
@@ -246,9 +301,7 @@ class FeatureSpecifier:
                 NamedDataframe(df=hypnotics(), name="hypnotics and sedatives"),
                 NamedDataframe(df=antidepressives(), name="antidepressives"),
                 NamedDataframe(df=lithium(), name="lithium"),
-                NamedDataframe(
-                    df=hyperactive_disorders_medications(), name="hyperactive disorders medications"
-                ),
+                NamedDataframe(df=hyperactive_disorders_medications(), name="hyperactive disorders medications"),
                 NamedDataframe(df=alcohol_abstinence(), name="alcohol_abstinence"),
                 NamedDataframe(df=opioid_dependence(), name="opioid_dependence"),
                 NamedDataframe(df=analgesic(), name="analgesics"),
@@ -259,6 +312,37 @@ class FeatureSpecifier:
                 NamedDataframe(df=haloperidol_depot(), name="haloperidol_depot"),
                 NamedDataframe(df=perphenazine_depot(), name="perphenazine_depot"),
                 NamedDataframe(df=zuclopenthixol_depot(), name="zuclopenthixol_depot"),
+                NamedDataframe(df=top_10_weight_gaining_antipsychotics(), name="top_10_weight_gaining_antipsychotics"),
+                NamedDataframe(df=sedative_antipsychotics(), name="sedative_antipsychotics"),
+                NamedDataframe(df=non_sedative_antipsychotics(), name="non_sedative_antipsychotics"),
+                NamedDataframe(df=benzodiazepines(), name="benzodiazepines"),
+                NamedDataframe(df=benzodiazepine_related_sleeping_agents(), name="benzodiazepine_related_sleeping_agents"),
+                NamedDataframe(df=pregabaline(), name="pregabaline"),
+                NamedDataframe(df=hypnotics_and_rivotril(), name="hypnotics_and_rivotril"),
+                NamedDataframe(df=mood_stabilisers(), name="mood_stabilisers"),
+                NamedDataframe(df=nervous_system_medications(), name="nervous_system_medications"),
+                NamedDataframe(df=ssri(), name="ssri"),
+                NamedDataframe(df=snri(), name="snri"),
+                NamedDataframe(df=tca(), name="tca"),
+                NamedDataframe(df=selected_nassa(), name="selected_nassa"),
+                NamedDataframe(df=valproate(), name="valproate"),
+                NamedDataframe(df=lamotrigine(), name="lamotrigine"),
+                NamedDataframe(df=dementia_medications(), name="dementia_medications"),
+                 NamedDataframe(df=anti_epileptics(), name="anti_epileptics"),
+                NamedDataframe(df=alimentary_medications(), name="alimentary_medications"),
+                NamedDataframe(df=blood_medications(), name="blood_medications"),
+                NamedDataframe(df=cardiovascular_medications(), name="cardiovascular_medications"),
+                NamedDataframe(df=dermatological_medications(), name="dermatological_medications"),
+                NamedDataframe(df=genito_sex_medications(), name="genito_sex_medications"),
+                NamedDataframe(df=hormonal_medications(), name="hormonal_medications"),
+                NamedDataframe(df=antiinfectives(), name="antiinfectives"),
+                NamedDataframe(df=antineoplastic(), name="antineoplastic"),
+                NamedDataframe(df=musculoskeletal_medications(), name="musculoskeletal_medications"),
+                NamedDataframe(df=antiparasitic(), name="antiparasitic"),
+                NamedDataframe(df=respiratory_medications(), name="respiratory_medications"),
+                NamedDataframe(df=sensory_medications(), name="sensory_medications"),
+                NamedDataframe(df=various_medications(), name="various_medications"),
+                NamedDataframe(df=diuretics(), name="diuretics"),
             ),
             lookbehind_days=interval_days,
             aggregation_fns=resolve_multiple,
@@ -352,7 +436,18 @@ class FeatureSpecifier:
                 NamedDataframe(df=broeset_violence_checklist(), name="broeset_violence_checklist"),
                 NamedDataframe(df=selvmordsrisiko(), name="selvmordsrisiko"),
                 NamedDataframe(df=hamilton_d17(), name="hamilton_d17"),
-                NamedDataframe(df=mas_m(), name="mas_m"),
+                NamedDataframe(df=height_in_cm(), name="height_in_cm"),
+                NamedDataframe(df=weight_in_kg(), name="weight_in_kg"),
+                NamedDataframe(df=bmi(), name="bmi"),
+                NamedDataframe(df=no_temporary_leave(), name="no_temporary_leave"),
+                NamedDataframe(df=temporary_leave(), name="temporary_leave"),
+                NamedDataframe(df=supervised_temporary_leave(), name="supervised_temporary_leave"),
+                NamedDataframe(df=unsupervised_temporary_leave(), name="unsupervised_temporary_leave"),
+                NamedDataframe(df=systolic_blood_pressure(), name="systolic_blood_pressure"),
+                NamedDataframe(df=smoking_continuous(), name="smoking_continuous"),
+                NamedDataframe(df=smoking_categorical(), name="smoking_categorical"),
+                NamedDataframe(df=diastolic_blood_pressure(), name="siastolic_blood_pressure"),
+                NamedDataframe(df=pulse(), name="pulse"),
             ),
             aggregation_fns=resolve_multiple,
             lookbehind_days=interval_days,
@@ -380,6 +475,23 @@ class FeatureSpecifier:
                 NamedDataframe(df=p_ethanol(), name="p_ethanol"),
                 NamedDataframe(df=p_nortriptyline(), name="p_nortriptyline"),
                 NamedDataframe(df=p_clomipramine(), name="p_clomipramine"),
+                NamedDataframe(df=hba1c(), name="hba1c"),
+                NamedDataframe(df=scheduled_glc(), name="scheduled_glc"),
+                NamedDataframe(df=unscheduled_p_glc(), name="unscheduled_p_glc"),
+                NamedDataframe(df=fasting_p_glc(), name="fasting_p_glc"),
+                NamedDataframe(df=triglycerides(), name="triglycerides"),
+                NamedDataframe(df=fasting_triglycerides(), name="fasting_triglycerides"),
+                NamedDataframe(df=hdl(), name="hdl"),
+                NamedDataframe(df=ldl(), name="ldl"),
+                NamedDataframe(df=fasting_ldl(), name="fasting_ldl"),
+                NamedDataframe(df=alat(), name="alat"),
+                NamedDataframe(df=asat(), name="asat"),
+                NamedDataframe(df=lymphocytes(), name="lymphocytes"),
+                NamedDataframe(df=leukocytes(), name="leukocytes"),
+                NamedDataframe(df=crp(), name="crp"),
+                #NamedDataframe(df=creatinine(), name="creatinine"), TO DO: VIRKER IKKE
+                NamedDataframe(df=egfr(), name="egfr"),
+                NamedDataframe(df=albumine_creatinine_ratio(), name="albumine_creatinine_ratio"),
             ),
             aggregation_fns=resolve_multiple,
             lookbehind_days=interval_days,
@@ -387,7 +499,7 @@ class FeatureSpecifier:
         ).create_combinations()
 
         return lab_results
-
+    
     def _get_cancelled_lab_result_specs(
         self, resolve_multiple: list[AggregationFunType], interval_days: list[float]
     ) -> list[PredictorSpec]:
@@ -522,7 +634,7 @@ class FeatureSpecifier:
         )
 
         structured_sfi = self._get_structured_sfi_specs(
-            resolve_multiple=[mean, maximum, minimum, change_per_day, variance],
+            resolve_multiple=[mean, maximum, minimum],
             interval_days=interval_days,
         )
 

@@ -10,10 +10,11 @@ if __name__ == "__main__":
     populate_baseline_registry()
     populate_with_somatic_registry()
     OptunaHyperParameterOptimization().from_file(
-        (Path(__file__).parent / "somatic_baseline.cfg"),
-        study_name="test_joblib",
-        n_trials=1000,
+        (Path(__file__).parent / "somatic_hyperparam.cfg"),
+        study_name="somatic_hyper_param_lim_lookbehind_temp",
+        n_trials=3,
         n_jobs=30,
         direction="maximize",
         catch=(Exception,),
     )
+

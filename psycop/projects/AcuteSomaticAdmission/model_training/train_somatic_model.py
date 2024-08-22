@@ -7,4 +7,4 @@ from psycop.projects.AcuteSomaticAdmission.model_training.populate_somatic_regis
 if __name__ == "__main__":
     populate_baseline_registry()
     populate_with_somatic_registry()
-    train_baseline_model(Path(__file__).parent / "somatic_baseline.cfg")
+    train_baseline_model(Path(__file__).parent / "somatic_crossval.cfg")

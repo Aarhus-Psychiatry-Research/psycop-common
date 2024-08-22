@@ -8,9 +8,6 @@ from datetime import timedelta
 
 from psycop.common.feature_generation.loaders.raw.load_visits import ambulatory_visits
 
-from psycop.common.global_utils.sql.loader import sql_load
-from psycop.common.global_utils.sql.writer import write_df_to_sql
-
 def get_outpatient_visits_to_psychiatry(write: bool = False) -> pd.DataFrame:
     # Load all physical visits data
     prediction_times = pl.from_pandas(
@@ -28,4 +25,9 @@ def get_outpatient_visits_to_psychiatry(write: bool = False) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    get_outpatient_visits_to_psychiatry()
+    df_pl = get_outpatient_visits_to_psychiatry()
+    df_pd = df_pl.to_pandas()
+    n_patients = df_pd['dw_ek_borger'].nunique()
+    print(f"Antal unikke ID'er der har mindst én ambulant kontakt er: {n_patients}")
+    antal_kontakter = df_pd.shape[0]
+    print(f"Antal ambulante kontakter: {antal_kontakter}")
