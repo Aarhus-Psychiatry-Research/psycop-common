@@ -3,7 +3,6 @@ from dataclasses import dataclass
 
 import pandas as pd
 import plotnine as pn
-import numpy as np
 
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_time_from_first_positive_to_diagnosis_df,

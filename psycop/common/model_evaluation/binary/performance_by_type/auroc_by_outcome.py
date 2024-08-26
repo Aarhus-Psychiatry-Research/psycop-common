@@ -65,7 +65,11 @@ def auroc_by_outcome(
             validation_outcome.df, on=prediction_time_uuid, how="left", validate="1:1"
         ).filter(pl.col(validation_outcome_col_name).is_not_null())
 
-        ci = bootstrap_estimates(metric=roc_auc_score, input_1=joined_df[validation_outcome_col_name], input_2=joined_df[y_hat_col_name])
+        ci = bootstrap_estimates(
+            metric=roc_auc_score,
+            input_1=joined_df[validation_outcome_col_name],
+            input_2=joined_df[y_hat_col_name],
+        )
         performance_dfs.append(
             pd.DataFrame(
                 {
@@ -81,7 +85,7 @@ def auroc_by_outcome(
                         )
                     ],
                     "ci_low": ci[0][0],
-                    "ci_high" : ci[0][1]
+                    "ci_high": ci[0][1],
                 }
             )
         )

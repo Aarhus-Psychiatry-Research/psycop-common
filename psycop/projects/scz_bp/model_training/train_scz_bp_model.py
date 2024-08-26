@@ -1,3 +1,5 @@
+# ruff: noqa: ERA001
+
 from pathlib import Path
 
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model
@@ -17,8 +19,5 @@ if __name__ == "__main__":
     # )
 
     train_baseline_model(
-        Path(__file__).parent
-        / "config"
-        / "post_hoc" 
-        / "random_split_structured_only.cfg"
+        Path(__file__).parent / "config" / "post_hoc" / "random_split_structured_only.cfg"
     )

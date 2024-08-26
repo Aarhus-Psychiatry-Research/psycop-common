@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 from typing import Callable
 
@@ -6,7 +7,9 @@ import polars.selectors as cs
 from confection import Config
 
 from psycop.common.feature_generation.data_checks.flattened.feature_describer_tsflattener_v2 import (
-    ParsedPredictorColumn, generate_feature_description_df, parse_predictor_column_name, tsflattener_v2_column_is_static
+    ParsedPredictorColumn,
+    generate_feature_description_df,
+    tsflattener_v2_column_is_static,
 )
 from psycop.common.feature_generation.data_checks.utils import save_df_to_pretty_html_table
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
@@ -14,12 +17,9 @@ from psycop.common.model_training_v2.config.populate_registry import populate_ba
 from psycop.common.model_training_v2.loggers.dummy_logger import DummyLogger
 from psycop.projects.scz_bp.evaluation.configs import SCZ_BP_EVAL_OUTPUT_DIR
 
-import re
 
 def get_filtered_prediction_times(cfg: Config) -> pl.DataFrame:
-    data = BaselineRegistry.resolve({"data": cfg["trainer"]["training_data"]})[
-        "data"
-    ].load()
+    data = BaselineRegistry.resolve({"data": cfg["trainer"]["training_data"]})["data"].load()
 
     preprocessing_pipeline = BaselineRegistry().resolve(
         {"pipe": cfg["trainer"]["preprocessing_pipeline"]}
@@ -28,6 +28,7 @@ def get_filtered_prediction_times(cfg: Config) -> pl.DataFrame:
     preprocessed_all_splits: pl.DataFrame = pl.from_pandas(preprocessing_pipeline.apply(data))
 
     return preprocessed_all_splits
+
 
 def parse_predictor_column_name_v1(
     col_name: str,
@@ -65,20 +66,34 @@ def parse_predictor_column_name_v1(
     )
 
 
-
 if __name__ == "__main__":
-        cfg = Config().from_disk(Path(__file__).parent / "predictor_description_config.cfg")
+    cfg = Config().from_disk(Path(__file__).parent / "predictor_description_config.cfg")
 
-        populate_baseline_registry()
+    populate_baseline_registry()
 
-        filtered_dataset = get_filtered_prediction_times(cfg).select(cs.starts_with("pred_")).rename({"pred_age_in_years" : "pred_age_years_fallback_nan", "pred_sex_female_layer_1" : "pred_sex_female_fallback_nan"})
- 
-        feature_description_df = generate_feature_description_df(df=filtered_dataset, column_name_parser=parse_predictor_column_name_v1)
-        save_df_to_pretty_html_table(
-            df=feature_description_df.to_pandas(),
-            path= SCZ_BP_EVAL_OUTPUT_DIR/ "feature_description.html",
-            title="Predictors descriptive stats",
+    filtered_dataset = (
+        get_filtered_prediction_times(cfg)
+        .select(cs.starts_with("pred_"))
+        .rename(
+            {
+                "pred_age_in_years": "pred_age_years_fallback_nan",
+                "pred_sex_female_layer_1": "pred_sex_female_fallback_nan",
+            }
         )
-        
-        feature_description_df.drop("Feature name").write_csv("feature_description_right.csv", separator=";")
-        feature_description_df.select("Feature name").write_csv("feature_description_left.csv", separator=";")
+    )
+
+    feature_description_df = generate_feature_description_df(
+        df=filtered_dataset, column_name_parser=parse_predictor_column_name_v1
+    )
+    save_df_to_pretty_html_table(
+        df=feature_description_df.to_pandas(),
+        path=SCZ_BP_EVAL_OUTPUT_DIR / "feature_description.html",
+        title="Predictors descriptive stats",
+    )
+
+    feature_description_df.drop("Feature name").write_csv(
+        "feature_description_right.csv", separator=";"
+    )
+    feature_description_df.select("Feature name").write_csv(
+        "feature_description_left.csv", separator=";"
+    )
