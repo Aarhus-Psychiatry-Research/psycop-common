@@ -8,6 +8,7 @@ import polars as pl
 from sklearn.metrics import roc_auc_score
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
+from psycop.common.model_evaluation.binary.bootstrap_estimates import bootstrap_estimates
 
 
 @dataclass
@@ -63,6 +64,12 @@ def auroc_by_outcome(
         joined_df = eval_df.join(
             validation_outcome.df, on=prediction_time_uuid, how="left", validate="1:1"
         ).filter(pl.col(validation_outcome_col_name).is_not_null())
+
+        ci = bootstrap_estimates(
+            metric=roc_auc_score,
+            input_1=joined_df[validation_outcome_col_name],  # type: ignore
+            input_2=joined_df[y_hat_col_name],  # type: ignore
+        )
         performance_dfs.append(
             pd.DataFrame(
                 {
@@ -77,6 +84,8 @@ def auroc_by_outcome(
                             2,
                         )
                     ],
+                    "ci_low": ci[0][0],
+                    "ci_high": ci[0][1],
                 }
             )
         )
