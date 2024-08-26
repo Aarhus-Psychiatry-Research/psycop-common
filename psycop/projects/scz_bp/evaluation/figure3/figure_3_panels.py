@@ -101,7 +101,8 @@ if __name__ == "__main__":
     for diagnosis in ["bp", "scz"]:
         best_experiment = f"sczbp/test_{diagnosis}_structured_text"
         best_eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(
-            experiment_name=best_experiment, model_type=diagnosis # type: ignore
+            experiment_name=best_experiment,
+            model_type=diagnosis,  # type: ignore
         )
 
         panels = [

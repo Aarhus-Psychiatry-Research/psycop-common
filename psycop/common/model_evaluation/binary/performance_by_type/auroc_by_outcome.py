@@ -67,8 +67,8 @@ def auroc_by_outcome(
 
         ci = bootstrap_estimates(
             metric=roc_auc_score,
-            input_1=joined_df[validation_outcome_col_name], # type: ignore
-            input_2=joined_df[y_hat_col_name], # type: ignore
+            input_1=joined_df[validation_outcome_col_name],  # type: ignore
+            input_2=joined_df[y_hat_col_name],  # type: ignore
         )
         performance_dfs.append(
             pd.DataFrame(
