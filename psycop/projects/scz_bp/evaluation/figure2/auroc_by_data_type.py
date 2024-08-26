@@ -27,7 +27,7 @@ def scz_bp_auroc_by_data_type(
         auc_roc_df = get_auc_roc_df(y=eval_df.y, y_hat_probs=eval_df.y_hat_probs).with_columns(  # type: ignore
             pl.lit(modality).alias("modality")
         )  # type: ignore
-        aucs[modality] = roc_auc_score(
+        aucs[modality] = roc_auc_score( # type: ignore
             y_true=eval_df.y.to_numpy(), y_score=eval_df.y_hat_probs.to_numpy()
         )  # type: ignore
         auc_roc_dfs.append(auc_roc_df)
