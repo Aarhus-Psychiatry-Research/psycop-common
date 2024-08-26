@@ -79,3 +79,6 @@ if __name__ == "__main__":
             path= SCZ_BP_EVAL_OUTPUT_DIR/ "feature_description.html",
             title="Predictors descriptive stats",
         )
+        
+        feature_description_df.drop("Feature name").write_csv("feature_description_right.csv", separator=";")
+        feature_description_df.select("Feature name").write_csv("feature_description_left.csv", separator=";")

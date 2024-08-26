@@ -11,7 +11,7 @@ from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
 
 
 def get_auc_roc_df(y: pd.Series, y_hat_probs: pd.Series) -> pl.DataFrame:  # type: ignore
-    fpr, tpr, _ = roc_curve(y_true=y, y_score=y_hat_probs)
+    fpr, tpr, _ = roc_curve(y_true=y.to_numpy(), y_score=y_hat_probs.to_numpy())
     return pl.DataFrame({"fpr": fpr, "tpr": tpr})
 
 
@@ -27,7 +27,7 @@ def scz_bp_auroc_by_data_type(
         auc_roc_df = get_auc_roc_df(y=eval_df.y, y_hat_probs=eval_df.y_hat_probs).with_columns(  # type: ignore
             pl.lit(modality).alias("modality")
         )  # type: ignore
-        aucs[modality] = roc_auc_score(y_true=eval_df.y, y_score=eval_df.y_hat_probs)  # type: ignore
+        aucs[modality] = roc_auc_score(y_true=eval_df.y.to_numpy(), y_score=eval_df.y_hat_probs.to_numpy())  # type: ignore
         auc_roc_dfs.append(auc_roc_df)
 
     auc_df = pl.DataFrame(aucs).melt(variable_name="modality", value_name="AUC")
