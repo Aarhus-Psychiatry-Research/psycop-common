@@ -8,7 +8,8 @@ hydra-optuna-sweeper==1.2.0
 ipython==8.10.0
 iterpy==1.6.0
 Levenshtein==0.21.0
-mlflow==2.12.1
+mlflow==2.15.0
+matplotlib==3.9.1
 numpy==1.26.0
 pandas==1.5.2
 patchworklib==0.6.2
@@ -22,8 +23,8 @@ pydantic==2.5.3
 pyodbc==4.0.39
 Random-Word==1.0.11
 requests>=2.32.0 # Due to Snyk vuln SNYK-PYTHON-REQUESTS-6928867
-setuptools==65.6.1
-scikit-learn==1.2.1
+setuptools==72.1.0 # Due to Snyk vuln fSNYK-PYTHON-SETUPTOOLS-7448482
+scikit-learn==1.5.0
 scipy==1.10.0
 shap==0.41.0
 sqlalchemy==1.4.39
@@ -34,6 +35,6 @@ wandb==0.15.4
 wasabi==0.9.1
 xgboost==1.7.3
 lightgbm==4.3.0
-imbalanced-learn==0.11.0
+imbalanced-learn==0.12.3
 cleanlab==2.5.0
 rapidfuzz==3.6.1

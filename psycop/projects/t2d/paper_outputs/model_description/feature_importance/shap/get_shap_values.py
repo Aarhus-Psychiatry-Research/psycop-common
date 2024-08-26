@@ -27,7 +27,7 @@ def generate_shap_df_for_predictor_col(
     return df
 
 
-@shared_cache.cache
+@shared_cache().cache
 def get_long_shap_df(X: pd.DataFrame, shap_values: list[float]) -> pd.DataFrame:
     predictor_cols = X.columns
     dfs = []
@@ -74,7 +74,7 @@ def generate_shap_values_from_pipe(
     return shap_values
 
 
-@shared_cache.cache
+@shared_cache().cache
 def get_shap_bundle_for_best_run(
     run: T2DPipelineRun, n_rows: Optional[int] = 10_000, cache_ver: float = 0.1
 ) -> ShapBundle:

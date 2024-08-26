@@ -16,11 +16,11 @@ pre-commit:
   commands:
     format:
       glob: "*.{py}"
-      run: ruff format .
+      run: ruff format . # Do not fail on pre-commit
       stage_fixed: true
     lint:
       glob: "*.{py}"
-      run: ruff check --fix-only --unsafe-fixes .
+      run: ruff check --fix-only --unsafe-fixes . # Do not fail on pre-commit
       stage_fixed: true
 
 test:

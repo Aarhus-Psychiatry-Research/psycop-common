@@ -22,9 +22,7 @@ def _is_ones_then_zeros(seq: Sequence[int]) -> bool:
             if change_occurred:  # If the sequence changed more than once
                 return False
             change_occurred = True
-    if seq[0] == 1 and seq[-1] == 0:
-        return True
-    return False
+    return bool(seq[0] == 1 and seq[-1] == 0)
 
 
 def _is_zeros_then_ones(seq: Sequence[int]) -> bool:
@@ -34,9 +32,7 @@ def _is_zeros_then_ones(seq: Sequence[int]) -> bool:
             if change_occurred:  # If the sequence changed more than once
                 return False
             change_occurred = True
-    if seq[0] == 0 and seq[-1] == 1:
-        return True
-    return False
+    return bool(seq[0] == 0 and seq[-1] == 1)
 
 
 def _get_prediction_times_with_outcome_shared_more_than_one_prediction_time(

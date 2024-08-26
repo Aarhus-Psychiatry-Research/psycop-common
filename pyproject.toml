@@ -105,7 +105,6 @@ ignore = [
   "COM812",
   "E402",
   "E501",
-  "F401",
   "F841",
   "RUF100",
   "RET504",
@@ -152,7 +151,7 @@ mypy-init-return = true
 suppress-none-returning = true
 
 [tool.ruff.lint.isort]
-known-third-party = ["wandb", "joblib"]
+known-third-party = ["wandb", "joblib", "confection"]
 split-on-trailing-comma = false
 
 [tool.ruff.lint.per-file-ignores]

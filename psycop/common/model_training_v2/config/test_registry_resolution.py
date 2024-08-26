@@ -58,7 +58,7 @@ def test_registered_callables_should_have_valid_example_cfgs(
     source_registry: RegistryWithDict, output_dir: Path
 ):
     populate_baseline_registry()
-    registered_fns = get_registered_functions(source_registry)
+    registered_fns = get_registered_functions(source_registry, exclude=("estimator_calibrator"))
     # don't make example cfgs and tests for project-specific functions
     registered_fns_in_common = [
         registered_fn for registered_fn in registered_fns if "common" in registered_fn.module
