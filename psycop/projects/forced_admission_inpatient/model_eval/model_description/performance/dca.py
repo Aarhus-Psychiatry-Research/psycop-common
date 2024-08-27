@@ -1,7 +1,17 @@
+from collections.abc import Sequence
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.calibration import calibration_curve
 
+from psycop.projects.forced_admission_inpatient.model_eval.config import (
+    BEST_POS_RATE,
+    DEVELOPMENT_GROUP,
+    MODEL_ALGORITHM,
+)
+from psycop.projects.forced_admission_inpatient.model_eval.run_pipeline_on_val import (
+    test_selected_model_pipeline,
+)
 from psycop.projects.forced_admission_inpatient.model_eval.selected_runs import (
     get_best_eval_pipeline,
 )
@@ -64,7 +74,7 @@ def plot_decision_curve(run: ForcedAdmissionInpatientPipelineRun):
 
     plt.figure(figsize=(8, 6))
     
-    plt.plot(dca['thresholds'], dca['net_benefit_model'], label="Model", color="#0072B2")
+    plt.plot(dca['thresholds'], dca['net_benefit_model'], label="XGBoost" if run.model_type == "xgboost" else "ElasticNet", color="#0072B2")
     plt.plot(dca['thresholds'], dca['net_benefit_all'], label="Treat All", linestyle="--", color="#009E73")
     plt.plot(dca['thresholds'], dca['net_benefit_none'], label="Treat None", linestyle="--", color="gray")
     
@@ -81,11 +91,79 @@ def plot_decision_curve(run: ForcedAdmissionInpatientPipelineRun):
     # Save and show the plot
     dca_path = run.paper_outputs.paths.figures / "fa_inpatient_dca.png"
     plt.savefig(dca_path)
-    plt.show()
+
+def plot_decision_curve_multiple_runs(runs: Sequence[ForcedAdmissionInpatientPipelineRun]):
+
+    dca = decision_curve_analysis(run=runs[0])
+
+    dca['net_benefit_model_1'] = dca.pop('net_benefit_model')
+
+    for i, run in enumerate(runs[1:], 1):
+        dca_new = decision_curve_analysis(run=run)
+        
+        # Append net_benefit_model to the dca dictionary as net_benefit_model_1, net_benefit_model_2, etc.
+        dca[f"net_benefit_model_{i+1}"] = dca_new['net_benefit_model']
+
+    # create a colour palette for the model lines
+    palette = plt.cm.get_cmap('tab10', len(runs) + 1)
+             
+    plt.figure(figsize=(8, 6))
+
+    plt.plot(dca['thresholds'], dca['net_benefit_all'], label="Treat All", linestyle="--", color="#009E73")
+    plt.plot(dca['thresholds'], dca['net_benefit_none'], label="Treat None", linestyle="--", color="gray")
+    # plot the model lines
+    for i, run in enumerate(runs, 1):   
+
+        # Add label to model lines  
+        model_name = "XGBoost" if run.model_type == "xgboost" else "ElasticNet"
+    
+        plt.plot(dca['thresholds'], dca[f"net_benefit_model_{i}"], label=f"{model_name}", color=palette(i), linewidth=1, alpha=0.8)
+    
+    plt.xlabel("Threshold Probability")
+    plt.ylabel("Net Benefit")
+    plt.title("Decision Curve Analysis")
+    plt.legend(loc="best")
+    plt.grid(True)
+
+    # Set axis limits
+    plt.xlim(0, 0.25)   # X-axis limit from 0 to 0.2
+    plt.ylim(-0.2, 0.15)    # Y-axis limit from -1 to 1 (or adjust upper bound if needed)
+    
+    # Save and show the plot
+    EVAL_ROOT = Path("E:/shared_resources/forced_admissions_inpatient/eval")
+    dca_path = EVAL_ROOT / "fa_inpatient_dca_all_models.png"
+    plt.savefig(dca_path)
 
 if __name__ == "__main__":
-    
-
 
     # Plot the Decision Curve
-    plot_decision_curve(run= get_best_eval_pipeline())
+    plot_decision_curve(run=get_best_eval_pipeline())
+
+    
+    xgboost = ForcedAdmissionInpatientPipelineRun(
+        group=DEVELOPMENT_GROUP,
+        name=DEVELOPMENT_GROUP.get_best_runs_by_lookahead()[1, 2],
+        pos_rate=BEST_POS_RATE,
+        create_output_paths_on_init=False,
+    )
+    xgboost_eval = test_selected_model_pipeline(
+        pipeline_to_test=xgboost,
+        splits_for_training=["train", "val"],
+        splits_for_evaluation=["test"],  # add with_washout if eval on cohort with washout
+    )
+    lr = ForcedAdmissionInpatientPipelineRun(
+        group=DEVELOPMENT_GROUP,
+        name=DEVELOPMENT_GROUP.get_best_runs_by_lookahead()[0, 2],
+        pos_rate=BEST_POS_RATE,
+        create_output_paths_on_init=False,
+    )
+
+    lr_eval = test_selected_model_pipeline(
+        pipeline_to_test=lr,
+        splits_for_training=["train", "val"],
+        splits_for_evaluation=["test"],  # add with_washout if eval on cohort with washout
+    )
+
+    # Plot the Decision Curve for the best XGBoost model AND the best Logistic Regression model
+    plot_decision_curve_multiple_runs(runs=[xgboost_eval, lr_eval])
+    
