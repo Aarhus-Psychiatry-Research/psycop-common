@@ -24,9 +24,9 @@ jobs:
           cache: "pip"
 
       - name: Install pre-commit
-        run: pip install pre-commit
+        run: pip install pre-commit invoke
 
       - name: Lint
         id: pre_commit
         run: |
-          pre-commit run --color always --all-files
+          inv lint
