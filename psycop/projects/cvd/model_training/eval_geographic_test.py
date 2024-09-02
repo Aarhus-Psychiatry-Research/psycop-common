@@ -5,7 +5,7 @@ from psycop.common.model_training_v2.config.populate_registry import populate_ba
 from psycop.projects.cvd.model_training.populate_cvd_registry import populate_with_cvd_registry
 
 
-def test_set(cfg: PsycopConfig):
+def eval_geographic_test_set(cfg: PsycopConfig):
     outcome_col_name = cfg.retrieve("trainer.outcome_col_name")
     preprocessing_pipeline = cfg.retrieve("trainer.preprocessing_pipeline")
 
@@ -45,4 +45,6 @@ if __name__ == "__main__":
     populate_baseline_registry()
     populate_with_cvd_registry()
 
-    test_set(MlflowClientWrapper().get_run("CVD, h, l-2, XGB", "classy-wren-652").get_config())
+    eval_geographic_test_set(
+        MlflowClientWrapper().get_run("CVD, h, l-2, XGB", "classy-wren-652").get_config()
+    )
