@@ -111,7 +111,6 @@ ignore = [
   "SIM108",
   "TCH001",
 ]
-ignore-init-module-imports = true
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 unfixable = ["ERA"]
 # Exclude a variety of commonly ignored directories.
