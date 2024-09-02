@@ -9,6 +9,7 @@ from psycop.common.cohort_definition import (
 )
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
 from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits_to_psychiatry
+from psycop.common.global_utils.cache import shared_cache
 from psycop.common.sequence_models.registry import SequenceRegistry
 from psycop.projects.t2d.feature_generation.cohort_definition.eligible_prediction_times.single_filters import (
     NoIncidentDiabetes,
@@ -22,6 +23,16 @@ from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specificat
 )
 
 msg = Printer(timestamp=True)
+
+
+@shared_cache().cache()
+def t2d_pred_times() -> FilteredPredictionTimeBundle:
+    return T2DCohortDefiner.get_filtered_prediction_times_bundle()
+
+
+@shared_cache().cache()
+def t2d_outcome_timestamps() -> OutcomeTimestampFrame:
+    return T2DCohortDefiner.get_outcome_timestamps()
 
 
 @SequenceRegistry.cohorts.register("t2d")
