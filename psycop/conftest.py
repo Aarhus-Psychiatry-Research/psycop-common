@@ -43,7 +43,7 @@ def add_eval_column(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-@pytest.fixture()
+@pytest.fixture
 def synth_eval_df() -> pd.DataFrame:
     """Load synthetic data."""
     csv_path = PSYCOP_PKG_ROOT / "test_utils" / "test_data" / "model_eval" / "synth_eval_data.csv"
@@ -58,7 +58,7 @@ def synth_eval_df() -> pd.DataFrame:
     return df
 
 
-@pytest.fixture()
+@pytest.fixture
 def subsampled_synth_eval_df(synth_eval_df: pd.DataFrame) -> pd.DataFrame:
     # Set seed
     seed = 42
@@ -81,24 +81,24 @@ def df_to_synth_eval_dataset(df: pd.DataFrame) -> EvalDataset:
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def synth_eval_dataset(synth_eval_df: pd.DataFrame) -> EvalDataset:
     """Load synthetic data."""
     return df_to_synth_eval_dataset(synth_eval_df)
 
 
-@pytest.fixture()
+@pytest.fixture
 def immuteable_test_config() -> FullConfigSchema:
     """Get an immutable config for testing."""
     return load_test_cfg_as_pydantic(config_file_name="default_config.yaml")
 
 
-@pytest.fixture()
+@pytest.fixture
 def muteable_test_config() -> FullConfigSchema:
     """Get a mutable config for testing."""
     return load_test_cfg_as_pydantic(config_file_name="default_config.yaml", unfrozen=True)
 
 
-@pytest.fixture()
+@pytest.fixture
 def subsampled_eval_dataset(subsampled_synth_eval_df: pd.DataFrame) -> EvalDataset:
     return df_to_synth_eval_dataset(subsampled_synth_eval_df)
