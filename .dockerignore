@@ -185,7 +185,7 @@ psycop/tests/test_eval_results/*
 psycop/**/*.md
 
 # Wandb
-/wandb
+**/wandb
 multirun
 
 # Ignore the ouptuts for publishing folder
@@ -193,4 +193,18 @@ multirun
 pytest.xml
 joblib
 /outputs
-.git
+
+# model checkpoints
+/data
+
+# logging
+lightning_logs/*
+logs/*
+mlruns/*
+# Allow mapping file to be uploaded
+!**/diagnosis_code_mapping.json
+!.devcontainer/devcontainer.json
+
+# Ignore testmon database
+.testmon*
+*.db

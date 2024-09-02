@@ -17,7 +17,6 @@ plotly==5.22.0
 plotnine==0.12.2
 polars==0.20.10
 protobuf==3.20.3
-psutil==5.9.0
 pyarrow==14.0.1
 pydantic==2.5.3
 pyodbc==4.0.39
@@ -31,7 +30,7 @@ sqlalchemy==1.4.39
 tableone==0.8.0
 tabulate==0.8.10
 timeseriesflattener==2.2.2
-wandb==0.15.4
+wandb==0.15.12
 wasabi==0.9.1
 xgboost==1.7.3
 lightgbm==4.3.0
