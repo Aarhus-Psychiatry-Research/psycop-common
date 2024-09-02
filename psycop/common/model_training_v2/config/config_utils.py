@@ -1,3 +1,4 @@
+import copy
 import operator
 from functools import reduce
 from pathlib import Path
@@ -82,6 +83,11 @@ class PsycopConfig(confection.Config):
             location: The location of the value to add. E.g. "trainer.training_data.paths.0"
             value: The value to add.
         """
+        if isinstance(
+            value, dict
+        ):  # Avoid having the same mutable dict in multiple locations in the tree
+            value = copy.deepcopy(value)
+
         *path, last = location.split(".")
 
         # Go through each layer. If it does not exist, create it as an empty dict.
