@@ -1,18 +1,16 @@
 name: kubeflow-publish
 on:
   push:
-    tags:
-      - "v*"
-  pull_request: # TODO: Disable this when we have tested the CI/CD
+    branches:
+      - "main"
+  pull_request:
     branches:
       - "main"
   workflow_dispatch:
-    # TODO: Skip if no requirements or dockerfile changes
 
 jobs:
   release:
     runs-on: ubuntu-latest
-    # Re-enable: concurrency: kubeflow-publish
     steps:
       - uses: actions/checkout@v4
 
@@ -46,8 +44,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          # TODO: Push only on main branch, # ${{ github.ref == 'refs/heads/main' }}
-          push: true
+          push: ${{ github.ref == 'refs/heads/main' }}
           platforms: linux/amd64
           file: Kubeflow
           tags: ghcr.io/aarhus-psychiatry-research/psycop-common-kubeflow:latest
