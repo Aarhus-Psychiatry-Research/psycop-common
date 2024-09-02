@@ -1,59 +1,33 @@
-FROM kubeflownotebookswg/codeserver-python:v1.9.0
+FROM python:3.10
 
-# Firewall in RM disallows http - add sources.list to use https mirrors
-ADD sources.list /etc/apt/ 
-
-# Switch over to root for building the custom image
-USER root
-
-# Install system dependencies including odbc and FreeTDS driver
-RUN apt-get update && apt-get install -y \
-    unixodbc-dev \
-    unixodbc \
-    tdsodbc \
-    curl \
-    gcc \
-    g++ \
-    build-essential \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Add FreeTDS driver to odbcinst
-RUN cat <<EOF > /etc/odbcinst.ini
-[FreeTDS]
-Description = FreeTDS Driver
-Driver = /usr/lib/x86_64-linux-gnu/odbc/libtdsodbc.so
-Setup = /usr/lib/x86_64-linux-gnu/odbc/libtdsS.so
-EOF
-
-# Install msodbcsql18 and mssql-tools18
-RUN \
-    if ! [[ "18.04 20.04 22.04 23.04 24.04" == *"$(lsb_release -rs)"* ]]; then \
-    echo "Ubuntu $(lsb_release -rs) is not currently supported."; \
-    exit; \
-    fi
-
-RUN curl https://packages.microsoft.com/keys/microsoft.asc | tee /etc/apt/trusted.gpg.d/microsoft.asc \
-    && curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list | tee /etc/apt/sources.list.d/mssql-release.list \
-    && apt-get update \
-    && ACCEPT_EULA=Y apt-get install -y msodbcsql18 \
-    && ACCEPT_EULA=Y apt-get install -y mssql-tools18 \
-    && echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc \
-    && /bin/bash -c "source ~/.bashrc"
-
-# Install Python packages
 ENV UV_SYSTEM_PYTHON=1
+
+RUN apt-get update && apt-get install -y curl
+
+# NVM and NPM are required for snyk
+# Install nvm
+# Explicitly set HOME environment variable 
+ENV NVM_DIR=$HOME/.nvm
+RUN mkdir -p $NVM_DIR
+ENV NODE_VERSION=18.2.0
+
+# Install nvm with node and npm
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash \
+    && . $NVM_DIR/nvm.sh \
+    && nvm install $NODE_VERSION \
+    && nvm alias default $NODE_VERSION \
+    && nvm use default
+
+ENV NODE_PATH=$NVM_DIR/v$NODE_VERSION/lib/node_modules
+ENV PATH=$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
+
+# Install snyk
+RUN npm install -g snyk
+
+# Install dev tools
+# The cache mount caches downloaded packages for Docker
+# The --no-compile options defers compilation to runtime, instead of install-time. This can dramatically save on build time, at the cost of slightly increased first-run times.
 RUN pip install uv
-
-# Mount a cache dir for faster repeated installs. Only mounts during build.
-# Do not compile the python packages, only compile them at runtime.
-# Heaviest requirements first, to preserve cache hits.
-COPY gpu-requirements.txt .
-RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r gpu-requirements.txt --no-compile
-
-# Add build-essential for psutil
-COPY requirements.txt .
-RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r requirements.txt --no-compile
 
 COPY test-requirements.txt .
 RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r test-requirements.txt --no-compile
@@ -61,16 +35,14 @@ RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r test-requirement
 COPY dev-requirements.txt .
 RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r dev-requirements.txt --no-compile
 
-# Ensure pyright is installed from npm since npm is not accessible at runtime
-RUN pyright --help
+COPY gpu-requirements.txt .
+RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r gpu-requirements.txt --no-compile
 
-# BI's SQL server is MsSQL 2016, which supports TLS <= 1.2. This is lower than the default TLS version of Ubuntu 22.04.
-# Modify the OpenSSL configuration file, in system and conda, to set the minimum supported TLS version to TLSv1.2
-RUN sed -i 's/^\(\[system_default_sect\]\)/\1\nMinProtocol = TLSv1.2/' /etc/ssl/openssl.cnf && \
-    sed -i 's/^CipherString = DEFAULT:@SECLEVEL=2/CipherString = DEFAULT@SECLEVEL=0/' /etc/ssl/openssl.cnf
+COPY requirements.txt .
+RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r requirements.txt --no-compile
 
-RUN sed -i '/\[openssl_init\]/a ssl_conf = ssl_sect' /opt/conda/ssl/openssl.cnf && \
-    sed -i '$a\\n[ssl_sect]\nsystem_default = system_default_sect\n\n[system_default_sect]\nMinProtocol = TLSv1.2\nCipherString = DEFAULT@SECLEVEL=0' /opt/conda/ssl/openssl.cnf
+# Set the working directory to /app
+WORKDIR /app
+VOLUME psycop-common
 
-# Switch back to root user
-USER $NB_USER
+COPY . /app
