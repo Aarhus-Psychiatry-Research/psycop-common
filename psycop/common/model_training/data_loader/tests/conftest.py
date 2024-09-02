@@ -4,7 +4,7 @@ import pytest
 from psycop.common.test_utils.str_to_df import str_to_df
 
 
-@pytest.fixture()
+@pytest.fixture
 def base_feature_df() -> pd.DataFrame:
     return str_to_df(
         """prediction_time_uuid,feature_name_1,dw_ek_borger,timestamp
@@ -15,7 +15,7 @@ y_2011,1,y,2021-01-01"""
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def feature_df_same_order_uuids() -> pd.DataFrame:
     return str_to_df(
         """prediction_time_uuid,feature_name_2,dw_ek_borger,timestamp
@@ -26,7 +26,7 @@ y_2011,3,y,2021-01-01"""
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def feature_df_different_order_uuids() -> pd.DataFrame:
     return str_to_df(
         """prediction_time_uuid,feature_name_2,dw_ek_borger,timestamp
@@ -37,7 +37,7 @@ y_2011,3,y,2021-01-01"""
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def feature_df_different_split() -> pd.DataFrame:
     return str_to_df(
         """prediction_time_uuid,feature_name_1,dw_ek_borger,timestamp
