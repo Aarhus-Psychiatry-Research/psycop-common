@@ -1,3 +1,5 @@
+"""Comparison of v1 and v2 feature sets for T2D. Used for debugging, since the original model performed differently from a retrained model. Turned out it was due to subtle differences in outcome definition, which are now fixed. Kept for archival."""
+
 import polars as pl
 
 from psycop.common.model_training_v2.trainer.preprocessing.steps.column_filters import (
