@@ -48,7 +48,7 @@ def eval_stratified_split(cfg: PsycopConfig, threshold_date: str):
                 "@preprocessing": "date_filter",
                 "column_name": "timestamp",
                 "threshold_date": threshold_date,
-                "direction": "after",
+                "direction": "after-inclusive",
             },
         )
     )
