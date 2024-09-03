@@ -24,6 +24,7 @@ def xgboost_classifier_step(
     learning_rate: float = 0.3,
     gamma: float = 0,
     tree_method: Literal["auto", "gpu_hist"] = "gpu_hist",
+    grow_policy: Literal["depthwise", "lossguide"] = "depthwise",
     n_estimators: int = 100,
 ) -> ModelStep:
     """Initialize XGBClassifier model with hparams specified as kwargs.
@@ -40,6 +41,7 @@ def xgboost_classifier_step(
             n_estimators=n_estimators,
             reg_lambda=reg_lambda,
             tree_method=tree_method,
+            grow_policy=grow_policy,
         ),
     )
 
