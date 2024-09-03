@@ -52,7 +52,7 @@ def eval_stratified_split(
         .add("trainer.validation_outcome_col_name", outcome_col_name)
         .add("trainer.validation_preprocessing_pipeline", preprocessing_pipeline)
         .add(
-            "trainer.validation_preprocessing_pipeline.*.date_filter",
+            "trainer.validation_preprocessing_pipeline.*.date_filter_start",
             {
                 "@preprocessing": "date_filter",
                 "column_name": "timestamp",
@@ -61,7 +61,7 @@ def eval_stratified_split(
             },
         )
         .add(
-            "trainer.validation_preprocessing_pipeline.*.date_filter",
+            "trainer.validation_preprocessing_pipeline.*.date_filter_end",
             {
                 "@preprocessing": "date_filter",
                 "column_name": "timestamp",
