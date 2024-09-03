@@ -122,22 +122,21 @@ def test_filter_by_quarantine_period():
 def test_date_filter(
     direction: Literal["before", "after"], threshold_date: str, expected_dates: list[str]
 ):
-    df_str = """
-    timestamp,value
-    2023-01-01,10
-    2023-02-15,20
-    2023-03-30,30
-    2023-04-10,40
-    2023-05-20,50
+    df = str_to_pl_df(
+        """timestamp
+    2023-01-01
+    2023-02-15
+    2023-03-30
+    2023-04-10
+    2023-05-20
     """
-    df = str_to_pl_df(df_str)
+    ).lazy()
 
     date_filter = DateFilter(
         column_name="timestamp", threshold_date=threshold_date, direction=direction
     )
-    filtered_df = date_filter.apply(df.lazy()).collect()
+    filtered_df = date_filter.apply(df).collect()
 
-    assert filtered_df.shape[0] == len(expected_dates)
     assert filtered_df["timestamp"].cast(pl.Utf8).to_list() == [
-        f"{date} 00:00:00.000000000" for date in expected_dates
+        f"{date} 00:00:00.000000" for date in expected_dates
     ]
