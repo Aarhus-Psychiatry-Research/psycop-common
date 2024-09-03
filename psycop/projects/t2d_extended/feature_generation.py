@@ -39,11 +39,7 @@ def _init_t2d_predictor(
     lookbehind_distances: Sequence[datetime.timedelta] = [
         datetime.timedelta(days=i) for i in [730]
     ],
-    aggregation_fns: Sequence[ts.aggregators.Aggregator] = [
-        ts.MeanAggregator()
-        # ts.MinAggregator(),
-        # ts.MaxAggregator(),
-    ],
+    aggregation_fns: Sequence[ts.aggregators.Aggregator] = [ts.MeanAggregator()],
     column_prefix: str = "pred_layer_{}",
     entity_id_col_name: str = "dw_ek_borger",
 ) -> ts.PredictorSpec:

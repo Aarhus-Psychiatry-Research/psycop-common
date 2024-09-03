@@ -44,6 +44,4 @@ def eval_stratified_split(cfg: PsycopConfig):
 if __name__ == "__main__":
     populate_baseline_registry()
 
-    eval_stratified_split(
-        PsycopConfig().from_disk(Path(__file__).parent / "t2d_extended.cfg")
-    )
+    eval_stratified_split(PsycopConfig().from_disk(Path(__file__).parent / "t2d_extended.cfg"))
