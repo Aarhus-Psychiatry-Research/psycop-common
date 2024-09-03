@@ -66,7 +66,7 @@ class ColumnPrefixExpectation(PresplitStep):
     def __init__(self, column_expectations: Sequence[Sequence[str | int]]):
         self.column_expectations = (
             Iter(column_expectations)
-            .map(lambda x: ColumnPrefixCountExpectation.from_list(x))
+            .map(lambda x: ColumnPrefixCountExpectation.from_list((str(x[0]), int(x[1]))))
             .to_list()
         )
 

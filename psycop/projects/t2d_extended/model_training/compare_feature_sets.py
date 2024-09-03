@@ -59,9 +59,9 @@ if __name__ == "__main__":
         .str.replace_all(" ", "-")
     )
 
-    from datacompy import PolarsCompare
+    # from datacompy import PolarsCompare  # noqa: ERA001
 
-    comparison = PolarsCompare(
-        old_f_renamed, new_matched, join_columns=["prediction_time_uuid"], rel_tol=0.00
-    )
-    print(comparison.report())
+    # comparison = PolarsCompare(  # noqa: ERA001
+    #     old_f_renamed, new_matched, join_columns=["prediction_time_uuid"], rel_tol=0.00
+    # )  # noqa: ERA001
+    # print(comparison.report())  # noqa: ERA001
