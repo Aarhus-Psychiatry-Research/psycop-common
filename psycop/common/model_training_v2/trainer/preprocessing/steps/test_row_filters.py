@@ -5,6 +5,7 @@ import pytest
 
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
     AgeFilter,
+    DateFilter,
     QuarantineFilter,
     WindowFilter,
 )
@@ -109,3 +110,33 @@ def test_filter_by_quarantine_period():
     from polars.testing import assert_frame_equal
 
     assert_frame_equal(result_df, expected_df)
+
+
+@pytest.mark.parametrize(
+    ("direction", "threshold_date", "expected_dates"),
+    [
+        ("before", "2023-03-01", ["2023-01-01", "2023-02-15"]),
+        ("after", "2023-04-01", ["2023-04-10", "2023-05-20"]),
+    ],
+)
+def test_date_filter(
+    direction: Literal["before", "after"], threshold_date: str, expected_dates: list[str]
+):
+    df = str_to_pl_df(
+        """timestamp
+    2023-01-01
+    2023-02-15
+    2023-03-30
+    2023-04-10
+    2023-05-20
+    """
+    ).lazy()
+
+    date_filter = DateFilter(
+        column_name="timestamp", threshold_date=threshold_date, direction=direction
+    )
+    filtered_df = date_filter.apply(df).collect()
+
+    assert filtered_df["timestamp"].cast(pl.Utf8).to_list() == [
+        f"{date} 00:00:00.000000" for date in expected_dates
+    ]
