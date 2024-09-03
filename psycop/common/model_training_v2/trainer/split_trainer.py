@@ -58,7 +58,6 @@ class SplitTrainerSeparatePreprocessing(BaselineTrainer):
         y_hat_prob = self.task.predict_proba(
             x=validation_data_preprocessed.drop(self.non_predictor_columns, axis=1)
         )
-
         main_metric = self.metric.calculate(
             y=validation_data_preprocessed[self.validation_outcome_col_name], y_hat_prob=y_hat_prob
         )
