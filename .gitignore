@@ -211,3 +211,4 @@ mlruns/*
 # Ignore testmon database
 .testmon*
 *.db
+func_code.py

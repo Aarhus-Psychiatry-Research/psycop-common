@@ -1,13 +1,13 @@
 import datetime
-from pathlib import Path
 
 from joblib import Memory
+from psycop.automation.environment import on_ovartaci
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR, PSYCOP_PKG_ROOT
 
 
 def shared_cache() -> Memory:
     # If on Windows
-    if Path("E:/").exists():
+    if on_ovartaci():
         cache_dir = OVARTACI_SHARED_DIR / "cache"
     else:
         cache_dir = PSYCOP_PKG_ROOT / ".cache"
