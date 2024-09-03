@@ -115,7 +115,10 @@ if __name__ == "__main__":
                 value_frame=ts.ValueFrame(
                     init_df=t2d_outcome_timestamps().frame, entity_id_col_name="dw_ek_borger"
                 ),
-                lookahead_distances=[datetime.timedelta(days=365 * 5)],
+                lookahead_distances=[
+                    datetime.timedelta(days=365 * 2),
+                    datetime.timedelta(days=365 * 5),
+                ],
                 aggregators=[ts.MaxAggregator()],
                 fallback=0,
                 column_prefix="outc_t2d",

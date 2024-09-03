@@ -18,8 +18,8 @@ from psycop.projects.t2d.feature_generation.cohort_definition.eligible_predictio
     T2DWashoutMove,
     WithoutPrevalentDiabetes,
 )
-from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specification.combined import (
-    get_first_diabetes_indicator,
+from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specification.lab_results import (
+    get_first_diabetes_lab_result_above_threshold,
 )
 
 msg = Printer(timestamp=True)
@@ -60,7 +60,9 @@ class T2DCohortDefiner(CohortDefiner):
 
     @staticmethod
     def get_outcome_timestamps() -> OutcomeTimestampFrame:
-        return OutcomeTimestampFrame(frame=pl.from_pandas(get_first_diabetes_indicator()))
+        return OutcomeTimestampFrame(
+            frame=pl.from_pandas(get_first_diabetes_lab_result_above_threshold())
+        )
 
 
 if __name__ == "__main__":
