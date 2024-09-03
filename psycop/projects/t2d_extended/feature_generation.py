@@ -28,8 +28,7 @@ from psycop.projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer
 
 def get_t2d_project_info() -> ProjectInfo:
     return ProjectInfo(
-        project_name="t2d_extended",
-        project_path=OVARTACI_SHARED_DIR / "t2d_extended" / "feature_set",
+        project_name="t2d_extended", project_path=OVARTACI_SHARED_DIR / "t2d_extended"
     )
 
 
