@@ -116,11 +116,11 @@ def test_filter_by_quarantine_period():
     ("direction", "threshold_date", "expected_dates"),
     [
         ("before", "2023-03-01", ["2023-01-01", "2023-02-15"]),
-        ("after", "2023-04-01", ["2023-04-10", "2023-05-20"]),
+        ("after-inclusive", "2023-04-01", ["2023-04-10", "2023-05-20"]),
     ],
 )
 def test_date_filter(
-    direction: Literal["before", "after"], threshold_date: str, expected_dates: list[str]
+    direction: Literal["before", "after-inclusive"], threshold_date: str, expected_dates: list[str]
 ):
     df = str_to_pl_df(
         """timestamp

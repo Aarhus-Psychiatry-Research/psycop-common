@@ -1,4 +1,3 @@
-from collections.abc import Sequence
 from pathlib import Path
 
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
@@ -6,7 +5,7 @@ from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 
 
-def eval_stratified_split(cfg: PsycopConfig, threshold_dates: Sequence[str]):
+def eval_stratified_split(cfg: PsycopConfig, threshold_date: str):
     outcome_col_name = cfg.retrieve("trainer.outcome_col_name")
     preprocessing_pipeline = cfg.retrieve("trainer.preprocessing_pipeline")
 
@@ -29,7 +28,7 @@ def eval_stratified_split(cfg: PsycopConfig, threshold_dates: Sequence[str]):
             {
                 "@preprocessing": "date_filter",
                 "column_name": "timestamp",
-                "threshold_date": "2021-01-01",
+                "threshold_date": threshold_date,
                 "direction": "before",
             },
         )
@@ -48,7 +47,7 @@ def eval_stratified_split(cfg: PsycopConfig, threshold_dates: Sequence[str]):
             {
                 "@preprocessing": "date_filter",
                 "column_name": "timestamp",
-                "threshold_date": "2021-01-01",
+                "threshold_date": threshold_date,
                 "direction": "after",
             },
         )
@@ -60,4 +59,7 @@ def eval_stratified_split(cfg: PsycopConfig, threshold_dates: Sequence[str]):
 if __name__ == "__main__":
     populate_baseline_registry()
 
-    eval_stratified_split(PsycopConfig().from_disk(Path(__file__).parent / "t2d_extended.cfg"))
+    eval_stratified_split(
+        PsycopConfig().from_disk(Path(__file__).parent / "t2d_extended.cfg"),
+        threshold_date="2021-01-01",
+    )
