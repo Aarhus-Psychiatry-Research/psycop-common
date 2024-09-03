@@ -140,5 +140,3 @@ class DateFilter(PresplitStep):
                 return input_df.filter(date_col < threshold_date)
             case "after":
                 return input_df.filter(date_col > threshold_date)
-            case _:
-                raise ValueError("Direction must be either 'before' or 'after'")
