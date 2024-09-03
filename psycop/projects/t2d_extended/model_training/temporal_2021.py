@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from pathlib import Path
 
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
@@ -5,7 +6,7 @@ from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 
 
-def eval_stratified_split(cfg: PsycopConfig):
+def eval_stratified_split(cfg: PsycopConfig, threshold_dates: Sequence[str]):
     outcome_col_name = cfg.retrieve("trainer.outcome_col_name")
     preprocessing_pipeline = cfg.retrieve("trainer.preprocessing_pipeline")
 
@@ -22,9 +23,15 @@ def eval_stratified_split(cfg: PsycopConfig):
     cfg = (
         cfg.add("trainer.training_outcome_col_name", outcome_col_name)
         .add("trainer.training_preprocessing_pipeline", preprocessing_pipeline)
-        .mut(
-            "trainer.training_preprocessing_pipeline.*.split_filter.splits_to_keep",
-            ["train", "val"],
+        .rem("trainer.preprocessing_pipeline.*.split_filter")
+        .add(
+            "trainer.training_preprocessing_pipeline.*.date_filter",
+            {
+                "@preprocessing": "date_filter",
+                "column_name": "timestamp",
+                "threshold_date": "2021-01-01",
+                "direction": "before",
+            },
         )
     )
 
@@ -35,7 +42,16 @@ def eval_stratified_split(cfg: PsycopConfig):
         )
         .add("trainer.validation_outcome_col_name", outcome_col_name)
         .add("trainer.validation_preprocessing_pipeline", preprocessing_pipeline)
-        .mut("trainer.validation_preprocessing_pipeline.*.split_filter.splits_to_keep", ["test"])
+        .rem("trainer.preprocessing_pipeline.*.split_filter")
+        .add(
+            "trainer.training_preprocessing_pipeline.*.date_filter",
+            {
+                "@preprocessing": "date_filter",
+                "column_name": "timestamp",
+                "threshold_date": "2021-01-01",
+                "direction": "after",
+            },
+        )
     )
 
     train_baseline_model_from_cfg(cfg)
