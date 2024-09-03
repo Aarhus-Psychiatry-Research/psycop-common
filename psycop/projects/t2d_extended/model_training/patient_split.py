@@ -30,9 +30,7 @@ def eval_stratified_split(cfg: PsycopConfig):
 
     # Handle validation set setup
     cfg = (
-        cfg.add(  # Handle validation dataset
-            "trainer.validation_data", cfg.retrieve("trainer.training_data")
-        )
+        cfg.add("trainer.validation_data", cfg.retrieve("trainer.training_data"))
         .add("trainer.validation_outcome_col_name", outcome_col_name)
         .add("trainer.validation_preprocessing_pipeline", preprocessing_pipeline)
         .mut("trainer.validation_preprocessing_pipeline.*.split_filter.splits_to_keep", ["test"])
