@@ -1,0 +1,382 @@
+"""Main feature generation."""
+
+import datetime
+import logging
+import multiprocessing
+from collections.abc import Sequence
+from dataclasses import dataclass
+from functools import partial
+from typing import Callable
+
+import numpy as np
+import pandas as pd
+import polars as pl
+import timeseriesflattener as ts
+from timeseriesflattener.aggregators import (
+    CountAggregator,
+    HasValuesAggregator,
+    LatestAggregator,
+    MaxAggregator,
+    MeanAggregator,
+    SumAggregator,
+)
+from tqdm import tqdm
+
+from psycop.common.feature_generation.application_modules.generate_feature_set import (
+    generate_feature_set,
+)
+from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
+from psycop.common.feature_generation.loaders.raw.load_coercion import skema_1, skema_2, skema_3
+from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
+from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
+    angina,
+    atrial_fibrillation,
+    chronic_kidney_failure,
+    chronic_lung_disease,
+    f0_disorders,
+    f1_disorders,
+    f2_disorders,
+    f3_disorders,
+    f4_disorders,
+    f5_disorders,
+    f6_disorders,
+    f7_disorders,
+    f8_disorders,
+    f9_disorders,
+    type_1_diabetes,
+    type_2_diabetes,
+)
+from psycop.common.feature_generation.loaders.raw.load_lab_results import (
+    hba1c,
+    hdl,
+    ldl,
+    total_cholesterol,
+)
+from psycop.common.feature_generation.loaders.raw.load_medications import (
+    antidepressives,
+    antihypertensives,
+    antipsychotics,
+    benzodiazepine_related_sleeping_agents,
+    benzodiazepines,
+    clozapine,
+    first_gen_antipsychotics,
+    lamotrigine,
+    lithium,
+    pregabaline,
+    second_gen_antipsychotics,
+    selected_nassa,
+    snri,
+    ssri,
+    tca,
+    top_10_weight_gaining_antipsychotics,
+    valproate,
+)
+from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
+    broeset_violence_checklist,
+    hamilton_d17,
+    no_temporary_leave,
+    suicide_risk_assessment,
+    supervised_temporary_leave,
+    temporary_leave,
+    unsupervised_temporary_leave,
+)
+from psycop.common.feature_generation.loaders.raw.load_visits import (
+    admissions,
+    ambulatory_visits,
+    physical_visits_to_psychiatry,
+    physical_visits_to_somatic,
+)
+from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
+from psycop.projects.ect.feature_generation.cohort_definition.ect_cohort_definition import (
+    ect_outcome_timestamps,
+)
+from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
+    broeset_violence_checklist,
+    hamilton_d17,
+    no_temporary_leave,
+    suicide_risk_assessment,
+    supervised_temporary_leave,
+    temporary_leave,
+    unsupervised_temporary_leave,
+)
+from psycop.common.feature_generation.loaders.raw.load_visits import (
+    admissions,
+    ambulatory_visits,
+    physical_visits_to_psychiatry,
+    physical_visits_to_somatic,
+)
+from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
+from psycop.projects.ect.feature_generation.cohort_definition.ect_cohort_definition import (
+    ect_outcome_timestamps,
+)
+
+
+def get_ect_project_info() -> ProjectInfo:
+    return ProjectInfo(project_name="ect", project_path=OVARTACI_SHARED_DIR / "ect" / "feature_set")
+
+
+def _init_ect_predictor(
+    df_loader: Callable[[], pd.DataFrame],
+    layer: int,
+    fallback: float | int,
+    aggregation_fns: Sequence[ts.aggregators.Aggregator],
+    lookbehind_distances: Sequence[datetime.timedelta] = [
+        datetime.timedelta(days=i) for i in [90, 365, 730]
+    ],
+    column_prefix: str = "pred_layer_{}",
+    entity_id_col_name: str = "dw_ek_borger",
+) -> ts.PredictorSpec:
+    logging.info(f"Initialising {df_loader.__name__}")
+    return ts.PredictorSpec(
+        value_frame=ts.ValueFrame(
+            init_df=pl.from_pandas(df_loader()).rename({"value": df_loader.__name__}),
+            entity_id_col_name=entity_id_col_name,
+        ),
+        lookbehind_distances=lookbehind_distances,
+        aggregators=aggregation_fns,
+        fallback=fallback,
+        column_prefix=column_prefix.format(layer),
+    )
+
+
+AnySpec = ts.PredictorSpec | ts.OutcomeSpec | ts.StaticSpec | ts.TimeDeltaSpec
+
+
+@dataclass(frozen=True)
+class ContinuousSpec:
+    loader: Callable[[], pd.DataFrame]
+    aggregation_fns: Sequence[ts.aggregators.Aggregator]
+    fallback: float
+
+
+@dataclass(frozen=True)
+class BooleanSpec:
+    loader: Callable[[], pd.DataFrame]
+    aggregation_fns: Sequence[ts.aggregators.Aggregator] = [HasValuesAggregator()]
+    fallback: float = 0.0
+
+
+@dataclass(frozen=True)
+class CategoricalSpec:
+    loader: Callable[[], pd.DataFrame]
+    aggregation_fns: Sequence[ts.aggregators.Aggregator]
+    fallback: float
+
+
+@dataclass(frozen=True)
+class LayerSpecPair:
+    layer: int
+    spec: AnySpec | BooleanSpec | ContinuousSpec | CategoricalSpec
+
+
+def _pair_to_spec(pair: LayerSpecPair) -> AnySpec:
+    match pair.spec:
+        case ContinuousSpec():
+            return _init_ect_predictor(
+                df_loader=pair.spec.loader,
+                layer=pair.layer,
+                fallback=pair.spec.fallback,
+                aggregation_fns=pair.spec.aggregation_fns,
+            )
+        case BooleanSpec():
+            return _init_ect_predictor(
+                df_loader=pair.spec.loader,
+                layer=pair.layer,
+                fallback=pair.spec.fallback,
+                aggregation_fns=pair.spec.aggregation_fns,
+            )
+        case CategoricalSpec():
+            return _init_ect_predictor(
+                df_loader=pair.spec.loader,
+                layer=pair.layer,
+                fallback=pair.spec.fallback,
+                aggregation_fns=pair.spec.aggregation_fns,
+            )
+        case ts.PredictorSpec() | ts.OutcomeSpec() | ts.StaticSpec() | ts.TimeDeltaSpec():
+            return pair.spec
+
+
+if __name__ == "__main__":
+    import coloredlogs
+
+    coloredlogs.install(  # type: ignore
+        level="INFO",
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+        datefmt="%Y/%m/%d %H:%M:%S",
+    )
+
+    feature_layers = {
+        0: [
+            ts.OutcomeSpec(
+                value_frame=ts.ValueFrame(
+                    init_df=ect_outcome_timestamps().frame, entity_id_col_name="dw_ek_borger"
+                ),
+                lookahead_distances=[datetime.timedelta(days=60)],
+                aggregators=[ts.MaxAggregator()],
+                fallback=0,
+                column_prefix="outc_ect",
+            ),
+            ts.StaticSpec(
+                value_frame=ts.StaticFrame(init_df=sex_female(), entity_id_col_name="dw_ek_borger"),
+                fallback=0,
+                column_prefix="pred",
+            ),
+            ts.TimeDeltaSpec(
+                init_frame=ts.TimestampValueFrame(
+                    birthdays(),
+                    entity_id_col_name="dw_ek_borger",
+                    value_timestamp_col_name="date_of_birth",
+                ),
+                column_prefix="pred",
+                fallback=0,
+                output_name="age",
+            ),
+        ],
+        1: [
+            ContinuousSpec(
+                physical_visits_to_psychiatry, aggregation_fns=[CountAggregator()], fallback=0
+            ),
+            ContinuousSpec(
+                physical_visits_to_somatic, aggregation_fns=[CountAggregator()], fallback=0
+            ),
+            ContinuousSpec(
+                partial(admissions, shak_code=6600, shak_sql_operator="="),
+                aggregation_fns=[CountAggregator()],
+                fallback=0,
+            ),
+            ContinuousSpec(
+                partial(ambulatory_visits, shak_code=6600, shak_sql_operator="="),
+                aggregation_fns=[CountAggregator()],
+                fallback=0,
+            ),
+        ],
+        2: [
+            ContinuousSpec(
+                hamilton_d17,
+                aggregation_fns=[
+                    LatestAggregator(timestamp_col_name="timestamp"),
+                    MeanAggregator(),
+                ],
+                fallback=np.NaN,
+            ),
+            ContinuousSpec(
+                broeset_violence_checklist,
+                aggregation_fns=[LatestAggregator("timestamp"), MeanAggregator()],
+                fallback=np.NaN,
+            ),
+            ContinuousSpec(antipsychotics, aggregation_fns=[CountAggregator()], fallback=0),
+            ContinuousSpec(antidepressives, aggregation_fns=[CountAggregator()], fallback=0),
+        ],
+        3: [
+            BooleanSpec(f0_disorders),
+            BooleanSpec(f1_disorders),
+            BooleanSpec(f2_disorders),
+            BooleanSpec(f3_disorders),
+            BooleanSpec(f4_disorders),
+            BooleanSpec(f5_disorders),
+            BooleanSpec(f6_disorders),
+            BooleanSpec(f7_disorders),
+            BooleanSpec(f8_disorders),
+            BooleanSpec(f9_disorders),
+        ],
+        4: [
+            BooleanSpec(first_gen_antipsychotics),
+            BooleanSpec(second_gen_antipsychotics),
+            BooleanSpec(clozapine),
+            BooleanSpec(lithium),
+            BooleanSpec(valproate),
+            BooleanSpec(lamotrigine),
+            BooleanSpec(benzodiazepines),
+            BooleanSpec(pregabaline),
+            BooleanSpec(ssri),
+            BooleanSpec(snri),
+            BooleanSpec(tca),
+            BooleanSpec(selected_nassa),
+            BooleanSpec(benzodiazepine_related_sleeping_agents),
+        ],
+        5: [
+            ContinuousSpec(
+                suicide_risk_assessment,
+                aggregation_fns=[
+                    LatestAggregator(timestamp_col_name="timestamp"),
+                    MaxAggregator(),
+                    MeanAggregator(),
+                ],
+                fallback=np.NaN,
+            ),
+            # coercion loaders return duration of coercion
+            ContinuousSpec(
+                skema_1,
+                aggregation_fns=[
+                    MeanAggregator(),
+                    MaxAggregator(),
+                    LatestAggregator(timestamp_col_name="timestamp"),
+                ],
+                fallback=0,
+            ),
+            ContinuousSpec(
+                skema_2,
+                aggregation_fns=[
+                    MeanAggregator(),
+                    MaxAggregator(),
+                    LatestAggregator(timestamp_col_name="timestamp"),
+                ],
+                fallback=0,
+            ),
+            ContinuousSpec(
+                skema_3,
+                aggregation_fns=[
+                    MeanAggregator(),
+                    MaxAggregator(),
+                    LatestAggregator(timestamp_col_name="timestamp"),
+                ],
+                fallback=0,
+            ),
+            # leave loaders return a bool
+            ContinuousSpec(
+                temporary_leave,
+                aggregation_fns=[CountAggregator(), HasValuesAggregator()],
+                fallback=0,
+            ),
+            ContinuousSpec(
+                no_temporary_leave,
+                aggregation_fns=[CountAggregator(), HasValuesAggregator()],
+                fallback=0,
+            ),
+            ContinuousSpec(
+                supervised_temporary_leave,
+                aggregation_fns=[CountAggregator(), HasValuesAggregator()],
+                fallback=0,
+            ),
+            ContinuousSpec(
+                unsupervised_temporary_leave,
+                aggregation_fns=[CountAggregator(), HasValuesAggregator()],
+                fallback=0,
+            ),
+        ],
+        6: [
+            # TODO: text
+        ],
+    }
+
+    layer_spec_pairs = [
+        LayerSpecPair(layer, spec)
+        for layer, spec_list in feature_layers.items()
+        for spec in spec_list
+    ]
+
+    # Run in parallel for faster loading
+    logging.info("Loading specifications")
+    with multiprocessing.Pool(processes=15) as pool:
+        specs = list(tqdm(pool.imap(_pair_to_spec, layer_spec_pairs), total=len(layer_spec_pairs)))
+
+    logging.info("Generating feature set")
+    generate_feature_set(
+        project_info=get_ect_project_info(),
+        eligible_prediction_times_frame=ect_pred_times(),
+        feature_specs=specs,
+        feature_set_name="ect_feature_set",
+        n_workers=15,
+        step_size=datetime.timedelta(days=365),
+        do_dataset_description=False,
+    )
