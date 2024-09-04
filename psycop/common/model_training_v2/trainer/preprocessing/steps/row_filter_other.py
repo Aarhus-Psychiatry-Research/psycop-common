@@ -129,7 +129,7 @@ class DateFilter(PresplitStep):
 
     column_name: str
     threshold_date: str
-    direction: Literal["before", "after"]
+    direction: Literal["before", "after-inclusive"]
 
     def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
         date_col = pl.col(self.column_name)
@@ -138,5 +138,5 @@ class DateFilter(PresplitStep):
         match self.direction:
             case "before":
                 return input_df.filter(date_col < threshold_date)
-            case "after":
-                return input_df.filter(date_col > threshold_date)
+            case "after-inclusive":
+                return input_df.filter(date_col >= threshold_date)
