@@ -1,4 +1,3 @@
-"""Experiments with models trained and evaluated using different lookaheads for the outcome columns"""
 
 from pathlib import Path
 
@@ -11,7 +10,9 @@ from sklearn.pipeline import Pipeline
 from wasabi import Printer
 
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from psycop.common.model_training.data_loader.utils import load_and_filter_split_from_cfg
+from psycop.common.model_training.data_loader.utils import (
+    load_and_filter_split_from_cfg,
+)
 from psycop.common.model_training.preprocessing.post_split.pipeline import (
     create_post_split_pipeline,
 )
@@ -42,7 +43,7 @@ def stratified_cross_validation(
     train_df: pd.DataFrame,
     train_col_names: list[str],
     outcome_col_name: str,
-) -> tuple[pd.DataFrame, list[float]]:
+) -> tuple[pd.DataFrame, list[float], list[float]]:
     """Performs stratified and grouped cross validation using the pipeline."""
     msg = Printer(timestamp=True)
 
@@ -62,6 +63,8 @@ def stratified_cross_validation(
 
     oof_aucs = []
 
+    train_aucs = []
+
     for i, (train_idxs, val_idxs) in enumerate(folds):
         msg_prefix = f"Fold {i + 1}"
 
@@ -72,7 +75,9 @@ def stratified_cross_validation(
 
         y_pred = pipe.predict_proba(X_train)[:, 1]
 
-        msg.info(f"{msg_prefix}: Train AUC = {round(roc_auc_score(y_train,y_pred), 3)}")  # type: ignore
+        train_auc = round(roc_auc_score(y_train,y_pred), 3)
+        
+        msg.info(f"{msg_prefix}: Train AUC = {train_auc}")  # type: ignore
 
         oof_y_pred = pipe.predict_proba(X.loc[val_idxs])[:, 1]  # type: ignore
 
@@ -83,8 +88,9 @@ def stratified_cross_validation(
         train_df.loc[val_idxs, "oof_y_hat"] = oof_y_pred  # type: ignore
 
         oof_aucs.append(oof_auc)
+        train_aucs.append(train_auc)
 
-    return train_df, oof_aucs
+    return train_df, oof_aucs, train_aucs
 
 
 def crossvalidate(
@@ -93,7 +99,7 @@ def crossvalidate(
     pipe: Pipeline,
     outcome_col_name: str,
     train_col_names: list[str],
-) -> tuple[pd.DataFrame, list[float]]:
+) -> tuple[pd.DataFrame, list[float], list[float]]:
     """Train model on cross validation folds and return evaluation dataset.
 
     Args:
@@ -107,7 +113,7 @@ def crossvalidate(
         Evaluation dataset
     """
 
-    df, oof_aucs = stratified_cross_validation(
+    df, oof_aucs, train_aucs = stratified_cross_validation(
         cfg=cfg,
         pipe=pipe,
         train_df=train,
@@ -119,7 +125,7 @@ def crossvalidate(
 
     return create_eval_dataset(
         col_names=cfg.data.col_name, outcome_col_name=outcome_col_name, df=df
-    ), oof_aucs  # type: ignore
+    ), oof_aucs, train_aucs  # type: ignore
 
 
 def load_data(cfg: FullConfigSchema) -> pd.DataFrame:
@@ -137,7 +143,7 @@ def load_data(cfg: FullConfigSchema) -> pd.DataFrame:
     return train_dataset
 
 
-def train_model(cfg: FullConfigSchema) -> tuple[float, list[float]]:
+def train_model(cfg: FullConfigSchema) -> tuple[float, list[float], list[float]]:
     """Train a single model and evaluate it."""
     dataset = load_data(cfg)
 
@@ -145,7 +151,7 @@ def train_model(cfg: FullConfigSchema) -> tuple[float, list[float]]:
 
     pipe = create_post_split_pipeline(cfg)
 
-    eval_dataset, oof_aucs = crossvalidate(
+    eval_dataset, oof_aucs, train_aucs = crossvalidate(
         cfg=cfg,
         train=dataset,
         pipe=pipe,
@@ -156,7 +162,7 @@ def train_model(cfg: FullConfigSchema) -> tuple[float, list[float]]:
     roc_auc = roc_auc_score(  # type: ignore
         eval_dataset.y, eval_dataset.y_hat_probs
     )
-    return roc_auc, oof_aucs  # type: ignore
+    return roc_auc, oof_aucs, train_aucs  # type: ignore
 
 
 def cross_validation_performance_table(
@@ -166,6 +172,8 @@ def cross_validation_performance_table(
     cfs = []
     std_devs = []
     oof_intervals = []
+    train_aurocs = []
+    model_optimisms = []
 
     for i in models_to_train.index:
         run = _get_model_pipeline(
@@ -173,25 +181,31 @@ def cross_validation_performance_table(
             group_name=models_to_train["group_name"][i],  # type: ignore
             model_type=models_to_train["model_type"][i],  # type: ignore
         )
-        roc_auc, oof_aucs = train_model(run.inputs.cfg)
+        roc_auc, oof_aucs, train_aucs = train_model(run.inputs.cfg)
 
         high_oof_auc = max(oof_aucs)
         low_oof_auc = min(oof_aucs)
-        mean_auroc = np.mean(oof_aucs)  # type: ignore
+        train_auroc = np.mean(train_aucs)  # type: ignore
+        mean_auroc = np.mean(oof_aucs)
         std_dev_auroc = np.std(oof_aucs)  # type: ignore
         std_error_auroc = std_dev_auroc / np.sqrt(len(oof_aucs))
         dof = len(oof_aucs) - 1
         conf_interval = stats.t.interval(0.95, dof, loc=mean_auroc, scale=std_error_auroc)
+        optimism = train_auroc - roc_auc
 
         roc_aucs.append(roc_auc)
         cfs.append(f"[{round(conf_interval[0],3)}:{round(conf_interval[1],3)}]")
         std_devs.append(round(std_dev_auroc, 3))
         oof_intervals.append(f"{low_oof_auc}-{high_oof_auc}")
+        train_aurocs.append(train_auroc)
+        model_optimisms.append(optimism)
 
     df_dict = {
         "Predictor set": models_to_train["pretty_model_name"],
         "Model type": models_to_train["pretty_model_type"],
-        "AUROC score": roc_aucs,
+        "Apparent AUROC score": train_aurocs,
+        "Internal AUROC score": roc_aucs,
+        "Model optimism": model_optimisms,
         "95 percent confidence interval": cfs,
         "Standard deviation": std_devs,
         "5-fold out-of-fold AUROC interval": oof_intervals,
@@ -205,7 +219,10 @@ def cross_validation_performance_table(
 
 
 if __name__ == "__main__":
-    df = pd.DataFrame(
+
+        #### XGBOOST ####
+    
+    xg_df = pd.DataFrame(
         {
             "pretty_model_name": [
                 "Diagnoses",
@@ -213,31 +230,87 @@ if __name__ == "__main__":
                 "Sentence transformer embeddings",
                 "TF-IDF features",
                 "Full predictor set",
-                "Full predictor set 90 days lookahead",
-                "Full predictor set 365 days lookahead",
+                "90 days lookahead - Full predictor set ",
+                "365 days lookahead - Full predictor set",
+                "No washout - Full predictor set"
             ],
             "model_name": [
                 "limited_model_demographics_diagnoses",
                 "full_model_without_text_features",
-                "only_sent_trans_model",
-                "only_tfidf_750_model_added_konklusion",
-                "full_model_with_text_features_added_konklusion",
-                "full_model_with_text_features_lookahead_90_added_konklusion",
-                "full_model_with_text_features_lookahead_365_added_konklusion",
+                "only_sent_trans_model_train_val",
+                "only_tfidf_model_train_val",
+                "full_model_with_text_features_train_val",
+                "full_model_with_text_features_lookahead_90",
+                "full_model_with_text_features_lookahead_365",
+                "no_washout_full_model_with_text_features_train_val"
             ],
             "group_name": [
-                "elaborations-piecrust",
-                "frustums-liveable",
-                "overlogicality-gardenesque",
-                "hectical-jawboned",
-                "dittoed-tetrastylous",
-                "psychorhythmic-unmaneged",
-                "alopecias-peewees",
+                "dismail-smilaceous",
+                "photodramaturgy-missilry",
+                "subclassing-cacodemonomania",
+                "theophanism-chauvinists",
+                "chuddahs-caterwauls",
+                "grangeriser-wavingly",
+                "proskomide-unsurliness",
+                "prelim-benched",
             ],
             # 0 is logistic regression and 1 is Xgboost
-            "model_type": [0, 0, 0, 0, 0, 0, 0],
+            "model_type": [1,1,1,1,1,1,1,1],
             # change this for either XGboost or Logistic regression
             "pretty_model_type": [
+                "XGBoost",
+                "XGBoost",
+                "XGBoost",
+                "XGBoost",
+                "XGBoost",
+                "XGBoost",
+                "XGBoost",
+                "XGBoost",
+            ],
+        }
+    )
+
+    cross_validation_performance_table(xg_df, "primary_models_xgboost_")
+
+    #### ELASTIC NET ####
+
+    en_df = pd.DataFrame(
+        {
+            "pretty_model_name": [
+                "Diagnoses",
+                "Patient descriptors",
+                "Sentence transformer embeddings",
+                "TF-IDF features",
+                "Full predictor set",
+                "90 days lookahead - Full predictor set ",
+                "365 days lookahead - Full predictor set",
+                "No washout - Full predictor set"
+            ],
+            "model_name": [
+                "limited_model_demographics_diagnoses",
+                "full_model_without_text_features",
+                "only_sent_trans_model_train_val",
+                "only_tfidf_model_train_val",
+                "full_model_with_text_features_train_val",
+                "full_model_with_text_features_lookahead_90",
+                "full_model_with_text_features_lookahead_365",
+                "no_washout_full_model_with_text_features_train_val"
+            ],
+            "group_name": [
+                "dismail-smilaceous",
+                "photodramaturgy-missilry",
+                "subclassing-cacodemonomania",
+                "theophanism-chauvinists",
+                "chuddahs-caterwauls",
+                "grangeriser-wavingly",
+                "proskomide-unsurliness",
+                "prelim-benched",
+            ],
+            # 0 is logistic regression and 1 is Xgboost
+            "model_type": [0, 0, 0, 0, 0, 0, 0, 0],
+            # change this for either XGboost or Logistic regression
+            "pretty_model_type": [
+                "Logistic regression",
                 "Logistic regression",
                 "Logistic regression",
                 "Logistic regression",
@@ -249,4 +322,4 @@ if __name__ == "__main__":
         }
     )
 
-    cross_validation_performance_table(df, "primary_models_")
+    cross_validation_performance_table(en_df, "primary_models_elastic_net_")
