@@ -1452,3 +1452,7 @@ def bipolar_a_diagnosis(
         shak_sql_operator=shak_sql_operator,
         timestamp_purpose=timestamp_purpose,
     )
+
+
+if __name__ == "__main__":
+    df = type_1_diabetes()
