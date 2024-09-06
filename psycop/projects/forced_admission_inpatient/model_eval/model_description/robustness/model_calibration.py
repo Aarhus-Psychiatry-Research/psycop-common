@@ -22,8 +22,8 @@ def calibration_plot(run: ForcedAdmissionInpatientPipelineRun):
     )
 
     # only keep bins with a prob_pred value below 0.25
-    prob_true = prob_true[prob_pred < 0.25]
-    prob_pred = prob_pred[prob_pred < 0.25]
+    prob_true = prob_true[prob_pred < 0.2]
+    prob_pred = prob_pred[prob_pred < 0.2]
 
     # Create the subplots
     fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, figsize=(8, 8))
@@ -33,13 +33,23 @@ def calibration_plot(run: ForcedAdmissionInpatientPipelineRun):
         prob_pred, prob_true, marker="o", color="#0072B2", label="Calibration Curve"
     )  # Calibration line color
     ax1.plot(
-        [0, 0.25], [0, 1], linestyle="--", color="#D55E00", label="Perfectly Calibrated"
+        [0, 0.2], [0, 0.2], linestyle="--", color="#D55E00", label="Perfectly Calibrated"
     )  # Dotted line color
     ax1.set_xlabel("Mean Predicted Probability")
     ax1.set_ylabel("Fraction of Positives")
     ax1.set_title("Calibration Curve")
     ax1.legend()
     ax1.axvline(x=BEST_POS_RATE, color="red", linestyle="--", label="Best Positive Rate")
+    ax1.text(
+    0.3,
+    0.95,
+    "Best positive predicted rate",
+    color="red",
+    fontsize=8,
+    transform=ax1.transAxes,
+    verticalalignment="top",
+)
+
 
     # Plot the histogram with solid bars
     counts, bin_edges = np.histogram(eval_ds.y_hat_probs, bins=50, range=(0, 1))
@@ -66,6 +76,15 @@ def calibration_plot(run: ForcedAdmissionInpatientPipelineRun):
     ax2.set_ylabel("Count")
     ax2.set_title("Distribution of Predicted Probabilities")
     ax2.axvline(x=BEST_POS_RATE, color="red", linestyle="--", label="Best Positive Rate")
+    ax2.text(
+    0.15,
+    0.95,
+    "Best positive predicted rate",
+    color="red",
+    fontsize=8,
+    transform=ax2.transAxes,
+    verticalalignment="top",
+)
 
     # Adjust layout and save the figure
     plt.tight_layout()
