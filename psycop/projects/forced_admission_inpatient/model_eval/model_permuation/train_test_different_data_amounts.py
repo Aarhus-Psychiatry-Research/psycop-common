@@ -1,4 +1,5 @@
 """Experiments with models trained and evaluated using only part of the data"""
+from typing import Sequence
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -22,7 +23,7 @@ from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
 def train_model_on_different_training_data_amounts(
     run: ForcedAdmissionInpatientPipelineRun,
     save: bool = True,
-    fractions: tuple[float] = (0.1, 0.25, 0.5, 0.75, 1.0),  # type: ignore
+    fractions: Sequence[float] = [0.1, 0.25, 0.5, 0.75, 1.0],
 ) -> pd.DataFrame:
     """Train a single model and evaluate it."""
     cfg = run.inputs.cfg
@@ -41,11 +42,11 @@ def train_model_on_different_training_data_amounts(
 
     # sample 10, 25, 50, 75, 100 percent of the data and train the model on it
     for i in fractions:
-        dataset = dataset.sample(frac=i, random_state=42)
-
+        fraction_dataset = dataset.copy().sample(frac=i, random_state=42).reset_index(drop=True) if i != 1.0 else dataset.copy()
+        
         eval_dataset, oof_aucs, train_aucs = crossvalidate(
             cfg=cfg,
-            train=dataset,
+            train=fraction_dataset,
             pipe=pipe,
             outcome_col_name=outcome_col_name_for_train,  # type: ignore
             train_col_names=train_col_names,
@@ -69,8 +70,9 @@ def train_model_on_different_training_data_amounts(
         oof_intervals.append(f"{low_oof_auc}-{high_oof_auc}")
         train_aurocs.append(train_auroc)
 
+
     df_dict = {
-        "Data fraction": list(fractions),
+        "Data fraction": fractions,
         "Apparent AUROC score": train_aurocs,
         "Internal AUROC score": roc_aucs,
         "95 percent confidence interval": cfs,
@@ -112,7 +114,9 @@ def plot_performance_by_amount_of_training_data(run: ForcedAdmissionInpatientPip
     plt.legend()
 
     # Save the plot
-    output_path = run.paper_outputs.paths.figures / "performance_by_training_fraction.png"
+    output_path = run.paper_outputs.paths.figures / "fa_inpatient_performance_by_training_fraction.png"
+    plt.savefig(output_path)
+
     plt.show()
 
 
@@ -120,5 +124,5 @@ if __name__ == "__main__":
     from psycop.projects.forced_admission_inpatient.model_eval.selected_runs import (
         get_best_eval_pipeline,
     )
-
+    train_model_on_different_training_data_amounts(run=get_best_eval_pipeline(), fractions=[0.1, 0.25, 0.5, 0.75, 1.0])
     plot_performance_by_amount_of_training_data(run=get_best_eval_pipeline())
