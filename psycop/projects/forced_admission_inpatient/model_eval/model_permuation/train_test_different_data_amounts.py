@@ -42,7 +42,7 @@ def train_model_on_different_training_data_amounts(
 
     # sample 10, 25, 50, 75, 100 percent of the data and train the model on it
     for i in fractions:
-        fraction_dataset = dataset.copy().sample(frac=i, random_state=42).reset_index(drop=True) if i != 1.0 else dataset.copy()
+        fraction_dataset = dataset.copy().sample(frac=i, random_state=1).reset_index(drop=True) if i != 1.0 else dataset.copy()
         
         eval_dataset, oof_aucs, train_aucs = crossvalidate(
             cfg=cfg,
@@ -124,5 +124,6 @@ if __name__ == "__main__":
     from psycop.projects.forced_admission_inpatient.model_eval.selected_runs import (
         get_best_eval_pipeline,
     )
-    train_model_on_different_training_data_amounts(run=get_best_eval_pipeline(), fractions=[0.1, 0.25, 0.5, 0.75, 1.0])
     plot_performance_by_amount_of_training_data(run=get_best_eval_pipeline())
+
+    train_model_on_different_training_data_amounts(run=get_best_eval_pipeline(), fractions=[0.1, 0.25, 0.5, 0.75, 1.0])
