@@ -9,9 +9,6 @@ from psycop.common.model_training.data_loader.utils import (
 from psycop.projects.forced_admission_inpatient.model_eval.selected_runs import (
     get_best_eval_pipeline,
 )
-from psycop.projects.forced_admission_inpatient.utils.feature_name_to_readable import (
-    feature_name_to_readable,
-)
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
     ForcedAdmissionInpatientPipelineRun,
 )
@@ -22,15 +19,15 @@ def _load_vocabulary(vocab_filename: str) -> pd.DataFrame:
 
     return pd.read_parquet(vocab_filepath)
 
+
 def generate_feature_coefs_table(
     pipeline_run: ForcedAdmissionInpatientPipelineRun, vocab_filename: str
 ) -> pl.DataFrame:
-    
     pipeline = pipeline_run.pipeline_outputs.pipe
 
     # Import text model vocabulary
     vocab = _load_vocabulary(vocab_filename)
-    
+
     val_df = load_and_filter_split_from_cfg(
         data_cfg=pipeline_run.inputs.cfg.data,
         pre_split_cfg=pipeline_run.inputs.cfg.preprocessing.pre_split,
@@ -42,14 +39,11 @@ def generate_feature_coefs_table(
         pre_split_cfg=pipeline_run.inputs.cfg.preprocessing.pre_split,
         split="val",
     )
-    
+
     feature_names = [c for c in train_df.columns if "pred_" in c]
 
-        # Concatenate the train and validation DataFrames
+    # Concatenate the train and validation DataFrames
     combined_df = pd.concat([train_df, val_df], ignore_index=True)
-    
-    # Keep only the columns that are in feature_names
-    train_predictors = combined_df[feature_names]
 
     try:
         pipeline[0]["feature_selection"]  # type: ignore
@@ -61,7 +55,7 @@ def generate_feature_coefs_table(
 
     except KeyError:
         selected_feature_names = feature_names  # type: ignore
-    
+
     # Get standardised predictor coefficients
     standard_coefs = pipeline.named_steps["model"].coef_
 
@@ -73,29 +67,19 @@ def generate_feature_coefs_table(
     # Sort the table by gain in descending order
     feature_table = feature_table.sort("Standardised coefficients", descending=True)
 
-    # Get the top 100 features by gain
-    top_100_features = feature_table.head(100).with_columns(
-        pl.col("Gain").round(3),
-        pl.col("Feature Name").apply(lambda x: feature_name_to_readable(x)),  # type: ignore
-    )
+    # Get the top 15 features and the bottom 15 features and add them to a new DataFrame
+    top_bottom_features = feature_table.tail(15)
+    top_top_features = feature_table.head(15)
 
-    pd_df = top_100_features.to_pandas()
-    pd_df = pd_df.reset_index()
-    pd_df["index"] = pd_df["index"] + 1
-    pd_df = pd_df.set_index("index")
+    # Concatenate the two DataFrames
+    top_features = pl.concat([top_bottom_features, top_top_features]).to_pandas()
 
-    # Map tfidf indices with actual ngrams from vocabulary
-    pd_df["Feature Name"][pd_df["Feature Name"].str.contains("tfidf")] = pd_df["Feature Name"][
-        pd_df["Feature Name"].str.contains("tfidf")
-    ].str.replace(r"\d+$", lambda x: vocab.loc[int(x.group())]["Word"])
+    output_path = pipeline_run.paper_outputs.paths.tables / "fa_inpatient_feature_coefficients.xlsx"
 
-    with (pipeline_run.paper_outputs.paths.tables / "feature_importance_by_gain.html").open(
-        "w"
-    ) as html_file:
-        html = pd_df.to_html()
-        html_file.write(html)
+    top_features.to_excel(output_path, index=False)
 
-    return top_100_features
+    return top_features  # type: ignore
+
 
 if __name__ == "__main__":
     top_100_features = generate_feature_coefs_table(
