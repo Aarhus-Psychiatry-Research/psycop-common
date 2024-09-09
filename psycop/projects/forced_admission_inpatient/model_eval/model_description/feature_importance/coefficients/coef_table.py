@@ -51,13 +51,6 @@ def generate_feature_coefs_table(
     # Keep only the columns that are in feature_names
     train_predictors = combined_df[feature_names]
 
-    # Standardize the predictors (X)
-    scaler = StandardScaler()
-    train_predictors_scaled = scaler.fit_transform(train_predictors)
-    
-    # Get the standard deviation of each feature from the fitted StandardScaler
-    feature_std_devs = scaler.scale_
-
     try:
         pipeline[0]["feature_selection"]  # type: ignore
 
@@ -66,13 +59,11 @@ def generate_feature_coefs_table(
         )
         selected_feature_names = [feature_names[i] for i in feature_indices]
 
-        selected_feature_std_devs = [feature_std_devs[i] for i in feature_indices] # type: ignore
-
     except KeyError:
         selected_feature_names = feature_names  # type: ignore
     
     # Get standardised predictor coefficients
-    standard_coefs = pipeline.named_steps["model"].coef_ * selected_feature_std_devs  # type: ignore
+    standard_coefs = pipeline.named_steps["model"].coef_
 
     # Create a DataFrame to store the feature names and their corresponding gain
     feature_table = pl.DataFrame(
