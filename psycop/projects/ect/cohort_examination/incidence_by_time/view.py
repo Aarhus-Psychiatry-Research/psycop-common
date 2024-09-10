@@ -31,6 +31,7 @@ def incidence_by_time_distribution_density(
     )
     return distribution_plot
 
+
 def incidence_by_time_distribution_histogram(
     model: IncidenceByTimeModel,
     limits: tuple[datetime.datetime, datetime.datetime] = (
@@ -55,7 +56,6 @@ def incidence_by_time_distribution_histogram(
         + pn.geom_vline(xintercept=datetime.datetime(2013, 1, 1), color="black", linetype="dashed")
     )
     return distribution_plot
-
 
 
 def incidence_by_time_faceted(

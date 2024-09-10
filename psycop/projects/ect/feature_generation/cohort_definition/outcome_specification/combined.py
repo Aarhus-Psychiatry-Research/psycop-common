@@ -6,7 +6,6 @@ from psycop.projects.ect.feature_generation.cohort_definition.outcome_specificat
 
 
 def get_first_ect_indicator() -> pd.DataFrame:
-    
     procedure_codes = get_ect_procedures().rename({"procedurekodetekst": "cause"})
     first_ect = procedure_codes.sort("timestamp").groupby("dw_ek_borger").first()
 

@@ -35,8 +35,5 @@ def pad() -> pd.DataFrame:
     return finalize_feature_df(subset_df)
 
 
-
 if __name__ == "__main__":
-
-
     df = pad()

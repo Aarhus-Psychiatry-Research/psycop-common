@@ -1,7 +1,6 @@
 # remove admission after ect
 # identify closest admission
 # calculate timedelta
-import datetime
 from pathlib import Path
 from typing import NewType
 
@@ -16,6 +15,7 @@ from psycop.projects.ect.feature_generation.cohort_definition.outcome_specificat
 
 TimeFromAdmissionModel = NewType("TimeFromAdmissionModel", pl.DataFrame)
 
+
 def time_from_admission_to_incidence_facade(output_dir: Path):
     data = time_from_admission_model()
 
@@ -23,6 +23,7 @@ def time_from_admission_to_incidence_facade(output_dir: Path):
     p.save(
         output_dir / "incidence_by_time_faceted.png", limitsize=False, dpi=300, width=15, height=10
     )
+
 
 @shared_cache().cache()
 def time_from_admission_model() -> TimeFromAdmissionModel:
@@ -44,12 +45,8 @@ def time_from_admission_model() -> TimeFromAdmissionModel:
 
 
 def time_from_admission_view(
-    model: TimeFromAdmissionModel,
-    limits: tuple[float, float] = (
-        0, 60,
-    ),
+    model: TimeFromAdmissionModel, limits: tuple[float, float] = (0, 60)
 ) -> pn.ggplot:
-    
     p = (
         pn.ggplot(model.with_columns(pl.col("timedelta").dt.days()), pn.aes(x="timedelta"))
         + pn.geom_histogram(bins=30)
@@ -59,6 +56,3 @@ def time_from_admission_view(
     )
 
     return p
-
-
-

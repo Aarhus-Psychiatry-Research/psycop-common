@@ -225,7 +225,7 @@ def admissions(
     shak_code: Union[int, None] = None,
     shak_sql_operator: Union[str, None] = None,
     timestamp_for_output: Literal["start", "end"] = "end",
-    timestamps_only: bool = False
+    timestamps_only: bool = False,
 ) -> pd.DataFrame:
     """Load admissions."""
     df = physical_visits(
@@ -234,7 +234,7 @@ def admissions(
         n_rows=n_rows,
         shak_code=shak_code,
         shak_sql_operator=shak_sql_operator,
-        timestamp_for_output=timestamp_for_output
+        timestamp_for_output=timestamp_for_output,
     )
     if timestamps_only:
         df = df.drop(columns=["value"])

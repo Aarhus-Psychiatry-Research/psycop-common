@@ -18,9 +18,7 @@ IncidenceByTimeModel = NewType("IncidenceByTimeModel", pl.DataFrame)
 def incidence_by_time_model() -> IncidenceByTimeModel:
     df_lab_result = get_first_ect_indicator()
 
-    grouped_by_outcome = (
-        label_by_outcome_type(pl.from_pandas(df_lab_result), procedure_col="cause")
-    )
+    grouped_by_outcome = label_by_outcome_type(pl.from_pandas(df_lab_result), procedure_col="cause")
 
     filtered_after_move = ECTWashoutMove().apply(grouped_by_outcome.lazy()).collect()
 
@@ -28,5 +26,4 @@ def incidence_by_time_model() -> IncidenceByTimeModel:
 
 
 if __name__ == "__main__":
-
     df = incidence_by_time_model()

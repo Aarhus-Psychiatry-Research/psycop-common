@@ -1,7 +1,6 @@
 import polars as pl
 
 from psycop.common.cohort_definition import PredictionTimeFilter
-from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import f2_disorders, f6_disorders
 from psycop.common.feature_generation.loaders.raw.load_moves import MoveIntoRMBaselineLoader
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
@@ -13,9 +12,6 @@ from psycop.projects.ect.feature_generation.cohort_definition.eligible_predictio
     AGE_COL_NAME,
     MIN_AGE,
     MIN_DATE,
-)
-from psycop.projects.ect.feature_generation.cohort_definition.outcome_specification.combined import (
-    get_first_ect_indicator,
 )
 from psycop.projects.ect.feature_generation.cohort_definition.outcome_specification.procedure_codes import (
     get_ect_procedures,
@@ -55,7 +51,6 @@ class NoIncidentECTWithin3Years(PredictionTimeFilter):  # TODO: check this
 def remove_after_incidence(
     prediction_times: pl.LazyFrame, first_incidence_df: pl.LazyFrame
 ) -> pl.LazyFrame:
-    
     pred_times_with_time_of_incidence = prediction_times.join(
         first_incidence_df, on="dw_ek_borger", how="left", suffix="_result"
     )
@@ -74,24 +69,31 @@ def remove_after_incidence(
 class NoIncidentF2(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         first_f2 = (
-            pl.from_pandas(f2_disorders())
-            .sort(["dw_ek_borger", "timestamp"])
-            .group_by("dw_ek_borger")
-            .first()
-        ).drop("value").lazy()
+            (
+                pl.from_pandas(f2_disorders())
+                .sort(["dw_ek_borger", "timestamp"])
+                .group_by("dw_ek_borger")
+                .first()
+            )
+            .drop("value")
+            .lazy()
+        )
 
         return remove_after_incidence(prediction_times=df, first_incidence_df=first_f2)
-
 
 
 class NoIncidentF6(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         first_f6 = (
-            pl.from_pandas(f6_disorders())
-            .sort(["dw_ek_borger", "timestamp"])
-            .group_by("dw_ek_borger")
-            .first()
-        ).drop("value").lazy()
+            (
+                pl.from_pandas(f6_disorders())
+                .sort(["dw_ek_borger", "timestamp"])
+                .group_by("dw_ek_borger")
+                .first()
+            )
+            .drop("value")
+            .lazy()
+        )
 
         return remove_after_incidence(prediction_times=df, first_incidence_df=first_f6)
 

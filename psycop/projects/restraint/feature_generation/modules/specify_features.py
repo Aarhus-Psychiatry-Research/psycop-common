@@ -641,5 +641,3 @@ class FeatureSpecifier:
             + self._get_outcome_specs()
         )
 
-if __name__ == "__main__":
-    2+2

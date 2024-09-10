@@ -2,11 +2,10 @@
 
 import datetime
 import logging
-import multiprocessing
+import sys
 from collections.abc import Sequence
 from dataclasses import dataclass
 from functools import partial
-import sys
 from typing import Callable
 
 import numpy as np
@@ -21,7 +20,6 @@ from timeseriesflattener.aggregators import (
     MeanAggregator,
     SumAggregator,
 )
-from tqdm import tqdm
 
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
     generate_feature_set,
@@ -30,10 +28,6 @@ from psycop.common.feature_generation.application_modules.project_setup import P
 from psycop.common.feature_generation.loaders.raw.load_coercion import skema_1, skema_2, skema_3
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
-    angina,
-    atrial_fibrillation,
-    chronic_kidney_failure,
-    chronic_lung_disease,
     f0_disorders,
     f1_disorders,
     f2_disorders,
@@ -44,18 +38,9 @@ from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     f7_disorders,
     f8_disorders,
     f9_disorders,
-    type_1_diabetes,
-    type_2_diabetes,
-)
-from psycop.common.feature_generation.loaders.raw.load_lab_results import (
-    hba1c,
-    hdl,
-    ldl,
-    total_cholesterol,
 )
 from psycop.common.feature_generation.loaders.raw.load_medications import (
     antidepressives,
-    antihypertensives,
     antipsychotics,
     benzodiazepine_related_sleeping_agents,
     benzodiazepines,
@@ -69,7 +54,6 @@ from psycop.common.feature_generation.loaders.raw.load_medications import (
     snri,
     ssri,
     tca,
-    top_10_weight_gaining_antipsychotics,
     valproate,
 )
 from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
@@ -93,28 +77,9 @@ from psycop.projects.ect.feature_generation.cohort_definition.ect_cohort_definit
     ect_outcome_timestamps,
     ect_pred_times,
 )
-from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
-    broeset_violence_checklist,
-    hamilton_d17,
-    no_temporary_leave,
-    suicide_risk_assessment,
-    supervised_temporary_leave,
-    temporary_leave,
-    unsupervised_temporary_leave,
-)
-from psycop.common.feature_generation.loaders.raw.load_visits import (
-    admissions,
-    ambulatory_visits,
-    physical_visits_to_psychiatry,
-    physical_visits_to_somatic,
-)
-from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
-from psycop.projects.ect.feature_generation.cohort_definition.ect_cohort_definition import (
-    ect_outcome_timestamps,
-)
-
 
 TEXT_FILE_NAME = "text_embeddings_all_relevant_tfidf-1000.parquet"
+
 
 def get_ect_project_info() -> ProjectInfo:
     return ProjectInfo(project_name="ect", project_path=OVARTACI_SHARED_DIR / "ect" / "feature_set")
@@ -130,12 +95,14 @@ def _init_ect_predictor(
     ],
     column_prefix: str = "pred_layer_{}",
     entity_id_col_name: str = "dw_ek_borger",
-    name_overwrite: str | None = None
+    name_overwrite: str | None = None,
 ) -> ts.PredictorSpec:
     logging.info(f"Initialising {df_loader.__name__ if name_overwrite is None else name_overwrite}")
     return ts.PredictorSpec(
         value_frame=ts.ValueFrame(
-            init_df=pl.from_pandas(df_loader()).rename({"value": df_loader.__name__ if name_overwrite is None else name_overwrite}),
+            init_df=pl.from_pandas(df_loader()).rename(
+                {"value": df_loader.__name__ if name_overwrite is None else name_overwrite}
+            ),
             entity_id_col_name=entity_id_col_name,
         ),
         lookbehind_distances=lookbehind_distances,
@@ -163,12 +130,14 @@ class BooleanSpec:
     fallback: float = 0.0
     name_overwrite: str | None = None
 
+
 @dataclass(frozen=True)
 class CategoricalSpec:
     loader: Callable[[], pd.DataFrame]
     aggregation_fns: Sequence[ts.aggregators.Aggregator]
     fallback: float
     name_overwrite: str | None = None
+
 
 @dataclass(frozen=True)
 class LayerSpecPair:
@@ -184,7 +153,7 @@ def _pair_to_spec(pair: LayerSpecPair) -> AnySpec:
                 layer=pair.layer,
                 fallback=pair.spec.fallback,
                 aggregation_fns=pair.spec.aggregation_fns,
-                name_overwrite=pair.spec.name_overwrite
+                name_overwrite=pair.spec.name_overwrite,
             )
         case BooleanSpec():
             return _init_ect_predictor(
@@ -192,7 +161,7 @@ def _pair_to_spec(pair: LayerSpecPair) -> AnySpec:
                 layer=pair.layer,
                 fallback=pair.spec.fallback,
                 aggregation_fns=pair.spec.aggregation_fns,
-                name_overwrite=pair.spec.name_overwrite
+                name_overwrite=pair.spec.name_overwrite,
             )
         case CategoricalSpec():
             return _init_ect_predictor(
@@ -200,7 +169,7 @@ def _pair_to_spec(pair: LayerSpecPair) -> AnySpec:
                 layer=pair.layer,
                 fallback=pair.spec.fallback,
                 aggregation_fns=pair.spec.aggregation_fns,
-                name_overwrite=pair.spec.name_overwrite
+                name_overwrite=pair.spec.name_overwrite,
             )
         case ts.PredictorSpec() | ts.OutcomeSpec() | ts.StaticSpec() | ts.TimeDeltaSpec():
             return pair.spec
@@ -213,7 +182,7 @@ if __name__ == "__main__":
         level="INFO",
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
         datefmt="%Y/%m/%d %H:%M:%S",
-        stream=sys.stdout
+        stream=sys.stdout,
     )
 
     feature_layers = {
@@ -254,34 +223,49 @@ if __name__ == "__main__":
                 partial(admissions, shak_code=6600, shak_sql_operator="="),
                 aggregation_fns=[CountAggregator()],
                 fallback=0,
-                name_overwrite="admissions_to_psychiatry"
+                name_overwrite="admissions_to_psychiatry",
             ),
             ContinuousSpec(
-                partial(admissions, shak_code=6600, shak_sql_operator="=", return_value_as_visit_length_days=True),
+                partial(
+                    admissions,
+                    shak_code=6600,
+                    shak_sql_operator="=",
+                    return_value_as_visit_length_days=True,
+                ),
                 aggregation_fns=[SumAggregator()],
                 fallback=0,
-                name_overwrite="admissions_to_psychiatry_duration"
+                name_overwrite="admissions_to_psychiatry_duration",
             ),
             ContinuousSpec(
                 partial(admissions, shak_code=6600, shak_sql_operator="!="),
                 aggregation_fns=[CountAggregator()],
                 fallback=0,
-                name_overwrite="admissions_not_to_psychiatry"
+                name_overwrite="admissions_not_to_psychiatry",
             ),
             ContinuousSpec(
-                partial(admissions, shak_code=6600, shak_sql_operator="!=", return_value_as_visit_length_days=True),
+                partial(
+                    admissions,
+                    shak_code=6600,
+                    shak_sql_operator="!=",
+                    return_value_as_visit_length_days=True,
+                ),
                 aggregation_fns=[SumAggregator()],
                 fallback=0,
-                name_overwrite="admissions_not_to_psychiatry_duration"
+                name_overwrite="admissions_not_to_psychiatry_duration",
             ),
             ContinuousSpec(
                 partial(ambulatory_visits, shak_code=6600, shak_sql_operator="="),
                 aggregation_fns=[CountAggregator()],
                 fallback=0,
-                name_overwrite="ambulatory_visits_to_psychiatry"
+                name_overwrite="ambulatory_visits_to_psychiatry",
             ),
             ContinuousSpec(
-                partial(ambulatory_visits, shak_code=6600, shak_sql_operator="=", return_value_as_visit_length_days=True),
+                partial(
+                    ambulatory_visits,
+                    shak_code=6600,
+                    shak_sql_operator="=",
+                    return_value_as_visit_length_days=True,
+                ),
                 aggregation_fns=[SumAggregator()],
                 fallback=0,
                 name_overwrite="ambutory_visits_to_psychiatry_duration",
@@ -404,17 +388,18 @@ if __name__ == "__main__":
             ),
         ],
         "layer_text": [
-            
             ts.PredictorSpec(
                 value_frame=ts.ValueFrame(
-                    init_df=pl.read_parquet(TEXT_EMBEDDINGS_DIR / TEXT_FILE_NAME).drop("overskrift"),
+                    init_df=pl.read_parquet(TEXT_EMBEDDINGS_DIR / TEXT_FILE_NAME).drop(
+                        "overskrift"
+                    ),
                     entity_id_col_name="dw_ek_borger",
-                    value_timestamp_col_name="timestamp"
+                    value_timestamp_col_name="timestamp",
                 ),
                 lookbehind_distances=[datetime.timedelta(days=730)],
                 aggregators=[MeanAggregator()],
                 fallback=np.nan,
-                column_prefix="pred_text"
+                column_prefix="pred_text",
             )
         ],
     }
@@ -425,12 +410,10 @@ if __name__ == "__main__":
         for spec in spec_list
     ]
 
-    # Run in parallel for faster loading
+    
     logging.info("Loading specifications")
     specs = [_pair_to_spec(layer_spec) for layer_spec in layer_spec_pairs]
-    # with multiprocessing.Pool(processes=15) as pool:
-    #     specs = list(tqdm(pool.imap(_pair_to_spec, layer_spec_pairs), total=len(layer_spec_pairs)))
-
+    
     logging.info("Generating feature set")
     generate_feature_set(
         project_info=get_ect_project_info(),
