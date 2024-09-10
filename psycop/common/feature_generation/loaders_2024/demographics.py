@@ -5,10 +5,10 @@ import pandas as pd
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 
 
-def birthdays(sql_cmd_postfix: str, n_rows: int | None = None) -> pd.DataFrame:
+def birthdays(n_rows: int | None = None) -> pd.DataFrame:
     view = "[CVD_T2D_kohorte_demografi]"
 
-    sql = f"SELECT dw_ek_borger, foedselsdato FROM [fct].{view} {sql_cmd_postfix}"
+    sql = f"SELECT dw_ek_borger, foedselsdato FROM [fct].{view}"
 
     df = sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
 
@@ -21,10 +21,10 @@ def birthdays(sql_cmd_postfix: str, n_rows: int | None = None) -> pd.DataFrame:
     return df.reset_index(drop=True)
 
 
-def sex_female(sql_cmd_postfix: str, n_rows: int | None = None) -> pd.DataFrame:
+def sex_female(n_rows: int | None = None) -> pd.DataFrame:
     view = "[CVD_T2D_kohorte_demografi]"
 
-    sql = f"SELECT dw_ek_borger, koennavn FROM [fct].{view} {sql_cmd_postfix}"
+    sql = f"SELECT dw_ek_borger, koennavn FROM [fct].{view}"
 
     df = sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
 

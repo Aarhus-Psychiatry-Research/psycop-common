@@ -15,7 +15,6 @@ from psycop.projects.t2d_extended.cohort_definition.eligible_prediction_times.si
     NoIncidentDiabetes,
     T2DMinAgeFilter,
     T2DMinDateFilter,
-    T2DWashoutMove,
     WithoutPrevalentDiabetes,
 )
 from psycop.projects.t2d_extended.cohort_definition.outcome_specification.lab_results import (
@@ -53,7 +52,6 @@ class T2DCohortDefiner2024(CohortDefiner):
                 T2DMinAgeFilter(birthday_df=pl.from_pandas(birthdays()).lazy()),
                 WithoutPrevalentDiabetes(),
                 NoIncidentDiabetes(),
-                T2DWashoutMove(),
             ),
             entity_id_col_name="dw_ek_borger",
         )

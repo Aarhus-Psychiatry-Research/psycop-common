@@ -2,8 +2,7 @@ import polars as pl
 from wasabi import Printer
 
 from psycop.common.feature_generation.loaders.raw.load_moves import MoveIntoRMBaselineLoader
-
-from ......common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
+from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
     QuarantineFilter,
 )
 

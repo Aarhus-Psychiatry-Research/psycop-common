@@ -147,7 +147,6 @@ def _load_all_values(
 
 def blood_sample(
     blood_sample_id: str | list[str],
-    sql_cmd_postfix: str,
     n_rows: int | None = None,
     values_to_load: str = "numerical_and_coerce",
 ) -> pd.DataFrame:
@@ -155,7 +154,6 @@ def blood_sample(
 
     Args:
         blood_sample_id (Union[str, list]): The blood_sample_id, typically an NPU code. If a list, concatenates the values. # noqa: DAR102
-        sql_cmd_postfix (str): Additional SQL command postfix.
         n_rows: Number of rows to return. Defaults to None.
         values_to_load (str): Which values to load. Takes either "numerical", "numerical_and_coerce", "cancelled" or "all". Defaults to None, which is coerced to "all".
     Returns:
@@ -186,10 +184,7 @@ def blood_sample(
     for k in sources_to_load:
         dfs.append(
             fn_dict[k](  # type: ignore
-                blood_sample_id=blood_sample_id,
-                n_rows=n_rows_per_fn,
-                view=view,
-                sql_cmd_postfix=sql_cmd_postfix,
+                blood_sample_id=blood_sample_id, n_rows=n_rows_per_fn, view=view
             )
         )
 
@@ -201,49 +196,29 @@ def blood_sample(
     )
 
 
-def hba1c(
-    sql_cmd_postfix: str, n_rows: int | None = None, values_to_load: str = "numerical_and_coerce"
-) -> pd.DataFrame:
+def hba1c(n_rows: int | None = None, values_to_load: str = "numerical_and_coerce") -> pd.DataFrame:
     return blood_sample(
-        blood_sample_id=["NPU27300", "AAB00093"],
-        n_rows=n_rows,
-        values_to_load=values_to_load,
-        sql_cmd_postfix=sql_cmd_postfix,
+        blood_sample_id=["NPU27300", "AAB00093"], n_rows=n_rows, values_to_load=values_to_load
     )
 
 
 def unscheduled_p_glc(
-    sql_cmd_postfix: str, n_rows: int | None = None, values_to_load: str = "numerical_and_coerce"
+    n_rows: int | None = None, values_to_load: str = "numerical_and_coerce"
 ) -> pd.DataFrame:
     npu_suffixes = ["02192", "21531"]
 
     blood_sample_ids = [f"NPU{suffix}" for suffix in npu_suffixes]
 
     return blood_sample(
-        blood_sample_id=blood_sample_ids,
-        n_rows=n_rows,
-        values_to_load=values_to_load,
-        sql_cmd_postfix=sql_cmd_postfix,
+        blood_sample_id=blood_sample_ids, n_rows=n_rows, values_to_load=values_to_load
     )
 
 
-def ogtt(
-    sql_cmd_postfix: str, n_rows: int | None = None, values_to_load: str = "numerical_and_coerce"
-) -> pd.DataFrame:
-    return blood_sample(
-        blood_sample_id="NPU04177",
-        n_rows=n_rows,
-        values_to_load=values_to_load,
-        sql_cmd_postfix=sql_cmd_postfix,
-    )
+def ogtt(n_rows: int | None = None, values_to_load: str = "numerical_and_coerce") -> pd.DataFrame:
+    return blood_sample(blood_sample_id="NPU04177", n_rows=n_rows, values_to_load=values_to_load)
 
 
 def fasting_p_glc(
-    sql_cmd_postfix: str, n_rows: int | None = None, values_to_load: str = "numerical_and_coerce"
+    n_rows: int | None = None, values_to_load: str = "numerical_and_coerce"
 ) -> pd.DataFrame:
-    return blood_sample(
-        blood_sample_id="DNK35842",
-        n_rows=n_rows,
-        values_to_load=values_to_load,
-        sql_cmd_postfix=sql_cmd_postfix,
-    )
+    return blood_sample(blood_sample_id="DNK35842", n_rows=n_rows, values_to_load=values_to_load)

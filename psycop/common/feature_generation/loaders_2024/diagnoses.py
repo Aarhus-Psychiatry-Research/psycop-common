@@ -23,7 +23,6 @@ if TYPE_CHECKING:
 
 def from_contacts(
     icd_code: list[str] | str,
-    sql_cmd_postfix: str,
     output_col_name: str = "value",
     code_col_name: str = "diagnosegruppestreng",
     n_rows: int | None = None,
@@ -41,7 +40,6 @@ def from_contacts(
         code_col_name (str, optional): Name of column in loaded data frame from which to extract the diagnosis codes. Defaults to "diagnosegruppestrengs".
         n_rows: Number of rows to return. Defaults to None.
         wildcard_icd_code (bool, optional): Whether to match on icd_code*. Defaults to False.
-        sql_cmd_postfix (str, optional): Additional SQL command to append to the end of the query, e.g. for SHAK filtering. Defaults to "".
         keep_code_col (bool, optional): Whether to keep the code column. Defaults to False.
         timestamp_purpose (Literal[str], optional): The intended use of the loader. If used as a predictor, the timestamp should be set to the contact end time, in order to avoid data leakage from future
         timestamp_purpose (Literal[str], optional): The intended use of the loader. If used as a predictor, the timestamp should be set to the contact end time, in order to avoid data leakage from future
@@ -81,7 +79,6 @@ def from_contacts(
         n_rows=n_rows,
         load_diagnoses=True,
         keep_code_col=keep_code_col,
-        sql_cmd_postfix=sql_cmd_postfix,
     )
 
     df = df.drop_duplicates(subset=["dw_ek_borger", "timestamp", output_col_name], keep="first")
@@ -92,7 +89,6 @@ def from_contacts(
 def type_2_diabetes(
     n_rows: int | None = None,
     timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
-    sql_cmd_postfix: str = "",
 ) -> pd.DataFrame:
     df = from_contacts(
         icd_code=[
@@ -113,7 +109,6 @@ def type_2_diabetes(
         n_rows=n_rows,
         timestamp_purpose=timestamp_purpose,
         keep_code_col=True,
-        sql_cmd_postfix=sql_cmd_postfix,
     )
 
     df_filtered = keep_rows_where_diag_matches_t2d_diag(df=df, col_name="diagnosegruppestreng")
@@ -124,7 +119,6 @@ def type_2_diabetes(
 def type_1_diabetes(
     n_rows: int | None = None,
     timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
-    sql_cmd_postfix: str = "",
 ) -> pd.DataFrame:
     df = from_contacts(
         icd_code=[
@@ -145,7 +139,6 @@ def type_1_diabetes(
         n_rows=n_rows,
         timestamp_purpose=timestamp_purpose,
         keep_code_col=True,
-        sql_cmd_postfix=sql_cmd_postfix,
     )
 
     df_filtered = keep_rows_where_diag_matches_t1d_diag(df=df, col_name="diagnosegruppestreng")
@@ -159,7 +152,6 @@ def load_from_codes(
     code_col_name: str,
     source_timestamp_col_name: str,
     view: str,
-    sql_cmd_postfix: str,
     output_col_name: str | None = None,
     match_with_wildcard: bool = True,
     n_rows: int | None = None,
@@ -196,7 +188,6 @@ def load_from_codes(
         administration_method (str, optional): Whether to subset by method of administration, e.g. 'PN' or 'Fast'. Defaults to None.
         fixed_doses ( tuple(int), optional): Whether to subset by specific doses. Doses are set as micrograms (e.g., 100 mg = 100000). Defaults to None which return all doses. Find standard dosage for medications on pro.medicin.dk.
         keep_code_col (bool, optional): Whether to keep the code column. Defaults to False.
-        sql_cmd_postfix (str, optional): Additional SQL command to append to the end of the query, e.g. for SHAK filtering. Defaults to "".
 
     Returns:
         pd.DataFrame: A pandas dataframe with dw_ek_borger, timestamp and
@@ -233,9 +224,6 @@ def load_from_codes(
         f"SELECT dw_ek_borger, {source_timestamp_col_name}, {code_col_name} "
         + f"FROM [fct].{fct} WHERE {source_timestamp_col_name} IS NOT NULL AND ({match_col_sql_str})"
     )
-
-    if sql_cmd_postfix:
-        sql += sql_cmd_postfix
 
     if administration_method:
         allowed_administration_methods = (
