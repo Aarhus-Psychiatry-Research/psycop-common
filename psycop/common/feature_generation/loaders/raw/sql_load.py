@@ -10,12 +10,10 @@ import pandas as pd
 from sqlalchemy import create_engine, text
 
 from psycop.automation.environment import on_ovartaci
-from psycop.common.global_utils.cache import shared_cache
 
 log = logging.getLogger(__name__)
 
 
-@shared_cache().cache
 def sql_load(
     query: str,
     server: str = "BI-DPA-PROD",
