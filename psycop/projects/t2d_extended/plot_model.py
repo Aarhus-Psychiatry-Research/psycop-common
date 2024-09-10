@@ -2,14 +2,10 @@ import datetime
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-import coloredlogs
 import numpy as np
 
 from psycop.common.global_utils.cache import shared_cache
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
-    MlflowClientWrapper,
-    PsycopMlflowRun,
-)
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import PsycopMlflowRun
 from psycop.common.model_evaluation.binary.global_performance.roc_auc import bootstrap_roc
 
 
@@ -65,17 +61,3 @@ def t2d_extended_temporal_stability_model(
 ) -> Sequence[TemporalRunPerformance]:
     """Temporal stability model for T2D Extended."""
     return [run_perf_from_run(run, n_bootstraps=n_bootstraps) for run in runs]
-
-
-if __name__ == "__main__":
-    coloredlogs.install(level="INFO", fmt="%(asctime)s [%(levelname)s] %(message)s")
-
-    client_wrapper = MlflowClientWrapper()
-    runs = [
-        client_wrapper.get_run(
-            experiment_name="T2D-extended, temporal validation",
-            run_name=f"2018-01-01_20{y}-01-01_20{y}-12-31",
-        )
-        for y in range(18, 23)
-    ]
-    performances = t2d_extended_temporal_stability_model(runs, n_bootstraps=50)
