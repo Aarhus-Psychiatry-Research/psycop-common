@@ -38,7 +38,7 @@ def _init_t2d_predictor(
     entity_id_col_name: str = "dw_ek_borger",
 ) -> ts.PredictorSpec:
     logging.info(f"Initialising {df_loader.__name__}")
-    return ts.PredictorSpec(
+    spec = ts.PredictorSpec(
         value_frame=ts.ValueFrame(
             init_df=pl.from_pandas(df_loader()).rename({"value": df_loader.__name__}),
             entity_id_col_name=entity_id_col_name,
@@ -48,6 +48,8 @@ def _init_t2d_predictor(
         fallback=fallback,
         column_prefix=column_prefix.format(layer),
     )
+    logging.info(f"Initialised {spec}")
+    return spec
 
 
 AnySpec = ts.PredictorSpec | ts.OutcomeSpec | ts.StaticSpec | ts.TimeDeltaSpec
