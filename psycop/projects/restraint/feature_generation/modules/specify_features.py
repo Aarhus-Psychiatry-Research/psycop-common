@@ -640,4 +640,3 @@ class FeatureSpecifier:
             + self._get_temporal_predictor_specs()
             + self._get_outcome_specs()
         )
-

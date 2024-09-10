@@ -410,10 +410,9 @@ if __name__ == "__main__":
         for spec in spec_list
     ]
 
-    
     logging.info("Loading specifications")
     specs = [_pair_to_spec(layer_spec) for layer_spec in layer_spec_pairs]
-    
+
     logging.info("Generating feature set")
     generate_feature_set(
         project_info=get_ect_project_info(),

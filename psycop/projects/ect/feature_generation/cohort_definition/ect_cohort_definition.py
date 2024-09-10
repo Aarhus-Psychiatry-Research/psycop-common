@@ -85,5 +85,5 @@ if __name__ == "__main__":
             f"\tUnique patients: {filtering_step.n_ids_before} - {filtering_step.n_ids_after} = {filtering_step.n_dropped_ids} dropped ids"
         )
     # cohort = pl.read_parquet( # noqa: ERA001
-    #     "E:/shared_resources/ect/feature_set/flattened_datasets/ect_feature_set/ect_feature_set.parquet"
-    # )
+    #     "E:/shared_resources/ect/feature_set/flattened_datasets/ect_feature_set/ect_feature_set.parquet" # noqa: ERA001
+    # ) noqa: ERA001
