@@ -79,4 +79,3 @@ if __name__ == "__main__":
         for y in range(18, 23)
     ]
     performances = t2d_extended_temporal_stability_model(runs, n_bootstraps=50)
-    pass
