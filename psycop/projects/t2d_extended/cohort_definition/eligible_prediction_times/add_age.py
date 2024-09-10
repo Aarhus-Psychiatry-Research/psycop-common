@@ -7,9 +7,7 @@ from psycop.projects.t2d_extended.cohort_definition.eligible_prediction_times.el
 
 
 def add_age(df: pl.DataFrame) -> pl.DataFrame:
-    birthday_df = pl.from_pandas(
-        birthdays()
-    )  # TD: How can we filter on SHAK? Is that even present?
+    birthday_df = pl.from_pandas(birthdays())
 
     df = df.join(birthday_df, on="dw_ek_borger", how="inner")
     df = df.with_columns(
