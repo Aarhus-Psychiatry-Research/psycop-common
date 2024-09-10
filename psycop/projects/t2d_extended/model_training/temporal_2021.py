@@ -16,6 +16,10 @@ def eval_stratified_split(
     # Setup for experiment
     cfg = (
         cfg.mut("logger.*.mlflow.experiment_name", "T2D-extended, temporal validation")
+        .add(
+            "logger.*.mlflow.run_name",
+            f"{training_end_date}_{evaluation_interval[0]}_{evaluation_interval[1]}",
+        )
         .mut("trainer.@trainers", "split_trainer_separate_preprocessing")
         .rem("trainer.outcome_col_name")
         .rem("trainer.preprocessing_pipeline")
@@ -81,14 +85,15 @@ def eval_stratified_split(
 if __name__ == "__main__":
     populate_baseline_registry()
 
-    eval_years = [16, 17, 18, 19]
+    eval_years = [18, 19, 20, 21, 22]
     aurocs = {
         y: eval_stratified_split(
             PsycopConfig().from_disk(Path(__file__).parent / "t2d_extended.cfg"),
-            training_end_date="2016-01-01",
+            training_end_date="2018-01-01",
             evaluation_interval=(f"20{y}-01-01", f"20{y}-12-31"),
         )
         for y in eval_years
     }
 
     print(aurocs)
+    pass

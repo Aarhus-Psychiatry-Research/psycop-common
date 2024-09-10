@@ -10,10 +10,10 @@ def on_ovartaci() -> bool:
     import platform
 
     if platform.node() == "RMAPPS1279":
-        logging.info("On Ovartaci")
+        logging.debug("On Ovartaci")
         return True
 
-    logging.info("Not on Ovartaci")
+    logging.debug("Not on Ovartaci")
     return False
 
 

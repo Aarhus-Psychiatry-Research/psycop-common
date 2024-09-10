@@ -14,7 +14,6 @@ def _load_non_numerical_values_and_coerce_inequalities(
     blood_sample_id: str | list[str],
     n_rows: int | None,
     view: str,
-    sql_cmd_postfix: str,
     ineq2mult: dict[str, float] | None = None,
 ) -> pd.DataFrame:
     """Load non-numerical values for a blood sample.
@@ -24,7 +23,6 @@ def _load_non_numerical_values_and_coerce_inequalities(
         n_rows (Optional[int]): Number of rows to return. Defaults to None.
         view (str): The view to load from.
         ineq2mult (dict[str, float]): A dictionary mapping inequalities to a multiplier. Defaults to None.
-        sql_cmd_postfix (str): Additional SQL command postfix.
 
     Returns:
         pd.DataFrame: A dataframe with the non-numerical values.
@@ -38,7 +36,7 @@ def _load_non_numerical_values_and_coerce_inequalities(
     else:
         npu_where = f"npukode = '{blood_sample_id}'"
 
-    sql = f"SELECT {cols} FROM [fct].{view} WHERE datotid_sidstesvar IS NOT NULL AND {npu_where} AND numerisksvar IS NULL AND (left(Svar,1) = '>' OR left(Svar, 1) = '<') {sql_cmd_postfix}"
+    sql = f"SELECT {cols} FROM [fct].{view} WHERE datotid_sidstesvar IS NOT NULL AND {npu_where} AND numerisksvar IS NULL AND (left(Svar,1) = '>' OR left(Svar, 1) = '<')"
 
     df = sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
 
@@ -48,7 +46,7 @@ def _load_non_numerical_values_and_coerce_inequalities(
 
 
 def _load_numerical_values(
-    blood_sample_id: str | list[str], n_rows: int | None, view: str, sql_cmd_postfix: str
+    blood_sample_id: str | list[str], n_rows: int | None, view: str
 ) -> pd.DataFrame:
     """Load numerical values for a blood sample.
 
@@ -56,7 +54,6 @@ def _load_numerical_values(
         blood_sample_id (str): The blood_sample_id, typically an NPU code.  # noqa: DAR102
         n_rows (Optional[int]): Number of rows to return. Defaults to None.
         view (str): The view to load from.
-        sql_cmd_postfix (str): Additional SQL command postfix.
 
     Returns:
         pd.DataFrame: A dataframe with the numerical values.
@@ -71,7 +68,7 @@ def _load_numerical_values(
     else:
         npu_where = f"npukode = '{blood_sample_id}'"
 
-    sql = f"SELECT {cols} FROM [fct].{view} WHERE datotid_sidstesvar IS NOT NULL AND {npu_where} AND numerisksvar IS NOT NULL {sql_cmd_postfix}"
+    sql = f"SELECT {cols} FROM [fct].{view} WHERE datotid_sidstesvar IS NOT NULL AND {npu_where} AND numerisksvar IS NOT NULL"
     df = sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
 
     df = df.rename(columns={"datotid_sidstesvar": "timestamp", "numerisksvar": "value"})
@@ -80,7 +77,7 @@ def _load_numerical_values(
 
 
 def _load_cancelled(
-    blood_sample_id: str | list[str], n_rows: int | None, view: str, sql_cmd_postfix: str
+    blood_sample_id: str | list[str], n_rows: int | None, view: str
 ) -> pd.DataFrame:
     """Load cancelled samples for a blood sample.
 
@@ -88,7 +85,6 @@ def _load_cancelled(
         blood_sample_id (str): The blood_sample_id, typically an NPU code.  # noqa: DAR102
         n_rows (Optional[int]): Number of rows to return. Defaults to None.
         view (str): The view to load from.
-        sql_cmd_postfix (str): Additional SQL command postfix.
     Returns:
         pd.DataFrame: A dataframe with the timestamps for cancelled values.
     """
@@ -101,7 +97,7 @@ def _load_cancelled(
     else:
         npu_where = f"npukode = '{blood_sample_id}'"
 
-    sql = f"SELECT {cols} FROM [fct].{view} WHERE {npu_where} AND datotid_sidstesvar IS NOT NULL AND Svar = 'Aflyst' {sql_cmd_postfix}"
+    sql = f"SELECT {cols} FROM [fct].{view} WHERE {npu_where} AND datotid_sidstesvar IS NOT NULL AND Svar = 'Aflyst'"
 
     df = sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
 
@@ -114,12 +110,11 @@ def _load_cancelled(
 
 
 def _load_all_values(
-    blood_sample_id: str | list[str], n_rows: int | None, view: str, sql_cmd_postfix: str
+    blood_sample_id: str | list[str], n_rows: int | None, view: str
 ) -> pd.DataFrame:
     """Load all samples for a blood sample.
 
     Args:
-        sql_cmd_postfix (str): Additional SQL command postfix.
         blood_sample_id (str): The blood_sample_id, typically an NPU code.  # noqa: DAR102
         n_rows (Optional[int]): Number of rows to return. Defaults to None.
         view (str): The view to load from.
@@ -136,7 +131,7 @@ def _load_all_values(
     else:
         npu_where = f"npukode = '{blood_sample_id}'"
 
-    sql = f"SELECT {cols} FROM [fct].{view} WHERE datotid_sidstesvar IS NOT NULL AND {npu_where} {sql_cmd_postfix}"
+    sql = f"SELECT {cols} FROM [fct].{view} WHERE datotid_sidstesvar IS NOT NULL AND {npu_where}"
 
     df = sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
 
