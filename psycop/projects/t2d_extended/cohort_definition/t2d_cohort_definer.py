@@ -34,7 +34,7 @@ def t2d_outcome_timestamps() -> OutcomeTimestampFrame:
     return T2DCohortDefiner2024.get_outcome_timestamps()
 
 
-@SequenceRegistry.cohorts.register("t2d")
+@SequenceRegistry.cohorts.register("t2d_extended")
 class T2DCohortDefiner2024(CohortDefiner):
     @staticmethod
     def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle:

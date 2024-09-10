@@ -17,19 +17,13 @@ from psycop.common.feature_generation.application_modules.generate_feature_set i
     generate_feature_set,
 )
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
-from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
-from psycop.common.feature_generation.loaders.raw.load_lab_results import hba1c
+from psycop.common.feature_generation.loaders_2024.demographics import birthdays, sex_female
+from psycop.common.feature_generation.loaders_2024.lab import hba1c
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.projects.t2d_extended.cohort_definition.t2d_cohort_definer import (
     t2d_outcome_timestamps,
     t2d_pred_times,
 )
-
-
-def get_t2d_project_info() -> ProjectInfo:
-    return ProjectInfo(
-        project_name="t2d_extended", project_path=OVARTACI_SHARED_DIR / "t2d_extended"
-    )
 
 
 def _init_t2d_predictor(
@@ -151,7 +145,9 @@ if __name__ == "__main__":
 
     logging.info("Generating feature set")
     generate_feature_set(
-        project_info=get_t2d_project_info(),
+        project_info=ProjectInfo(
+            project_name="t2d_extended", project_path=OVARTACI_SHARED_DIR / "t2d_extended"
+        ),
         eligible_prediction_times_frame=t2d_pred_times().prediction_times,
         feature_specs=specs,
         feature_set_name="t2d_extended_feature_set",
