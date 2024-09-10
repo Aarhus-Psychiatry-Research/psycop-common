@@ -21,26 +21,23 @@ class T2DExtendedPlot(SingleRunPlot):
 
     def __call__(self) -> pn.ggplot:
         logging.info(f"Starting {self.__class__.__name__}")
-        df = pl.DataFrame(
-            {
-                "auroc": [run.performance for run in self.data],
-                "lower_ci": [run.lower_ci for run in self.data],
-                "upper_ci": [run.upper_ci for run in self.data],
-                "start_date": [run.start_date for run in self.data],
-                "end_date": [run.end_date for run in self.data],
-            }
-        )
+        df = pl.concat(run.to_dataframe() for run in self.data)
+        mean_score = df["performance"].mean()
 
         # Plot AUC ROC curve
-        return (
-            pn.ggplot(df, pn.aes(x="start_date", y="auroc", ymin="lower_ci", ymax="upper_ci"))
-            + pn.geom_point(size=4)
-            + pn.geom_errorbar(width=0.3)
+        plot = (
+            pn.ggplot(df, pn.aes(x="start_date", y="performance", ymin="lower_ci", ymax="upper_ci"))
+            + pn.geom_point(size=2)
+            + pn.stat_smooth(method="lm")
             + pn.labs(y="AUROC", x="Start date")
-            + pn.ylim([0.5, 1.0])
+            + pn.ylim([0.7, 1.0])
             + THEME
             + pn.scale_x_datetime(date_labels="%Y", date_breaks="1 year")
+            # + pn.geom_hline(pn.aes(yintercept=mean_score), linetype="dashed")
         )
+
+        plot.save("test.png", width=4, height=2.5, dpi=600)
+        return plot
 
 
 if __name__ == "__main__":
@@ -54,6 +51,6 @@ if __name__ == "__main__":
         )
         for y in range(18, 23)
     ]
-    performances = t2d_extended_temporal_stability_model(runs, n_bootstraps=50)
+    performances = t2d_extended_temporal_stability_model(runs, n_bootstraps=100)
 
     plot = T2DExtendedPlot(performances)()
