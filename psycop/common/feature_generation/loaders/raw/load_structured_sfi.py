@@ -84,7 +84,7 @@ def broeset_violence_checklist_physical_threats(n_rows: int | None = None) -> pd
 
 
 @data_loaders.register("selvmordsrisiko")
-def selvmordsrisiko(n_rows: int | None = None) -> pd.DataFrame:
+def suicide_risk_assessment(n_rows: int | None = None) -> pd.DataFrame:
     df = sfi_loader(
         aktivitetstypenavn="Screening for selvmordsrisiko",
         elementledetekst="ScrSelvmordlRisikoniveauKonkl",

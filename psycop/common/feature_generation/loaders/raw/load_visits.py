@@ -224,15 +224,21 @@ def admissions(
     return_value_as_visit_length_days: Union[bool, None] = False,
     shak_code: Union[int, None] = None,
     shak_sql_operator: Union[str, None] = None,
+    timestamp_for_output: Literal["start", "end"] = "end",
+    timestamps_only: bool = False,
 ) -> pd.DataFrame:
     """Load admissions."""
-    return physical_visits(
+    df = physical_visits(
         visit_types=["admissions"],
         return_value_as_visit_length_days=return_value_as_visit_length_days,
         n_rows=n_rows,
         shak_code=shak_code,
         shak_sql_operator=shak_sql_operator,
+        timestamp_for_output=timestamp_for_output,
     )
+    if timestamps_only:
+        df = df.drop(columns=["value"])
+    return df
 
 
 @data_loaders.register("ambulatory_visits")

@@ -6,7 +6,7 @@ from psycop.common.feature_generation.data_checks.raw.check_predictor_lists impo
 )
 
 if __name__ == "__main__":
-    df = struct_sfi_loader.selvmordsrisiko(n_rows=1000)
+    df = struct_sfi_loader.suicide_risk_assessment(n_rows=1000)
 
     input_dict = [{"predictor_df": "selvmordsrisiko", "allowed_nan_value_prop": 0.01}]
 

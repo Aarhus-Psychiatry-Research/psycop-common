@@ -97,7 +97,7 @@ from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
     broeset_violence_checklist,
     hamilton_d17,
     mas_m,
-    selvmordsrisiko,
+    suicide_risk_assessment,
 )
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
@@ -343,7 +343,7 @@ class FeatureSpecifier:
         structured_sfi = PredictorGroupSpec(
             named_dataframes=(
                 NamedDataframe(df=broeset_violence_checklist(), name="broeset_violence_checklist"),
-                NamedDataframe(df=selvmordsrisiko(), name="selvmordsrisiko"),
+                NamedDataframe(df=suicide_risk_assessment(), name="selvmordsrisiko"),
                 NamedDataframe(df=hamilton_d17(), name="hamilton_d17"),
                 NamedDataframe(df=mas_m(), name="mas_m"),
             ),
