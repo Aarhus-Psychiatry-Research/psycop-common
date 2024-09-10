@@ -23,14 +23,12 @@ if TYPE_CHECKING:
 
 def from_contacts(
     icd_code: list[str] | str,
+    sql_cmd_postfix: str,
     output_col_name: str = "value",
     code_col_name: str = "diagnosegruppestreng",
     n_rows: int | None = None,
     wildcard_icd_code: bool = False,
-    shak_location_col: str | None = None,
-    shak_code: int | None = None,
     keep_code_col: bool = False,
-    shak_sql_operator: str | None = None,
     timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     """Load diagnoses from all hospital contacts. If icd_code is a list, will
@@ -43,10 +41,9 @@ def from_contacts(
         code_col_name (str, optional): Name of column in loaded data frame from which to extract the diagnosis codes. Defaults to "diagnosegruppestrengs".
         n_rows: Number of rows to return. Defaults to None.
         wildcard_icd_code (bool, optional): Whether to match on icd_code*. Defaults to False.
-        shak_location_col (str, optional): Name of column containing shak code. Defaults to None. For diagnosis loaders, this column is "shakkode_ansvarlig". Combine with shak_code and shak_sql_operator.
-        shak_code (int, optional): Shak code indicating where to keep/not keep visits from (e.g. 6600). Defaults to None.
+        sql_cmd_postfix (str, optional): Additional SQL command to append to the end of the query, e.g. for SHAK filtering. Defaults to "".
         keep_code_col (bool, optional): Whether to keep the code column. Defaults to False.
-        shak_sql_operator (str, optional): Operator indicating how to filter shak_code, e.g. "!= 6600" or "= 6600". Defaults to None.
+        timestamp_purpose (Literal[str], optional): The intended use of the loader. If used as a predictor, the timestamp should be set to the contact end time, in order to avoid data leakage from future
         timestamp_purpose (Literal[str], optional): The intended use of the loader. If used as a predictor, the timestamp should be set to the contact end time, in order to avoid data leakage from future
             events. If used a an outcome, the timestamp should be set as the contact start time, in order to avoid inflation of model performance.
 
@@ -83,10 +80,8 @@ def from_contacts(
         match_with_wildcard=wildcard_icd_code,
         n_rows=n_rows,
         load_diagnoses=True,
-        shak_location_col=shak_location_col,
-        shak_code=shak_code,
         keep_code_col=keep_code_col,
-        shak_sql_operator=shak_sql_operator,
+        sql_cmd_postfix=sql_cmd_postfix,
     )
 
     df = df.drop_duplicates(subset=["dw_ek_borger", "timestamp", output_col_name], keep="first")
@@ -94,13 +89,10 @@ def from_contacts(
     return df.reset_index(drop=True)  # type: ignore
 
 
-@data_loaders.register("type_2_diabetes")
 def type_2_diabetes(
     n_rows: int | None = None,
-    shak_location_col: str | None = None,
-    shak_code: int | None = None,
-    shak_sql_operator: str | None = None,
     timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+    sql_cmd_postfix: str = "",
 ) -> pd.DataFrame:
     df = from_contacts(
         icd_code=[
@@ -119,11 +111,9 @@ def type_2_diabetes(
         ],
         wildcard_icd_code=True,
         n_rows=n_rows,
-        shak_location_col=shak_location_col,
-        shak_code=shak_code,
-        shak_sql_operator=shak_sql_operator,
         timestamp_purpose=timestamp_purpose,
         keep_code_col=True,
+        sql_cmd_postfix=sql_cmd_postfix,
     )
 
     df_filtered = keep_rows_where_diag_matches_t2d_diag(df=df, col_name="diagnosegruppestreng")
@@ -131,13 +121,10 @@ def type_2_diabetes(
     return df_filtered.drop("diagnosegruppestreng", axis=1)
 
 
-@data_loaders.register("type_1_diabetes")
 def type_1_diabetes(
     n_rows: int | None = None,
-    shak_location_col: str | None = None,
-    shak_code: int | None = None,
-    shak_sql_operator: str | None = None,
     timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+    sql_cmd_postfix: str = "",
 ) -> pd.DataFrame:
     df = from_contacts(
         icd_code=[
@@ -156,11 +143,9 @@ def type_1_diabetes(
         ],
         wildcard_icd_code=True,
         n_rows=n_rows,
-        shak_location_col=shak_location_col,
-        shak_code=shak_code,
-        shak_sql_operator=shak_sql_operator,
         timestamp_purpose=timestamp_purpose,
         keep_code_col=True,
+        sql_cmd_postfix=sql_cmd_postfix,
     )
 
     df_filtered = keep_rows_where_diag_matches_t1d_diag(df=df, col_name="diagnosegruppestreng")
@@ -174,6 +159,7 @@ def load_from_codes(
     code_col_name: str,
     source_timestamp_col_name: str,
     view: str,
+    sql_cmd_postfix: str,
     output_col_name: str | None = None,
     match_with_wildcard: bool = True,
     n_rows: int | None = None,
@@ -181,10 +167,7 @@ def load_from_codes(
     administration_route: str | None = None,
     administration_method: str | None = None,
     fixed_doses: tuple[int, ...] | None = None,
-    shak_location_col: str | None = None,
-    shak_code: int | None = None,
     keep_code_col: bool = False,
-    shak_sql_operator: str | None = None,
 ) -> pd.DataFrame:
     """Load the visits that have diagnoses that match icd_code or atc code from
     the beginning of their adiagnosekode or atc code string. Aggregates all
@@ -212,10 +195,8 @@ def load_from_codes(
         administration_route (str, optional): Whether to subset by a specific administration route, e.g. 'OR', 'IM' or 'IV'. Defaults to None.
         administration_method (str, optional): Whether to subset by method of administration, e.g. 'PN' or 'Fast'. Defaults to None.
         fixed_doses ( tuple(int), optional): Whether to subset by specific doses. Doses are set as micrograms (e.g., 100 mg = 100000). Defaults to None which return all doses. Find standard dosage for medications on pro.medicin.dk.
-        shak_location_col (str, optional): Name of column containing shak code. Defaults to None. Combine with shak_code and shak_sql_operator.
-        shak_code (int, optional): Shak code indicating where to keep/not keep visits from (e.g. 6600). Defaults to None.
         keep_code_col (bool, optional): Whether to keep the code column. Defaults to False.
-        shak_sql_operator (str, optional): Operator indicating how to filter shak_code, e.g. "!= 6600" or "= 6600". Defaults to None.
+        sql_cmd_postfix (str, optional): Additional SQL command to append to the end of the query, e.g. for SHAK filtering. Defaults to "".
 
     Returns:
         pd.DataFrame: A pandas dataframe with dw_ek_borger, timestamp and
@@ -253,10 +234,8 @@ def load_from_codes(
         + f"FROM [fct].{fct} WHERE {source_timestamp_col_name} IS NOT NULL AND ({match_col_sql_str})"
     )
 
-    if shak_code is not None:
-        sql += (
-            f" AND left({shak_location_col}, {len(str(shak_code))}) {shak_sql_operator} {shak_code}"
-        )
+    if sql_cmd_postfix:
+        sql += sql_cmd_postfix
 
     if administration_method:
         allowed_administration_methods = (

@@ -6,7 +6,7 @@ import logging
 
 import pandas as pd
 
-from psycop.common.feature_generation.loaders.raw.utils import load_from_codes
+from psycop.common.feature_generation.loaders_2024.diagnoses import load_from_codes
 
 log = logging.getLogger(__name__)
 
@@ -22,6 +22,7 @@ def load(
     administration_route: str | None = None,
     administration_method: str | None = None,
     fixed_doses: tuple[int, ...] | None = None,
+    sql_cmd_postfix: str = "",
 ) -> pd.DataFrame:
     """Load medications. Aggregates prescribed/administered if both true. If
     wildcard_atc_code, match from atc_code*. Aggregates all that match. Beware
@@ -44,7 +45,7 @@ def load(
         administration_route (str, optional): Whether to subset by a specific administration route, e.g. 'OR', 'IM' or 'IV'. Only applicable for administered medication, not prescribed. Defaults to None.
         administration_method (str, optional): Whether to subset by method of administration, e.g. 'PN' or 'Fast'. Only applicable for administered medication, not prescribed. Defaults to None.
         fixed_doses ( tuple(int), optional): Whether to subset by specific doses. Doses are set as micrograms (e.g., 100 mg = 100000). Defaults to None which return all doses. Find standard dosage for medications on pro.medicin.dk.
-
+        sql_cmd_postfix (str, optional): Additional SQL command to append to the end of the query, e.g. for SHAK filtering. Defaults to "".
     Returns:
         pd.DataFrame: Cols: dw_ek_borger, timestamp, {atc_code_prefix}_value = 1
     """
@@ -79,6 +80,7 @@ def load(
             administration_route=administration_route,
             administration_method=administration_method,
             fixed_doses=fixed_doses,
+            sql_cmd_postfix=sql_cmd_postfix,
         )
 
         df = pd.concat([df, df_medication_prescribed])
@@ -97,6 +99,7 @@ def load(
             administration_route=administration_route,
             administration_method=administration_method,
             fixed_doses=fixed_doses,
+            sql_cmd_postfix=sql_cmd_postfix,
         )
         df = pd.concat([df, df_medication_administered])
 
@@ -111,7 +114,10 @@ def load(
 
 
 def concat_medications(
-    output_col_name: str, atc_code_prefixes: list[str], n_rows: int | None = None
+    output_col_name: str,
+    atc_code_prefixes: list[str],
+    n_rows: int | None = None,
+    sql_cmd_postfix: str = "",
 ) -> pd.DataFrame:
     """Aggregate multiple blood_sample_ids (typically NPU-codes) into one
     column.
@@ -120,12 +126,18 @@ def concat_medications(
         output_col_name (str): Name for new column.  # noqa: DAR102
         atc_code_prefixes (list[str]): list of atc_codes.
         n_rows (int, optional): Number of atc_codes to aggregate. Defaults to None.
+        sql_cmd_postfix (str, optional): Additional SQL command to append to the end of the query, e.g. for SHAK filtering. Defaults to "".
 
     Returns:
         pd.DataFrame
     """
     dfs = [
-        load(atc_code=f"{id}", output_col_name=output_col_name, n_rows=n_rows)
+        load(
+            atc_code=f"{id}",
+            output_col_name=output_col_name,
+            n_rows=n_rows,
+            sql_cmd_postfix=sql_cmd_postfix,
+        )
         for id in atc_code_prefixes  # noqa
     ]
 
@@ -142,6 +154,7 @@ def antidiabetics(
     load_administered: bool = True,
     administration_route: str | None = None,
     administration_method: str | None = None,
+    sql_cmd_postfix: str = "",
 ) -> pd.DataFrame:
     return load(
         atc_code="A10",
@@ -151,4 +164,5 @@ def antidiabetics(
         n_rows=n_rows,
         administration_route=administration_route,
         administration_method=administration_method,
+        sql_cmd_postfix=sql_cmd_postfix,
     )

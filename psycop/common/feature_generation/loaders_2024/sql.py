@@ -7,7 +7,6 @@ import logging
 log = logging.getLogger(__name__)
 
 
-import logging
 import urllib
 import urllib.parse
 
