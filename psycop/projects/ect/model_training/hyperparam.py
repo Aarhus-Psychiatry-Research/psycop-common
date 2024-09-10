@@ -5,7 +5,27 @@ from psycop.common.model_training_v2.config.populate_registry import populate_ba
 from psycop.common.model_training_v2.hyperparameter_suggester.optuna_hyperparameter_search import (
     OptunaHyperParameterOptimization,
 )
-from psycop.projects.cvd.model_training.populate_cvd_registry import populate_with_cvd_registry
+
+FEATURE_SETS = {
+    "structured_only": [
+        "basic",
+        "contacts",
+        "ham-broeset",
+        "diagnoses",
+        "medication",
+        "leave-suicide",
+    ],
+    "text_only": ["text"],
+    "structured_text": [
+        "basic",
+        "contacts",
+        "ham-broeset",
+        "diagnoses",
+        "medication",
+        "leave-suicide",
+        "text",
+    ],
+}
 
 
 def hyperparameter_search(cfg: PsycopConfig):
@@ -15,10 +35,10 @@ def hyperparameter_search(cfg: PsycopConfig):
     )
 
     # Set run name
-    for i in reversed([1, 2, 3, 4]):
-        cfg.mut("logger.*.mlflow.experiment_name", f"CVD hyperparam tuning, layer {i}, xgboost, v2")
+    for feature_set, features in FEATURE_SETS.items():
+        cfg.mut("logger.*.mlflow.experiment_name", f"ECT hparam, {feature_set}, xgboost")
 
-        layer_regex = "|".join([str(i) for i in range(1, i + 1)])
+        layer_regex = "|".join(features)
 
         cfg.mut(
             "trainer.preprocessing_pipeline.*.layer_selector.keep_matching",
@@ -27,17 +47,16 @@ def hyperparameter_search(cfg: PsycopConfig):
 
         OptunaHyperParameterOptimization().from_cfg(
             cfg,
-            study_name=cfg.retrieve("logger.*.mlflow.experiment_name") + "_",
+            study_name=cfg.retrieve("logger.*.mlflow.experiment_name"),
             n_trials=150,
             n_jobs=10,
             direction="maximize",
             catch=(Exception,),
-            custom_populate_registry_fn=populate_with_cvd_registry,
+            custom_populate_registry_fn=None
         )
 
 
 if __name__ == "__main__":
     populate_baseline_registry()
-    populate_with_cvd_registry()
 
-    hyperparameter_search(PsycopConfig().from_disk(Path(__file__).parent / "cvd_baseline.cfg"))
+    hyperparameter_search(PsycopConfig().from_disk(Path(__file__).parent / "ect_baseline.cfg"))

@@ -12,11 +12,11 @@ from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     BaselinePreprocessingPipeline,
 )
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
-    RegionalFilter,
+    RegionalFilter, FilterByOutcomeStratifiedSplits
 )
 from psycop.common.types.validated_frame import ValidatedFrame
-from psycop.projects.cvd.feature_generation.cohort_definition.outcome_specification.combined import (
-    get_first_cvd_indicator,
+from psycop.projects.ect.feature_generation.cohort_definition.outcome_specification.combined import (
+    get_first_ect_indicator,
 )
 
 
@@ -32,13 +32,13 @@ class TableOneModel(ValidatedFrame[pl.DataFrame]):
 def _train_test_column(flattened_data: pl.DataFrame) -> pl.DataFrame:
     """Adds a 'dataset' column to the dataframe, indicating whether the row is in the train or test set."""
     train_data = (
-        RegionalFilter(["train", "val"])
+        FilterByOutcomeStratifiedSplits(["train", "val"])
         .apply(flattened_data.lazy())
         .with_columns(dataset=pl.lit("0. train"))
         .collect()
     )
     test_data = (
-        RegionalFilter(["test"])
+        FilterByOutcomeStratifiedSplits(["test"])
         .apply(flattened_data.lazy())
         .with_columns(dataset=pl.lit("test"))
         .collect()
@@ -58,7 +58,7 @@ def _preprocessed_data(data_path: str, pipeline: BaselinePreprocessingPipeline) 
 
 @shared_cache().cache
 def _first_outcome_data(data: pl.DataFrame) -> pl.DataFrame:
-    first = get_first_cvd_indicator()
+    first = get_first_ect_indicator()
     return data.join(pl.from_pandas(first), on="dw_ek_borger", how="left")
 
 
@@ -70,10 +70,8 @@ def table_one_model(run: PsycopMlflowRun, sex_col_name: str) -> TableOneModel:
     cfg.to_disk(tmp_cfg)
 
     from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
-    from psycop.projects.cvd.model_training.populate_cvd_registry import populate_with_cvd_registry
 
     populate_baseline_registry()
-    populate_with_cvd_registry()
 
     filled = resolve_and_fill_config(tmp_cfg, fill_cfg_with_defaults=True)
 
@@ -85,8 +83,8 @@ def table_one_model(run: PsycopMlflowRun, sex_col_name: str) -> TableOneModel:
         if "filter" in step.__class__.__name__.lower()  # Only keep potential row filters
         and "column"
         not in step.__class__.__name__.lower()  # Do not filter columns (e.g. keep timestamps for further processing)
-        and "regional"
-        not in step.__class__.__name__.lower()  # Do not filter on region (happens when adding split labels)
+        and "outcomestratified"
+        not in step.__class__.__name__.lower()  # Do not filter on id split (happens when adding split labels)
     ]
 
     preprocessed_visits = _preprocessed_data(cfg["trainer"]["training_data"]["paths"][0], pipeline)
