@@ -20,7 +20,7 @@ from psycop.common.feature_generation.application_modules.project_setup import P
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
 from psycop.common.feature_generation.loaders.raw.load_lab_results import hba1c
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
-from psycop.projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer import (
+from psycop.projects.t2d_extended.cohort_definition.t2d_cohort_definer import (
     t2d_outcome_timestamps,
     t2d_pred_times,
 )

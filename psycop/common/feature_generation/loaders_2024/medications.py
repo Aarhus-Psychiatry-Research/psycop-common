@@ -148,7 +148,7 @@ def concat_medications(
     )
 
 
-def antidiabetics(
+def antidiabetics_2024(
     n_rows: int | None = None,
     load_prescribed: bool = False,
     load_administered: bool = True,
