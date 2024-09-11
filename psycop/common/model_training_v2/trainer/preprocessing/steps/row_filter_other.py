@@ -103,14 +103,14 @@ class QuarantineFilter(PresplitStep):
 
         time_since_quarantine = df_with_quarantine_timestamps.with_columns(
             (pl.col(self.timestamp_col_name) - pl.col("timestamp_quarantine"))
-            .dt.days()
-            .alias("days_since_quarantine")
+            .dt.seconds()
+            .alias("seconds_since_quarantine")
         )
 
         # Check if the quarantine date hits the prediction time
         hit_by_quarantine = time_since_quarantine.filter(
-            (pl.col("days_since_quarantine") < self.quarantine_interval_days)
-            & (pl.col("days_since_quarantine") > 0)
+            (pl.col("seconds_since_quarantine") < self.quarantine_interval_days * 60 * 60 * 24)
+            & (pl.col("seconds_since_quarantine") > 0)
         ).select(self._tmp_pred_time_uuid_col_name)
 
         # Use these rows to filter the prediction times, ensuring that all columns are kept

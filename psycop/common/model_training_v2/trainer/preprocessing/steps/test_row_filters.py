@@ -83,6 +83,7 @@ def test_filter_by_quarantine_period():
         1,2020-12-01 00:00:01, # keep: before quarantine date
         1,2022-12-01 00:00:01, # drop: within quarantine days from the first quarantine date
         1,2026-02-01 00:00:01, # keep: outside quarantine days from the first quarantine date
+        1,2021-01-01 00:01:00  # drop: same day, later time
         2,2023-02-01 00:00:01, # keep: no quarantine date for this id
         """
     ).lazy()
