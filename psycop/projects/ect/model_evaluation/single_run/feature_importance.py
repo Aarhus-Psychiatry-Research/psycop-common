@@ -9,7 +9,7 @@ from sklearn.pipeline import Pipeline
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 
 
-def cvd_parse_static_feature(full_string: str) -> str:
+def ect_parse_static_feature(full_string: str) -> str:
     """Takes a static feature name and returns a human readable version of it."""
     feature_name = full_string.replace("pred_", "")
 
@@ -21,9 +21,8 @@ def cvd_parse_static_feature(full_string: str) -> str:
         feature_capitalised = manual_overrides[feature_capitalised]
     return feature_capitalised
 
-
-def cvd_parse_temporal_feature(full_string: str) -> str:
-    feature_name = re.findall(r"pred_layer_\d_(.*)?_within", full_string)[0]
+def ect_parse_temporal_feature(full_string: str) -> str:
+    feature_name = re.findall(r"pred_layer_[^_]+_(.*)?_within", full_string)[0]
     if "_" in feature_name:
         words = feature_name.split("_")
         words[0] = words[0].capitalize()
@@ -32,7 +31,7 @@ def cvd_parse_temporal_feature(full_string: str) -> str:
     lookbehind = re.findall(r"within_0_to_(.*)?_days", full_string)[0]
     resolve_multiple = re.findall(r"days_(.*)?_fallback", full_string)[0]
 
-    remove = [r"_layer_\d_*"]
+    remove = [r"_layer_[^_]+_*"]
     remove = "(%s)" % "|".join(remove)  # noqa
 
     feature_name = re.sub(remove, "", feature_name)
@@ -40,15 +39,15 @@ def cvd_parse_temporal_feature(full_string: str) -> str:
     return output_string
 
 
-def cvd_feature_name_to_readable(full_string: str) -> str:
+def ect_feature_name_to_readable(full_string: str) -> str:
     if "within" not in full_string:
-        output_string = cvd_parse_static_feature(full_string)
+        output_string = ect_parse_static_feature(full_string)
     else:
-        output_string = cvd_parse_temporal_feature(full_string=full_string)
+        output_string = ect_parse_temporal_feature(full_string=full_string)
     return output_string
 
 
-def cvd_generate_feature_importance_table(
+def ect_generate_feature_importance_table(
     pipeline: Pipeline, clf_model_name: str = "classifier"
 ) -> pd.DataFrame:
     # Get feature importance scores
@@ -66,7 +65,7 @@ def cvd_generate_feature_importance_table(
 
     # Get the top 100 features by gain
     top_100_features = feature_table.head(100).with_columns(
-        pl.col("Feature Name").apply(lambda x: cvd_feature_name_to_readable(x))
+        pl.col("Feature Name").apply(lambda x: ect_feature_name_to_readable(x))
     )
 
     pd_df = top_100_features.to_pandas()
@@ -79,12 +78,12 @@ def cvd_generate_feature_importance_table(
 
 if __name__ == "__main__":
     run = MlflowClientWrapper().get_run(
-        "CVD hyperparam tuning, layer 2, xgboost, v2", "Layer 2, hparam"
+        "ECT hparam, structured_only, xgboost, no lookbehind filter", "inquisitive-koi-243"
     )
 
-    feat_imp = cvd_generate_feature_importance_table(
+    feat_imp = ect_generate_feature_importance_table(
         pipeline=run.sklearn_pipeline(), clf_model_name="classifier"
     )
     pl.Config.set_tbl_rows(100)
 
-    pathlib.Path("cvd_feature_importances.html").write_text(feat_imp.to_html())
+    pathlib.Path("ect_feature_importances.html").write_text(feat_imp.to_html())

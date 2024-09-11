@@ -4,9 +4,9 @@ from dataclasses import dataclass
 import plotnine as pn
 import polars as pl
 
-from psycop.projects.cvd.model_evaluation.single_run.auroc_by.auroc_by_view import auroc_by_view
-from psycop.projects.cvd.model_evaluation.single_run.auroc_by.sex_model import AurocBySexDF
-from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
+from psycop.projects.ect.model_evaluation.single_run.auroc_by.auroc_by_view import auroc_by_view
+from psycop.projects.ect.model_evaluation.single_run.auroc_by.sex_model import AurocBySexDF
+from psycop.projects.ect.model_evaluation.single_run.single_run_artifact import SingleRunPlot
 
 log = logging.getLogger(__file__)
 

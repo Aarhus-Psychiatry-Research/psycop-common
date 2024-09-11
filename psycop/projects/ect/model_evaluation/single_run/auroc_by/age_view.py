@@ -3,9 +3,9 @@ import logging
 import plotnine as pn
 from attr import dataclass
 
-from psycop.projects.cvd.model_evaluation.single_run.auroc_by.age_model import AUROCByAgeDF
-from psycop.projects.cvd.model_evaluation.single_run.auroc_by.auroc_by_view import auroc_by_view
-from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
+from psycop.projects.ect.model_evaluation.single_run.auroc_by.age_model import AUROCByAgeDF
+from psycop.projects.ect.model_evaluation.single_run.auroc_by.auroc_by_view import auroc_by_view
+from psycop.projects.ect.model_evaluation.single_run.single_run_artifact import SingleRunPlot
 
 
 @dataclass

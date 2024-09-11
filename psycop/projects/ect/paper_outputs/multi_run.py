@@ -3,8 +3,8 @@ from pathlib import Path
 
 import coloredlogs
 
-import psycop.projects.cvd.model_evaluation.multi_run.auroc_by_run_data as abrd
-from psycop.projects.cvd.model_evaluation.multi_run import auroc_by_run_presentation
+import psycop.projects.ect.model_evaluation.multi_run.auroc_by_run_data as abrd
+from psycop.projects.ect.model_evaluation.multi_run import auroc_by_run_presentation
 
 
 def multi_run_facade(output_path: Path, runs: Sequence[abrd.RunSelector]) -> None:

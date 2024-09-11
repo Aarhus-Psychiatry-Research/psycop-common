@@ -1,10 +1,10 @@
 import polars as pl
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
-from psycop.projects.cvd.feature_generation.cohort_definition.cvd_cohort_definition import (
-    cvd_outcome_timestamps,
+from psycop.projects.ect.feature_generation.cohort_definition.ect_cohort_definition import (
+    ect_outcome_timestamps,
 )
-from psycop.projects.cvd.model_evaluation.single_run.performance_by_ppr.model import (
+from psycop.projects.ect.model_evaluation.single_run.performance_by_ppr.model import (
     PerformanceByPPRModel,
     performance_by_ppr_model,
 )
@@ -72,9 +72,9 @@ if __name__ == "__main__":
     table = performance_by_ppr_view(
         performance_by_ppr_model(
             eval_df=eval_df,
-            positive_rates=[0.01, 0.05, 0.1, 0.2],
-            outcome_timestamps=cvd_outcome_timestamps(),
+            positive_rates=[0.01, 0.02, 0.3, 0.4],
+            outcome_timestamps=ect_outcome_timestamps(),
         ),
-        outcome_label="CVD",
+        outcome_label="ECT",
     )
     table.write_csv("performance_by_ppr.csv")

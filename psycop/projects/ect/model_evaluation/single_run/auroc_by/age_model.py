@@ -4,8 +4,8 @@ from typing import NewType
 import polars as pl
 
 from psycop.common.global_utils.cache import shared_cache
-from psycop.projects.cvd.model_evaluation.single_run.auroc_by.auroc_by_model import auroc_by_model
-from psycop.projects.cvd.model_evaluation.uuid_parsers import (
+from psycop.projects.ect.model_evaluation.single_run.auroc_by.auroc_by_model import auroc_by_model
+from psycop.projects.ect.model_evaluation.uuid_parsers import (
     parse_dw_ek_borger_from_uuid,
     parse_timestamp_from_uuid,
 )

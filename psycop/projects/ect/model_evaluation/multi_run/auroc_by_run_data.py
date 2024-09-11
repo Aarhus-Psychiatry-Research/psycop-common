@@ -7,7 +7,7 @@ import polars as pl
 from psycop.common.global_utils.cache import shared_cache
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_evaluation.binary.global_performance.roc_auc import bootstrap_roc
-from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import RunSelector
+from psycop.projects.ect.model_evaluation.single_run.single_run_artifact import RunSelector
 
 
 @shared_cache().cache()

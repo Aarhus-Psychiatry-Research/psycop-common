@@ -36,7 +36,7 @@ def hyperparameter_search(cfg: PsycopConfig):
 
     # Set run name
     for feature_set, features in FEATURE_SETS.items():
-        cfg.mut("logger.*.mlflow.experiment_name", f"ECT hparam, {feature_set}, xgboost")
+        cfg.mut("logger.*.mlflow.experiment_name", f"ECT hparam, {feature_set}, xgboost, no lookbehind filter")
 
         layer_regex = "|".join(features)
 
@@ -47,7 +47,7 @@ def hyperparameter_search(cfg: PsycopConfig):
 
         OptunaHyperParameterOptimization().from_cfg(
             cfg,
-            study_name=cfg.retrieve("logger.*.mlflow.experiment_name"),
+            study_name=cfg.retrieve("logger.*.mlflow.experiment_name") + "_",
             n_trials=150,
             n_jobs=10,
             direction="maximize",
