@@ -1,3 +1,4 @@
+import datetime
 import logging
 from collections.abc import Sequence
 from dataclasses import dataclass
@@ -5,6 +6,7 @@ from dataclasses import dataclass
 import coloredlogs
 import plotnine as pn
 import polars as pl
+import statsmodels.api as sm
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
@@ -22,18 +24,42 @@ class T2DExtendedPlot(SingleRunPlot):
     def __call__(self) -> pn.ggplot:
         logging.info(f"Starting {self.__class__.__name__}")
         df = pl.concat(run.to_dataframe() for run in self.data)
-        mean_score = df["performance"].mean()
+
+        estimates = df.explode("estimates").with_columns(
+            (
+                (pl.col("start_date").cast(pl.Date) - pl.col("start_date").min()).dt.total_days()
+                / 365.25
+            ).alias("years_since_start")
+        )
+
+        def format_datetime(x: Sequence[datetime.datetime]) -> Sequence[str]:
+            return [f"{d.year-2000}-{d.year+1-2000}" for d in x]
+
+        # Convert to numpy arrays for scikit-learn
+        X = estimates.to_pandas()["years_since_start"].to_numpy().reshape(-1, 1)
+        y = estimates.to_pandas()["estimates"].to_numpy()
+
+        # Use statsmodels to get the standard error of the slope
+        X_with_const = sm.add_constant(X)
+        sm_model = sm.GLM(y, X_with_const).fit()
+        slope = sm_model.params[1]
+        slope_se = sm_model.bse[1]
+        slope_string = f"{round(slope, 3)} (±{round(1.96 * slope_se, 3)})"
 
         # Plot AUC ROC curve
         plot = (
             pn.ggplot(df, pn.aes(x="start_date", y="performance", ymin="lower_ci", ymax="upper_ci"))
             + pn.geom_point(size=2)
-            + pn.stat_smooth(method="lm")
-            + pn.labs(y="AUROC", x="Start date")
-            + pn.ylim([0.7, 1.0])
+            + pn.stat_smooth(
+                data=estimates, mapping=pn.aes(x="start_date", y="estimates"), se=True, size=0.5
+            )
+            + pn.labs(y="AUROC", x="")
             + THEME
-            + pn.scale_x_datetime(date_labels="%Y", date_breaks="1 year")
-            # + pn.geom_hline(pn.aes(yintercept=mean_score), linetype="dashed")
+            + pn.scale_x_datetime(labels=format_datetime, date_breaks="1 year")
+            + pn.theme(
+                panel_grid_major=pn.element_line(color="lightgrey", size=0.25, linetype="dotted"),
+                axis_text_x=pn.element_text(size=10),
+            )
         )
 
         plot.save("test.png", width=4, height=2.5, dpi=600)
@@ -51,6 +77,6 @@ if __name__ == "__main__":
         )
         for y in range(18, 23)
     ]
-    performances = t2d_extended_temporal_stability_model(runs, n_bootstraps=100)
+    performances = t2d_extended_temporal_stability_model(runs, n_bootstraps=500)
 
     plot = T2DExtendedPlot(performances)()

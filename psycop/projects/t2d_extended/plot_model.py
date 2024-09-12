@@ -1,5 +1,4 @@
 import datetime
-import itertools
 from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
@@ -24,13 +23,10 @@ class TemporalRunPerformance:
 
     def to_dataframe(self) -> pl.DataFrame:
         # Convert estimates to a list
-        estimates_list = self.estimates.tolist()
-
-        flattened = list(itertools.chain.from_iterable(estimates_list))
-
         # Create a dictionary with the data
         data = {
             "performance": [self.performance],
+            "estimates": [self.estimates.tolist()],
             "lower_ci": [self.lower_ci],
             "upper_ci": [self.upper_ci],
             "start_date": [self.start_date],
@@ -49,7 +45,7 @@ def run_perf_from_run(run: PsycopMlflowRun, n_bootstraps: int) -> TemporalRunPer
 
     y = eval_frame.frame.to_pandas()["y"]
     y_hat_probs = eval_frame.frame.to_pandas()["y_hat_prob"]
-    aucs_bootstrapped, _, _ = bootstrap_roc(n_bootstraps=n_bootstraps, y=y, y_hat_probs=y_hat_probs)
+    _, aucs_bootstrapped, _ = bootstrap_roc(n_bootstraps=n_bootstraps, y=y, y_hat_probs=y_hat_probs)
 
     auc_mean = float(np.mean(aucs_bootstrapped))
     auc_se = np.std(aucs_bootstrapped) / np.sqrt(n_bootstraps)
