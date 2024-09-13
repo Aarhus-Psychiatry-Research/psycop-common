@@ -11,7 +11,7 @@ import statsmodels.api as sm
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
 from psycop.projects.t2d.paper_outputs.config import THEME
-from psycop.projects.t2d_extended.plot_model import (
+from psycop.projects.t2d_extended.temporal_model import (
     TemporalRunPerformance,
     t2d_extended_temporal_stability_model,
 )
