@@ -85,14 +85,13 @@ def eval_stratified_split(
 if __name__ == "__main__":
     populate_baseline_registry()
 
-    eval_years = [18, 19, 20, 21, 22]
     aurocs = {
         y: eval_stratified_split(
             PsycopConfig().from_disk(Path(__file__).parent / "t2d_extended.cfg"),
             training_end_date="2018-01-01",
             evaluation_interval=(f"20{y}-01-01", f"20{y}-12-31"),
         )
-        for y in eval_years
+        for y in range(18, 23)
     }
 
     print(aurocs)
