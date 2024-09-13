@@ -48,7 +48,7 @@ class TemporalStabilityPlot(SingleRunPlot):
             + pn.geom_point(size=2)
             + pn.labs(y="AUROC", x="")
             + THEME
-            # + pn.scale_x_datetime(labels=format_datetime, date_breaks="1 year")
+            # + pn.scale_x_datetime(labels=format_datetime, date_breaks="1 year")  # noqa: ERA001
             + pn.theme(
                 panel_grid_major=pn.element_line(color="lightgrey", size=0.25, linetype="dotted"),
                 axis_text_x=pn.element_text(size=10),
