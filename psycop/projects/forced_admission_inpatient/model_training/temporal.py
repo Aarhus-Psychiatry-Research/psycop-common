@@ -9,26 +9,27 @@ def eval_stratified_split(
     cfg: PsycopConfig, training_end_date: str, evaluation_interval: tuple[str, str]
 ) -> float:
     outcome_col_name: str = cfg.retrieve("trainer.outcome_col_name")
+
+    # Python dicts are ordered, but we currently remove the timestamp column before generating predictions.
+    # Since we cannot insert at a given position in the ordering, we need to remove the timestamp filter,
+    # and then re-add it later.
     preprocessing_pipeline = cfg.rem(
         "trainer.preprocessing_pipeline.*.temporal_col_filter"
     ).retrieve("trainer.preprocessing_pipeline")
 
     # Setup for experiment
     cfg = (
-        cfg.mut("logger.*.mlflow.experiment_name", "T2D-extended, temporal validation")
+        cfg.mut("logger.*.mlflow.experiment_name", "Inpatient v2, temporal validation")
         .add(
             "logger.*.mlflow.run_name",
             f"{training_end_date}_{evaluation_interval[0]}_{evaluation_interval[1]}",
         )
         .mut("trainer.@trainers", "split_trainer_separate_preprocessing")
-        .rem("trainer.outcome_col_name")
-        .rem("trainer.preprocessing_pipeline")
-        .rem("trainer.n_splits")
+        .rem("trainer.outcome_col_name")  # Separate for train and test later
+        .rem("trainer.preprocessing_pipeline")  # Separate for train and test
+        .rem("trainer.n_splits")  # Not needed for splits
     )
 
-    # Python dicts are ordered, but we remove the timestamp column before generating predictions.
-    # To filter based on timestamp, we need to add the filter before temporal columns are removed.
-    # These shenanigans are needed to insert.
     # Handle training set setup
     cfg = (
         cfg.add("trainer.training_outcome_col_name", outcome_col_name)
@@ -85,18 +86,17 @@ def eval_stratified_split(
 if __name__ == "__main__":
     populate_baseline_registry()
 
-    base_cfg = PsycopConfig().from_disk(Path(__file__).parent / "inpatient_v2.cfg")
+    endyear2aurocs = {}
+    for train_end_year in range(16, 21):
+        evaluation_years = range(train_end_year, 22)
+        year_aurocs = {
+            y: eval_stratified_split(
+                PsycopConfig().from_disk(Path(__file__).parent / "inpatient_v2.cfg"),
+                training_end_date=f"20{train_end_year}-01-01",
+                evaluation_interval=(f"20{y}-01-01", f"20{y}-12-31"),
+            )
+            for y in evaluation_years
+        }
+        endyear2aurocs[train_end_year] = year_aurocs
 
-    auroc = train_baseline_model_from_cfg(base_cfg)
-    print(auroc)
-
-    # aurocs = {
-    #     y: eval_stratified_split(
-    #         PsycopConfig().from_disk(Path(__file__).parent / "inpatient_v2.cfg"),
-    #         training_end_date="2018-01-01",
-    #         evaluation_interval=(f"20{y}-01-01", f"20{y}-12-31"),
-    #     )
-    #     for y in range(18, 23)
-    # }
-
-    # print(aurocs)
+    print(endyear2aurocs)
