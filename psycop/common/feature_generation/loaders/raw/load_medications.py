@@ -7,7 +7,6 @@ import logging
 import pandas as pd
 
 from psycop.common.feature_generation.loaders.raw.utils import load_from_codes
-from psycop.common.feature_generation.utils import data_loaders
 
 log = logging.getLogger(__name__)
 
@@ -138,7 +137,8 @@ def concat_medications(
 
 
 # data_loaders primarly used in psychiatry
-@data_loaders.register("antipsychotics")
+
+
 def antipsychotics(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -164,7 +164,8 @@ def antipsychotics(
 
 
 # 1. generation antipsychotics [flupentixol, pimozid, haloperidol, zuclopenthixol, melperon,pipamperon, chlorprotixen]
-@data_loaders.register("first_gen_antipsychotics")
+
+
 def first_gen_antipsychotics(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -184,7 +185,8 @@ def first_gen_antipsychotics(
 
 
 # 2. generation antipsychotics [amisulpride, aripiprazole,asenapine, brexpiprazole, cariprazine, lurasidone, olanzapine, paliperidone, Quetiapine, risperidone, sertindol]
-@data_loaders.register("second_gen_antipsychotics")
+
+
 def second_gen_antipsychotics(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -217,7 +219,6 @@ def second_gen_antipsychotics(
     )
 
 
-@data_loaders.register("top_10_weight_gaining_antipsychotics")
 def top_10_weight_gaining_antipsychotics(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -240,7 +241,6 @@ def top_10_weight_gaining_antipsychotics(
     )
 
 
-@data_loaders.register("sedative_antipsychotics")
 def sedative_antipsychotics(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -259,7 +259,6 @@ def sedative_antipsychotics(
     )
 
 
-@data_loaders.register("non_sedative_antipsychotics")
 def non_sedative_antipsychotics(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -279,7 +278,6 @@ def non_sedative_antipsychotics(
     )
 
 
-@data_loaders.register("olanzapine_depot")
 def olanzapine_depot(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -303,7 +301,6 @@ def olanzapine_depot(
     )
 
 
-@data_loaders.register("aripiprazole_depot")
 def aripiprazole_depot(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -326,7 +323,6 @@ def aripiprazole_depot(
     )
 
 
-@data_loaders.register("risperidone_depot")
 def risperidone_depot(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -349,7 +345,6 @@ def risperidone_depot(
     )
 
 
-@data_loaders.register("paliperidone_depot")
 def paliperidone_depot(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -378,7 +373,6 @@ def paliperidone_depot(
     )
 
 
-@data_loaders.register("haloperidol_depot")
 def haloperidol_depot(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -404,7 +398,6 @@ def haloperidol_depot(
     )
 
 
-@data_loaders.register("perphenazine_depot")
 def perphenazine_depot(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -428,7 +421,6 @@ def perphenazine_depot(
     )
 
 
-@data_loaders.register("zuclopenthixol_depot")
 def zuclopenthixol_depot(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -453,7 +445,6 @@ def zuclopenthixol_depot(
     )
 
 
-@data_loaders.register("olanzapine")
 def olanzapine(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -472,7 +463,6 @@ def olanzapine(
     )
 
 
-@data_loaders.register("clozapine")
 def clozapine(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -491,7 +481,6 @@ def clozapine(
     )
 
 
-@data_loaders.register("anxiolytics")
 def anxiolytics(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -510,7 +499,6 @@ def anxiolytics(
     )
 
 
-@data_loaders.register("benzodiazepines")
 def benzodiazepines(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -529,7 +517,6 @@ def benzodiazepines(
     )
 
 
-@data_loaders.register("benzodiazepine_related_sleeping_agents")
 def benzodiazepine_related_sleeping_agents(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -548,7 +535,6 @@ def benzodiazepine_related_sleeping_agents(
     )
 
 
-@data_loaders.register("pregabaline")
 def pregabaline(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -567,7 +553,6 @@ def pregabaline(
     )
 
 
-@data_loaders.register("opioid_dependence")
 def opioid_dependence(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -587,7 +572,6 @@ def opioid_dependence(
     )
 
 
-@data_loaders.register("buprenorphine")
 def buprenorphine(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -608,7 +592,6 @@ def buprenorphine(
     )
 
 
-@data_loaders.register("methadone")
 def methadone(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -628,7 +611,6 @@ def methadone(
     )
 
 
-@data_loaders.register("naxolone")
 def naxolone(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -649,7 +631,6 @@ def naxolone(
     )
 
 
-@data_loaders.register("hypnotics_and_sedatives")
 def hypnotics(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -668,7 +649,6 @@ def hypnotics(
     )
 
 
-@data_loaders.register("hypnotics_and_sedatives_with_rivotril")
 def hypnotics_and_rivotril(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -701,7 +681,6 @@ def hypnotics_and_rivotril(
     )
 
 
-@data_loaders.register("mood_stabilisers")
 def mood_stabilisers(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -720,7 +699,6 @@ def mood_stabilisers(
     )
 
 
-@data_loaders.register("nervous_system_stimulants")
 def nervous_system_stimulants(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -739,7 +717,6 @@ def nervous_system_stimulants(
     )
 
 
-@data_loaders.register("antidepressives")
 def antidepressives(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -759,7 +736,8 @@ def antidepressives(
 
 
 # SSRIs, escitalopram, citalopram, fluvoxamin, fluoxetin, paroxetin
-@data_loaders.register("ssri")
+
+
 def ssri(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -779,7 +757,8 @@ def ssri(
 
 
 # SNRIs, duloxetin, venlafaxin
-@data_loaders.register("snri")
+
+
 def snri(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -799,7 +778,8 @@ def snri(
 
 
 # TCAs
-@data_loaders.register("tca")
+
+
 def tca(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -818,7 +798,6 @@ def tca(
     )
 
 
-@data_loaders.register("selected_nassa")
 def selected_nassa(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -837,7 +816,6 @@ def selected_nassa(
     )
 
 
-@data_loaders.register("lithium")
 def lithium(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -856,7 +834,6 @@ def lithium(
     )
 
 
-@data_loaders.register("valproate")
 def valproate(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -875,7 +852,6 @@ def valproate(
     )
 
 
-@data_loaders.register("lamotrigine")
 def lamotrigine(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -894,7 +870,6 @@ def lamotrigine(
     )
 
 
-@data_loaders.register("hyperactive disorders medications")
 def hyperactive_disorders_medications(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -913,7 +888,6 @@ def hyperactive_disorders_medications(
     )
 
 
-@data_loaders.register("dementia medications")
 def dementia_medications(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -932,7 +906,6 @@ def dementia_medications(
     )
 
 
-@data_loaders.register("anti-epileptics")
 def anti_epileptics(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -952,7 +925,8 @@ def anti_epileptics(
 
 
 # medications used in alcohol abstinence treatment [thiamin, b-combin, klopoxid, fenemal]
-@data_loaders.register("alcohol_abstinence")
+
+
 def alcohol_abstinence(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -972,7 +946,8 @@ def alcohol_abstinence(
 
 
 # data loaders for medications primarily used outside psychiatry
-@data_loaders.register("alimentary_tract_and_metabolism_medications")
+
+
 def alimentary_medications(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -991,7 +966,6 @@ def alimentary_medications(
     )
 
 
-@data_loaders.register("blood_and_blood_forming_organs_medications")
 def blood_medications(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -1010,7 +984,6 @@ def blood_medications(
     )
 
 
-@data_loaders.register("cardiovascular_medications")
 def cardiovascular_medications(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -1029,7 +1002,6 @@ def cardiovascular_medications(
     )
 
 
-@data_loaders.register("dermatologicals")
 def dermatological_medications(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -1048,7 +1020,6 @@ def dermatological_medications(
     )
 
 
-@data_loaders.register("genito_urinary_system_and_sex_hormones_medications")
 def genito_sex_medications(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -1067,7 +1038,6 @@ def genito_sex_medications(
     )
 
 
-@data_loaders.register("systemic_hormonal_preparations")
 def hormonal_medications(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -1086,7 +1056,6 @@ def hormonal_medications(
     )
 
 
-@data_loaders.register("antiinfectives")
 def antiinfectives(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -1105,7 +1074,6 @@ def antiinfectives(
     )
 
 
-@data_loaders.register("antineoplastic")
 def antineoplastic(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -1124,7 +1092,6 @@ def antineoplastic(
     )
 
 
-@data_loaders.register("musculoskeletal_medications")
 def musculoskeletal_medications(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -1143,7 +1110,6 @@ def musculoskeletal_medications(
     )
 
 
-@data_loaders.register("nervous_system_medications")
 def nervous_system_medications(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -1162,7 +1128,6 @@ def nervous_system_medications(
     )
 
 
-@data_loaders.register("analgesics")
 def analgesic(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -1181,7 +1146,6 @@ def analgesic(
     )
 
 
-@data_loaders.register("antiparasitic")
 def antiparasitic(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -1200,7 +1164,6 @@ def antiparasitic(
     )
 
 
-@data_loaders.register("respiratory_medications")
 def respiratory_medications(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -1219,7 +1182,6 @@ def respiratory_medications(
     )
 
 
-@data_loaders.register("sensory_organs_medications")
 def sensory_medications(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -1238,7 +1200,6 @@ def sensory_medications(
     )
 
 
-@data_loaders.register("various_medications")
 def various_medications(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -1257,7 +1218,6 @@ def various_medications(
     )
 
 
-@data_loaders.register("statins")
 def statins(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -1276,7 +1236,6 @@ def statins(
     )
 
 
-@data_loaders.register("antihypertensives")
 def antihypertensives(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -1295,7 +1254,6 @@ def antihypertensives(
     )
 
 
-@data_loaders.register("diuretics")
 def diuretics(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -1314,7 +1272,6 @@ def diuretics(
     )
 
 
-@data_loaders.register("gerd_drugs")
 def gerd_drugs(
     n_rows: int | None = None,
     load_prescribed: bool = False,
