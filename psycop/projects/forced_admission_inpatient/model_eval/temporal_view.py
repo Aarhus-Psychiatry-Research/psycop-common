@@ -1,4 +1,3 @@
-import datetime
 import logging
 from collections.abc import Sequence
 from dataclasses import dataclass
@@ -28,9 +27,6 @@ class TemporalStabilityPlot(SingleRunPlot):
             pl.col("train_end_date").dt.iso_year().cast(pl.Utf8).alias("train_end_year"),
             (pl.col("start_date") - (pl.col("train_end_date"))).alias("since_train_end"),
         )
-
-        def format_datetime(x: Sequence[datetime.datetime]) -> Sequence[str]:
-            return [f"{d.year-2000}-{d.year+1-2000}" for d in x]
 
         plot = (
             pn.ggplot(
