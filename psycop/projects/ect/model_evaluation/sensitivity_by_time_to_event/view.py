@@ -2,8 +2,8 @@ from dataclasses import dataclass
 
 import plotnine as pn
 
-from psycop.projects.ect.model_evaluation.single_run.single_run_artifact import SingleRunPlot
-from psycop.projects.t2d.paper_outputs.config import FONT_SIZES, THEME, ColorsPTC
+from psycop.projects.ect.model_evaluation.single_run_artifact import SingleRunPlot
+from psycop.projects.t2d.paper_outputs.config import FONT_SIZES, THEME, ColorsPTC, Colors
 
 from .model import SensitivityByTTEDF
 
@@ -27,15 +27,16 @@ class SensitivityByTTEPlot(SingleRunPlot):
             pn.ggplot(
                 df,
                 pn.aes(
-                    x="unit_from_event_binned", y="sensitivity", ymin="ci_lower", ymax="ci_upper"
+                    x="unit_from_event_binned", y="sensitivity", ymin="ci_lower", ymax="ci_upper", color="actual_positive_rate", group="actual_positive_rate"
                 ),
             )
             + pn.scale_x_discrete()
             + pn.expand_limits(y=0)
-            + pn.geom_path(group=1, size=0.5)
+            + pn.geom_path(size=0.5)
             + pn.geom_point(size=1)
             + pn.geom_errorbar(width=0.1)
-            + pn.labs(x="Months to outcome", y="Sensitivity")
+            + pn.labs(x="Days", y="Sensitivity")
+            + pn.scale_color_brewer(type="qual", palette="Set2") # type: ignore
             + THEME
             + pn.theme(
                 axis_text_x=pn.element_text(size=FONT_SIZES.axis_tick_labels, angle=45, hjust=1),

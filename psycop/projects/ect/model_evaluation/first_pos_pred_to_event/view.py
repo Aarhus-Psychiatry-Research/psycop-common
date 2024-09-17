@@ -8,11 +8,11 @@ from psycop.projects.ect.feature_generation.cohort_definition.ect_cohort_definit
     ect_outcome_timestamps,
 )
 from psycop.projects.ect.feature_generation.cohort_definition.outcome_specification.combined import add_first_ect_time_after_prediction_time
-from psycop.projects.ect.model_evaluation.single_run.first_pos_pred_to_event.model import (
+from psycop.projects.ect.model_evaluation.first_pos_pred_to_event.model import (
     FirstPosPredToEventDF,
     first_positive_prediction_to_event_model,
 )
-from psycop.projects.ect.model_evaluation.single_run.single_run_artifact import SingleRunPlot
+from psycop.projects.ect.model_evaluation.single_run_artifact import SingleRunPlot
 from psycop.projects.scz_bp.evaluation.configs import Colors
 from psycop.projects.t2d.paper_outputs.config import THEME
 

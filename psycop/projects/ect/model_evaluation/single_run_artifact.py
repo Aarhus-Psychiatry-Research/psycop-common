@@ -27,6 +27,8 @@ class SingleRunModel:
     def get_eval_df(self, run: RunSelector) -> pl.DataFrame:
         return self._get_run(run).eval_frame().frame
 
+    def get_metric(self, run: RunSelector, metric_name: str) -> float:
+        return self._get_run(run).get_all_metrics().select(metric_name).item()
 
 def get_eval_df(run: RunSelector) -> pl.DataFrame:
     return SingleRunModel().get_eval_df(run=run)
@@ -44,3 +46,4 @@ class SingleRunTable(SingleRunView):
 
 
 SingleRunArtifact = SingleRunPlot | SingleRunTable
+

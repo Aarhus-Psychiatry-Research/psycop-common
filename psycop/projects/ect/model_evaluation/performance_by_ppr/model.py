@@ -9,14 +9,15 @@ import polars as pl
 
 from psycop.common.cohort_definition import OutcomeTimestampFrame
 from psycop.common.global_utils.cache import shared_cache
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame, MlflowClientWrapper
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
     get_confusion_matrix_cells_from_df,
 )
 from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
 )
-from psycop.projects.ect.model_evaluation.single_run.performance_by_ppr.days_from_first_positive_to_event import (
+from psycop.projects.ect.feature_generation.cohort_definition.outcome_specification.combined import add_first_ect_time_after_prediction_time
+from psycop.projects.ect.model_evaluation.performance_by_ppr.days_from_first_positive_to_event import (
     days_from_first_positive_to_event,
 )
 from psycop.projects.ect.model_evaluation.uuid_parsers import (
@@ -25,14 +26,14 @@ from psycop.projects.ect.model_evaluation.uuid_parsers import (
 )
 
 
-def _performance_by_ppr_row(eval_df: EvalFrame, positive_rate: float) -> pl.DataFrame:
+def _performance_by_ppr_row(eval_df: pl.DataFrame, positive_rate: float) -> pl.DataFrame:
     logging.info(f"Generating performance by PPR row with positive rate {positive_rate}")
-    pd_df = eval_df.frame.to_pandas()
+    pd_df = eval_df.to_pandas()
     preds, _ = get_predictions_for_positive_rate(
-        desired_positive_rate=positive_rate, y_hat_probs=pd_df[eval_df.y_hat_prob_col_name]
+        desired_positive_rate=positive_rate, y_hat_probs=pd_df["y_hat_prob"]
     )
 
-    conf_matrix_df = pd.DataFrame({"pred": preds, "true": pd_df[eval_df.y_col_name]})
+    conf_matrix_df = pd.DataFrame({"pred": preds, "true": pd_df["y"]})
 
     conf_matrix = get_confusion_matrix_cells_from_df(df=conf_matrix_df)
 
@@ -88,23 +89,21 @@ def _performance_by_ppr_row(eval_df: EvalFrame, positive_rate: float) -> pl.Data
 
 
 def _get_prop_with_at_least_one_true_positve(
-    eval_df: EvalFrame, outcome_timestamps: OutcomeTimestampFrame, positive_rate: float = 0.5
+    eval_df: pl.DataFrame, positive_rate: float = 0.5
 ) -> float:
     logging.info("Getting proportion with at least one true positive")
-    base_df = parse_timestamp_from_uuid(parse_dw_ek_borger_from_uuid(eval_df.frame)).to_pandas()
+    base_df = parse_timestamp_from_uuid(parse_dw_ek_borger_from_uuid(eval_df)).to_pandas()
 
     df = pd.DataFrame(
         {
             "id": base_df["dw_ek_borger"],
             "pred": get_predictions_for_positive_rate(
                 desired_positive_rate=positive_rate,
-                y_hat_probs=eval_df.frame[eval_df.y_hat_prob_col_name].to_pandas(),
+                y_hat_probs=eval_df["y_hat_prob"].to_pandas(),
             )[0],
             "y": base_df["y"],
             "pred_timestamps": base_df["timestamp"],
-            "outcome_timestamps": outcome_timestamps.frame[
-                outcome_timestamps.timestamp_col_name
-            ].to_pandas(),
+            "outcome_timestamps": base_df["timestamp_outcome"],
         }
     )
 
@@ -115,10 +114,10 @@ def _get_prop_with_at_least_one_true_positve(
     return true_positives["id"].nunique() / df["id"].nunique()
 
 
-def get_percentage_of_events_captured(eval_df: EvalFrame, positive_rate: float) -> float:
+def get_percentage_of_events_captured(eval_df: pl.DataFrame, positive_rate: float) -> float:
     logging.info("Calculating proportion of events hit by a positive prediction")
     # Get all patients with at least one event and at least one positive prediction
-    base_df = parse_dw_ek_borger_from_uuid(eval_df.frame).to_pandas()
+    base_df = parse_dw_ek_borger_from_uuid(eval_df).to_pandas()
     base_df["pred"] = get_predictions_for_positive_rate(
         desired_positive_rate=positive_rate, y_hat_probs=base_df["y_hat_prob"]
     )[0]
@@ -138,14 +137,14 @@ def get_percentage_of_events_captured(eval_df: EvalFrame, positive_rate: float) 
 
 
 def _calculate_row(
-    positive_rate: float, eval_df: EvalFrame, outcome_timestamps: OutcomeTimestampFrame
+    positive_rate: float, eval_df: pl.DataFrame
 ) -> pl.DataFrame:
     threshold_metrics = _performance_by_ppr_row(
         eval_df=eval_df, positive_rate=positive_rate
     ).with_columns(
         pl.lit(
             _get_prop_with_at_least_one_true_positve(
-                eval_df=eval_df, outcome_timestamps=outcome_timestamps, positive_rate=positive_rate
+                eval_df=eval_df, positive_rate=positive_rate
             )
         ).alias("prop with ≥ 1 true positive"),
         pl.lit(
@@ -154,7 +153,6 @@ def _calculate_row(
         pl.lit(
             days_from_first_positive_to_event(
                 eval_dataset=eval_df,
-                outcome_timestamps=outcome_timestamps,
                 positive_rate=positive_rate,
                 aggregation_method="sum",
             )
@@ -162,7 +160,6 @@ def _calculate_row(
         pl.lit(
             days_from_first_positive_to_event(
                 eval_dataset=eval_df,
-                outcome_timestamps=outcome_timestamps,
                 positive_rate=positive_rate,
                 aggregation_method="mean",
             )
@@ -170,7 +167,6 @@ def _calculate_row(
         pl.lit(
             days_from_first_positive_to_event(
                 eval_dataset=eval_df,
-                outcome_timestamps=outcome_timestamps,
                 positive_rate=positive_rate,
                 aggregation_method="median",
             )
@@ -180,15 +176,17 @@ def _calculate_row(
     return threshold_metrics
 
 
-PerformanceByPPRModel = NewType("PerformanceByPPRModel", pl.DataFrame)
+PerformanceByPPRModel = NewType("PerformanceByPPRModel", pl.DataFrame) 
 
 
 @shared_cache().cache()
 def performance_by_ppr_model(
-    eval_df: EvalFrame, positive_rates: Sequence[float], outcome_timestamps: OutcomeTimestampFrame
+    eval_df: EvalFrame, positive_rates: Sequence[float]
 ) -> PerformanceByPPRModel:
+    eval_df_with_correct_outcome_timestamp = add_first_ect_time_after_prediction_time(eval_df.frame)
+
     rows = Pool(len(positive_rates)).map(
-        partial(_calculate_row, eval_df=eval_df, outcome_timestamps=outcome_timestamps),
+        partial(_calculate_row, eval_df=eval_df_with_correct_outcome_timestamp),
         positive_rates,
     )
 
@@ -198,3 +196,14 @@ def performance_by_ppr_model(
         )
     )
     return PerformanceByPPRModel(df)
+
+
+if __name__ == "__main__": 
+    MAIN_METRIC = "all_oof_BinaryAUROC"
+
+    eval_df = MlflowClientWrapper().get_best_run_from_experiment(
+        experiment_name="ECT hparam, structured_text, xgboost, no lookbehind filter", metric=MAIN_METRIC
+    ).eval_frame()
+
+    pers = performance_by_ppr_model(eval_df, [0.01, 0.02, 0.03, 0.04, 0.05])
+    # add correct outcome timestamp

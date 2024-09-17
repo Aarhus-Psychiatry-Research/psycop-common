@@ -3,8 +3,8 @@ from dataclasses import dataclass
 
 import plotnine as pn
 
-from psycop.projects.ect.model_evaluation.single_run.auroc.model import AUROC
-from psycop.projects.ect.model_evaluation.single_run.single_run_artifact import SingleRunPlot
+from psycop.projects.ect.model_evaluation.auroc.model import AUROC
+from psycop.projects.ect.model_evaluation.single_run_artifact import SingleRunPlot
 from psycop.projects.t2d.paper_outputs.config import THEME
 
 

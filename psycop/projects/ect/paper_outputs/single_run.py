@@ -9,8 +9,13 @@ from psycop.common.cohort_definition import OutcomeTimestampFrame
 from psycop.common.feature_generation.data_checks.flattened.feature_describer_tsflattener_v2 import (
     generate_feature_description_df,
 )
-from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
-from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits_to_psychiatry
+from psycop.common.feature_generation.loaders.raw.load_demographic import (
+    birthdays,
+    sex_female,
+)
+from psycop.common.feature_generation.loaders.raw.load_visits import (
+    physical_visits_to_psychiatry,
+)
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
     EvalFrame,
     MlflowClientWrapper,
@@ -24,21 +29,20 @@ from psycop.common.model_evaluation.markdown.md_objects import (
 )
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema
-from psycop.projects.ect.cohort_examination.filtering_flowchart import filtering_flowchart_facade
+from psycop.projects.ect.cohort_examination.filtering_flowchart import (
+    filtering_flowchart_facade,
+)
 from psycop.projects.ect.cohort_examination.incidence_by_time.facade import incidence_by_time_facade
 from psycop.projects.ect.cohort_examination.table_one.facade import table_one_facade
-from psycop.projects.ect.feature_generation.cohort_definition.ect_cohort_definition import (
-    ect_outcome_timestamps,
-    ect_pred_filtering,
-)
-from psycop.projects.ect.model_evaluation.single_run.performance_by_ppr.model import (
-    performance_by_ppr_model,
-)
-from psycop.projects.ect.model_evaluation.single_run.performance_by_ppr.view import (
-    performance_by_ppr_view,
-)
-from psycop.projects.ect.model_evaluation.single_run.single_run_main import single_run_main
-from psycop.projects.ect.model_evaluation.single_run.single_run_robustness import (
+from psycop.projects.ect.feature_generation.cohort_definition.ect_cohort_definition import ect_outcome_timestamps, ect_pred_filtering
+from psycop.projects.ect.model_evaluation.auroc_by.roc_by_multiple_runs_model import ExperimentWithNames
+from psycop.projects.ect.model_evaluation.performance_by_ppr.model import performance_by_ppr_model
+from psycop.projects.ect.model_evaluation.performance_by_ppr.view import performance_by_ppr_view
+from psycop.projects.ect.model_evaluation.single_run_main import single_run_main
+from psycop.projects.ect.model_evaluation.single_run_robustness import single_run_robustness
+
+from psycop.projects.ect.model_evaluation.single_run_main import single_run_main
+from psycop.projects.ect.model_evaluation.single_run_robustness import (
     single_run_robustness,
 )
 
@@ -50,21 +54,22 @@ class ECTArtifactFacade(Protocol):
 def _markdown_artifacts_facade(
     output_path: Path,
     outcome_label: str,
-    eval_df: EvalFrame,
-    outcome_timestamps: OutcomeTimestampFrame,
+    main_eval_df: EvalFrame,
+    group_auroc_experiments: ExperimentWithNames,
     sex_df: pl.DataFrame,
     all_visits_df: pl.DataFrame,
     birthdays_df: pl.DataFrame,
     estimator_type: str,
     primary_pos_proportion: float,
     pos_proportions: Sequence[float],
-    lookahead_years: int,
+    lookahead_days: int,
     first_letter_index: int,
 ) -> Sequence[MarkdownArtifact]:
     # Main figure
     main_figure_output_path = output_path / f"{outcome_label}_main_figure.png"
     main_figure = single_run_main(
-        eval_frame=eval_df,
+        main_eval_frame=main_eval_df,
+        group_auroc_experiments=group_auroc_experiments,
         desired_positive_rate=primary_pos_proportion,
         outcome_label=outcome_label,
         first_letter_index=first_letter_index,
@@ -74,7 +79,7 @@ def _markdown_artifacts_facade(
     # Robustness figure
     robustness_figure_output_path = output_path / f"{outcome_label}_robustness_figure.png"
     robustness_figure = single_run_robustness(
-        eval_frame=eval_df, sex_df=sex_df, all_visits_df=all_visits_df, birthdays=birthdays_df
+        eval_frame=main_eval_df, sex_df=sex_df, all_visits_df=all_visits_df, birthdays=birthdays_df
     )
     robustness_figure.savefig(robustness_figure_output_path)
 
@@ -82,7 +87,7 @@ def _markdown_artifacts_facade(
     performance_by_ppr_output_path = output_path / f"{outcome_label}_performance_by_ppr.csv"
     performance_by_ppr_table = performance_by_ppr_view(
         performance_by_ppr_model(
-            eval_df=eval_df, positive_rates=pos_proportions, outcome_timestamps=outcome_timestamps
+            eval_df=main_eval_df, positive_rates=pos_proportions
         ),
         outcome_label=outcome_label,
     )
@@ -91,22 +96,22 @@ def _markdown_artifacts_facade(
     pos_rate_percent = f"{int(primary_pos_proportion * 100)}"
     artifacts = [
         MarkdownFigure(
-            title=f"Performance of {estimator_type} at a {pos_rate_percent} predicted positive rate with {lookahead_years} years of lookahead",
+            title=f"Performance of {estimator_type} at a {pos_rate_percent}% predicted positive rate with {lookahead_days} days of lookahead",
             file_path=main_figure_output_path,
-            description=f"**A**: Receiver operating characteristics (ROC) curve. **B**: Confusion matrix. PPV: Positive predictive value. NPV: Negative predictive value. **C**: Sensitivity by months from prediction time to event, stratified by desired predicted positive rate (PPR). Note that the numbers do not match those in Table 1, since all prediction times with insufficient lookahead distance have been dropped. **D**: Time (years) from the first positive prediction to the patient having developed {outcome_label} at a {pos_rate_percent}% predicted positive rate (PPR). The dashed line represents the median time, and the solid line represents the prediction time.",
+            description=f"**A**: Receiver operating characteristics (ROC) curve for each feature set. The model using the feature set with the highest AUROC was used for figures B-D with a predicted positive rate of {pos_rate_percent}%. **B**: Confusion matrix. PPV: Positive predictive value. NPV: Negative predictive value. **C**: Sensitivity by months from prediction time to event, stratified by desired predicted positive rate (PPR).  **D**: Time (days) from the first positive prediction to the patient receiving treatment with {outcome_label} at a {pos_rate_percent}% predicted positive rate (PPR). The dashed line represents the median time, and the solid line represents the prediction time.",
             relative_to_path=output_path,
         ),
         MarkdownFigure(
-            title=f"Robustness of {estimator_type} at a {pos_rate_percent} predicted positive rate with {lookahead_years} years of lookahead",
+            title=f"Robustness of {estimator_type} at a {pos_rate_percent} predicted positive rate with {lookahead_days} days of lookahead",
             file_path=robustness_figure_output_path,
             description="Robustness of the model across stratifications. Blue line is the area under the receiver operating characteristics curve. Grey bars represent the proportion of visits that are present in each group. Error bars are 95%-confidence intervals from 100-fold bootstrap.",
             relative_to_path=output_path,
         ),
         MarkdownTable.from_filepath(
-            title=f"Performance of {estimator_type} with {lookahead_years} years of lookahead by predicted positive rate (PPR). Numbers are physical contacts.",
+            title=f"Performance of {estimator_type} with {lookahead_days} days of lookahead by predicted positive rate (PPR). Numbers are inpatient stays with a minimum duration of 7 days.",
             table_path=performance_by_ppr_output_path,
             description=f"""**Predicted positive rate**: The proportion of contacts predicted positive by the model. Since the model outputs a predicted probability, this is a threshold set by us.
-**True prevalence**: The proportion of contacts that qualified for type 2 diabetes within the lookahead window.
+**True prevalence**: The proportion of contacts that received treatment with ECT within the lookahead window.
 **PPV**: Positive predictive value.
 **NPV**: Negative predictive value.
 **FPR**: False positive rate.
@@ -115,8 +120,8 @@ def _markdown_artifacts_facade(
 **TN**: True negatives. Numbers are service contacts.
 **FP**: False positives. Numbers are service contacts.
 **FN**: False negatives. Numbers are service contacts.
-**% of all {outcome_label} captured**: Percentage of all patients who developed {outcome_label}, who had at least one positive prediction.
-**Median years from first positive to {outcome_label}**: For all patients with at least one true positive, the number of days from their first positive prediction to being labelled as {outcome_label}.
+**% of all {outcome_label} captured**: Percentage of all patients who received {outcome_label}, who had at least one positive prediction.
+**Median days from first positive to {outcome_label}**: For all patients with at least one true positive prediction, the number of days from their first positive prediction to being labelled as {outcome_label}.
             """,
         ),
     ]
@@ -124,28 +129,28 @@ def _markdown_artifacts_facade(
     return artifacts
 
 
-def single_run_facade(output_path: Path, run: PsycopMlflowRun) -> None:
+def single_run_facade(output_path: Path, main_run: PsycopMlflowRun, group_auroc_experiments: ExperimentWithNames) -> None:
     cfg = run.get_config()
     eval_frame = run.eval_frame()
 
     lookahead_days_str = re.findall(r".+_to_(\d+)_days.+", cfg["trainer"]["outcome_col_name"])[0]
-    lookahead_years = int(int(lookahead_days_str) / 365)
+    lookahead_days = int(lookahead_days_str)
     estimator_type = cfg["trainer"]["task"]["task_pipe"]["sklearn_pipe"]["*"]["model"][
         "@estimator_steps"
     ]
 
     artifacts = _markdown_artifacts_facade(
         outcome_label="ECT",
-        eval_df=eval_frame,
-        outcome_timestamps=ect_outcome_timestamps(),
+        main_eval_df=eval_frame,
+        group_auroc_experiments=group_auroc_experiments,
         sex_df=pl.from_pandas(sex_female()),
         all_visits_df=pl.from_pandas(physical_visits_to_psychiatry()),
         birthdays_df=pl.from_pandas(birthdays()),
         output_path=output_path,
         estimator_type=estimator_type,
-        primary_pos_proportion=0.05,
+        primary_pos_proportion=0.03,
         pos_proportions=[0.01, 0.02, 0.03, 0.04],
-        lookahead_years=lookahead_years,
+        lookahead_days=lookahead_days,
         first_letter_index=0,
     )
 
@@ -189,10 +194,41 @@ if __name__ == "__main__":
         datefmt="%Y/%m/%d %H:%M:%S",
     )
 
-    run_name = "CVD layer 1, base"
+    MAIN_METRIC = "all_oof_BinaryAUROC"
+
     run = MlflowClientWrapper().get_best_run_from_experiment(
-        experiment_name="ECT hparam, structured_only, xgboost, no lookbehind filter", metric="all_oof_BinaryAUROC"
+        experiment_name="ECT hparam, structured_text, xgboost, no lookbehind filter", metric=MAIN_METRIC
     )
+
+    auroc_feature_sets = ExperimentWithNames({
+        "Text only": (
+        MlflowClientWrapper()
+        .get_best_run_from_experiment(
+            experiment_name="ECT hparam, text_only, xgboost, no lookbehind filter",
+            metric=MAIN_METRIC
+        )
+        .eval_frame()
+    ),
+        "Structured only": (
+        MlflowClientWrapper()
+        .get_best_run_from_experiment(
+            experiment_name="ECT hparam, structured_only, xgboost, no lookbehind filter",
+            metric=MAIN_METRIC
+        )
+        .eval_frame()
+    ),
+        "Structured + text": (
+        MlflowClientWrapper()
+        .get_best_run_from_experiment(
+            experiment_name="ECT hparam, structured_text, xgboost, no lookbehind filter",
+            metric=MAIN_METRIC
+        )
+        .eval_frame()
+    )
+    })
+
+
+
     output_dir = Path(__file__).parent / "outputs" / run.name
     output_dir.mkdir(exist_ok=True, parents=True)
-    single_run_facade(output_dir, run)
+    single_run_facade(output_path=output_dir, main_run=run, group_auroc_experiments=auroc_feature_sets)

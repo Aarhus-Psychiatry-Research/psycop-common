@@ -3,11 +3,11 @@ from dataclasses import dataclass
 
 import plotnine as pn
 
-from psycop.projects.ect.model_evaluation.single_run.auroc_by.auroc_by_view import auroc_by_view
-from psycop.projects.ect.model_evaluation.single_run.auroc_by.time_from_first_visit_model import (
+from psycop.projects.ect.model_evaluation.auroc_by.auroc_by_view import auroc_by_view
+from psycop.projects.ect.model_evaluation.auroc_by.time_from_first_visit_model import (
     TimeFromFirstVisitDF,
 )
-from psycop.projects.ect.model_evaluation.single_run.single_run_artifact import SingleRunPlot
+from psycop.projects.ect.model_evaluation.single_run_artifact import SingleRunPlot
 
 
 @dataclass

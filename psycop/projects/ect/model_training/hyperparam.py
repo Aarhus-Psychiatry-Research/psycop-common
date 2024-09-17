@@ -47,7 +47,7 @@ def hyperparameter_search(cfg: PsycopConfig):
 
         OptunaHyperParameterOptimization().from_cfg(
             cfg,
-            study_name=cfg.retrieve("logger.*.mlflow.experiment_name") + "_",
+            study_name=cfg.retrieve("logger.*.mlflow.experiment_name"),
             n_trials=150,
             n_jobs=10,
             direction="maximize",

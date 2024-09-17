@@ -37,7 +37,7 @@ def sensitivity_by_time_to_event_model(
             time_one=eval_dataset["timestamp"],
             time_two=eval_dataset["timestamp_outcome"],
             direction="t2-t1",
-            bins=range(0, 180, 12),
+            bins=range(0, 120, 12),
             bin_unit="D",
             bin_continuous_input=True,
         )

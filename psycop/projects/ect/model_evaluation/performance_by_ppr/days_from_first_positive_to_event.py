@@ -15,14 +15,13 @@ from psycop.projects.ect.model_evaluation.uuid_parsers import (
 
 
 def days_from_first_positive_to_event(
-    eval_dataset: EvalFrame,
-    outcome_timestamps: OutcomeTimestampFrame,
+    eval_dataset: pl.DataFrame,
     positive_rate: float = 0.5,
     aggregation_method: str = "sum",
 ) -> float:
     logging.info(f"Getting days from first positive to event with agg method {aggregation_method}")
     base_df = parse_timestamp_from_uuid(
-        parse_dw_ek_borger_from_uuid(eval_dataset.frame)
+        parse_dw_ek_borger_from_uuid(eval_dataset)
     ).to_pandas()
 
     # Generate df with only true positives
@@ -34,9 +33,7 @@ def days_from_first_positive_to_event(
             )[0],
             "y": base_df["y"],
             "pred_timestamps": base_df["timestamp"],
-            "outcome_timestamps": outcome_timestamps.frame.to_pandas()[
-                outcome_timestamps.timestamp_col_name
-            ],
+            "outcome_timestamps": base_df["timestamp_outcome"]
         }
     )
 
