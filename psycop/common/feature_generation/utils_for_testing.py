@@ -10,7 +10,6 @@ from psycop.common.feature_generation.loaders.synth.raw.load_synth_data import (
     load_synth_outcome,
     load_synth_prediction_times,
 )
-from psycop.common.feature_generation.utils import data_loaders
 from psycop.common.test_utils.str_to_df import str_to_df
 
 
@@ -32,7 +31,6 @@ def convert_cols_with_matching_colnames_to_datetime(
     return df
 
 
-@data_loaders.register("load_event_times")
 def load_event_times() -> pd.DataFrame:
     """Load event times."""
     event_times_str = """dw_ek_borger,timestamp,value,

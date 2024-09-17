@@ -9,7 +9,6 @@ import polars as pl
 from pydantic import BaseModel
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
-from psycop.common.feature_generation.utils import data_loaders
 
 log = logging.getLogger(__name__)
 
@@ -173,7 +172,6 @@ def physical_visits(
     return output_df[output_cols].reset_index(drop=True)
 
 
-@data_loaders.register("physical_visits")
 def physical_visits_loader(
     n_rows: Union[int, None] = None, return_value_as_visit_length_days: Union[bool, None] = False
 ) -> pd.DataFrame:
@@ -183,7 +181,6 @@ def physical_visits_loader(
     )
 
 
-@data_loaders.register("physical_visits_to_psychiatry")
 def physical_visits_to_psychiatry(
     n_rows: Union[int, None] = None,
     timestamps_only: bool = False,
@@ -205,7 +202,6 @@ def physical_visits_to_psychiatry(
     return df
 
 
-@data_loaders.register("physical_visits_to_somatic")
 def physical_visits_to_somatic(
     n_rows: Union[int, None] = None, return_value_as_visit_length_days: Union[bool, None] = False
 ) -> pd.DataFrame:
@@ -218,7 +214,6 @@ def physical_visits_to_somatic(
     )
 
 
-@data_loaders.register("admissions")
 def admissions(
     n_rows: Union[int, None] = None,
     return_value_as_visit_length_days: Union[bool, None] = False,
@@ -241,7 +236,6 @@ def admissions(
     return df
 
 
-@data_loaders.register("ambulatory_visits")
 def ambulatory_visits(
     n_rows: Union[int, None] = None,
     return_value_as_visit_length_days: Union[bool, None] = False,
@@ -265,7 +259,6 @@ def ambulatory_visits(
     return df
 
 
-@data_loaders.register("emergency_visits")
 def emergency_visits(
     n_rows: Union[int, None] = None,
     return_value_as_visit_length_days: Union[bool, None] = False,
@@ -282,7 +275,6 @@ def emergency_visits(
     )
 
 
-@data_loaders.register("ambulatory_and_emergency_visits")
 def ambulatory_and_emergency_visits(
     n_rows: Union[int, None] = None,
     return_value_as_visit_length_days: Union[bool, None] = False,

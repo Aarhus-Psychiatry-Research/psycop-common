@@ -116,7 +116,7 @@ class MlflowClientWrapper:
     def get_all_metrics_for_experiment(self, experiment_name: str) -> MlflowAllMetricsFrame:
         """Get the final value of all logged metrics for each run in an experiment.
         Returns a long df with cols 'run_name', 'metric', and 'value'."""
-        runs = self._get_mlflow_runs_by_experiment(experiment_name=experiment_name)
+        runs = self.get_runs_from_experiment(experiment_name=experiment_name)
         metrics_df = pl.concat([run.get_all_metrics() for run in runs]).melt(
             id_vars="run_name", variable_name="metric"
         )
@@ -124,7 +124,7 @@ class MlflowClientWrapper:
         return MlflowAllMetricsFrame(frame=metrics_df, allow_extra_columns=False)
 
     def get_run(self, experiment_name: str, run_name: str) -> PsycopMlflowRun:
-        runs = self._get_mlflow_runs_by_experiment(experiment_name=experiment_name)
+        runs = self.get_runs_from_experiment(experiment_name=experiment_name)
 
         matches = [run for run in runs if run.info.run_name == run_name]
         if not matches:
@@ -141,23 +141,21 @@ class MlflowClientWrapper:
         e.g. 'all_oof_BinaryAUROC'"""
         order = "DESC" if larger_is_better else "ASC"
 
-        experiment_id = self._get_mlflow_experiment_id_from_experiment_name(experiment_name)
+        experiment_id = self._experiment_id_from_name(experiment_name)
 
         best_run = self.client.search_runs(
             experiment_ids=[experiment_id], max_results=1, order_by=[f"metrics.{metric} {order}"]
         )[0]
         return PsycopMlflowRun.from_mlflow_run(run=best_run, client=self.client)
 
-    def _get_mlflow_experiment_id_from_experiment_name(self, experiment_name: str) -> str:
+    def _experiment_id_from_name(self, experiment_name: str) -> str:
         experiment = self.client.get_experiment_by_name(name=experiment_name)
         if experiment is None:
             raise ValueError(f"Experiment {experiment_name} does not exist on MlFlow.")
         return experiment.experiment_id
 
-    def _get_mlflow_runs_by_experiment(self, experiment_name: str) -> Sequence[PsycopMlflowRun]:
-        experiment_id = self._get_mlflow_experiment_id_from_experiment_name(
-            experiment_name=experiment_name
-        )
+    def get_runs_from_experiment(self, experiment_name: str) -> Sequence[PsycopMlflowRun]:
+        experiment_id = self._experiment_id_from_name(experiment_name=experiment_name)
         runs = self.client.search_runs(experiment_ids=[experiment_id])
         return [PsycopMlflowRun.from_mlflow_run(run=run, client=self.client) for run in runs]
 
