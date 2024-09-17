@@ -25,7 +25,7 @@ class TemporalStabilityPlot(SingleRunPlot):
         df = pl.concat(run.to_dataframe() for run in self.data)
 
         df = df.with_columns(
-            pl.col("train_end_date").dt.iso_year().cast(pl.Utf8).alias("train_end_year"),
+            pl.col("train_end_date").dt.year().cast(pl.Utf8).alias("train_end_year"),
             (pl.col("start_date") - (pl.col("train_end_date"))).alias("since_train_end"),
         )
 
