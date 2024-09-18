@@ -61,10 +61,6 @@ from psycop.projects.t2d_bigdata.feature_generation.cohort_definition.t2d_bigdat
 )
 
 
-def get_t2d_bigdata_project_info() -> ProjectInfo:
-    return ProjectInfo(project_name="t2d_bigdata", project_path=OVARTACI_SHARED_DIR / "t2d_bigdata" / "feature_set")
-
-
 def _init_t2d_bigdata_predictor(
     df_loader: Callable[[], pd.DataFrame],
     layer: int,
@@ -124,7 +120,9 @@ def _pair_to_spec(pair: LayerSpecPair) -> AnySpec:
                 df_loader=pair.spec.loader, layer=pair.layer, fallback=np.NaN
             )
         case BooleanSpec():
-            return _init_t2d_bigdata_predictor(df_loader=pair.spec.loader, layer=pair.layer, fallback=0.0)
+            return _init_t2d_bigdata_predictor(
+                df_loader=pair.spec.loader, layer=pair.layer, fallback=0.0
+            )
         case CategoricalSpec():
             return _init_t2d_bigdata_predictor(
                 df_loader=pair.spec.loader, layer=pair.layer, fallback=np.NaN
@@ -146,7 +144,8 @@ if __name__ == "__main__":
         0: [
             ts.OutcomeSpec(
                 value_frame=ts.ValueFrame(
-                    init_df=t2d_bigdata_outcome_timestamps().frame, entity_id_col_name="dw_ek_borger"
+                    init_df=t2d_bigdata_outcome_timestamps().frame,
+                    entity_id_col_name="dw_ek_borger",
                 ),
                 lookahead_distances=[datetime.timedelta(days=365 * 5)],
                 aggregators=[ts.MaxAggregator()],
@@ -169,24 +168,24 @@ if __name__ == "__main__":
                 output_name="age",
             ),
         ],
-        1: [ContinuousSpec(hba1c), CategoricalSpec(chronic_lung_disease)],
-        2: [BooleanSpec(f0_disorders),
-            BooleanSpec(f1_disorders),
-            BooleanSpec(f2_disorders),
-            BooleanSpec(f3_disorders),
-            BooleanSpec(f4_disorders),
-            BooleanSpec(f5_disorders),
-            BooleanSpec(f6_disorders),
-            BooleanSpec(f7_disorders),
-            BooleanSpec(f8_disorders),
-            BooleanSpec(f9_disorders),
-            BooleanSpec(top_10_weight_gaining_antipsychotics),
-            ContinuousSpec(hdl),
-        ],
-        3: [ContinuousSpec(weight_in_kg),
-            ContinuousSpec(height_in_cm),
-            ContinuousSpec(bmi),
-        ],
+        1: [ContinuousSpec(hba1c)],
+        # 2: [BooleanSpec(f0_disorders),
+        #     BooleanSpec(f1_disorders),
+        #     BooleanSpec(f2_disorders),
+        #     BooleanSpec(f3_disorders),
+        #     BooleanSpec(f4_disorders),
+        #     BooleanSpec(f5_disorders),
+        #     BooleanSpec(f6_disorders),
+        #     BooleanSpec(f7_disorders),
+        #     BooleanSpec(f8_disorders),
+        #     BooleanSpec(f9_disorders),
+        #     BooleanSpec(top_10_weight_gaining_antipsychotics),
+        #     ContinuousSpec(hdl),
+        # ],
+        # 3: [ContinuousSpec(weight_in_kg),
+        #     ContinuousSpec(height_in_cm),
+        #     ContinuousSpec(bmi),
+        # ],
     }
 
     layer_spec_pairs = [
@@ -202,7 +201,10 @@ if __name__ == "__main__":
 
     logging.info("Generating feature set")
     generate_feature_set(
-        project_info=get_t2d_bigdata_project_info(),
+        project_info=ProjectInfo(
+            project_name="t2d_bigdata",
+            project_path=OVARTACI_SHARED_DIR / "t2d_bigdata" / "feature_set",
+        ),
         eligible_prediction_times_frame=t2d_bigdata_pred_times(),
         feature_specs=specs,
         feature_set_name="t2d_bigdata_feature_set",

@@ -9,8 +9,12 @@ from psycop.common.cohort_definition import (
     filter_prediction_times,
 )
 
-from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays # TODO: new loader?
-from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits_to_psychiatry # TODO: new loader?
+from psycop.common.feature_generation.loaders.raw.load_demographic import (
+    birthdays,
+)  # TODO: new loader?
+from psycop.common.feature_generation.loaders.raw.load_visits import (
+    physical_visits_to_psychiatry,
+)  # TODO: new loader?
 from psycop.common.global_utils.cache import shared_cache
 from psycop.common.sequence_models.registry import SequenceRegistry
 from psycop.projects.t2d_bigdata.feature_generation.cohort_definition.eligible_prediction_times.single_filters import (
@@ -70,13 +74,11 @@ class T2DBigDataCohortDefiner(CohortDefiner):
     def get_outcome_timestamps() -> OutcomeTimestampFrame:
         return OutcomeTimestampFrame(
             frame=pl.from_pandas(get_first_diabetes_lab_result_above_threshold())
-            # .with_columns(value=pl.lit(1)) # TODO: this is from cvd, but not in t2d. because t2d already has a value column?
-            # .select(["dw_ek_borger", "timestamp", "value"])
         )
 
 
 if __name__ == "__main__":
-    bundle = T2DBigDataCohortDefiner.get_filtered_prediction_times_bundle() # TODO: this is from t2d, different from cvd
+    bundle = T2DBigDataCohortDefiner.get_filtered_prediction_times_bundle()
 
     if isinstance(bundle.prediction_times, pl.LazyFrame):
         msg.info("Collecting")
