@@ -43,7 +43,7 @@ def stratified_cross_validation(
     train_df: pd.DataFrame,
     train_col_names: list[str],
     outcome_col_name: str,
-) -> tuple[pd.DataFrame, list[float], list[float]]:
+) -> tuple[pd.DataFrame, list[float], list[float], list[int]]:
     """Performs stratified and grouped cross validation using the pipeline."""
     msg = Printer(timestamp=True)
 
@@ -53,6 +53,8 @@ def stratified_cross_validation(
     # Create folds
     msg.info("Creating folds")
     msg.info(f"Training on {X.shape[1]} columns and {X.shape[0]} rows")
+
+    training_shape = [X.shape[0], y.value_counts()[1]]
 
     folds = StratifiedGroupKFold(n_splits=cfg.n_crossval_splits).split(
         X=X, y=y, groups=train_df[cfg.data.col_name.id]
@@ -90,7 +92,7 @@ def stratified_cross_validation(
         oof_aucs.append(oof_auc)
         train_aucs.append(train_auc)
 
-    return train_df, oof_aucs, train_aucs
+    return train_df, oof_aucs, train_aucs, training_shape
 
 
 def crossvalidate(
@@ -99,7 +101,7 @@ def crossvalidate(
     pipe: Pipeline,
     outcome_col_name: str,
     train_col_names: list[str],
-) -> tuple[pd.DataFrame, list[float], list[float]]:
+) -> tuple[pd.DataFrame, list[float], list[float], list[int]]:
     """Train model on cross validation folds and return evaluation dataset.
 
     Args:
@@ -113,7 +115,7 @@ def crossvalidate(
         Evaluation dataset
     """
 
-    df, oof_aucs, train_aucs = stratified_cross_validation(
+    df, oof_aucs, train_aucs, training_shape = stratified_cross_validation(
         cfg=cfg,
         pipe=pipe,
         train_df=train,
@@ -125,7 +127,7 @@ def crossvalidate(
 
     return create_eval_dataset(
         col_names=cfg.data.col_name, outcome_col_name=outcome_col_name, df=df
-    ), oof_aucs, train_aucs  # type: ignore
+    ), oof_aucs, train_aucs, training_shape  # type: ignore
 
 
 def load_data(cfg: FullConfigSchema) -> pd.DataFrame:
@@ -143,7 +145,7 @@ def load_data(cfg: FullConfigSchema) -> pd.DataFrame:
     return train_dataset
 
 
-def train_model(cfg: FullConfigSchema) -> tuple[float, list[float], list[float]]:
+def train_model(cfg: FullConfigSchema) -> tuple[float, list[float], list[float], list[int]]:
     """Train a single model and evaluate it."""
     dataset = load_data(cfg)
 
@@ -151,7 +153,7 @@ def train_model(cfg: FullConfigSchema) -> tuple[float, list[float], list[float]]
 
     pipe = create_post_split_pipeline(cfg)
 
-    eval_dataset, oof_aucs, train_aucs = crossvalidate(
+    eval_dataset, oof_aucs, train_aucs, training_shape = crossvalidate(
         cfg=cfg,
         train=dataset,
         pipe=pipe,
@@ -162,7 +164,7 @@ def train_model(cfg: FullConfigSchema) -> tuple[float, list[float], list[float]]
     roc_auc = roc_auc_score(  # type: ignore
         eval_dataset.y, eval_dataset.y_hat_probs
     )
-    return roc_auc, oof_aucs, train_aucs  # type: ignore
+    return roc_auc, oof_aucs, train_aucs, training_shape  # type: ignore
 
 
 def cross_validation_performance_table(
@@ -174,6 +176,8 @@ def cross_validation_performance_table(
     oof_intervals = []
     train_aurocs = []
     model_optimisms = []
+    n_train_rows = []
+    n_outcomes = []
 
     for i in models_to_train.index:
         run = _get_model_pipeline(
@@ -181,7 +185,7 @@ def cross_validation_performance_table(
             group_name=models_to_train["group_name"][i],  # type: ignore
             model_type=models_to_train["model_type"][i],  # type: ignore
         )
-        roc_auc, oof_aucs, train_aucs = train_model(run.inputs.cfg)
+        roc_auc, oof_aucs, train_aucs, training_shape = train_model(run.inputs.cfg)
 
         high_oof_auc = max(oof_aucs)
         low_oof_auc = min(oof_aucs)
@@ -199,6 +203,8 @@ def cross_validation_performance_table(
         oof_intervals.append(f"{low_oof_auc}-{high_oof_auc}")
         train_aurocs.append(train_auroc)
         model_optimisms.append(optimism)
+        n_train_rows.append(training_shape[0])
+        n_outcomes.append(training_shape[1])
 
     df_dict = {
         "Predictor set": models_to_train["pretty_model_name"],
@@ -209,6 +215,8 @@ def cross_validation_performance_table(
         "95 percent confidence interval": cfs,
         "Standard deviation": std_devs,
         "5-fold out-of-fold AUROC interval": oof_intervals,
+        "Number of training samples": n_train_rows ,  # type: ignore
+        "Number of outcomes in training data": n_outcomes  # type: ignore
     }
     df = pd.DataFrame(df_dict)
 

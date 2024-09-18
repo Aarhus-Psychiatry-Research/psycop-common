@@ -21,6 +21,8 @@ def calibration_plot(run: ForcedAdmissionInpatientPipelineRun):
         eval_ds.y, eval_ds.y_hat_probs, n_bins=30, strategy="uniform"
     )
 
+    positive_threshold = eval_ds.y_hat_probs.quantile(1 - BEST_POS_RATE)
+
     # only keep bins with a prob_pred value below 0.25
     prob_true = prob_true[prob_pred < 0.2]
     prob_pred = prob_pred[prob_pred < 0.2]
@@ -39,13 +41,13 @@ def calibration_plot(run: ForcedAdmissionInpatientPipelineRun):
     ax1.set_ylabel("Fraction of Positives")
     ax1.set_title("Calibration Curve")
     ax1.legend()
-    ax1.axvline(x=BEST_POS_RATE, color="red", linestyle="--", label="Best Positive Rate")
+    ax1.axvline(x=positive_threshold, color="red", linestyle="--", label=f"Positive prediction threshold (PPR of {BEST_POS_RATE*100}%)")
     ax1.text(
-    0.3,
+    0.31,
     0.95,
-    "Best positive predicted rate",
+    f"Positive prediction threshold (PPR of {BEST_POS_RATE*100}%)",
     color="red",
-    fontsize=8,
+    fontsize=6,
     transform=ax1.transAxes,
     verticalalignment="top",
 )
@@ -64,7 +66,7 @@ def calibration_plot(run: ForcedAdmissionInpatientPipelineRun):
         edgecolor="black",
     )
     ax2.text(
-        0.6,
+        0.65,
         0.95,
         "Bins with <5 entries have been removed",
         color="red",
@@ -75,11 +77,11 @@ def calibration_plot(run: ForcedAdmissionInpatientPipelineRun):
     ax2.set_xlabel("Mean Predicted Probability")
     ax2.set_ylabel("Count")
     ax2.set_title("Distribution of Predicted Probabilities")
-    ax2.axvline(x=BEST_POS_RATE, color="red", linestyle="--", label="Best Positive Rate")
+    ax2.axvline(x=positive_threshold, color="red", linestyle="--", label=f"Positive prediction threshold (PPR of {BEST_POS_RATE*100}%)")
     ax2.text(
-    0.15,
+    0.2,
     0.95,
-    "Best positive predicted rate",
+    f"Positive prediction threshold (PPR of {BEST_POS_RATE*100}%)",
     color="red",
     fontsize=8,
     transform=ax2.transAxes,
