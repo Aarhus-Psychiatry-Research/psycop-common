@@ -1,15 +1,11 @@
 import polars as pl
 
-from psycop.projects.cvd.feature_generation.cohort_definition.outcome_specification.procedure_codes import ( # TODO: this is for cvd
-    CVD_PROCEDURE_CODES,
-)
-
 
 def label_by_outcome_type(
     df: pl.DataFrame,
     procedure_col: str,
+    type2procedures: dict[str, list[str]],
     output_col_name: str = "outcome_type",
-    type2procedures: dict[str, list[str]] = CVD_PROCEDURE_CODES,
 ) -> pl.DataFrame:
     """Takes a dataframe with a column containing diagnosis/procedure codes adds a new column with the outcome type based on the diagnosis code."""
 

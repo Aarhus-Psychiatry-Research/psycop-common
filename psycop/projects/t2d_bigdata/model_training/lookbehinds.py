@@ -5,7 +5,9 @@ from pathlib import Path
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
 from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
-from psycop.projects.t2d_bigdata.model_training.populate_t2d_bigdata_registry import populate_with_t2d_bigdata_registry
+from psycop.projects.t2d_bigdata.model_training.populate_t2d_bigdata_registry import (
+    populate_with_t2d_bigdata_registry,
+)
 
 
 def train_with_lookbehinds(cfg: PsycopConfig, lookbehinds: Sequence[int]):
@@ -17,7 +19,9 @@ def train_with_lookbehinds(cfg: PsycopConfig, lookbehinds: Sequence[int]):
             "trainer.preprocessing_pipeline.*.lookbehind_selector.keep_matching",
             f".+_({distances})_.+",
         )
-        cfg.mut("logger.*.mlflow.run_name", f"CVD layer 1, lookbehind: {','.join(distances_i)}")
+        cfg.mut(
+            "logger.*.mlflow.run_name", f"T2D-bigdata layer 1, lookbehind: {','.join(distances_i)}"
+        )
 
         logging.info(f"Training model with {distances_i}")
         train_baseline_model_from_cfg(cfg)
@@ -35,7 +39,7 @@ if __name__ == "__main__":
     populate_baseline_registry()
     populate_with_t2d_bigdata_registry()
 
-    cfg = PsycopConfig().from_disk(Path(__file__).parent / "cvd_baseline.cfg")
+    cfg = PsycopConfig().from_disk(Path(__file__).parent / "t2d_bigdata_baseline.cfg")
 
     lookbehinds = [90, 365, 730]
     train_with_lookbehinds(cfg, lookbehinds)

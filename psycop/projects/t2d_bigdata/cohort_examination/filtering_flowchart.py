@@ -19,7 +19,9 @@ from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
 from psycop.projects.t2d_bigdata.feature_generation.cohort_definition.t2d_bigdata_cohort_definer import (
     t2d_bigdata_pred_filtering,
 )
-from psycop.projects.t2d_bigdata.model_training.populate_t2d_bigdata_registry import populate_with_t2d_bigdata_registry
+from psycop.projects.t2d_bigdata.model_training.populate_t2d_bigdata_registry import (
+    populate_with_t2d_bigdata_registry,
+)
 
 
 @shared_cache().cache
@@ -97,6 +99,6 @@ def filtering_flowchart_facade(
 if __name__ == "__main__":
     filtering_flowchart_facade(
         prediction_time_bundle=t2d_bigdata_pred_filtering(),
-        run=MlflowClientWrapper().get_run(experiment_name="CVD", run_name="CVD layer 1, base"),
+        run=MlflowClientWrapper().get_run("T2D-bigdata", "kindly-squirrel-385"),
         output_dir=pathlib.Path(),
     )

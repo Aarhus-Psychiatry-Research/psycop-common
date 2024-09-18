@@ -6,7 +6,9 @@ import plotnine as pn
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import ConfusionMatrix
 from psycop.common.test_utils.str_to_df import str_to_df
 from psycop.projects.clozapine.model_eval.config import COLORS
-from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
+from psycop.projects.t2d_bigdata.model_evaluation.single_run.single_run_artifact import (
+    SingleRunPlot,
+)
 from psycop.projects.t2d.paper_outputs.config import FONT_SIZES
 
 

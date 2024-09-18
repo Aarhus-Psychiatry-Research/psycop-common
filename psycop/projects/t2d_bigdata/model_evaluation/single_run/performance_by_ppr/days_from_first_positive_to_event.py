@@ -8,7 +8,7 @@ from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame
 from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
 )
-from psycop.projects.cvd.model_evaluation.uuid_parsers import (
+from psycop.projects.t2d_bigdata.model_evaluation.uuid_parsers import (
     parse_dw_ek_borger_from_uuid,
     parse_timestamp_from_uuid,
 )

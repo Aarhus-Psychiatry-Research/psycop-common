@@ -2,8 +2,10 @@ import datetime
 
 import plotnine as pn
 
-from psycop.projects.t2d_bigdata.cohort_examination.incidence_by_time.model import IncidenceByTimeModel
 from psycop.projects.t2d.paper_outputs.config import COLORS, FONT_SIZES, THEME
+from psycop.projects.t2d_bigdata.cohort_examination.incidence_by_time.model import (
+    IncidenceByTimeModel,
+)
 
 
 def incidence_by_time_distribution(
@@ -25,7 +27,7 @@ def incidence_by_time_distribution(
         )
         + pn.scale_fill_manual(COLORS.color_scale())
         + pn.geom_density(position="fill", alpha=0.7)
-        + pn.ylab("Incident CVD")
+        + pn.ylab("Incident T2D")
         + pn.geom_vline(xintercept=datetime.datetime(2013, 1, 1), color="black", linetype="dashed")
     )
     return distribution_plot

@@ -3,9 +3,15 @@ from dataclasses import dataclass
 import polars as pl
 import pytest
 
-from psycop.projects.cvd.cohort_examination.label_by_outcome_type import label_by_outcome_type # TODO: this is for cvd
+from psycop.projects.cvd.feature_generation.cohort_definition.outcome_specification.procedure_codes import (
+    CVD_PROCEDURE_CODES,
+)
+from psycop.projects.t2d_bigdata.cohort_examination.label_by_outcome_type import (
+    label_by_outcome_type,
+)
 
 
+# TODO: make general test
 @dataclass(frozen=True)
 class Ex:
     given: str
@@ -27,6 +33,8 @@ class Ex:
 def test_grouping_by_outcome_type(example: Ex) -> None:
     df = pl.DataFrame({"diagnosis_code": [example.given]})
 
-    result = label_by_outcome_type(df, procedure_col="diagnosis_code")
+    result = label_by_outcome_type(
+        df, procedure_col="diagnosis_code", type2procedures=CVD_PROCEDURE_CODES
+    )
 
     assert result.get_column("outcome_type").unique().to_list() == [example.then]

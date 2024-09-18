@@ -1,10 +1,10 @@
 import polars as pl
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
-from psycop.projects.cvd.feature_generation.cohort_definition.cvd_cohort_definition import (
-    cvd_outcome_timestamps,
+from psycop.projects.t2d_bigdata.feature_generation.cohort_definition.t2d_bigdata_cohort_definer import (
+    t2d_bigdata_outcome_timestamps,
 )
-from psycop.projects.cvd.model_evaluation.single_run.performance_by_ppr.model import (
+from psycop.projects.t2d_bigdata.model_evaluation.single_run.performance_by_ppr.model import (
     PerformanceByPPRModel,
     performance_by_ppr_model,
 )
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     eval_df = (
         MlflowClientWrapper()
         .get_run(
-            experiment_name="CVD hyperparam tuning, layer 2, xgboost, v2",
+            experiment_name="T2D-bigdata hyperparam tuning, layer 2, xgboost, v2",
             run_name="Layer 2, hparam",
         )
         .eval_frame()
@@ -73,8 +73,8 @@ if __name__ == "__main__":
         performance_by_ppr_model(
             eval_df=eval_df,
             positive_rates=[0.01, 0.05, 0.1, 0.2],
-            outcome_timestamps=cvd_outcome_timestamps(),
+            outcome_timestamps=t2d_bigdata_outcome_timestamps(),
         ),
-        outcome_label="CVD",
+        outcome_label="T2D-bigdata",
     )
     table.write_csv("performance_by_ppr.csv")

@@ -70,10 +70,12 @@ def table_one_model(run: PsycopMlflowRun, sex_col_name: str) -> TableOneModel:
     cfg.to_disk(tmp_cfg)
 
     from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
-    from psycop.projects.cvd.model_training.populate_cvd_registry import populate_with_cvd_registry
+    from psycop.projects.t2d_bigdata.model_training.populate_t2d_bigdata_registry import (
+        populate_with_t2d_bigdata_registry,
+    )
 
     populate_baseline_registry()
-    populate_with_cvd_registry()
+    populate_with_t2d_bigdata_registry()
 
     filled = resolve_and_fill_config(tmp_cfg, fill_cfg_with_defaults=True)
 

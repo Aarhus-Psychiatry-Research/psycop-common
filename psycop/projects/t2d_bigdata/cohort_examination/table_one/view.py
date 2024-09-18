@@ -12,7 +12,10 @@ from psycop.common.feature_generation.data_checks.flattened.feature_describer_ts
     parse_predictor_column_name,
 )
 from psycop.common.global_utils.cache import shared_cache
-from psycop.projects.t2d_bigdata.cohort_examination.label_by_outcome_type import label_by_outcome_type
+
+# from psycop.projects.t2d_bigdata.cohort_examination.label_by_outcome_type import (
+#     label_by_outcome_type,
+# )
 from psycop.projects.t2d_bigdata.cohort_examination.table_one.model import TableOneModel
 
 
@@ -40,9 +43,9 @@ class RowSpecification:
     readable_name: str
     category: RowCategory
     categorical: bool = False
-    values_to_display: Optional[Sequence[Union[int, float, str]]] = (
-        None  # Which categories to display.
-    )
+    values_to_display: Optional[
+        Sequence[Union[int, float, str]]
+    ] = None  # Which categories to display.
     nonnormal: bool = False
 
 
@@ -179,19 +182,17 @@ def _visit_frame(
     # Order by category
     specs = sorted(specs, key=lambda x: f"{x.category.value}_{x.readable_name}")
 
-    visits_labelled = label_by_outcome_type(
-        model.frame, procedure_col="cause", output_col_name="outcome_type"
-    ).select(
-        [r.source_col_name for r in specs if r.source_col_name not in ["age_grouped"]] + ["dataset"]
-    )
+    # visits_labelled = label_by_outcome_type(
+    #     model.frame, procedure_col="cause", output_col_name="outcome_type"
+    # ).select(
+    #     [r.source_col_name for r in specs if r.source_col_name not in ["age_grouped"]] + ["dataset"]
+    # )
 
     # data["age_grouped"] = pd.Series(
     #     bin_continuous_data(data["pred_age_in_years"], bins=[18, *list(range(19, 90, 10))])[0]  # noqa: ERA001
     # ).astype(str)
 
-    table = _to_table_one(
-        row_specs=specs, data=visits_labelled.to_pandas(), groupby_col_name="dataset"
-    )
+    table = _to_table_one(row_specs=specs, data=model.frame.to_pandas(), groupby_col_name="dataset")
 
     return table
 
@@ -207,147 +208,23 @@ def _patient_frame(
         pl.col(model.outcome_col_name).max().alias(model.outcome_col_name),
         pl.col("timestamp").min().alias("first_contact_timestamp"),
         pl.col("dataset").first().alias("dataset"),
-        pl.col("cause").first().alias("outcome_cause"),
+        # pl.col("cause").first().alias("outcome_cause"),
     )
 
-    patient_df_labelled = label_by_outcome_type(patient_df, procedure_col="outcome_cause")
+    # patient_df_labelled = label_by_outcome_type(patient_df, procedure_col="outcome_cause")
 
-    return _to_table_one(specs, data=patient_df_labelled.to_pandas(), groupby_col_name="dataset")
+    return _to_table_one(specs, data=patient_df.to_pandas(), groupby_col_name="dataset")
 
 
-def cvd_table_one(model: TableOneModel) -> pd.DataFrame:
+def t2d_bigdata_table_one(model: TableOneModel) -> pd.DataFrame:
     overrides = [
-        ColumnOverride(
-            "lung",
-            categorical=True,
-            values_to_display=[1],
-            override_name=None,
-            category=RowCategory.diagnoses,
-        ),
-        ColumnOverride(
-            "antipsychotics",
-            categorical=True,
-            values_to_display=[1],
-            override_name=None,
-            category=RowCategory.medications,
-        ),
-        ColumnOverride(
-            "atrial",
-            categorical=True,
-            values_to_display=[1],
-            override_name=None,
-            category=RowCategory.diagnoses,
-        ),
-        ColumnOverride(
-            "antihypertensives",
-            categorical=True,
-            values_to_display=[1],
-            override_name=None,
-            category=RowCategory.medications,
-        ),
-        ColumnOverride(
-            "ldl",
-            categorical=False,
-            override_name="LDL",
-            category=RowCategory.lab_results,
-            values_to_display=None,
-        ),
-        ColumnOverride(
-            "systolic",
-            categorical=False,
-            override_name=None,
-            category=RowCategory.lab_results,
-            values_to_display=None,
-            nonnormal=True,
-        ),
-        ColumnOverride(
-            "smoking_categorical",
-            categorical=False,  # The mean of the observations is not categorical
-            values_to_display=None,
-            override_name="Smoking (daily/occasionally/prior/never)",
-            category=RowCategory.demographics,
-            nonnormal=True,
-        ),
-        ColumnOverride(
-            "smoking_continuous",
-            categorical=False,
-            override_name="Smoking (carton-years)",
-            category=RowCategory.demographics,
-            values_to_display=None,
-        ),
         ColumnOverride(
             "hba1c",
             categorical=False,
             override_name="HbA1c",
             category=RowCategory.lab_results,
             values_to_display=None,
-        ),
-        ColumnOverride(
-            "hdl",
-            categorical=False,
-            override_name="HDL",
-            category=RowCategory.lab_results,
-            values_to_display=None,
-        ),
-        ColumnOverride(
-            "type_1_diabetes",
-            categorical=True,
-            values_to_display=[1],
-            override_name=None,
-            category=RowCategory.diagnoses,
-        ),
-        ColumnOverride(
-            "type_2_diabetes",
-            categorical=True,
-            values_to_display=[1],
-            override_name=None,
-            category=RowCategory.diagnoses,
-        ),
-        ColumnOverride(
-            "weight_in_kg",
-            categorical=False,
-            override_name="Weight (kg)",
-            category=RowCategory.demographics,
-            values_to_display=None,
-            nonnormal=True,
-        ),
-        ColumnOverride(
-            "height",
-            categorical=False,
-            override_name="Height (cm)",
-            category=RowCategory.demographics,
-            values_to_display=None,
-            nonnormal=True,
-        ),
-        ColumnOverride(
-            "bmi",
-            categorical=False,
-            override_name="BMI",
-            category=RowCategory.demographics,
-            values_to_display=None,
-            nonnormal=True,
-        ),
-        ColumnOverride(
-            "cholesterol",
-            categorical=False,
-            override_name="Total cholesterol",
-            category=RowCategory.lab_results,
-            values_to_display=None,
-        ),
-        ColumnOverride(
-            "kidney_failure",
-            categorical=True,
-            values_to_display=[1],
-            override_name=None,
-            category=RowCategory.diagnoses,
-        ),
-        ColumnOverride(
-            "angina",
-            categorical=True,
-            values_to_display=[1],
-            override_name=None,
-            category=RowCategory.diagnoses,
-        ),
+        )
     ]
 
     prototype_columns = [c for c in model.frame.columns if _is_prototype_column(c)]
@@ -373,15 +250,9 @@ def cvd_table_one(model: TableOneModel) -> pd.DataFrame:
             ),
             RowSpecification(
                 source_col_name=model.outcome_col_name,
-                readable_name="Incident CVD",
+                readable_name="Incident T2D",
                 categorical=True,
                 values_to_display=[1],
-                category=RowCategory.outcome,
-            ),
-            RowSpecification(
-                source_col_name="outcome_type",
-                readable_name="CVD by type",
-                categorical=True,
                 category=RowCategory.outcome,
             ),
             *_psychiatric_diagnosis_row_specs(
@@ -406,15 +277,9 @@ def cvd_table_one(model: TableOneModel) -> pd.DataFrame:
             ),
             RowSpecification(
                 source_col_name=model.outcome_col_name,
-                readable_name="Incident CVD",
+                readable_name="Incident T2D",
                 categorical=True,
                 values_to_display=[1],
-                category=RowCategory.outcome,
-            ),
-            RowSpecification(
-                source_col_name="outcome_type",
-                readable_name="CVD by type",
-                categorical=True,
                 category=RowCategory.outcome,
             ),
         ],

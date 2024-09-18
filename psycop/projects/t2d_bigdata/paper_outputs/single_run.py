@@ -24,27 +24,33 @@ from psycop.common.model_evaluation.markdown.md_objects import (
 )
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema
-from psycop.projects.cvd.cohort_examination.filtering_flowchart import filtering_flowchart_facade
-from psycop.projects.cvd.cohort_examination.incidence_by_time.facade import incidence_by_time_facade
-from psycop.projects.cvd.cohort_examination.table_one.facade import table_one_facade
-from psycop.projects.cvd.feature_generation.cohort_definition.cvd_cohort_definition import (
-    cvd_outcome_timestamps,
-    cvd_pred_filtering,
+from psycop.projects.t2d_bigdata.cohort_examination.filtering_flowchart import (
+    filtering_flowchart_facade,
 )
-from psycop.projects.cvd.model_evaluation.single_run.performance_by_ppr.model import (
+from psycop.projects.t2d_bigdata.cohort_examination.incidence_by_time.facade import (
+    incidence_by_time_facade,
+)
+from psycop.projects.t2d_bigdata.cohort_examination.table_one.facade import table_one_facade
+from psycop.projects.t2d_bigdata.feature_generation.cohort_definition.t2d_bigdata_cohort_definer import (
+    t2d_bigdata_outcome_timestamps,
+    t2d_bigdata_pred_filtering,
+    t2d_bigdata_pred_times,
+)
+from psycop.projects.t2d_bigdata.model_evaluation.single_run.performance_by_ppr.model import (
     performance_by_ppr_model,
 )
-from psycop.projects.cvd.model_evaluation.single_run.performance_by_ppr.view import (
+from psycop.projects.t2d_bigdata.model_evaluation.single_run.performance_by_ppr.view import (
     performance_by_ppr_view,
 )
-from psycop.projects.cvd.model_evaluation.single_run.single_run_main import single_run_main
-from psycop.projects.cvd.model_evaluation.single_run.single_run_robustness import (
+from psycop.projects.t2d_bigdata.model_evaluation.single_run.single_run_main import single_run_main
+from psycop.projects.t2d_bigdata.model_evaluation.single_run.single_run_robustness import (
     single_run_robustness,
 )
 
 
-class CVDArtifactFacade(Protocol):
-    def __call__(self, output_dir: Path) -> None: ...
+class T2DBigDataArtifactFacade(Protocol):
+    def __call__(self, output_dir: Path) -> None:
+        ...
 
 
 def _markdown_artifacts_facade(
@@ -136,9 +142,9 @@ def single_run_facade(output_path: Path, run: PsycopMlflowRun) -> None:
     ]
 
     artifacts = _markdown_artifacts_facade(
-        outcome_label="CVD",
+        outcome_label="T2D-bigdata",
         eval_df=eval_frame,
-        outcome_timestamps=cvd_outcome_timestamps(),
+        outcome_timestamps=t2d_bigdata_outcome_timestamps(),
         sex_df=pl.from_pandas(sex_female()),
         all_visits_df=pl.from_pandas(physical_visits_to_psychiatry()),
         birthdays_df=pl.from_pandas(birthdays()),
@@ -160,11 +166,11 @@ def single_run_facade(output_path: Path, run: PsycopMlflowRun) -> None:
 
     (output_path / "Report.md").write_text(markdown_text)
 
-    non_markdown_artifacts: Sequence[CVDArtifactFacade] = [
+    non_markdown_artifacts: Sequence[T2DBigDataArtifactFacade] = [
         lambda output_dir: table_one_facade(run=run, output_dir=output_dir),
         lambda output_dir: incidence_by_time_facade(output_dir=output_dir),
         lambda output_dir: filtering_flowchart_facade(
-            prediction_time_bundle=cvd_pred_filtering(), run=run, output_dir=output_dir
+            prediction_time_bundle=t2d_bigdata_pred_filtering(), run=run, output_dir=output_dir
         ),
     ]
     for artifact in non_markdown_artifacts:
@@ -190,9 +196,9 @@ if __name__ == "__main__":
         datefmt="%Y/%m/%d %H:%M:%S",
     )
 
-    run_name = "CVD layer 1, base"
+    run_name = "T2D-bigdata layer 1, base"
     run = MlflowClientWrapper().get_best_run_from_experiment(
-        experiment_name="CVD, h, l-2, XGB", metric="all_oof_BinaryAUROC"
+        experiment_name="T2D-bigdata, h, l-2, XGB", metric="all_oof_BinaryAUROC"
     )
     output_dir = Path() / "outputs" / run.name
     output_dir.mkdir(exist_ok=True, parents=True)

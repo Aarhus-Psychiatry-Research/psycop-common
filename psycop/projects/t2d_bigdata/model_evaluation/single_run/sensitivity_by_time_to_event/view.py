@@ -2,7 +2,9 @@ from dataclasses import dataclass
 
 import plotnine as pn
 
-from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
+from psycop.projects.t2d_bigdata.model_evaluation.single_run.single_run_artifact import (
+    SingleRunPlot,
+)
 from psycop.projects.t2d.paper_outputs.config import FONT_SIZES, THEME, ColorsPTC
 
 from .model import SensitivityByTTEDF

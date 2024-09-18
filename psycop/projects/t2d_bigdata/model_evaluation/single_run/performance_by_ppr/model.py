@@ -16,10 +16,10 @@ from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
 from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
 )
-from psycop.projects.cvd.model_evaluation.single_run.performance_by_ppr.days_from_first_positive_to_event import (
+from psycop.projects.t2d_bigdata.model_evaluation.single_run.performance_by_ppr.days_from_first_positive_to_event import (
     days_from_first_positive_to_event,
 )
-from psycop.projects.cvd.model_evaluation.uuid_parsers import (
+from psycop.projects.t2d_bigdata.model_evaluation.uuid_parsers import (
     parse_dw_ek_borger_from_uuid,
     parse_timestamp_from_uuid,
 )

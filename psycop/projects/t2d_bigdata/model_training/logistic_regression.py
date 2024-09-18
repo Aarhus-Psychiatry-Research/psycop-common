@@ -5,7 +5,9 @@ from psycop.common.model_training_v2.config.populate_registry import populate_ba
 from psycop.common.model_training_v2.hyperparameter_suggester.optuna_hyperparameter_search import (
     OptunaHyperParameterOptimization,
 )
-from psycop.projects.t2d_bigdata.model_training.populate_t2d_bigdata_registry import populate_with_t2d_bigdata_registry
+from psycop.projects.t2d_bigdata.model_training.populate_t2d_bigdata_registry import (
+    populate_with_t2d_bigdata_registry,
+)
 
 
 def logistic_regression_hyperparam(cfg: PsycopConfig):
@@ -27,7 +29,7 @@ def logistic_regression_hyperparam(cfg: PsycopConfig):
 
     # Set run name
     for i in reversed([1, 2, 3, 4]):
-        cfg.mut("logger.*.mlflow.experiment_name", f"CVD, h, l-{i}, logR")
+        cfg.mut("logger.*.mlflow.experiment_name", f"T2D-bigdata, h, l-{i}, logR")
 
         # Filter by layers
         layer_regex = "|".join([str(i) for i in range(1, i + 1)])
@@ -52,5 +54,5 @@ if __name__ == "__main__":
     populate_with_t2d_bigdata_registry()
 
     logistic_regression_hyperparam(
-        PsycopConfig().from_disk(Path(__file__).parent / "cvd_baseline.cfg")
+        PsycopConfig().from_disk(Path(__file__).parent / "t2d_bigdata_baseline.cfg")
     )

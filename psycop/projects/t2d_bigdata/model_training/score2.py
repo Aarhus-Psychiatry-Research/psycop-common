@@ -4,7 +4,7 @@ from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 
 def train_with_score2(cfg: PsycopConfig):
     # Set run name
-    cfg.mut("logger.*.mlflow.run_name", "CVD, logistic regression, SCORE2")
+    cfg.mut("logger.*.mlflow.run_name", "T2D-bigdata, logistic regression, SCORE2")
 
     # Switch to logistic regression
     cfg.mut(

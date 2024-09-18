@@ -6,32 +6,34 @@ import patchworklib as pw
 from psycop.common.cohort_definition import OutcomeTimestampFrame
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame, MlflowClientWrapper
 from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
-from psycop.projects.cvd.feature_generation.cohort_definition.cvd_cohort_definition import (
-    cvd_outcome_timestamps,
-    cvd_pred_times,
+from psycop.projects.scz_bp.evaluation.configs import COLORS
+from psycop.projects.t2d_bigdata.feature_generation.cohort_definition.t2d_bigdata_cohort_definer import (
+    t2d_bigdata_outcome_timestamps,
+    t2d_bigdata_pred_times,
 )
-from psycop.projects.cvd.model_evaluation.single_run.auroc.model import auroc_model
-from psycop.projects.cvd.model_evaluation.single_run.auroc.view import AUROCPlot
-from psycop.projects.cvd.model_evaluation.single_run.confusion_matrix.model import (
+from psycop.projects.t2d_bigdata.model_evaluation.single_run.auroc.model import auroc_model
+from psycop.projects.t2d_bigdata.model_evaluation.single_run.auroc.view import AUROCPlot
+from psycop.projects.t2d_bigdata.model_evaluation.single_run.confusion_matrix.model import (
     confusion_matrix_model,
 )
-from psycop.projects.cvd.model_evaluation.single_run.confusion_matrix.view import (
+from psycop.projects.t2d_bigdata.model_evaluation.single_run.confusion_matrix.view import (
     ConfusionMatrixPlot,
 )
-from psycop.projects.cvd.model_evaluation.single_run.first_pos_pred_to_event.model import (
+from psycop.projects.t2d_bigdata.model_evaluation.single_run.first_pos_pred_to_event.model import (
     first_positive_prediction_to_event_model,
 )
-from psycop.projects.cvd.model_evaluation.single_run.first_pos_pred_to_event.view import (
+from psycop.projects.t2d_bigdata.model_evaluation.single_run.first_pos_pred_to_event.view import (
     FirstPosPredToEventPlot,
 )
-from psycop.projects.cvd.model_evaluation.single_run.sensitivity_by_time_to_event.model import (
+from psycop.projects.t2d_bigdata.model_evaluation.single_run.sensitivity_by_time_to_event.model import (
     sensitivity_by_time_to_event_model,
 )
-from psycop.projects.cvd.model_evaluation.single_run.sensitivity_by_time_to_event.view import (
+from psycop.projects.t2d_bigdata.model_evaluation.single_run.sensitivity_by_time_to_event.view import (
     SensitivityByTTEPlot,
 )
-from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
-from psycop.projects.scz_bp.evaluation.configs import COLORS
+from psycop.projects.t2d_bigdata.model_evaluation.single_run.single_run_artifact import (
+    SingleRunPlot,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -97,20 +99,20 @@ if __name__ == "__main__":
     eval_frame = (
         MlflowClientWrapper()
         .get_run(
-            experiment_name="CVD hyperparam tuning, layer 2, xgboost, v2",
+            experiment_name="T2D-bigdata hyperparam tuning, layer 2, xgboost, v2",
             run_name="Layer 2, hparam",
         )
         .eval_frame()
     )
-    pred_timestamps = cvd_pred_times()
-    outcome_timestamps = cvd_outcome_timestamps()
+    pred_timestamps = t2d_bigdata_pred_times()
+    outcome_timestamps = t2d_bigdata_outcome_timestamps()
 
     figure = single_run_main(
         eval_frame=eval_frame,
         desired_positive_rate=0.05,
-        outcome_label="CVD",
+        outcome_label="T2D-bigdata",
         outcome_timestamps=outcome_timestamps,
         first_letter_index=1,
     )
 
-    figure.savefig("test_cvd_main.png")
+    figure.savefig("test_t2d-bigdata_main.png")
