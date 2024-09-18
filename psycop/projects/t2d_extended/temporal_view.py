@@ -33,7 +33,7 @@ class T2DExtendedPlot(SingleRunPlot):
         )
 
         def format_datetime(x: Sequence[datetime.datetime]) -> Sequence[str]:
-            return [f"{d.year-2000}-{d.year+1-2000}" for d in x]
+            return [f"{d.year}" for d in x]
 
         # Convert to numpy arrays for scikit-learn
         X = estimates.to_pandas()["years_since_start"].to_numpy().reshape(-1, 1)
@@ -42,13 +42,13 @@ class T2DExtendedPlot(SingleRunPlot):
         # Use statsmodels to get the standard error of the slope
         X_with_const = sm.add_constant(X)
         sm_model = sm.GLM(y, X_with_const).fit()
-        slope = sm_model.params[1]
-        slope_se = sm_model.bse[1]
-        slope_string = f"{round(slope, 3)} (±{round(1.96 * slope_se, 3)})"
+        slope = sm_model.params[1]  # type: ignore
+        slope_se = sm_model.bse[1]  # type: ignore
 
         # Plot AUC ROC curve
         plot = (
             pn.ggplot(df, pn.aes(x="start_date", y="performance", ymin="lower_ci", ymax="upper_ci"))
+            + pn.lims(y=(0.7, 1.0))
             + pn.geom_point(size=2)
             + pn.stat_smooth(
                 data=estimates, mapping=pn.aes(x="start_date", y="estimates"), se=True, size=0.5
