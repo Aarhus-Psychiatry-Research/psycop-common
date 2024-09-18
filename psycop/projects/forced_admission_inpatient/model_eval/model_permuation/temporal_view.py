@@ -2,14 +2,17 @@ import datetime
 import logging
 from collections.abc import Sequence
 from dataclasses import dataclass
+from pathlib import Path
 
 import coloredlogs
 import plotnine as pn
 import polars as pl
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
-from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
-from psycop.projects.forced_admission_inpatient.model_eval.temporal_model import (
+from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import (
+    SingleRunPlot,
+)
+from psycop.projects.forced_admission_inpatient.model_eval.model_permuation.temporal_model import (
     TemporalRunPerformance,
     temporal_stability,
 )
@@ -31,31 +34,44 @@ class TemporalStabilityPlot(SingleRunPlot):
 
         def format_datetime(x: Sequence[datetime.datetime]) -> Sequence[str]:  # type: ignore
             return [f"{d.year-2000}-{d.year+1-2000}" for d in x]
+        
+        def format_datetime_v2(x: Sequence[datetime.datetime]) -> Sequence[str]:  # type: ignore
+            return [f"2014-{d.year}" for d in x]
+        
+
+        df = df.with_columns(
+            pl.Series(name="year", values=format_datetime(df["end_date"])),  # type: ignore
+            pl.Series(name="train_interval", values=format_datetime_v2(df["train_end_date"]))  # type: ignore
+        )
 
         plot = (
             pn.ggplot(
                 df,
                 pn.aes(
-                    x="since_train_end",
+                    x="year",
                     y="performance",
                     ymin="lower_ci",
                     ymax="upper_ci",
-                    color="train_end_year",
+                    color="train_interval",
+                    group="train_interval",
                 ),
             )
             + pn.scale_color_ordinal()
             + pn.geom_line()
             + pn.geom_point(size=2)
-            + pn.labs(y="AUROC", x="")
+            + pn.labs(y="AUROC", x="", color="Train Period")
             + THEME
             # + pn.scale_x_datetime(labels=format_datetime, date_breaks="1 year")  # noqa: ERA001
             + pn.theme(
                 panel_grid_major=pn.element_line(color="lightgrey", size=0.25, linetype="dotted"),
-                axis_text_x=pn.element_text(size=10),
+                axis_text_x=pn.element_text(size=10, angle=45, ha="right"),  # Tilt labels to 45 degrees
             )
         )
+        
+        EVAL_ROOT = Path("E:/shared_resources/forced_admissions_inpatient/eval")
 
-        plot.save("test.png", width=4, height=2.5, dpi=600)
+        plot.save(EVAL_ROOT / "best_model_temporal_cv.png", width=4, height=2.5, dpi=600)
+        
         return plot
 
 
