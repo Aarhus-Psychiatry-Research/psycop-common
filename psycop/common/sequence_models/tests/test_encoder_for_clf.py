@@ -28,7 +28,7 @@ skip_if_arm_within_docker = pytest.mark.skipif(
 )
 
 
-@pytest.fixture()
+@pytest.fixture
 def patient_dataset_with_labels(patient_slices: list[PatientSlice]) -> PredictionTimeDataset:
     prediction_times = []
     for i, patient_slice in enumerate(patient_slices):

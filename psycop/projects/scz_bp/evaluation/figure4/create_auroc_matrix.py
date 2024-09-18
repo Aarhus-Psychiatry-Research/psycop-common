@@ -72,6 +72,16 @@ if __name__ == "__main__":
             model_names=(list(mapping.keys())), validation_outcomes=validation_outcomes
         )
         m = m.replace(mapping)
+        m["ci_low"] = m["ci_low"].round(2)
+        m["ci_high"] = m["ci_high"].round(2)
+        m["estimate"] = (
+            m["estimate"].astype(str)
+            + " ("
+            + m["ci_low"].astype(str)
+            + ", "
+            + m["ci_high"].astype(str)
+            + ")"
+        )
         m = m.pivot(columns="validation_outcome", index="model_name", values="estimate")
         m = m.sort_index(ascending=False)
         # reverse order of columns to get scz first

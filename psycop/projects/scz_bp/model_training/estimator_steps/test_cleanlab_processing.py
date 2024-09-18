@@ -17,12 +17,12 @@ def sample_data() -> tuple[pd.DataFrame, pd.Series]:  # type: ignore
     return pd.DataFrame(X), pd.Series(y, name="target")
 
 
-@pytest.fixture()
+@pytest.fixture
 def clean_sample_data() -> tuple[pd.DataFrame, pd.Series]:  # type: ignore
     return sample_data()
 
 
-@pytest.fixture()
+@pytest.fixture
 def noisy_sample_data() -> tuple[pd.DataFrame, pd.Series]:  # type: ignore
     X, y = sample_data()
     # flip random values of y

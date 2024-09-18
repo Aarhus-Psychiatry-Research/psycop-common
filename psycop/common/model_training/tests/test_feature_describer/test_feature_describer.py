@@ -16,7 +16,7 @@ from psycop.common.feature_generation.data_checks.flattened.feature_describer im
 from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 
 
-@pytest.fixture()
+@pytest.fixture
 def predictor_specs() -> list[PredictorSpec]:
     return [
         PredictorSpec(
@@ -29,7 +29,7 @@ def predictor_specs() -> list[PredictorSpec]:
     ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def static_specs() -> list[StaticSpec]:
     return [
         StaticSpec(
@@ -38,7 +38,7 @@ def static_specs() -> list[StaticSpec]:
     ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def outcome_specs() -> list[OutcomeSpec]:
     return [
         OutcomeSpec(
@@ -53,7 +53,7 @@ def outcome_specs() -> list[OutcomeSpec]:
     ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def df() -> pd.DataFrame:
     """Load the synthetic flattened data set."""
     return pd.read_csv(

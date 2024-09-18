@@ -11,7 +11,7 @@ from psycop.common.test_utils.str_to_df import str_to_df
 ## write test for hashing of uuids
 
 
-@pytest.fixture()
+@pytest.fixture
 def dataloader() -> DataLoader:
     data_cfg = DataSchema(dir=Path(), suffix="", splits_for_training=[""], n_training_samples=None)
     return DataLoader(data_cfg=data_cfg)

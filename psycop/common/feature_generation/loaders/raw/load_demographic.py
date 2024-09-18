@@ -5,10 +5,8 @@ from __future__ import annotations
 import pandas as pd
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
-from psycop.common.feature_generation.utils import data_loaders
 
 
-@data_loaders.register("birthdays")
 def birthdays(n_rows: int | None = None) -> pd.DataFrame:
     view = "[FOR_kohorte_demografi_inkl_2021_feb2022]"
 
@@ -25,7 +23,6 @@ def birthdays(n_rows: int | None = None) -> pd.DataFrame:
     return df.reset_index(drop=True)
 
 
-@data_loaders.register("sex_female")
 def sex_female(n_rows: int | None = None) -> pd.DataFrame:
     view = "[FOR_kohorte_demografi_inkl_2021_feb2022]"
 

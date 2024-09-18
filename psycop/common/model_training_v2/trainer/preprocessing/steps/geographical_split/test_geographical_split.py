@@ -13,7 +13,7 @@ from psycop.common.model_training_v2.trainer.preprocessing.steps.geographical_sp
 from psycop.common.test_utils.str_to_df import str_to_pl_df
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_geography_data() -> pl.DataFrame:
     return str_to_pl_df(
         """dw_ek_borger,timestamp,region

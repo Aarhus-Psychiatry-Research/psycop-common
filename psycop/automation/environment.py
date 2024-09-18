@@ -1,3 +1,4 @@
+import logging
 import platform
 
 from invoke import Context
@@ -9,10 +10,10 @@ def on_ovartaci() -> bool:
     import platform
 
     if platform.node() == "RMAPPS1279":
-        print("On Ovartaci")
+        logging.debug("On Ovartaci")
         return True
 
-    print("Not on Ovartaci")
+    logging.debug("Not on Ovartaci")
     return False
 
 

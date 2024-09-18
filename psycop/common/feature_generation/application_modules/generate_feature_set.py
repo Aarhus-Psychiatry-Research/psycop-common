@@ -76,11 +76,13 @@ def generate_feature_set(
     )
     if do_dataset_description:
         # TODO #826
-        print(
+        logging.info(
             "Dataset description not yet implemented for tsflattener v2 specs. Perhaps you should implement it?"
         )
 
-    flattened_df.write_parquet(feature_set_dir / f"{feature_set_name}.parquet")
+    feature_set_path = feature_set_dir / f"{feature_set_name}.parquet"
+    flattened_df.write_parquet(feature_set_path)
+    logging.info(f"Writing feature set to {feature_set_path}")
     return
 
 
