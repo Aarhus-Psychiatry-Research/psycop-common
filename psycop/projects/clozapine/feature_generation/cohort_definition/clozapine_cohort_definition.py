@@ -14,8 +14,8 @@ from psycop.projects.clozapine.feature_generation.cohort_definition.eligible_pre
     ClozapineSchizophrenia,
     ClozapineWashoutMoveFilter,
 )
-from psycop.projects.clozapine.feature_generation.cohort_definition.outcome_specification.first_clozapine_prescription import (
-    get_first_clozapine_prescription,
+from psycop.projects.clozapine.feature_generation.cohort_definition.outcome_specification.combine_text_structured_clozapine_outcome import (
+    combine_structured_and_text_outcome,
 )
 
 
@@ -44,7 +44,7 @@ class ClozapineCohortDefiner(CohortDefiner):
     def get_outcome_timestamps() -> OutcomeTimestampFrame:
         return OutcomeTimestampFrame(
             frame=(
-                pl.from_pandas(get_first_clozapine_prescription())
+                pl.from_pandas(combine_structured_and_text_outcome())
                 .with_columns(value=pl.lit(1))
                 .select(["dw_ek_borger", "timestamp", "value"])
             )
