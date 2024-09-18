@@ -36,7 +36,10 @@ def hyperparameter_search(cfg: PsycopConfig):
 
     # Set run name
     for feature_set, features in FEATURE_SETS.items():
-        cfg.mut("logger.*.mlflow.experiment_name", f"ECT hparam, {feature_set}, xgboost, no lookbehind filter")
+        cfg.mut(
+            "logger.*.mlflow.experiment_name",
+            f"ECT hparam, {feature_set}, xgboost, no lookbehind filter",
+        )
 
         layer_regex = "|".join(features)
 
@@ -52,7 +55,7 @@ def hyperparameter_search(cfg: PsycopConfig):
             n_jobs=10,
             direction="maximize",
             catch=(Exception,),
-            custom_populate_registry_fn=None
+            custom_populate_registry_fn=None,
         )
 
 

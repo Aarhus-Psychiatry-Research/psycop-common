@@ -8,7 +8,6 @@ import pandas as pd
 import polars as pl
 from tableone import TableOne
 
-
 from psycop.common.global_utils.cache import shared_cache
 from psycop.common.model_training.utils.utils import bin_continuous_data
 from psycop.projects.ect.cohort_examination.table_one.model import TableOneModel
@@ -128,9 +127,7 @@ def _is_prototype_column(column: str) -> bool:
     return "bool" in column and "730" in column
 
 
-def _visit_frame(
-    model: TableOneModel, specs: Sequence[RowSpecification]
-) -> pd.DataFrame:
+def _visit_frame(model: TableOneModel, specs: Sequence[RowSpecification]) -> pd.DataFrame:
     # Order by category
     specs = sorted(specs, key=lambda x: f"{x.category.value}_{x.readable_name}")
 
@@ -139,20 +136,19 @@ def _visit_frame(
     )
 
     visits.with_columns(
-        pl.Series(bin_continuous_data(visits["pred_age_in_years"].to_pandas(), bins=[18, *list(range(19, 90, 10))])[0]).alias("age_grouped")  # noqa: ERA001
+        pl.Series(
+            bin_continuous_data(
+                visits["pred_age_in_years"].to_pandas(), bins=[18, *list(range(19, 90, 10))]
+            )[0]
+        ).alias("age_grouped")  # noqa: ERA001
     )
 
-    table = _to_table_one(
-        row_specs=specs, data=visits.to_pandas(), groupby_col_name="dataset"
-    )
+    table = _to_table_one(row_specs=specs, data=visits.to_pandas(), groupby_col_name="dataset")
 
     return table
 
 
-def _patient_frame(
-    model: TableOneModel, specs: Sequence[RowSpecification]
-) -> pd.DataFrame:
-
+def _patient_frame(model: TableOneModel, specs: Sequence[RowSpecification]) -> pd.DataFrame:
     patient_df = model.frame.groupby("dw_ek_borger").agg(
         pl.col(model.sex_col_name).first().alias(model.sex_col_name),
         pl.col(model.outcome_col_name).max().alias(model.outcome_col_name),
@@ -164,8 +160,6 @@ def _patient_frame(
 
 
 def ect_table_one(model: TableOneModel) -> pd.DataFrame:
-    
-
     prototype_columns = [c for c in model.frame.columns if _is_prototype_column(c)]
 
     visit_frame = _visit_frame(
@@ -217,7 +211,7 @@ def ect_table_one(model: TableOneModel) -> pd.DataFrame:
                 values_to_display=[1],
                 category=RowCategory.outcome,
             ),
-        ]
+        ],
     )
 
     return pd.concat([visit_frame, patient_frame], axis=0)

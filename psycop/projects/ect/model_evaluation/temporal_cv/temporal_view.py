@@ -20,7 +20,7 @@ from psycop.projects.t2d.paper_outputs.config import THEME
 @dataclass(frozen=True)
 class TemporalStabilityPlot(SingleRunPlot):
     data: Sequence[TemporalRunPerformance]
-    relative_time: bool 
+    relative_time: bool
 
     def __call__(self) -> pn.ggplot:
         logging.info(f"Starting {self.__class__.__name__}")
@@ -35,7 +35,6 @@ class TemporalStabilityPlot(SingleRunPlot):
             return [f"{d.year-2000}-{d.year+1-2000}" for d in x]
 
         x_variable = "since_train_end" if self.relative_time else "start_date"
-
 
         plot = (
             pn.ggplot(
@@ -61,7 +60,6 @@ class TemporalStabilityPlot(SingleRunPlot):
         if not self.relative_time:
             plot = plot + pn.scale_x_datetime(labels=format_datetime, date_breaks="1 year")  # noqa: ERA001
 
-        # plot.save("test.png", width=4, height=2.5, dpi=600)
         return plot
 
 
@@ -69,9 +67,14 @@ if __name__ == "__main__":
     coloredlogs.install(level="INFO", fmt="%(asctime)s [%(levelname)s] %(message)s")
 
     for feature_set in ["structured_only", "text_only", "structured_text"]:
-        runs = MlflowClientWrapper().get_runs_from_experiment(f"ECT, {feature_set} temporal validation")
+        runs = MlflowClientWrapper().get_runs_from_experiment(
+            f"ECT, {feature_set} temporal validation"
+        )
         performances = temporal_stability(runs, n_bootstraps=50)
         for is_relative_time in [True, False]:
-            relative_time_str = "relative"  if is_relative_time else "absolute"
+            relative_time_str = "relative" if is_relative_time else "absolute"
             plot = TemporalStabilityPlot(performances, relative_time=is_relative_time)()
-            plot.save(Path(__file__).parent / f"temporal_stability_{feature_set}_{relative_time_str}.png", dpi=300)
+            plot.save(
+                Path(__file__).parent / f"temporal_stability_{feature_set}_{relative_time_str}.png",
+                dpi=300,
+            )

@@ -1,10 +1,10 @@
 from dataclasses import dataclass
+
 import plotnine as pn
 import polars as pl
 
-from psycop.projects.ect.model_evaluation.auroc_by.roc_by_multiple_runs_model import ROCByGroupDF, group_auroc_model
-from psycop.projects.ect.model_evaluation.single_run_artifact import RunSelector, SingleRunPlot
-
+from psycop.projects.ect.model_evaluation.auroc_by.roc_by_multiple_runs_model import ROCByGroupDF
+from psycop.projects.ect.model_evaluation.single_run_artifact import SingleRunPlot
 
 
 @dataclass(frozen=True)

@@ -3,8 +3,6 @@ import logging
 import pandas as pd
 import polars as pl
 
-from psycop.common.cohort_definition import OutcomeTimestampFrame
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame
 from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
 )
@@ -15,14 +13,10 @@ from psycop.projects.ect.model_evaluation.uuid_parsers import (
 
 
 def days_from_first_positive_to_event(
-    eval_dataset: pl.DataFrame,
-    positive_rate: float = 0.5,
-    aggregation_method: str = "sum",
+    eval_dataset: pl.DataFrame, positive_rate: float = 0.5, aggregation_method: str = "sum"
 ) -> float:
     logging.info(f"Getting days from first positive to event with agg method {aggregation_method}")
-    base_df = parse_timestamp_from_uuid(
-        parse_dw_ek_borger_from_uuid(eval_dataset)
-    ).to_pandas()
+    base_df = parse_timestamp_from_uuid(parse_dw_ek_borger_from_uuid(eval_dataset)).to_pandas()
 
     # Generate df with only true positives
     df = pd.DataFrame(
@@ -33,7 +27,7 @@ def days_from_first_positive_to_event(
             )[0],
             "y": base_df["y"],
             "pred_timestamps": base_df["timestamp"],
-            "outcome_timestamps": base_df["timestamp_outcome"]
+            "outcome_timestamps": base_df["timestamp_outcome"],
         }
     )
 

@@ -1,10 +1,11 @@
 import copy
+from collections.abc import Sequence
 from functools import partial
 from itertools import combinations
 from pathlib import Path
-from typing import Sequence
 
 from joblib import Parallel, delayed
+
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
 from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
@@ -34,10 +35,11 @@ def train_ect_layers(cfg: PsycopConfig):
 
     def _prepare_config_and_train(layer: Sequence[str], cfg: PsycopConfig) -> float:
         layer_cfg = copy.deepcopy(cfg)
-        layer_cfg.add("logger.*.mlflow.run_name", f"{str(layer)}")
+        layer_cfg.add("logger.*.mlflow.run_name", f"{layer!s}")
 
         layer_cfg.mut(
-            "trainer.preprocessing_pipeline.*.layer_selector.keep_matching", f".+_layer_({'|'.join(layer)}).+",
+            "trainer.preprocessing_pipeline.*.layer_selector.keep_matching",
+            f".+_layer_({'|'.join(layer)}).+",
         )
         return train_baseline_model_from_cfg(layer_cfg)
 

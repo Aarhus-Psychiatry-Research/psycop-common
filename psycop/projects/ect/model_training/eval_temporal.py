@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from joblib import Parallel, delayed
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
@@ -9,7 +7,10 @@ from psycop.common.model_training_v2.config.populate_registry import populate_ba
 
 
 def eval_stratified_split(
-    cfg: PsycopConfig, training_end_date: str, evaluation_interval: tuple[str, str], feature_set: str
+    cfg: PsycopConfig,
+    training_end_date: str,
+    evaluation_interval: tuple[str, str],
+    feature_set: str,
 ) -> float:
     outcome_col_name: str = cfg.retrieve("trainer.outcome_col_name")
 
@@ -51,8 +52,10 @@ def eval_stratified_split(
             {"@preprocessing": "temporal_col_filter"},
         )
         # train and eval across all splits
-        .mut("trainer.training_preprocessing_pipeline.*.split_filter.splits_to_keep", 
-             ["train", "val", "test"])
+        .mut(
+            "trainer.training_preprocessing_pipeline.*.split_filter.splits_to_keep",
+            ["train", "val", "test"],
+        )
     )
 
     # Handle validation set setup
@@ -85,22 +88,26 @@ def eval_stratified_split(
             {"@preprocessing": "temporal_col_filter"},
         )
         # train and eval across all splits
-        .mut("trainer.validation_preprocessing_pipeline.*.split_filter.splits_to_keep", 
-             ["train", "val", "test"])
+        .mut(
+            "trainer.validation_preprocessing_pipeline.*.split_filter.splits_to_keep",
+            ["train", "val", "test"],
+        )
     )
 
     return train_baseline_model_from_cfg(cfg)
 
 
-def evaluate_feature_set_and_year(feature_set: str, train_end_year: int):
+def evaluate_feature_set_and_year(feature_set: str, train_end_year: int) -> tuple[int, dict[int, float]]:
     evaluation_years = range(train_end_year, 22)
     year_aurocs = {
         y: eval_stratified_split(
-            MlflowClientWrapper().get_best_run_from_experiment(
-                experiment_name=f"ECT hparam, {feature_set}, xgboost, no lookbehind filter", 
-                larger_is_better=True, 
-                metric="all_oof_BinaryAUROC"
-            ).get_config(),
+            MlflowClientWrapper()
+            .get_best_run_from_experiment(
+                experiment_name=f"ECT hparam, {feature_set}, xgboost, no lookbehind filter",
+                larger_is_better=True,
+                metric="all_oof_BinaryAUROC",
+            )
+            .get_config(),
             feature_set=feature_set,
             training_end_date=f"20{train_end_year}-01-01",
             evaluation_interval=(f"20{y}-01-01", f"20{y}-12-31"),
@@ -108,6 +115,7 @@ def evaluate_feature_set_and_year(feature_set: str, train_end_year: int):
         for y in evaluation_years
     }
     return train_end_year, year_aurocs
+
 
 if __name__ == "__main__":
     populate_baseline_registry()
@@ -117,9 +125,15 @@ feature_sets = ["structured_only", "text_only", "structured_text"]
 train_end_years = range(16, 21)
 
 # Create a list of all combinations of feature_set and train_end_year
-combinations = [(feature_set, train_end_year) for feature_set in feature_sets for train_end_year in train_end_years]
+combinations = [
+    (feature_set, train_end_year)
+    for feature_set in feature_sets
+    for train_end_year in train_end_years
+]
 
 # compute in parallel across train end year and feature sets (15 workers)
 # can be flattened to be done across evaluation years as well but, meh
-results = Parallel(n_jobs=len(combinations))(delayed(evaluate_feature_set_and_year)(feature_set=feature_set, train_end_year=train_end_year) for feature_set, train_end_year in combinations)
-
+results = Parallel(n_jobs=len(combinations))(
+    delayed(evaluate_feature_set_and_year)(feature_set=feature_set, train_end_year=train_end_year)
+    for feature_set, train_end_year in combinations
+)

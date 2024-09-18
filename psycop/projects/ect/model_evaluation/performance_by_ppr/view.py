@@ -1,9 +1,6 @@
 import polars as pl
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
-from psycop.projects.ect.feature_generation.cohort_definition.ect_cohort_definition import (
-    ect_outcome_timestamps,
-)
 from psycop.projects.ect.model_evaluation.performance_by_ppr.model import (
     PerformanceByPPRModel,
     performance_by_ppr_model,
@@ -46,9 +43,12 @@ def performance_by_ppr_view(model: PerformanceByPPRModel, outcome_label: str) ->
             (pl.col("mean_warning_days"))
             .round(1)
             .alias(f"Mean days from first positive to {outcome_label}")
-        )).with_columns(
+        )
+    ).with_columns(
         model.select(
-            pl.col("median_warning_days").alias(f"Median days from first positive to {outcome_label}")
+            pl.col("median_warning_days").alias(
+                f"Median days from first positive to {outcome_label}"
+            )
         )
     )
 
@@ -73,10 +73,7 @@ if __name__ == "__main__":
         .eval_frame()
     )
     table = performance_by_ppr_view(
-        performance_by_ppr_model(
-            eval_df=eval_df,
-            positive_rates=[0.01, 0.02, 0.3, 0.4],
-        ),
+        performance_by_ppr_model(eval_df=eval_df, positive_rates=[0.01, 0.02, 0.3, 0.4]),
         outcome_label="ECT",
     )
     table.write_csv("performance_by_ppr.csv")

@@ -62,9 +62,7 @@ def filtering_flowchart_facade(
 ):
     cfg = run.get_config()
 
-    filled = filled_cfg_from_run(
-        run, populate_registry_fns=[populate_baseline_registry]
-    )
+    filled = filled_cfg_from_run(run, populate_registry_fns=[populate_baseline_registry])
 
     pipeline: BaselinePreprocessingPipeline = filled["trainer"].preprocessing_pipeline
     pipeline._logger = TerminalLogger()  # type: ignore
@@ -96,6 +94,8 @@ def filtering_flowchart_facade(
 if __name__ == "__main__":
     filtering_flowchart_facade(
         prediction_time_bundle=ect_pred_filtering(),
-        run=MlflowClientWrapper().get_run("ECT hparam, structured_only, xgboost", "handsome-smelt-991"),
+        run=MlflowClientWrapper().get_run(
+            "ECT hparam, structured_only, xgboost", "handsome-smelt-991"
+        ),
         output_dir=pathlib.Path(__file__).parent,
     )

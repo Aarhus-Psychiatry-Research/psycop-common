@@ -3,17 +3,12 @@ from typing import NewType
 import pandas as pd
 import polars as pl
 
-from psycop.common.cohort_definition import OutcomeTimestampFrame
 from psycop.common.global_utils.cache import shared_cache
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_time_from_first_positive_to_diagnosis_df,
 )
 from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
-)
-from psycop.projects.ect.model_evaluation.uuid_parsers import (
-    parse_dw_ek_borger_from_uuid,
-    parse_timestamp_from_uuid,
 )
 
 FirstPosPredToEventDF = NewType("FirstPosPredToEventDF", pl.DataFrame)
@@ -22,8 +17,7 @@ FirstPosPredToEventDF = NewType("FirstPosPredToEventDF", pl.DataFrame)
 
 @shared_cache().cache()
 def first_positive_prediction_to_event_model(
-    eval_df: pl.DataFrame,
-    desired_positive_rate: float = 0.02,
+    eval_df: pl.DataFrame, desired_positive_rate: float = 0.02
 ) -> FirstPosPredToEventDF:
     eval_dataset = eval_df.to_pandas()
 

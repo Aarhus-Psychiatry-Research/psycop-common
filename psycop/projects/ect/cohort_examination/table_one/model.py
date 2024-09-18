@@ -12,7 +12,7 @@ from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     BaselinePreprocessingPipeline,
 )
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
-    RegionalFilter, FilterByOutcomeStratifiedSplits
+    FilterByOutcomeStratifiedSplits,
 )
 from psycop.common.types.validated_frame import ValidatedFrame
 from psycop.projects.ect.feature_generation.cohort_definition.outcome_specification.combined import (

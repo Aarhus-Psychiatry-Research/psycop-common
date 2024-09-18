@@ -4,9 +4,7 @@ from dataclasses import dataclass
 import plotnine as pn
 
 from psycop.projects.ect.model_evaluation.auroc_by.auroc_by_view import auroc_by_view
-from psycop.projects.ect.model_evaluation.auroc_by.month_of_year_model import (
-    AUROCByMonthOfYearDF,
-)
+from psycop.projects.ect.model_evaluation.auroc_by.month_of_year_model import AUROCByMonthOfYearDF
 from psycop.projects.ect.model_evaluation.single_run_artifact import SingleRunPlot
 
 

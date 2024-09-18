@@ -5,17 +5,11 @@ from typing import Protocol
 
 import polars as pl
 
-from psycop.common.cohort_definition import OutcomeTimestampFrame
 from psycop.common.feature_generation.data_checks.flattened.feature_describer_tsflattener_v2 import (
     generate_feature_description_df,
 )
-from psycop.common.feature_generation.loaders.raw.load_demographic import (
-    birthdays,
-    sex_female,
-)
-from psycop.common.feature_generation.loaders.raw.load_visits import (
-    physical_visits_to_psychiatry,
-)
+from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
+from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits_to_psychiatry
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
     EvalFrame,
     MlflowClientWrapper,
@@ -29,22 +23,19 @@ from psycop.common.model_evaluation.markdown.md_objects import (
 )
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema
-from psycop.projects.ect.cohort_examination.filtering_flowchart import (
-    filtering_flowchart_facade,
-)
+from psycop.projects.ect.cohort_examination.filtering_flowchart import filtering_flowchart_facade
 from psycop.projects.ect.cohort_examination.incidence_by_time.facade import incidence_by_time_facade
 from psycop.projects.ect.cohort_examination.table_one.facade import table_one_facade
-from psycop.projects.ect.feature_generation.cohort_definition.ect_cohort_definition import ect_outcome_timestamps, ect_pred_filtering
-from psycop.projects.ect.model_evaluation.auroc_by.roc_by_multiple_runs_model import ExperimentWithNames
+from psycop.projects.ect.feature_generation.cohort_definition.ect_cohort_definition import (
+    ect_pred_filtering,
+)
+from psycop.projects.ect.model_evaluation.auroc_by.roc_by_multiple_runs_model import (
+    ExperimentWithNames,
+)
 from psycop.projects.ect.model_evaluation.performance_by_ppr.model import performance_by_ppr_model
 from psycop.projects.ect.model_evaluation.performance_by_ppr.view import performance_by_ppr_view
 from psycop.projects.ect.model_evaluation.single_run_main import single_run_main
 from psycop.projects.ect.model_evaluation.single_run_robustness import single_run_robustness
-
-from psycop.projects.ect.model_evaluation.single_run_main import single_run_main
-from psycop.projects.ect.model_evaluation.single_run_robustness import (
-    single_run_robustness,
-)
 
 
 class ECTArtifactFacade(Protocol):
@@ -86,9 +77,7 @@ def _markdown_artifacts_facade(
     # Performance by PPR
     performance_by_ppr_output_path = output_path / f"{outcome_label}_performance_by_ppr.csv"
     performance_by_ppr_table = performance_by_ppr_view(
-        performance_by_ppr_model(
-            eval_df=main_eval_df, positive_rates=pos_proportions
-        ),
+        performance_by_ppr_model(eval_df=main_eval_df, positive_rates=pos_proportions),
         outcome_label=outcome_label,
     )
     performance_by_ppr_table.write_csv(performance_by_ppr_output_path)
@@ -129,7 +118,9 @@ def _markdown_artifacts_facade(
     return artifacts
 
 
-def single_run_facade(output_path: Path, main_run: PsycopMlflowRun, group_auroc_experiments: ExperimentWithNames) -> None:
+def single_run_facade(
+    output_path: Path, main_run: PsycopMlflowRun, group_auroc_experiments: ExperimentWithNames
+) -> None:
     cfg = run.get_config()
     eval_frame = run.eval_frame()
 
@@ -197,38 +188,41 @@ if __name__ == "__main__":
     MAIN_METRIC = "all_oof_BinaryAUROC"
 
     run = MlflowClientWrapper().get_best_run_from_experiment(
-        experiment_name="ECT hparam, structured_text, xgboost, no lookbehind filter", metric=MAIN_METRIC
+        experiment_name="ECT hparam, structured_text, xgboost, no lookbehind filter",
+        metric=MAIN_METRIC,
     )
 
-    auroc_feature_sets = ExperimentWithNames({
-        "Text only": (
-        MlflowClientWrapper()
-        .get_best_run_from_experiment(
-            experiment_name="ECT hparam, text_only, xgboost, no lookbehind filter",
-            metric=MAIN_METRIC
-        )
-        .eval_frame()
-    ),
-        "Structured only": (
-        MlflowClientWrapper()
-        .get_best_run_from_experiment(
-            experiment_name="ECT hparam, structured_only, xgboost, no lookbehind filter",
-            metric=MAIN_METRIC
-        )
-        .eval_frame()
-    ),
-        "Structured + text": (
-        MlflowClientWrapper()
-        .get_best_run_from_experiment(
-            experiment_name="ECT hparam, structured_text, xgboost, no lookbehind filter",
-            metric=MAIN_METRIC
-        )
-        .eval_frame()
+    auroc_feature_sets = ExperimentWithNames(
+        {
+            "Text only": (
+                MlflowClientWrapper()
+                .get_best_run_from_experiment(
+                    experiment_name="ECT hparam, text_only, xgboost, no lookbehind filter",
+                    metric=MAIN_METRIC,
+                )
+                .eval_frame()
+            ),
+            "Structured only": (
+                MlflowClientWrapper()
+                .get_best_run_from_experiment(
+                    experiment_name="ECT hparam, structured_only, xgboost, no lookbehind filter",
+                    metric=MAIN_METRIC,
+                )
+                .eval_frame()
+            ),
+            "Structured + text": (
+                MlflowClientWrapper()
+                .get_best_run_from_experiment(
+                    experiment_name="ECT hparam, structured_text, xgboost, no lookbehind filter",
+                    metric=MAIN_METRIC,
+                )
+                .eval_frame()
+            ),
+        }
     )
-    })
-
-
 
     output_dir = Path(__file__).parent / "outputs" / run.name
     output_dir.mkdir(exist_ok=True, parents=True)
-    single_run_facade(output_path=output_dir, main_run=run, group_auroc_experiments=auroc_feature_sets)
+    single_run_facade(
+        output_path=output_dir, main_run=run, group_auroc_experiments=auroc_feature_sets
+    )

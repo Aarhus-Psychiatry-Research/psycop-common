@@ -21,6 +21,7 @@ def ect_parse_static_feature(full_string: str) -> str:
         feature_capitalised = manual_overrides[feature_capitalised]
     return feature_capitalised
 
+
 def ect_parse_temporal_feature(full_string: str) -> str:
     feature_name = re.findall(r"pred_layer_[^_]+_(.*)?_within", full_string)[0]
     if "_" in feature_name:
