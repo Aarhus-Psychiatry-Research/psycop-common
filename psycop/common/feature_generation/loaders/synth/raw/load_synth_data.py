@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import pandas as pd
 
-from psycop.common.feature_generation.utils import data_loaders
 from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 
 
@@ -24,7 +23,6 @@ def load_raw_test_csv(filename: str, n_rows: int | None = None) -> pd.DataFrame:
     return df
 
 
-@data_loaders.register("synth_predictor_float")
 def synth_predictor_float(n_rows: int | None = None) -> pd.DataFrame:
     """Load synth predictor data.".
 
@@ -37,7 +35,6 @@ def synth_predictor_float(n_rows: int | None = None) -> pd.DataFrame:
     return load_raw_test_csv("synth_raw_float_1.csv", n_rows=n_rows)
 
 
-@data_loaders.register("synth_predictor_binary")
 def synth_predictor_binary(n_rows: int | None = None) -> pd.DataFrame:
     """Load synth predictor data.".
 
@@ -50,7 +47,6 @@ def synth_predictor_binary(n_rows: int | None = None) -> pd.DataFrame:
     return load_raw_test_csv("synth_raw_binary_1.csv", n_rows=n_rows)
 
 
-@data_loaders.register("synth_outcome")
 def load_synth_outcome(n_rows: int | None = None) -> pd.DataFrame:
     """Load synth predictor data.".
 
@@ -66,7 +62,6 @@ def load_synth_outcome(n_rows: int | None = None) -> pd.DataFrame:
     return df
 
 
-@data_loaders.register("synth_prediction_times")
 def load_synth_prediction_times(n_rows: int | None = None) -> pd.DataFrame:
     """Load synth predictor data.".
 

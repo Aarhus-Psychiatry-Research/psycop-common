@@ -38,7 +38,7 @@ def parse_predictor_column_name(
     feature_name_regex: str = r"[a-zA-Z]+_(.*?)_(?=fallback|within)",
     fallback_regex: str = r"_fallback_(.+)$",
     time_interval_start_regex: str = r"_within_([0-9]+)",
-    time_interval_end_regex: str = "_to_([0-9]+)_",
+    time_interval_end_regex: str = r"_to_([0-9]+)_",
     time_interval_format_regex: str = r"to_[0-9]+_([a-z]+)_",
     resolve_multiple_strategy_regex: str = r"([a-z]+)_fallback",
 ) -> ParsedPredictorColumn:

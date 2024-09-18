@@ -6,10 +6,8 @@ import pandas as pd
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.common.feature_generation.loaders.raw.utils import unpack_intervals
-from psycop.common.feature_generation.utils import data_loaders
 
 
-@data_loaders.register("coercion_duration")
 def coercion_duration(
     coercion_type: str | None = None,
     reason_for_coercion: str | None = None,
@@ -116,7 +114,6 @@ def _concatenate_coercion(
     return pd.concat(dfs, axis=0).reset_index(drop=True)
 
 
-@data_loaders.register("farlighed")
 def farlighed(
     n_rows: int | None = None, unpack_to_intervals: bool | None = False, unpack_freq: str = "D"
 ) -> pd.DataFrame:
@@ -134,7 +131,8 @@ def farlighed(
 
 
 # Røde papirer ved tvangsindlæggelse/tvangstilbageholdelse
-@data_loaders.register("paa_grund_af_farlighed")
+
+
 def paa_grund_af_farlighed(
     n_rows: int | None = None, unpack_to_intervals: bool | None = False, unpack_freq: str = "D"
 ) -> pd.DataFrame:
@@ -147,7 +145,8 @@ def paa_grund_af_farlighed(
 
 
 # Gule papirer ved tvangsindlæggelse/tvangstilbageholdelse
-@data_loaders.register("af_helbredsmaessige_grunde")
+
+
 def af_helbredsmaessige_grunde(
     n_rows: int | None = None, unpack_to_intervals: bool | None = False, unpack_freq: str = "D"
 ) -> pd.DataFrame:
@@ -159,7 +158,6 @@ def af_helbredsmaessige_grunde(
     )
 
 
-@data_loaders.register("urolig_tilstand")
 def urolig_tilstand(
     n_rows: int | None = None, unpack_to_intervals: bool | None = False, unpack_freq: str = "D"
 ) -> pd.DataFrame:
@@ -171,7 +169,6 @@ def urolig_tilstand(
     )
 
 
-@data_loaders.register("anden_begrundelse")
 def anden_begrundelse(
     n_rows: int | None = None, unpack_to_intervals: bool | None = False, unpack_freq: str = "D"
 ) -> pd.DataFrame:
@@ -183,7 +180,6 @@ def anden_begrundelse(
     )
 
 
-@data_loaders.register("naerliggende_eller_vaesentlig_fare_for_patienten_eller_andre")
 def naerliggende_fare(
     n_rows: int | None = None, unpack_to_intervals: bool | None = False, unpack_freq: str = "D"
 ) -> pd.DataFrame:
@@ -197,7 +193,8 @@ def naerliggende_fare(
 
 # GENERAL TYPE (tabeltekst) ###
 # frihedsberøvelser
-@data_loaders.register("skema_1")
+
+
 def skema_1(
     n_rows: int | None = None, unpack_to_intervals: bool | None = False, unpack_freq: str = "D"
 ) -> pd.DataFrame:
@@ -215,7 +212,8 @@ def skema_1(
 
 
 # tvangsbehandlinger
-@data_loaders.register("skema_2")
+
+
 def skema_2(
     n_rows: int | None = None, unpack_to_intervals: bool | None = False, unpack_freq: str = "D"
 ) -> pd.DataFrame:
@@ -234,7 +232,6 @@ def skema_2(
     )
 
 
-@data_loaders.register("skema_2_without_nutrition")
 def skema_2_without_nutrition(
     n_rows: int | None = None, unpack_to_intervals: bool | None = False, unpack_freq: str = "D"
 ) -> pd.DataFrame:
@@ -253,7 +250,8 @@ def skema_2_without_nutrition(
 
 
 # magtanvendelse
-@data_loaders.register("skema_3")
+
+
 def skema_3(
     n_rows: int | None = None, unpack_to_intervals: bool | None = False, unpack_freq: str = "D"
 ) -> pd.DataFrame:
@@ -279,7 +277,6 @@ def skema_3(
 # exists in the data, but not included here: [døraflåsning, personlig afskærmning, stofbælte, særlige dørlåse, tvungen opfølgning, personlige alarm, udskrivningsaftale, koordinationsplan]
 
 
-@data_loaders.register("baelte")
 def baelte(
     n_rows: int | None = None, unpack_to_intervals: bool | None = False, unpack_freq: str = "D"
 ) -> pd.DataFrame:
@@ -291,7 +288,6 @@ def baelte(
     )
 
 
-@data_loaders.register("remme")
 def remme(
     n_rows: int | None = None, unpack_to_intervals: bool | None = False, unpack_freq: str = "D"
 ) -> pd.DataFrame:
@@ -303,7 +299,6 @@ def remme(
     )
 
 
-@data_loaders.register("fastholden")
 def fastholden(
     n_rows: int | None = None, unpack_to_intervals: bool | None = False, unpack_freq: str = "D"
 ) -> pd.DataFrame:
@@ -315,7 +310,6 @@ def fastholden(
     )
 
 
-@data_loaders.register("beroligende_medicin")
 def beroligende_medicin(
     n_rows: int | None = None, unpack_to_intervals: bool | None = False, unpack_freq: str = "D"
 ) -> pd.DataFrame:
@@ -327,7 +321,6 @@ def beroligende_medicin(
     )
 
 
-@data_loaders.register("handsker")
 def handsker(
     n_rows: int | None = None, unpack_to_intervals: bool | None = False, unpack_freq: str = "D"
 ) -> pd.DataFrame:
@@ -339,7 +332,6 @@ def handsker(
     )
 
 
-@data_loaders.register("tvangsindlaeggelse")
 def tvangsindlaeggelse(
     n_rows: int | None = None, unpack_to_intervals: bool | None = False, unpack_freq: str = "D"
 ) -> pd.DataFrame:
@@ -351,7 +343,6 @@ def tvangsindlaeggelse(
     )
 
 
-@data_loaders.register("tvangstilbageholdelse")
 def tvangstilbageholdelse(
     n_rows: int | None = None, unpack_to_intervals: bool | None = False, unpack_freq: str = "D"
 ) -> pd.DataFrame:
@@ -363,7 +354,6 @@ def tvangstilbageholdelse(
     )
 
 
-@data_loaders.register("medicinering")
 def medicinering(
     n_rows: int | None = None, unpack_to_intervals: bool | None = False, unpack_freq: str = "D"
 ) -> pd.DataFrame:
@@ -375,7 +365,6 @@ def medicinering(
     )
 
 
-@data_loaders.register("ect")
 def ect(
     n_rows: int | None = None, unpack_to_intervals: bool | None = False, unpack_freq: str = "D"
 ) -> pd.DataFrame:
@@ -387,7 +376,6 @@ def ect(
     )
 
 
-@data_loaders.register("ernaering")
 def ernaering(
     n_rows: int | None = None, unpack_to_intervals: bool | None = False, unpack_freq: str = "D"
 ) -> pd.DataFrame:
@@ -399,7 +387,6 @@ def ernaering(
     )
 
 
-@data_loaders.register("af_legemlig_lidelse")
 def af_legemlig_lidelse(
     n_rows: int | None = None, unpack_to_intervals: bool | None = False, unpack_freq: str = "D"
 ) -> pd.DataFrame:

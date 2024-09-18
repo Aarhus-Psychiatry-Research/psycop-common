@@ -1,3 +1,5 @@
+# ruff: noqa: ERA001
+
 from pathlib import Path
 
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model
@@ -8,10 +10,14 @@ if __name__ == "__main__":
     populate_baseline_registry()
     populate_scz_bp_registry()
     # train_baseline_model(Path(__file__).parent / "config" / "individual_outcomes" / "bp_structured_text_xgboost_ddpm.cfg") # noqa: ERA001
+    # train_baseline_model(
+    #     Path(__file__).parent
+    #     / "config"
+    #     / "individual_outcomes"
+    #     / "test_set"
+    #     / "bp_structured_text.cfg"
+    # )
+
     train_baseline_model(
-        Path(__file__).parent
-        / "config"
-        / "individual_outcomes"
-        / "test_set"
-        / "bp_structured_text.cfg"
+        Path(__file__).parent / "config" / "post_hoc" / "random_split_structured_only.cfg"
     )

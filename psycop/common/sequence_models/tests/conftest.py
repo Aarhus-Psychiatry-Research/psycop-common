@@ -17,7 +17,7 @@ from ..dataset import PatientSliceDataset
 from .utils import create_patients
 
 
-@pytest.fixture()
+@pytest.fixture
 def patients() -> list[Patient]:
     """
     Returns a list of patient objects
@@ -25,27 +25,27 @@ def patients() -> list[Patient]:
     return create_patients()
 
 
-@pytest.fixture()
+@pytest.fixture
 def patient_slices(patients: list[Patient]) -> Sequence[PatientSlice]:
     return [p.as_slice() for p in patients]
 
 
-@pytest.fixture()
+@pytest.fixture
 def patient_dataset(patient_slices: list[PatientSlice]) -> PatientSliceDataset:
     return PatientSliceDataset(patient_slices=patient_slices)
 
 
-@pytest.fixture()
+@pytest.fixture
 def optimizer() -> OptimizerFn:
     return create_adamw(lr=0.03)
 
 
-@pytest.fixture()
+@pytest.fixture
 def lr_scheduler_fn() -> LRSchedulerFn:
     return create_linear_schedule_with_warmup(num_warmup_steps=2, num_training_steps=10)
 
 
-@pytest.fixture()
+@pytest.fixture
 def embedder(patient_slices: list[PatientSlice]) -> BEHRTEmbedder:
     d_model = 32
     emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
@@ -53,7 +53,7 @@ def embedder(patient_slices: list[PatientSlice]) -> BEHRTEmbedder:
     return emb
 
 
-@pytest.fixture()
+@pytest.fixture
 def encoder() -> nn.Module:
     d_model = 32
     encoder_layer = nn.TransformerEncoderLayer(
@@ -63,6 +63,6 @@ def encoder() -> nn.Module:
     return encoder
 
 
-@pytest.fixture()
+@pytest.fixture
 def aggregator() -> Aggregator:
     return CLSAggregator()

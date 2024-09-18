@@ -9,6 +9,8 @@ import urllib.parse
 import pandas as pd
 from sqlalchemy import create_engine, text
 
+from psycop.automation.environment import on_ovartaci
+
 log = logging.getLogger(__name__)
 
 
@@ -40,10 +42,20 @@ def sql_load(
         >>> sql = "SELECT * FROM [fct]." + view
         >>> df = sql_load(sql, chunksize = None)
     """
+    # Driver for Kubeflow is different from driver on Ovartaci
     driver = "SQL Server"
+
+    # Separate setup for kubeflow
+    if not on_ovartaci():
+        driver = "ODBC Driver 18 for SQL Server"
+        server = "rmsqls0175.onerm.dk"
+
     params = urllib.parse.quote(
-        f"DRIVER={driver};SERVER={server};DATABASE={database};Trusted_Connection=yes"
+        f"DRIVER={driver};SERVER={server};DATABASE={database};Trusted_Connection=yes;"
     )
+
+    if not on_ovartaci():
+        params += "TrustServerCertificate=yes;"
 
     if n_rows:
         query = query.replace("SELECT", f"SELECT TOP {n_rows} ")

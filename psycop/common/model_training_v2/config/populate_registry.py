@@ -32,7 +32,7 @@ def populate_baseline_registry() -> None:
     ### Rows
     from ..trainer.preprocessing.steps.row_filter_split import RegionalFilter
     from ..trainer.preprocessing.steps.row_filter_split import FilterByEntityID
-    from ..trainer.preprocessing.steps.row_filter_other import AgeFilter
+    from ..trainer.preprocessing.steps.row_filter_other import AgeFilter, DateFilter
 
     ### Columns
     from ..trainer.preprocessing.steps.column_filters import (

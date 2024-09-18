@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING
 import pandas as pd
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
-from psycop.common.feature_generation.utils import data_loaders
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -167,7 +166,6 @@ def load_text_split(
     return text_split_df
 
 
-@data_loaders.register("all_notes")
 def load_all_notes(n_rows: int | None = None, include_sfi_name: bool = False) -> pd.DataFrame:
     """Returns all notes from all years.
 
@@ -183,7 +181,6 @@ def load_all_notes(n_rows: int | None = None, include_sfi_name: bool = False) ->
     )
 
 
-@data_loaders.register("aktuelt_psykisk")
 def load_aktuel_psykisk(n_rows: int | None = None) -> pd.DataFrame:
     """Returns 'Aktuelt psykisk' notes from all years.
 
@@ -196,7 +193,6 @@ def load_aktuel_psykisk(n_rows: int | None = None) -> pd.DataFrame:
     return load_text_sfis(text_sfi_names="Aktuelt psykisk", n_rows=n_rows)
 
 
-@data_loaders.register("load_text_sfis")
 def load_arbitrary_notes(
     text_sfi_names: str | list[str], n_rows: int | None = None
 ) -> pd.DataFrame:
@@ -213,7 +209,6 @@ def load_arbitrary_notes(
     return load_text_sfis(text_sfi_names, n_rows=n_rows)
 
 
-@data_loaders.register("preprocessed_sfis")
 def load_preprocessed_sfis(
     text_sfi_names: set[str] | None = None,
     corpus_name: str = "psycop.train_val_all_sfis_preprocessed",

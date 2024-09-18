@@ -4,7 +4,7 @@ import pytest
 from psycop.common.test_utils.str_to_df import str_to_df
 
 
-@pytest.fixture()
+@pytest.fixture
 def shap_long_df() -> pl.DataFrame:
     pd_df = str_to_df(
         """feature_name,feature_value,pred_time_index,shap_value

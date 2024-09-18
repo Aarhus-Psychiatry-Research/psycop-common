@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import logging
+import os
 from typing import TYPE_CHECKING
 
-import psutil
 from timeseriesflattener import Flattener
 from timeseriesflattener import PredictionTimeFrame as FlattenerPredictionTimeFrame
 from timeseriesflattener.v1.flattened_dataset import TimeseriesFlattener
@@ -99,9 +99,13 @@ def create_flattened_dataset_tsflattener_v1(
         FlattenedDataset: Flattened dataset.
     """
 
+    cpu_count = os.cpu_count()
+    if cpu_count is None:
+        cpu_count = 4
+
     flattened_dataset = TimeseriesFlattener(
         prediction_times_df=prediction_times_df,
-        n_workers=min(len(feature_specs), psutil.cpu_count(logical=True)),
+        n_workers=min(len(feature_specs), cpu_count),
         cache=None,
         drop_pred_times_with_insufficient_look_distance=drop_pred_times_with_insufficient_look_distance,
         predictor_col_name_prefix=project_info.prefix.predictor,

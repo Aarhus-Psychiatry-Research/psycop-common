@@ -13,11 +13,14 @@ from psycop.projects.clozapine.feature_generation.cohort_definition.eligible_pre
     MIN_AGE,
     MIN_DATE,
 )
+from psycop.projects.clozapine.feature_generation.cohort_definition.eligible_prediction_times.prevalent_serum_clozapine import (
+    find_plasma_clozapine_between_2013_2014,
+)
 from psycop.projects.clozapine.feature_generation.cohort_definition.eligible_prediction_times.schizophrenia_diagnosis import (
     add_only_patients_with_schizo,
 )
-from psycop.projects.clozapine.feature_generation.cohort_definition.outcome_specification.first_clozapine_prescription import (
-    get_first_clozapine_prescription,
+from psycop.projects.clozapine.feature_generation.cohort_definition.outcome_specification.combine_text_structured_clozapine_outcome import (
+    combine_structured_and_text_outcome,
 )
 
 
@@ -81,13 +84,19 @@ class ClozapineWashoutMoveFilter(PredictionTimeFilter):
 
 class ClozapinePrevalentFilter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
-        first_clozapine_prescription = pl.from_pandas(get_first_clozapine_prescription()).select(
+        first_clozapine_prescription = pl.from_pandas(combine_structured_and_text_outcome()).select(
             pl.col("timestamp").alias("timestamp_outcome"), pl.col("dw_ek_borger")
         )
 
         prediction_times_with_outcome = df.join(
             first_clozapine_prescription.lazy(), on="dw_ek_borger", how="inner"
         )
+
+        prevalent_plasma_clozapine = pl.from_pandas(
+            find_plasma_clozapine_between_2013_2014()
+        ).select(pl.col("timestamp").alias("timestamp_outcome"), pl.col("dw_ek_borger"))
+
+        df = df.join(prevalent_plasma_clozapine.lazy(), on="dw_ek_borger", how="anti")
 
         prevalent_prediction_times = prediction_times_with_outcome.filter(
             pl.col("timestamp") > pl.col("timestamp_outcome")

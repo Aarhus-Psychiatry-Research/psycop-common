@@ -21,12 +21,12 @@ from .test_encoder_for_clf import skip_if_arm_within_docker
 from .test_finetuning import FakePredictionTimeCollater
 
 
-@pytest.fixture()
+@pytest.fixture
 def dataset_collater() -> BasePredictionTimeCollater:
     return FakePredictionTimeCollater()
 
 
-@pytest.fixture()
+@pytest.fixture
 def patient_slice_classifier(
     embedder: PatientSliceEmbedder,
     encoder: nn.Module,
@@ -44,7 +44,7 @@ def patient_slice_classifier(
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def training_config() -> TrainingConfigSchema:
     return TrainingConfigSchema(
         trainer=TrainerConfigSchema(

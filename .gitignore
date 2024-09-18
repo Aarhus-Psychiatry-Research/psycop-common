@@ -205,6 +205,10 @@ mlruns/*
 !**/diagnosis_code_mapping.json
 !.devcontainer/devcontainer.json
 
+# jupyter notebooks
+*.ipynb
+
 # Ignore testmon database
 .testmon*
 *.db
+func_code.py

@@ -48,7 +48,7 @@ class SplitTrainerSeparatePreprocessing(BaselineTrainer):
         )
 
         x = training_data_preprocessed.drop(self.non_predictor_columns, axis=1)
-        self.logger.info(f"Training on:\n\tFeatures: {training_data_preprocessed.columns}")
+        self.logger.info(f"The model sees these predictors:\n\t{x.columns}")
 
         training_y = training_data_preprocessed[self.training_outcome_col_name]
         self.logger.info(f"\tOutcome: {self.training_outcome_col_name}")
@@ -58,7 +58,6 @@ class SplitTrainerSeparatePreprocessing(BaselineTrainer):
         y_hat_prob = self.task.predict_proba(
             x=validation_data_preprocessed.drop(self.non_predictor_columns, axis=1)
         )
-
         main_metric = self.metric.calculate(
             y=validation_data_preprocessed[self.validation_outcome_col_name], y_hat_prob=y_hat_prob
         )
