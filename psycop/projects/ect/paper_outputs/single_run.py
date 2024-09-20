@@ -32,7 +32,9 @@ from psycop.projects.ect.feature_generation.cohort_definition.ect_cohort_definit
 from psycop.projects.ect.model_evaluation.auroc_by.roc_by_multiple_runs_model import (
     ExperimentWithNames,
 )
-from psycop.projects.ect.model_evaluation.feature_importance import ect_feature_importance_table_facade
+from psycop.projects.ect.model_evaluation.feature_importance import (
+    ect_feature_importance_table_facade,
+)
 from psycop.projects.ect.model_evaluation.performance_by_ppr.model import performance_by_ppr_model
 from psycop.projects.ect.model_evaluation.performance_by_ppr.view import performance_by_ppr_view
 from psycop.projects.ect.model_evaluation.single_run_main import single_run_main
@@ -125,7 +127,9 @@ def single_run_facade(
     cfg = main_run.get_config()
     eval_frame = main_run.eval_frame()
 
-    lookahead_days_str = re.findall(r".+_to_(\d+)_days.+", cfg["trainer"]["training_outcome_col_name"])[0]
+    lookahead_days_str = re.findall(
+        r".+_to_(\d+)_days.+", cfg["trainer"]["training_outcome_col_name"]
+    )[0]
     lookahead_days = int(lookahead_days_str)
     estimator_type = cfg["trainer"]["task"]["task_pipe"]["sklearn_pipe"]["*"]["model"][
         "@estimator_steps"
@@ -161,9 +165,8 @@ def single_run_facade(
         lambda output_dir: incidence_by_time_facade(output_dir=output_dir),
         lambda output_dir: filtering_flowchart_facade(
             prediction_time_bundle=ect_pred_filtering(), run=main_run, output_dir=output_dir
-            
         ),
-        lambda output_dir: ect_feature_importance_table_facade(run=main_run, output_dir=output_dir)
+        lambda output_dir: ect_feature_importance_table_facade(run=main_run, output_dir=output_dir),
     ]
     for artifact in non_markdown_artifacts:
         artifact(output_path)
@@ -190,36 +193,31 @@ if __name__ == "__main__":
 
     EXPERIMENT_NAME = "ECT random split test set, xgboost"
 
-
     all_feature_sets_runs = {
-            "Text only": (
-                MlflowClientWrapper()
-                .get_run(
-                    experiment_name=EXPERIMENT_NAME,
-                    run_name="text_only",
-                )
-            ),
-            "Structured only": (
-                MlflowClientWrapper()
-                .get_run(
-                    experiment_name=EXPERIMENT_NAME,
-                    run_name="structured_only"
-                )
-            ),
-            "Structured + text": MlflowClientWrapper().get_run(
+        "Text only": (
+            MlflowClientWrapper().get_run(experiment_name=EXPERIMENT_NAME, run_name="text_only")
+        ),
+        "Structured only": (
+            MlflowClientWrapper().get_run(
+                experiment_name=EXPERIMENT_NAME, run_name="structured_only"
+            )
+        ),
+        "Structured + text": MlflowClientWrapper().get_run(
             experiment_name=EXPERIMENT_NAME, run_name="structured_text"
-        )
-        }
+        ),
+    }
 
-    all_feature_sets_eval_dfs = ExperimentWithNames({
-        name : run.eval_frame() for name, run in all_feature_sets_runs.items()
-    })
+    all_feature_sets_eval_dfs = ExperimentWithNames(
+        {name: run.eval_frame() for name, run in all_feature_sets_runs.items()}
+    )
 
-    for feature_set_name in all_feature_sets_runs.keys():
+    for feature_set_name in all_feature_sets_runs:
         focus_run = all_feature_sets_runs[feature_set_name]
 
         output_dir = Path(__file__).parent / "outputs" / EXPERIMENT_NAME / focus_run.name
         output_dir.mkdir(exist_ok=True, parents=True)
         single_run_facade(
-            output_path=output_dir, main_run=focus_run, group_auroc_experiments=all_feature_sets_eval_dfs
+            output_path=output_dir,
+            main_run=focus_run,
+            group_auroc_experiments=all_feature_sets_eval_dfs,
         )

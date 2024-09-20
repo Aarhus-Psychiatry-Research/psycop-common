@@ -172,7 +172,10 @@ def ect_table_one(model: TableOneModel) -> pd.DataFrame:
                 category=RowCategory.demographics,
             ),
             RowSpecification(
-                source_col_name="age_grouped", readable_name="Age grouped", categorical=True, category=RowCategory.demographics,
+                source_col_name="age_grouped",
+                readable_name="Age grouped",
+                categorical=True,
+                category=RowCategory.demographics,
             ),
             RowSpecification(
                 source_col_name="pred_sex_female_fallback_0",

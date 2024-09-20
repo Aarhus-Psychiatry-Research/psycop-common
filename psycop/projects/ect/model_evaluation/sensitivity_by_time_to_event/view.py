@@ -47,7 +47,6 @@ class SensitivityByTTEPlot(SingleRunPlot):
                 axis_text_x=pn.element_text(size=FONT_SIZES.axis_tick_labels, angle=45, hjust=1),
                 axis_text_y=pn.element_text(size=FONT_SIZES.axis_tick_labels),
                 legend_position=(0.8, 0.8),
-
             )
         )
 

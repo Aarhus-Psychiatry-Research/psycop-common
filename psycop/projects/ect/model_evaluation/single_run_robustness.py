@@ -10,12 +10,6 @@ from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame, 
 from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
 from psycop.projects.cvd.model_evaluation.single_run.auroc_by.age_model import auroc_by_age_model
 from psycop.projects.cvd.model_evaluation.single_run.auroc_by.age_view import AUROCByAge
-from psycop.projects.cvd.model_evaluation.single_run.auroc_by.month_of_year_model import (
-    auroc_by_month_of_year_model,
-)
-from psycop.projects.cvd.model_evaluation.single_run.auroc_by.month_of_year_view import (
-    AUROCByMonthOfYearPlot,
-)
 from psycop.projects.cvd.model_evaluation.single_run.auroc_by.sex_model import auroc_by_sex_model
 from psycop.projects.cvd.model_evaluation.single_run.auroc_by.sex_view import AUROCBySex
 from psycop.projects.cvd.model_evaluation.single_run.auroc_by.time_from_first_visit_model import (

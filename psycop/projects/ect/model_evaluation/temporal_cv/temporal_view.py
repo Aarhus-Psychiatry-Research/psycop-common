@@ -56,7 +56,6 @@ class TemporalStabilityPlot(SingleRunPlot):
                 panel_grid_major=pn.element_line(color="lightgrey", size=0.25, linetype="dotted"),
                 axis_text_x=pn.element_text(size=10),
                 legend_position=(0.5, 0.2),
-
             )
         )
         if not self.relative_time:
