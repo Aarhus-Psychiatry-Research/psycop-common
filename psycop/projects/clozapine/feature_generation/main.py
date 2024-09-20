@@ -1,133 +1,367 @@
 """Main feature generation."""
 
+import datetime
 import logging
 import sys
-import warnings
-from pathlib import Path
-from typing import Literal
+from collections.abc import Sequence
+from dataclasses import dataclass
+from functools import partial
+from typing import Callable
 
-from psycop.common.feature_generation.application_modules.chunked_feature_generation import (
-    ChunkedFeatureGenerator,
+import numpy as np
+import pandas as pd
+import polars as pl
+import timeseriesflattener as ts
+from timeseriesflattener.aggregators import (
+    CountAggregator,
+    HasValuesAggregator,
+    LatestAggregator,
+    MaxAggregator,
+    MeanAggregator,
+    SumAggregator,
 )
-from psycop.common.feature_generation.application_modules.describe_flattened_dataset import (
-    save_flattened_dataset_description_to_disk,
+
+from psycop.common.feature_generation.application_modules.generate_feature_set import (
+    generate_feature_set,
 )
-from psycop.common.feature_generation.application_modules.loggers import init_root_logger
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
-from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
-    split_and_save_dataset_to_disk,
+from psycop.common.feature_generation.loaders.raw.load_coercion import skema_1, skema_2, skema_3
+from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
+from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
+    f0_disorders,
+    f1_disorders,
+    f2_disorders,
+    f3_disorders,
+    f4_disorders,
+    f5_disorders,
+    f6_disorders,
+    f7_disorders,
+    f8_disorders,
+    f9_disorders,
+)
+from psycop.common.feature_generation.loaders.raw.load_lab_results import (
+    cancelled_standard_lab_results,
+    crp,
+    lymphocytes,
+    triglycerides,
+)
+from psycop.common.feature_generation.loaders.raw.load_medications import (
+    antidepressives,
+    antipsychotics,
+    benzodiazepine_related_sleeping_agents,
+    benzodiazepines,
+    first_gen_antipsychotics,
+    lamotrigine,
+    lithium,
+    pregabaline,
+    second_gen_antipsychotics,
+    selected_nassa,
+    snri,
+    ssri,
+    tca,
+    valproate,
+)
+from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
+    broeset_violence_checklist,
+    suicide_risk_assessment,
+)
+from psycop.common.feature_generation.loaders.raw.load_visits import (
+    admissions,
+    ambulatory_visits,
+    emergency_visits,
+    physical_visits_to_psychiatry,
+    physical_visits_to_somatic,
 )
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.projects.clozapine.feature_generation.cohort_definition.clozapine_cohort_definition import (
-    ClozapineCohortDefiner,
-)
-from psycop.projects.clozapine.feature_generation.modules.specify_features import FeatureSpecifier
-from psycop.projects.clozapine.feature_generation.modules.specify_text_features import (
-    TextFeatureSpecifier,
+    clozapine_outcome_timestamps,
+    clozapine_pred_times,
 )
 
-log = logging.getLogger()
-warnings.simplefilter(action="ignore", category=RuntimeWarning)
+TEXT_FILE_NAME = "text_embeddings_all_relevant_tfidf-1000.parquet"
 
 
-def main(
-    add_text_features: bool = False,
-    min_set_for_debug: bool = False,
-    limited_feature_set: bool = True,
-    lookbehind_180d_mean: bool = False,
-    generate_in_chunks: bool = True,
-    feature_set_name: str | None = None,
-    text_embedding_method: Literal["tfidf", "sentence_transformer", "both"] = "both",
-    chunksize: int = 10,
-) -> Path:
-    """Main function for loading, generating and evaluating a flattened
-    dataset."""
+def get_clozapine_project_info() -> ProjectInfo:
+    return ProjectInfo(
+        project_name="clozapine", project_path=OVARTACI_SHARED_DIR / "clozapine" / "feature_set"
+    )
 
-    if feature_set_name:
-        feature_set_dir = project_info.flattened_dataset_dir / feature_set_name
-    else:
-        feature_set_dir = project_info.flattened_dataset_dir
 
-    if Path.exists(feature_set_dir):
-        while True:
-            response = input(
-                f"The path '{feature_set_dir}' already exists. Do you want to potentially overwrite the contents of this folder with new feature sets? (yes/no): "
+def _init_clozapine_predictor(
+    df_loader: Callable[[], pd.DataFrame],
+    layer: str,
+    fallback: float | int,
+    aggregation_fns: Sequence[ts.aggregators.Aggregator],
+    lookbehind_distances: Sequence[datetime.timedelta] = [
+        datetime.timedelta(days=i) for i in [90, 182, 365]
+    ],
+    column_prefix: str = "pred_layer_{}",
+    entity_id_col_name: str = "dw_ek_borger",
+    name_overwrite: str | None = None,
+) -> ts.PredictorSpec:
+    logging.info(f"Initialising {df_loader.__name__ if name_overwrite is None else name_overwrite}")
+    return ts.PredictorSpec(
+        value_frame=ts.ValueFrame(
+            init_df=pl.from_pandas(df_loader()).rename(
+                {"value": df_loader.__name__ if name_overwrite is None else name_overwrite}
+            ),
+            entity_id_col_name=entity_id_col_name,
+        ),
+        lookbehind_distances=lookbehind_distances,
+        aggregators=aggregation_fns,
+        fallback=fallback,
+        column_prefix=column_prefix.format(layer),
+    )
+
+
+AnySpec = ts.PredictorSpec | ts.OutcomeSpec | ts.StaticSpec | ts.TimeDeltaSpec
+
+
+@dataclass(frozen=True)
+class ContinuousSpec:
+    loader: Callable[[], pd.DataFrame]
+    aggregation_fns: Sequence[ts.aggregators.Aggregator]
+    fallback: float
+    name_overwrite: str | None = None
+
+
+@dataclass(frozen=True)
+class BooleanSpec:
+    loader: Callable[[], pd.DataFrame]
+    aggregation_fns: Sequence[ts.aggregators.Aggregator] = (HasValuesAggregator(),)
+    fallback: float = 0.0
+    name_overwrite: str | None = None
+
+
+@dataclass(frozen=True)
+class CategoricalSpec:
+    loader: Callable[[], pd.DataFrame]
+    aggregation_fns: Sequence[ts.aggregators.Aggregator]
+    fallback: float
+    name_overwrite: str | None = None
+
+
+@dataclass(frozen=True)
+class LayerSpecPair:
+    layer: str
+    spec: AnySpec | BooleanSpec | ContinuousSpec | CategoricalSpec
+
+
+def _pair_to_spec(pair: LayerSpecPair) -> AnySpec:
+    match pair.spec:
+        case ContinuousSpec():
+            return _init_clozapine_predictor(
+                df_loader=pair.spec.loader,
+                layer=pair.layer,
+                fallback=pair.spec.fallback,
+                aggregation_fns=pair.spec.aggregation_fns,
+                name_overwrite=pair.spec.name_overwrite,
             )
-
-            if response.lower() not in ["yes", "y", "no", "n"]:
-                print("Invalid response. Please enter 'yes/y' or 'no/n'.")
-            if response.lower() in ["no", "n"]:
-                print("Process stopped.")
-                return feature_set_dir
-            if response.lower() in ["yes", "y"]:
-                print(f"Folder '{feature_set_dir}' will be overwritten.")
-                break
-
-    feature_specs = FeatureSpecifier(
-        project_info=project_info,
-        min_set_for_debug=min_set_for_debug,  # Remember to set to False when generating full dataset
-        limited_feature_set=limited_feature_set,
-        lookbehind_180d_mean=lookbehind_180d_mean,
-    ).get_feature_specs()
-
-    if add_text_features:
-        text_feature_specs = TextFeatureSpecifier(
-            project_info=project_info,
-            min_set_for_debug=min_set_for_debug,  # Remember to set to False when generating full dataset
-        ).get_text_feature_specs(embedding_method=text_embedding_method)  # type: ignore
-
-        feature_specs += text_feature_specs
-
-    if generate_in_chunks:
-        flattened_df = ChunkedFeatureGenerator.create_flattened_dataset_with_chunking(
-            project_info=project_info,
-            eligible_prediction_times=ClozapineCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.frame.to_pandas(),
-            feature_specs=feature_specs,  # type: ignore
-            chunksize=chunksize,
-        )
-
-    split_and_save_dataset_to_disk(
-        flattened_df=flattened_df,  # type: ignore
-        project_info=project_info,
-        feature_set_dir=feature_set_dir,
-    )
-
-    save_flattened_dataset_description_to_disk(
-        project_info=project_info,
-        feature_specs=feature_specs,  # type: ignore
-        feature_set_dir=feature_set_dir,
-    )
-    return feature_set_dir
+        case BooleanSpec():
+            return _init_clozapine_predictor(
+                df_loader=pair.spec.loader,
+                layer=pair.layer,
+                fallback=pair.spec.fallback,
+                aggregation_fns=pair.spec.aggregation_fns,
+                name_overwrite=pair.spec.name_overwrite,
+            )
+        case CategoricalSpec():
+            return _init_clozapine_predictor(
+                df_loader=pair.spec.loader,
+                layer=pair.layer,
+                fallback=pair.spec.fallback,
+                aggregation_fns=pair.spec.aggregation_fns,
+                name_overwrite=pair.spec.name_overwrite,
+            )
+        case ts.PredictorSpec() | ts.OutcomeSpec() | ts.StaticSpec() | ts.TimeDeltaSpec():
+            return pair.spec
 
 
 if __name__ == "__main__":
-    # Run elements that are required before wandb init first,
-    # then run the rest in main so you can wrap it all in
-    # wandb_alert_on_exception, which will send a slack alert
-    # if you have wandb alerts set up in wandb
-    project_info = ProjectInfo(
-        project_name="clozapine", project_path=OVARTACI_SHARED_DIR / "clozapine"
+    import coloredlogs
+
+    coloredlogs.install(  # type: ignore
+        level="INFO",
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+        datefmt="%Y/%m/%d %H:%M:%S",
+        stream=sys.stdout,
     )
 
-    init_root_logger(project_info=project_info)
+    feature_layers = {
+        "demographics": [
+            ts.OutcomeSpec(
+                value_frame=ts.ValueFrame(
+                    init_df=clozapine_outcome_timestamps().frame, entity_id_col_name="dw_ek_borger"
+                ),
+                lookahead_distances=[datetime.timedelta(days=60)],
+                aggregators=[ts.MaxAggregator()],
+                fallback=0,
+                column_prefix="outc_ect",
+            ),
+            ts.StaticSpec(
+                value_frame=ts.StaticFrame(init_df=sex_female(), entity_id_col_name="dw_ek_borger"),
+                fallback=0,
+                column_prefix="pred",
+            ),
+            ts.TimeDeltaSpec(
+                init_frame=ts.TimestampValueFrame(
+                    birthdays(),
+                    entity_id_col_name="dw_ek_borger",
+                    value_timestamp_col_name="date_of_birth",
+                ),
+                column_prefix="pred",
+                fallback=0,
+                output_name="age",
+            ),
+        ],
+        "contacts": [
+            ContinuousSpec(
+                physical_visits_to_psychiatry, aggregation_fns=[CountAggregator()], fallback=0
+            ),
+            ContinuousSpec(
+                physical_visits_to_somatic, aggregation_fns=[CountAggregator()], fallback=0
+            ),
+            ContinuousSpec(
+                partial(admissions, shak_code=6600, shak_sql_operator="="),
+                aggregation_fns=[CountAggregator()],
+                fallback=0,
+                name_overwrite="admissions_to_psychiatry",
+            ),
+            ContinuousSpec(
+                partial(
+                    admissions,
+                    shak_code=6600,
+                    shak_sql_operator="=",
+                    return_value_as_visit_length_days=True,
+                ),
+                aggregation_fns=[SumAggregator()],
+                fallback=0,
+                name_overwrite="admissions_to_psychiatry_duration",
+            ),
+            ContinuousSpec(
+                partial(admissions, shak_code=6600, shak_sql_operator="!="),
+                aggregation_fns=[CountAggregator()],
+                fallback=0,
+                name_overwrite="admissions_not_to_psychiatry",
+            ),
+            ContinuousSpec(
+                partial(
+                    admissions,
+                    shak_code=6600,
+                    shak_sql_operator="!=",
+                    return_value_as_visit_length_days=True,
+                ),
+                aggregation_fns=[SumAggregator()],
+                fallback=0,
+                name_overwrite="admissions_not_to_psychiatry_duration",
+            ),
+            ContinuousSpec(
+                partial(ambulatory_visits, shak_code=6600, shak_sql_operator="="),
+                aggregation_fns=[CountAggregator()],
+                fallback=0,
+                name_overwrite="ambulatory_visits_to_psychiatry",
+            ),
+            ContinuousSpec(
+                partial(emergency_visits, shak_code=6600, shak_sql_operator="="),
+                aggregation_fns=[CountAggregator()],
+                fallback=0,
+                name_overwrite="emergency_visits_to_psychiatry",
+            ),
+            ContinuousSpec(
+                partial(emergency_visits, shak_code=6600, shak_sql_operator="!="),
+                aggregation_fns=[CountAggregator()],
+                fallback=0,
+                name_overwrite="emergency_visits_not_to_psychiatry",
+            ),
+        ],
+        "Medication overall": [
+            ContinuousSpec(antipsychotics, aggregation_fns=[CountAggregator()], fallback=0),
+            ContinuousSpec(antidepressives, aggregation_fns=[CountAggregator()], fallback=0),
+            ContinuousSpec(benzodiazepines, aggregation_fns=[CountAggregator()], fallback=0),
+        ],
+        "broset + suicide risk assessment": [
+            ContinuousSpec(
+                broeset_violence_checklist,
+                aggregation_fns=[LatestAggregator("timestamp"), MeanAggregator()],
+                fallback=np.NaN,
+            ),
+            ContinuousSpec(
+                suicide_risk_assessment,
+                aggregation_fns=[
+                    LatestAggregator(timestamp_col_name="timestamp"),
+                    MaxAggregator(),
+                    MeanAggregator(),
+                ],
+                fallback=np.NaN,
+            ),
+        ],
+        "diagnoses": [
+            BooleanSpec(f0_disorders),
+            BooleanSpec(f1_disorders),
+            BooleanSpec(f2_disorders),
+            BooleanSpec(f3_disorders),
+            BooleanSpec(f4_disorders),
+            BooleanSpec(f5_disorders),
+            BooleanSpec(f6_disorders),
+            BooleanSpec(f7_disorders),
+            BooleanSpec(f8_disorders),
+            BooleanSpec(f9_disorders),
+        ],
+        "medication": [
+            BooleanSpec(first_gen_antipsychotics),
+            BooleanSpec(second_gen_antipsychotics),
+            BooleanSpec(lithium),
+            BooleanSpec(valproate),
+            BooleanSpec(lamotrigine),
+            BooleanSpec(pregabaline),
+            BooleanSpec(ssri),
+            BooleanSpec(snri),
+            BooleanSpec(tca),
+            BooleanSpec(selected_nassa),
+            BooleanSpec(benzodiazepine_related_sleeping_agents),
+        ],
+        "coercion": [BooleanSpec(skema_1), BooleanSpec(skema_2), BooleanSpec(skema_3)],
+        "lab tests": [
+            ContinuousSpec(crp, aggregation_fns=[MeanAggregator()], fallback=np.NaN),
+            ContinuousSpec(lymphocytes, aggregation_fns=[MeanAggregator()], fallback=np.NaN),
+            ContinuousSpec(triglycerides, aggregation_fns=[MeanAggregator()], fallback=np.NaN),
+            ContinuousSpec(
+                cancelled_standard_lab_results, aggregation_fns=[MeanAggregator()], fallback=np.NaN
+            ),
+        ],
+        # "layer_text": [
+        #     ts.PredictorSpec(
+        #         value_frame=ts.ValueFrame(
+        #             init_df=pl.read_parquet(TEXT_EMBEDDINGS_DIR / TEXT_FILE_NAME).drop(
+        #                 "overskrift"
+        #             ),
+        #             entity_id_col_name="dw_ek_borger",
+        #             value_timestamp_col_name="timestamp",
+        #         ),
+        #         lookbehind_distances=[datetime.timedelta(days=730)],
+        #         aggregators=[MeanAggregator()],
+        #         fallback=np.nan,
+        #         column_prefix="pred_text",
+        #     )
+        # ],
+    }
 
-    log.info(f"Stdout level is {logging.getLevelName(log.level)}")  # pylint: disable=logging-fstring-interpolation
-    log.debug("Debugging is still captured in the log file")
+    layer_spec_pairs = [
+        LayerSpecPair(layer, spec)
+        for layer, spec_list in feature_layers.items()
+        for spec in spec_list
+    ]
 
-    # Use wandb to keep track of your dataset generations
-    # Makes it easier to find paths on wandb, as well as
-    # allows monitoring and automatic slack alert on failure
-    # allows monitoring and automatic slack alert on failure
-    if sys.platform == "win32":
-        (Path(__file__).resolve().parents[0] / "wandb" / "debug-cli.onerm").mkdir(
-            exist_ok=True, parents=True
-        )
+    logging.info("Loading specifications")
+    specs = [_pair_to_spec(layer_spec) for layer_spec in layer_spec_pairs]
 
-    main(
-        add_text_features=False,
-        min_set_for_debug=False,
-        limited_feature_set=False,
-        lookbehind_180d_mean=False,
-        feature_set_name="clozapine_preliminary_diagnoses_medication_coercion_v2",
-        generate_in_chunks=True,
+    logging.info("Generating feature set")
+    generate_feature_set(
+        project_info=get_clozapine_project_info(),
+        eligible_prediction_times_frame=clozapine_pred_times(),
+        feature_specs=specs,
+        feature_set_name="clozapine_feature_set",
+        n_workers=None,
+        step_size=datetime.timedelta(days=365),
+        do_dataset_description=False,
     )
