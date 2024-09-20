@@ -72,7 +72,7 @@ from psycop.common.feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
     physical_visits_to_somatic,
 )
-from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR,TEXT_EMBEDDINGS_DIR
+from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR, TEXT_EMBEDDINGS_DIR
 from psycop.projects.clozapine.feature_generation.cohort_definition.clozapine_cohort_definition import (
     clozapine_outcome_timestamps,
     clozapine_pred_times,
