@@ -343,7 +343,7 @@ if __name__ == "__main__":
                 fallback=np.nan,
                 column_prefix="pred_layer_text",
             )
-        ]
+        ],
     }
 
     layer_spec_pairs = [
