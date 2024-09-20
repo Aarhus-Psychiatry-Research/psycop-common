@@ -75,7 +75,7 @@ def table_one_model(run: PsycopMlflowRun, sex_col_name: str) -> TableOneModel:
 
     filled = resolve_and_fill_config(tmp_cfg, fill_cfg_with_defaults=True)
 
-    pipeline: BaselinePreprocessingPipeline = filled["trainer"].preprocessing_pipeline
+    pipeline: BaselinePreprocessingPipeline = filled["trainer"].training_preprocessing_pipeline
     pipeline._logger = TerminalLogger()  # type: ignore
     pipeline.steps = [
         step
@@ -96,6 +96,6 @@ def table_one_model(run: PsycopMlflowRun, sex_col_name: str) -> TableOneModel:
             (pl.col("pred_age_days_fallback_0") / 365.25).alias("pred_age_in_years")
         ),
         allow_extra_columns=True,
-        outcome_col_name=cfg["trainer"]["outcome_col_name"],
+        outcome_col_name=cfg["trainer"]["training_outcome_col_name"],
         sex_col_name=sex_col_name,
     )

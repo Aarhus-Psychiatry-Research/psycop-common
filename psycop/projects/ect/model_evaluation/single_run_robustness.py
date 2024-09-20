@@ -25,6 +25,8 @@ from psycop.projects.cvd.model_evaluation.single_run.auroc_by.time_from_first_vi
     AUROCByTimeFromFirstVisitPlot,
 )
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
+from psycop.projects.ect.model_evaluation.auroc_by.quarter_model import auroc_by_quarter_model
+from psycop.projects.ect.model_evaluation.auroc_by.quarter_view import AUROCByQuarterPlot
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -50,7 +52,7 @@ def single_run_robustness(
         AUROCByTimeFromFirstVisitPlot(
             auroc_by_time_from_first_visit_model(eval_frame=eval_frame, all_visits_df=all_visits_df)
         ),
-        AUROCByMonthOfYearPlot(auroc_by_month_of_year_model(eval_frame=eval_frame)),
+        AUROCByQuarterPlot(auroc_by_quarter_model(eval_frame=eval_frame)),
     ]
 
     ggplots: list[pn.ggplot] = []

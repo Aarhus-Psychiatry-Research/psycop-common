@@ -6,8 +6,8 @@ import pandas as pd
 import polars as pl
 from sklearn.pipeline import Pipeline
 
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
-
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper, PsycopMlflowRun
+from pathlib import Path
 
 def ect_parse_static_feature(full_string: str) -> str:
     """Takes a static feature name and returns a human readable version of it."""
@@ -77,10 +77,18 @@ def ect_generate_feature_importance_table(
     return pd_df
 
 
+def ect_feature_importance_table_facade(run: PsycopMlflowRun, output_dir: Path) -> None:
+    feat_imp = ect_generate_feature_importance_table(
+        pipeline=run.sklearn_pipeline(), clf_model_name="classifier"
+    )
+    pl.Config.set_tbl_rows(100)
+    (output_dir / "feature_importance.html").write_text(feat_imp.to_html())
+
 if __name__ == "__main__":
     run = MlflowClientWrapper().get_run(
-        "ECT hparam, structured_only, xgboost, no lookbehind filter", "inquisitive-koi-243"
+        "ECT random split test set, xgboost", "structured_text"
     )
+    
 
     feat_imp = ect_generate_feature_importance_table(
         pipeline=run.sklearn_pipeline(), clf_model_name="classifier"

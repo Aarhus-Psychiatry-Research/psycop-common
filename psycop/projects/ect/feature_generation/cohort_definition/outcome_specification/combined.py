@@ -46,7 +46,6 @@ def add_first_ect_time_after_prediction_time(prediction_time_df: pl.DataFrame) -
 
 
 if __name__ == "__main__":
-
     eval_frame = (
         MlflowClientWrapper()
         .get_run(

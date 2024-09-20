@@ -27,12 +27,12 @@ class TemporalStabilityPlot(SingleRunPlot):
         df = pl.concat(run.to_dataframe() for run in self.data)
 
         df = df.with_columns(
-            pl.col("train_end_date").dt.year().cast(pl.Utf8).alias("train_end_year"),
+            (pl.col("train_end_date").dt.year() - 1).cast(pl.Utf8).alias("train_end_year"),
             (pl.col("start_date") - (pl.col("train_end_date"))).alias("since_train_end"),
         )
 
         def format_datetime(x: Sequence[datetime.datetime]) -> Sequence[str]:  # type: ignore
-            return [f"{d.year-2000}-{d.year+1-2000}" for d in x]
+            return [f"{d.year}" for d in x]
 
         x_variable = "since_train_end" if self.relative_time else "start_date"
 
@@ -50,11 +50,13 @@ class TemporalStabilityPlot(SingleRunPlot):
             + pn.scale_color_ordinal()
             + pn.geom_line()
             + pn.geom_point(size=2)
-            + pn.labs(y="AUROC", x="")
+            + pn.labs(y="AUROC", x="Year of evaluation", color="Final year of training")
             + THEME
             + pn.theme(
                 panel_grid_major=pn.element_line(color="lightgrey", size=0.25, linetype="dotted"),
                 axis_text_x=pn.element_text(size=10),
+                legend_position=(0.5, 0.2),
+
             )
         )
         if not self.relative_time:

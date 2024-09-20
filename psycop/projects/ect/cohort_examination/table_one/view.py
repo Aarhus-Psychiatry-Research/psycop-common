@@ -135,7 +135,7 @@ def _visit_frame(model: TableOneModel, specs: Sequence[RowSpecification]) -> pd.
         [r.source_col_name for r in specs if r.source_col_name not in ["age_grouped"]] + ["dataset"]
     )
 
-    visits.with_columns(
+    visits = visits.with_columns(
         pl.Series(
             bin_continuous_data(
                 visits["pred_age_in_years"].to_pandas(), bins=[18, *list(range(19, 90, 10))]
@@ -171,9 +171,9 @@ def ect_table_one(model: TableOneModel) -> pd.DataFrame:
                 nonnormal=True,
                 category=RowCategory.demographics,
             ),
-            # RowSpecification(
-            #     source_col_name="age_grouped", readable_name="Age grouped", categorical=True
-            # ),
+            RowSpecification(
+                source_col_name="age_grouped", readable_name="Age grouped", categorical=True, category=RowCategory.demographics,
+            ),
             RowSpecification(
                 source_col_name="pred_sex_female_fallback_0",
                 readable_name="Female",
@@ -206,7 +206,7 @@ def ect_table_one(model: TableOneModel) -> pd.DataFrame:
             ),
             RowSpecification(
                 source_col_name=model.outcome_col_name,
-                readable_name="Incident CVD",
+                readable_name="Incident ECT",
                 categorical=True,
                 values_to_display=[1],
                 category=RowCategory.outcome,

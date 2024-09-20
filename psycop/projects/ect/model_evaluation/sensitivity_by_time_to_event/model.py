@@ -17,7 +17,7 @@ SensitivityByTTEDF = NewType("SensitivityByTTEDF", pl.DataFrame)
 
 @shared_cache().cache()
 def sensitivity_by_time_to_event_model(
-    eval_df: pl.DataFrame, pprs: Sequence[float] = (0.01, 0.03, 0.05)
+    eval_df: pl.DataFrame, pprs: Sequence[float] = (0.01, 0.02, 0.03)
 ) -> SensitivityByTTEDF:
     eval_dataset = eval_df.to_pandas()
 
@@ -31,7 +31,7 @@ def sensitivity_by_time_to_event_model(
             time_one=eval_dataset["timestamp"],
             time_two=eval_dataset["timestamp_outcome"],
             direction="t2-t1",
-            bins=range(0, 120, 12),
+            bins=range(0, 60, 10),
             bin_unit="D",
             bin_continuous_input=True,
         )

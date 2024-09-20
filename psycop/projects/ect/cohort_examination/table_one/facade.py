@@ -20,5 +20,5 @@ def table_one_facade(
 if __name__ == "__main__":
     table_one_facade(
         Path(__file__).parent,
-        MlflowClientWrapper().get_run("ECT hparam, structured_only, xgboost", "handsome-smelt-991"),
+        MlflowClientWrapper().get_run("ECT, geography test set, xgboost", "structured_text"),
     )

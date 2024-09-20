@@ -63,7 +63,8 @@ def single_run_main(
         ),
         FirstPosPredToEventPlot(
             data=first_positive_prediction_to_event_model(
-                eval_df=eval_df_with_correct_time_to_outcome
+                eval_df=eval_df_with_correct_time_to_outcome,
+                desired_positive_rate=desired_positive_rate
             ),
             outcome_label=outcome_label,
         ),

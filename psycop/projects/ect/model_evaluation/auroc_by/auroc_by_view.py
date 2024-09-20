@@ -32,3 +32,4 @@ def auroc_by_view(df: pd.DataFrame, x_column: str, line_y_col_name: str, xlab: s
         p += pn.scale_x_discrete()
 
     return p
+

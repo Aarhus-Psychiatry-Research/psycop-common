@@ -32,7 +32,7 @@ class ROCByGroupPlot(SingleRunPlot):
             + pn.geom_line(data=abline_df, linetype="dashed", color="grey", alpha=0.5)
             + pn.labs(x="1 - Specificity", y="Sensitivty")
             + pn.coord_cartesian(xlim=(0, 1), ylim=(0, 1))
-            + pn.theme_minimal()
+            + pn.theme_classic()
             + pn.theme(
                 legend_position=(0.65, 0.25),
                 legend_direction="vertical",

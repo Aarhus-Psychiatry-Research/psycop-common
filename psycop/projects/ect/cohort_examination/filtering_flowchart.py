@@ -64,7 +64,7 @@ def filtering_flowchart_facade(
 
     filled = filled_cfg_from_run(run, populate_registry_fns=[populate_baseline_registry])
 
-    pipeline: BaselinePreprocessingPipeline = filled["trainer"].preprocessing_pipeline
+    pipeline: BaselinePreprocessingPipeline = filled["trainer"].training_preprocessing_pipeline
     pipeline._logger = TerminalLogger()  # type: ignore
     pipeline.steps[0].splits_to_keep = ["train", "val", "test"]  # type: ignore # Do not filter by split
 
@@ -81,7 +81,7 @@ def filtering_flowchart_facade(
 
     lines = [_stepdelta_line(prior, cur) for prior, cur in zip(step_deltas, step_deltas[1:])]
 
-    outcome_matcher = pl.col(cfg["trainer"]["outcome_col_name"]) == pl.lit(1)
+    outcome_matcher = pl.col(cfg["trainer"]["training_outcome_col_name"]) == pl.lit(1)
     lines.append(f"With outcome: {len(flattened_data.filter(outcome_matcher).collect()):,}")
     lines.append(
         f"Without outcome: {len(flattened_data.filter(outcome_matcher.not_()).collect()):,}"

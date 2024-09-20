@@ -97,7 +97,9 @@ def eval_stratified_split(
     return train_baseline_model_from_cfg(cfg)
 
 
-def evaluate_feature_set_and_year(feature_set: str, train_end_year: int) -> tuple[int, dict[int, float]]:
+def evaluate_feature_set_and_year(
+    feature_set: str, train_end_year: int
+) -> tuple[int, dict[int, float]]:
     evaluation_years = range(train_end_year, 22)
     year_aurocs = {
         y: eval_stratified_split(

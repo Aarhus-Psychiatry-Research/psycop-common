@@ -40,12 +40,14 @@ class SensitivityByTTEPlot(SingleRunPlot):
             + pn.geom_path(size=0.5)
             + pn.geom_point(size=1)
             + pn.geom_errorbar(width=0.1)
-            + pn.labs(x="Days", y="Sensitivity")
+            + pn.labs(x="Days", y="Sensitivity", color="Predicted positive rate")
             + pn.scale_color_brewer(type="qual", palette="Set2")  # type: ignore
             + THEME
             + pn.theme(
                 axis_text_x=pn.element_text(size=FONT_SIZES.axis_tick_labels, angle=45, hjust=1),
                 axis_text_y=pn.element_text(size=FONT_SIZES.axis_tick_labels),
+                legend_position=(0.8, 0.8),
+
             )
         )
 
