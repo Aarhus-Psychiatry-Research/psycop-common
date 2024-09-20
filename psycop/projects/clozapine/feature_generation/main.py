@@ -72,7 +72,7 @@ from psycop.common.feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
     physical_visits_to_somatic,
 )
-from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
+from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR,TEXT_EMBEDDINGS_DIR
 from psycop.projects.clozapine.feature_generation.cohort_definition.clozapine_cohort_definition import (
     clozapine_outcome_timestamps,
     clozapine_pred_times,
@@ -329,6 +329,21 @@ if __name__ == "__main__":
                 cancelled_standard_lab_results, aggregation_fns=[MeanAggregator()], fallback=np.NaN
             ),
         ],
+        "layer_text": [
+            ts.PredictorSpec(
+                value_frame=ts.ValueFrame(
+                    init_df=pl.read_parquet(TEXT_EMBEDDINGS_DIR / TEXT_FILE_NAME).drop(
+                        "overskrift"
+                    ),
+                    entity_id_col_name="dw_ek_borger",
+                    value_timestamp_col_name="timestamp",
+                ),
+                lookbehind_distances=[datetime.timedelta(days=182)],
+                aggregators=[MeanAggregator()],
+                fallback=np.nan,
+                column_prefix="pred_layer_text",
+            )
+        ]
     }
 
     layer_spec_pairs = [
@@ -345,7 +360,7 @@ if __name__ == "__main__":
         project_info=get_clozapine_project_info(),
         eligible_prediction_times_frame=clozapine_pred_times(),
         feature_specs=specs,
-        feature_set_name="clozapine_feature_set",
+        feature_set_name="clozapine_feature_set_with_text",
         n_workers=None,
         step_size=datetime.timedelta(days=365),
         do_dataset_description=False,
