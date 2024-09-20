@@ -1,10 +1,16 @@
 from pathlib import Path
 
+from psycop.common.global_utils.cache import shared_cache
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
 from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
+from psycop.projects.forced_admission_inpatient.model_training.replace_sklearn_pipe import (
+    elastic_net,
+)
 
 
+@shared_cache().cache
 def eval_stratified_split(
     cfg: PsycopConfig, training_end_date: str, evaluation_interval: tuple[str, str]
 ) -> float:
@@ -19,7 +25,7 @@ def eval_stratified_split(
 
     # Setup for experiment
     cfg = (
-        cfg.mut("logger.*.mlflow.experiment_name", "Inpatient v2, temporal validation")
+        cfg.mut("logger.*.mlflow.experiment_name", "FA Inpatient - temporal cv")
         .add(
             "logger.*.mlflow.run_name",
             f"{training_end_date}_{evaluation_interval[0]}_{evaluation_interval[1]}",
@@ -87,16 +93,23 @@ if __name__ == "__main__":
     populate_baseline_registry()
 
     endyear2aurocs = {}
-    for train_end_year in range(16, 21):
-        evaluation_years = range(train_end_year, 22)
-        year_aurocs = {
-            y: eval_stratified_split(
-                PsycopConfig().from_disk(Path(__file__).parent / "inpatient_v2.cfg"),
-                training_end_date=f"20{train_end_year}-01-01",
-                evaluation_interval=(f"20{y}-01-01", f"20{y}-12-31"),
-            )
-            for y in evaluation_years
-        }
-        endyear2aurocs[train_end_year] = year_aurocs
+    for model in ["xgboost", "elastic_net"]:
+        for train_end_year in range(16, 21):
+            evaluation_years = range(train_end_year, 22)
+            year_aurocs = {
+                y: eval_stratified_split(
+                    cfg=PsycopConfig().from_disk(Path(__file__).parent / "inpatient_v2.cfg")
+                    if model == "xgboost"
+                    else (
+                        elastic_net(
+                            PsycopConfig().from_disk(Path(__file__).parent / "inpatient_v2.cfg")
+                        )
+                    ),
+                    training_end_date=f"20{train_end_year}-01-01",
+                    evaluation_interval=(f"20{y}-01-01", f"20{y}-12-31"),
+                )
+                for y in evaluation_years
+            }
+            endyear2aurocs[train_end_year] = year_aurocs
 
-    print(endyear2aurocs)
+        print(endyear2aurocs)
