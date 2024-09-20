@@ -46,7 +46,7 @@ def single_run_robustness(
         AUROCByTimeFromFirstVisitPlot(
             auroc_by_time_from_first_visit_model(eval_frame=eval_frame, all_visits_df=all_visits_df)
         ),
-        AUROCByQuarterPlot(auroc_by_quarter_model(eval_frame=eval_frame)),
+        AUROCByQuarterPlot(auroc_by_quarter_model(eval_frame=eval_frame)), # type: ignore
     ]
 
     ggplots: list[pn.ggplot] = []
