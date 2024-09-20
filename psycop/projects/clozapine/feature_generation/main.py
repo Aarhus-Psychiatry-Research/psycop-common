@@ -329,21 +329,6 @@ if __name__ == "__main__":
                 cancelled_standard_lab_results, aggregation_fns=[MeanAggregator()], fallback=np.NaN
             ),
         ],
-        # "layer_text": [
-        #     ts.PredictorSpec(
-        #         value_frame=ts.ValueFrame(
-        #             init_df=pl.read_parquet(TEXT_EMBEDDINGS_DIR / TEXT_FILE_NAME).drop(
-        #                 "overskrift"
-        #             ),
-        #             entity_id_col_name="dw_ek_borger",
-        #             value_timestamp_col_name="timestamp",
-        #         ),
-        #         lookbehind_distances=[datetime.timedelta(days=730)],
-        #         aggregators=[MeanAggregator()],
-        #         fallback=np.nan,
-        #         column_prefix="pred_text",
-        #     )
-        # ],
     }
 
     layer_spec_pairs = [
