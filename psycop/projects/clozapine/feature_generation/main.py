@@ -193,10 +193,10 @@ if __name__ == "__main__":
                 value_frame=ts.ValueFrame(
                     init_df=clozapine_outcome_timestamps().frame, entity_id_col_name="dw_ek_borger"
                 ),
-                lookahead_distances=[datetime.timedelta(days=60)],
+                lookahead_distances=[datetime.timedelta(days=365)],
                 aggregators=[ts.MaxAggregator()],
                 fallback=0,
-                column_prefix="outc_ect",
+                column_prefix="outc_clozapine",
             ),
             ts.StaticSpec(
                 value_frame=ts.StaticFrame(init_df=sex_female(), entity_id_col_name="dw_ek_borger"),
