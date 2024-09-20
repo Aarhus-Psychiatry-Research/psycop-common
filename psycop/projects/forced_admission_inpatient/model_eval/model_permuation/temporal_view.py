@@ -58,6 +58,7 @@ class TemporalStabilityPlot(SingleRunPlot):
             + pn.geom_line()
             + pn.geom_point(size=2)
             + pn.labs(y="AUROC", x="", color="Train Period")
+            + pn.ylim(0.65, 0.80)
             + THEME
             # + pn.scale_x_datetime(labels=format_datetime, date_breaks="1 year")  # noqa: ERA001
             + pn.theme(
