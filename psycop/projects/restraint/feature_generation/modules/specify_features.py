@@ -89,7 +89,7 @@ from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
     height_in_cm,
     mas_m,
     no_temporary_leave,
-    selvmordsrisiko,
+    suicide_risk_assessment,
     supervised_temporary_leave,
     temporary_leave,
     unsupervised_temporary_leave,
@@ -469,7 +469,7 @@ class FeatureSpecifier:
         structured_sfi = PredictorGroupSpec(
             named_dataframes=(
                 NamedDataframe(df=broeset_violence_checklist(), name="broeset_violence_checklist"),
-                NamedDataframe(df=selvmordsrisiko(), name="selvmordsrisiko"),
+                NamedDataframe(df=suicide_risk_assessment(), name="selvmordsrisiko"),
                 NamedDataframe(df=hamilton_d17(), name="hamilton_d17"),
                 NamedDataframe(df=mas_m(), name="mas_m"),
             ),

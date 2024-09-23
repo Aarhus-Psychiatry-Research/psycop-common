@@ -1,15 +1,28 @@
 from dataclasses import dataclass
+from typing import Any
 
 import pandas as pd
 import polars as pl
+from numpy import ndarray
 from sklearn.model_selection import StratifiedGroupKFold
 
+from psycop.common.global_utils.cache import shared_cache
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
 from psycop.common.model_training_v2.trainer.base_trainer import BaselineTrainer, TrainingResult
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import PreprocessingPipeline
 from psycop.common.model_training_v2.trainer.task.base_metric import BaselineMetric
 from psycop.common.model_training_v2.trainer.task.base_task import BaselineTask
+
+
+@shared_cache().cache()
+def cached_folds(
+    n_splits: int,
+    X: pd.DataFrame,
+    y: pd.DataFrame,
+    groups: pd.Series,  # type: ignore
+) -> list[tuple[ndarray[Any, Any], ndarray[Any, Any]]]:
+    return list(StratifiedGroupKFold(n_splits=n_splits).split(X=X, y=y, groups=groups))
 
 
 @BaselineRegistry.trainers.register("crossval_trainer")
@@ -35,8 +48,8 @@ class CrossValidatorTrainer(BaselineTrainer):
         )
         self.logger.info(f"\tOutcome: {list(y.columns)}")
 
-        folds = StratifiedGroupKFold(n_splits=self.n_splits).split(
-            X=X, y=y, groups=training_data_preprocessed[self.group_col_name]
+        folds = cached_folds(
+            n_splits=self.n_splits, X=X, y=y, groups=training_data_preprocessed[self.group_col_name]
         )
 
         for i, (train_idxs, val_idxs) in enumerate(folds):

@@ -19,7 +19,7 @@ from psycop.common.feature_generation.application_modules.project_setup import C
 from psycop.common.test_utils.str_to_df import str_to_df
 
 
-@pytest.fixture()
+@pytest.fixture
 def synth_prediction_times() -> pd.DataFrame:
     return str_to_df(
         """entity_id,timestamp
@@ -35,7 +35,7 @@ def synth_prediction_times() -> pd.DataFrame:
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def synth_predictor_1() -> pd.DataFrame:
     return str_to_df(
         """entity_id,timestamp,value
@@ -49,7 +49,7 @@ def synth_predictor_1() -> pd.DataFrame:
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def synth_predictor_2() -> pd.DataFrame:
     return str_to_df(
         """entity_id,timestamp,value
@@ -63,7 +63,7 @@ def synth_predictor_2() -> pd.DataFrame:
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def synth_project_info() -> ProjectInfo:
     return ProjectInfo(
         project_name="test",

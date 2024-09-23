@@ -11,8 +11,8 @@ from psycop.projects.cvd.model_evaluation.single_run.first_pos_pred_to_event.mod
     first_positive_prediction_to_event_model,
 )
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
-from psycop.projects.scz_bp.evaluation.configs import COLORS, Colors
-from psycop.projects.t2d.paper_outputs.config import FONT_SIZES, THEME
+from psycop.projects.scz_bp.evaluation.configs import Colors
+from psycop.projects.t2d.paper_outputs.config import THEME
 
 
 @dataclass(frozen=True)

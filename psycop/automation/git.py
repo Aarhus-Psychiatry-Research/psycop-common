@@ -22,10 +22,7 @@ def filetype_modified_since_main(c: Context, regex_pattern: str) -> bool:
         "git diff --name-only origin/main HEAD", hide=True
     ).stdout.splitlines()  # type: ignore
 
-    if any(re.compile(regex_pattern).search(file) for file in files_modified_since_main):
-        return True
-
-    return False
+    return bool(any(re.compile(regex_pattern).search(file) for file in files_modified_since_main))
 
 
 def add_commit(c: Context, msg: Optional[str] = None):

@@ -1,12 +1,15 @@
 import polars as pl
+from wasabi import msg
 
 from psycop.common.cohort_definition import (
     CohortDefiner,
     FilteredPredictionTimeBundle,
     OutcomeTimestampFrame,
+    PredictionTimeFrame,
     filter_prediction_times,
 )
 from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits_to_psychiatry
+from psycop.common.global_utils.cache import shared_cache
 from psycop.projects.clozapine.feature_generation.cohort_definition.eligible_prediction_times.single_filters import (
     ClozapineMinAgeFilter,
     ClozapineMinDateFilter,
@@ -14,9 +17,24 @@ from psycop.projects.clozapine.feature_generation.cohort_definition.eligible_pre
     ClozapineSchizophrenia,
     ClozapineWashoutMoveFilter,
 )
-from psycop.projects.clozapine.feature_generation.cohort_definition.outcome_specification.first_clozapine_prescription import (
-    get_first_clozapine_prescription,
+from psycop.projects.clozapine.feature_generation.cohort_definition.outcome_specification.combine_text_structured_clozapine_outcome import (
+    combine_structured_and_text_outcome,
 )
+
+
+@shared_cache().cache()
+def clozapine_pred_filtering() -> FilteredPredictionTimeBundle:
+    return ClozapineCohortDefiner().get_filtered_prediction_times_bundle()
+
+
+@shared_cache().cache()
+def clozapine_pred_times() -> PredictionTimeFrame:
+    return clozapine_pred_filtering().prediction_times
+
+
+@shared_cache().cache()
+def clozapine_outcome_timestamps() -> OutcomeTimestampFrame:
+    return ClozapineCohortDefiner().get_outcome_timestamps()
 
 
 class ClozapineCohortDefiner(CohortDefiner):
@@ -44,7 +62,7 @@ class ClozapineCohortDefiner(CohortDefiner):
     def get_outcome_timestamps() -> OutcomeTimestampFrame:
         return OutcomeTimestampFrame(
             frame=(
-                pl.from_pandas(get_first_clozapine_prescription())
+                pl.from_pandas(combine_structured_and_text_outcome())
                 .with_columns(value=pl.lit(1))
                 .select(["dw_ek_borger", "timestamp", "value"])
             )
@@ -52,8 +70,13 @@ class ClozapineCohortDefiner(CohortDefiner):
 
 
 if __name__ == "__main__":
-    bundle = ClozapineCohortDefiner.get_filtered_prediction_times_bundle()
+    filtered_prediction_time_bundle = ClozapineCohortDefiner.get_filtered_prediction_times_bundle()
 
-    df = bundle.prediction_times
-
-    outcome_timestamps = ClozapineCohortDefiner.get_outcome_timestamps()
+    for filtering_step in filtered_prediction_time_bundle.filter_steps:
+        msg.info(f"Filter step {filtering_step.step_index} {filtering_step.step_name}")
+        msg.info(
+            f"\tPrediction times: {filtering_step.n_prediction_times_before} - {filtering_step.n_prediction_times_after} = {filtering_step.n_dropped_prediction_times} dropped prediction times"
+        )
+        msg.info(
+            f"\tUnique patients: {filtering_step.n_ids_before} - {filtering_step.n_ids_after} = {filtering_step.n_dropped_ids} dropped ids"
+        )

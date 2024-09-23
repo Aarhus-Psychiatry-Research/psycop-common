@@ -103,14 +103,14 @@ class QuarantineFilter(PresplitStep):
 
         time_since_quarantine = df_with_quarantine_timestamps.with_columns(
             (pl.col(self.timestamp_col_name) - pl.col("timestamp_quarantine"))
-            .dt.days()
-            .alias("days_since_quarantine")
+            .dt.seconds()
+            .alias("seconds_since_quarantine")
         )
 
         # Check if the quarantine date hits the prediction time
         hit_by_quarantine = time_since_quarantine.filter(
-            (pl.col("days_since_quarantine") < self.quarantine_interval_days)
-            & (pl.col("days_since_quarantine") > 0)
+            (pl.col("seconds_since_quarantine") < self.quarantine_interval_days * 60 * 60 * 24)
+            & (pl.col("seconds_since_quarantine") > 0)
         ).select(self._tmp_pred_time_uuid_col_name)
 
         # Use these rows to filter the prediction times, ensuring that all columns are kept
@@ -120,3 +120,23 @@ class QuarantineFilter(PresplitStep):
             df = df.drop(self._tmp_pred_time_uuid_col_name)
 
         return df
+
+
+@BaselineRegistry.preprocessing.register("date_filter")
+@dataclass
+class DateFilter(PresplitStep):
+    """Filter rows based on a date column and a threshold date."""
+
+    column_name: str
+    threshold_date: str
+    direction: Literal["before", "after-inclusive"]
+
+    def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
+        date_col = pl.col(self.column_name)
+        threshold_date = pl.lit(self.threshold_date).cast(pl.Date)
+
+        match self.direction:
+            case "before":
+                return input_df.filter(date_col < threshold_date)
+            case "after-inclusive":
+                return input_df.filter(date_col >= threshold_date)

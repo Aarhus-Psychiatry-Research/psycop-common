@@ -1,10 +1,8 @@
 import pathlib
 from collections.abc import Sequence
-from typing import Any, Callable
 
 import polars as pl
 
-import psycop as ps
 from psycop.common.cohort_definition import FilteredPredictionTimeBundle, StepDelta
 from psycop.common.global_utils.cache import shared_cache
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
@@ -19,15 +17,12 @@ from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     PreprocessingPipeline,
 )
 from psycop.projects.cvd.feature_generation.cohort_definition.cvd_cohort_definition import (
-    CVDCohortDefiner,
     cvd_pred_filtering,
 )
 from psycop.projects.cvd.model_training.populate_cvd_registry import populate_with_cvd_registry
 
-run = MlflowClientWrapper().get_run(experiment_name="CVD", run_name="CVD layer 1, base")
 
-
-@shared_cache.cache
+@shared_cache().cache
 def _apply_preprocessing_pipeline(
     pre_steps: Sequence[StepDelta] | None,
     flattened_data: pl.LazyFrame,
@@ -74,7 +69,7 @@ def filtering_flowchart_facade(
 
     pipeline: BaselinePreprocessingPipeline = filled["trainer"].preprocessing_pipeline
     pipeline._logger = TerminalLogger()  # type: ignore
-    pipeline.steps[0].split_to_keep = ["train", "val", "test"]  # type: ignore # Do not filter by region
+    pipeline.steps[0].splits_to_keep = ["train", "val", "test"]  # type: ignore # Do not filter by region
 
     flattened_data = pl.scan_parquet(cfg["trainer"]["training_data"]["paths"][0]).lazy()
 
@@ -85,13 +80,15 @@ def filtering_flowchart_facade(
     )
 
     def _stepdelta_line(prior: StepDelta, cur: StepDelta) -> str:
-        return f"{cur.step_name}: Dropped {prior.n_prediction_times_before - cur.n_prediction_times_after}\n\t Remaining: {cur.n_prediction_times_after}"
+        return f"{cur.step_name}: Dropped {prior.n_prediction_times_before - cur.n_prediction_times_after:,}\n\t Remaining: {cur.n_prediction_times_after:,}"
 
     lines = [_stepdelta_line(prior, cur) for prior, cur in zip(step_deltas, step_deltas[1:])]
 
     outcome_matcher = pl.col(cfg["trainer"]["outcome_col_name"]) == pl.lit(1)
-    lines.append(f"With outcome: {len(flattened_data.filter(outcome_matcher).collect())}")
-    lines.append(f"Without outcome: {len(flattened_data.filter(outcome_matcher.not_()).collect())}")
+    lines.append(f"With outcome: {len(flattened_data.filter(outcome_matcher).collect()):,}")
+    lines.append(
+        f"Without outcome: {len(flattened_data.filter(outcome_matcher.not_()).collect()):,}"
+    )
 
     # Output to a file
     (output_dir / "filtering_flowchart.csv").write_text("\n".join(lines))

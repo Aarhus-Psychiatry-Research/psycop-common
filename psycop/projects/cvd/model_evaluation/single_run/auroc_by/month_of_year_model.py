@@ -10,7 +10,7 @@ from psycop.projects.cvd.model_evaluation.uuid_parsers import parse_timestamp_fr
 AUROCByMonthOfYearDF = NewType("AUROCByMonthOfYearDF", pl.DataFrame)
 
 
-@shared_cache.cache()
+@shared_cache().cache()
 def auroc_by_month_of_year_model(eval_frame: EvalFrame) -> AUROCByMonthOfYearDF:
     eval_dataset = parse_timestamp_from_uuid(eval_frame.frame).to_pandas()
 

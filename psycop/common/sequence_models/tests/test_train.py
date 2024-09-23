@@ -19,7 +19,7 @@ class FakeSliceCreator(BasePatientSliceCollater):
         return PatientSliceDataset(patient_slices=[p.as_slice() for p in create_patients()])
 
 
-@pytest.fixture()
+@pytest.fixture
 def config_path() -> Path:
     return Path(__file__).parent / "test_train.cfg"
 

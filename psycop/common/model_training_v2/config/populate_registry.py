@@ -21,6 +21,8 @@ def populate_baseline_registry() -> None:
         miss_forest_imputation_step,
         ImputationSuggester,
     )
+    from ..trainer.task.estimator_steps.scalers import standard_scaler_step
+    from ..trainer.task.estimator_steps.feature_selection import select_percentile
 
     # Preprocessing
     from ..trainer.preprocessing.pipeline import BaselinePreprocessingPipeline
@@ -31,7 +33,7 @@ def populate_baseline_registry() -> None:
     ### Rows
     from ..trainer.preprocessing.steps.row_filter_split import RegionalFilter
     from ..trainer.preprocessing.steps.row_filter_split import FilterByEntityID
-    from ..trainer.preprocessing.steps.row_filter_other import AgeFilter
+    from ..trainer.preprocessing.steps.row_filter_other import AgeFilter, DateFilter
 
     ### Columns
     from ..trainer.preprocessing.steps.column_filters import (

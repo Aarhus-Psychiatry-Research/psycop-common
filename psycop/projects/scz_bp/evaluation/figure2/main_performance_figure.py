@@ -50,6 +50,8 @@ if __name__ == "__main__":
 
     with pd.option_context("mode.chained_assignment", None):
         grid = create_patchwork_grid(
-            plots=panels, single_plot_dimensions=(5, 5), n_in_row=2, first_letter_index=2
+            plots=panels, single_plot_dimensions=(5, 5), n_in_row=2, first_letter_index=0
         )
-    grid.savefig(SCZ_BP_EVAL_OUTPUT_DIR / f"fig_2_{best_experiment.split('/')[1]}.png")
+    grid.savefig(SCZ_BP_EVAL_OUTPUT_DIR / f"fig_2_{best_experiment.split('/')[1]}.eps", dpi=300)
+    grid.savefig(SCZ_BP_EVAL_OUTPUT_DIR / f"fig_2_{best_experiment.split('/')[1]}.pdf", dpi=300)
+    grid.savefig(SCZ_BP_EVAL_OUTPUT_DIR / f"fig_2_{best_experiment.split('/')[1]}.svg", dpi=300)

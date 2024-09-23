@@ -45,37 +45,39 @@ class ColumnCountError(Exception): ...
 
 
 @dataclass(frozen=True)
-class ColumnCountExpectation:
+class ColumnPrefixCountExpectation:
     prefix: str
     count: int
 
-    @classmethod
-    def from_list(
-        cls: type["ColumnCountExpectation"], args: Sequence[str | int]
-    ) -> "ColumnCountExpectation":
+    @staticmethod
+    def from_list(args: tuple[str, int]) -> "ColumnPrefixCountExpectation":
         if not len(args) == 2:
             raise ValueError(
                 f"ColumnCountExpectation.from_list() takes exactly 2 arguments, ({len(args)} given)"
             )
 
         prefix = args[0]
-        count = args[1]  # noqa: F811
-        return cls(prefix=prefix, count=count)  # type: ignore
+        count = args[1]
+        return ColumnPrefixCountExpectation(prefix=prefix, count=count)
 
 
 @BaselineRegistry.preprocessing.register("column_prefix_count_expectation")
 class ColumnPrefixExpectation(PresplitStep):
     def __init__(self, column_expectations: Sequence[Sequence[str | int]]):
         self.column_expectations = (
-            Iter(column_expectations).map(lambda x: ColumnCountExpectation.from_list(x)).to_list()
+            Iter(column_expectations)
+            .map(lambda x: ColumnPrefixCountExpectation.from_list((str(x[0]), int(x[1]))))
+            .to_list()
         )
 
     def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
-        df = input_df.fetch(1) if isinstance(input_df, LazyFrame) else input_df  # type: ignore
-
         errors = (
             Iter(self.column_expectations)
-            .map(lambda expectation: self._column_count_as_expected(expectation=expectation, df=df))
+            .map(
+                lambda expectation: self._column_count_as_expected(
+                    expectation=expectation, columns=input_df.columns
+                )
+            )
             .flatten()
             .to_list()
         )
@@ -87,21 +89,15 @@ class ColumnPrefixExpectation(PresplitStep):
 
         return input_df
 
-    @staticmethod
-    def _wrap_str_in_quotes(string: str) -> str:
-        return f'"{string}"'
-
     def _column_count_as_expected(
-        self, expectation: ColumnCountExpectation, df: pl.DataFrame
+        self, expectation: ColumnPrefixCountExpectation, columns: Sequence[str]
     ) -> list[ColumnCountError]:
-        matching_columns = [
-            column for column in df.columns if column.startswith(expectation.prefix)
-        ]
+        matching_columns = [column for column in columns if column.startswith(expectation.prefix)]
 
         if len(matching_columns) != int(expectation.count):
             return [
                 ColumnCountError(
-                    f'{self._wrap_str_in_quotes(expectation.prefix)} matched {matching_columns if matching_columns else "None"}, expected {expectation.count}.'
+                    f'"{expectation.prefix}" matched {matching_columns if matching_columns else "None"}, expected {expectation.count} matches.'
                 )
             ]
 
