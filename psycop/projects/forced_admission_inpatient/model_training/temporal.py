@@ -1,7 +1,6 @@
 from pathlib import Path
 
 from psycop.common.global_utils.cache import shared_cache
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
 from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry

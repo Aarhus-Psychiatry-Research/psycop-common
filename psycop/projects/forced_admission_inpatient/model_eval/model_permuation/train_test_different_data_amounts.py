@@ -1,5 +1,6 @@
 """Experiments with models trained and evaluated using only part of the data"""
-from typing import Sequence
+
+from collections.abc import Sequence
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -42,8 +43,12 @@ def train_model_on_different_training_data_amounts(
 
     # sample 10, 25, 50, 75, 100 percent of the data and train the model on it
     for i in fractions:
-        fraction_dataset = dataset.copy().sample(frac=i, random_state=1).reset_index(drop=True) if i != 1.0 else dataset.copy()
-        
+        fraction_dataset = (
+            dataset.copy().sample(frac=i, random_state=1).reset_index(drop=True)
+            if i != 1.0
+            else dataset.copy()
+        )
+
         eval_dataset, oof_aucs, train_aucs = crossvalidate(
             cfg=cfg,
             train=fraction_dataset,
@@ -69,7 +74,6 @@ def train_model_on_different_training_data_amounts(
         std_devs.append(round(std_dev_auroc, 3))
         oof_intervals.append(f"{low_oof_auc}-{high_oof_auc}")
         train_aurocs.append(train_auroc)
-
 
     df_dict = {
         "Data fraction": fractions,
@@ -114,7 +118,9 @@ def plot_performance_by_amount_of_training_data(run: ForcedAdmissionInpatientPip
     plt.legend()
 
     # Save the plot
-    output_path = run.paper_outputs.paths.figures / "fa_inpatient_performance_by_training_fraction.png"
+    output_path = (
+        run.paper_outputs.paths.figures / "fa_inpatient_performance_by_training_fraction.png"
+    )
     plt.savefig(output_path)
 
     plt.show()
@@ -124,6 +130,9 @@ if __name__ == "__main__":
     from psycop.projects.forced_admission_inpatient.model_eval.selected_runs import (
         get_best_eval_pipeline,
     )
+
     plot_performance_by_amount_of_training_data(run=get_best_eval_pipeline())
 
-    train_model_on_different_training_data_amounts(run=get_best_eval_pipeline(), fractions=[0.1, 0.25, 0.5, 0.75, 1.0])
+    train_model_on_different_training_data_amounts(
+        run=get_best_eval_pipeline(), fractions=[0.1, 0.25, 0.5, 0.75, 1.0]
+    )

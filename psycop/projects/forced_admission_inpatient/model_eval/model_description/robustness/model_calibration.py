@@ -41,17 +41,21 @@ def calibration_plot(run: ForcedAdmissionInpatientPipelineRun):
     ax1.set_ylabel("Fraction of Positives")
     ax1.set_title("Calibration Curve")
     ax1.legend()
-    ax1.axvline(x=positive_threshold, color="red", linestyle="--", label=f"Positive prediction threshold (PPR of {BEST_POS_RATE*100}%)")
+    ax1.axvline(
+        x=positive_threshold,
+        color="red",
+        linestyle="--",
+        label=f"Positive prediction threshold (PPR of {BEST_POS_RATE*100}%)",
+    )
     ax1.text(
-    0.31,
-    0.95,
-    f"Positive prediction threshold (PPR of {BEST_POS_RATE*100}%)",
-    color="red",
-    fontsize=6,
-    transform=ax1.transAxes,
-    verticalalignment="top",
-)
-
+        0.31,
+        0.95,
+        f"Positive prediction threshold (PPR of {BEST_POS_RATE*100}%)",
+        color="red",
+        fontsize=6,
+        transform=ax1.transAxes,
+        verticalalignment="top",
+    )
 
     # Plot the histogram with solid bars
     counts, bin_edges = np.histogram(eval_ds.y_hat_probs, bins=50, range=(0, 1))
@@ -77,16 +81,21 @@ def calibration_plot(run: ForcedAdmissionInpatientPipelineRun):
     ax2.set_xlabel("Mean Predicted Probability")
     ax2.set_ylabel("Count")
     ax2.set_title("Distribution of Predicted Probabilities")
-    ax2.axvline(x=positive_threshold, color="red", linestyle="--", label=f"Positive prediction threshold (PPR of {BEST_POS_RATE*100}%)")
+    ax2.axvline(
+        x=positive_threshold,
+        color="red",
+        linestyle="--",
+        label=f"Positive prediction threshold (PPR of {BEST_POS_RATE*100}%)",
+    )
     ax2.text(
-    0.2,
-    0.95,
-    f"Positive prediction threshold (PPR of {BEST_POS_RATE*100}%)",
-    color="red",
-    fontsize=8,
-    transform=ax2.transAxes,
-    verticalalignment="top",
-)
+        0.2,
+        0.95,
+        f"Positive prediction threshold (PPR of {BEST_POS_RATE*100}%)",
+        color="red",
+        fontsize=8,
+        transform=ax2.transAxes,
+        verticalalignment="top",
+    )
 
     # Adjust layout and save the figure
     plt.tight_layout()

@@ -1,4 +1,3 @@
-
 from pathlib import Path
 
 import numpy as np
@@ -10,9 +9,7 @@ from sklearn.pipeline import Pipeline
 from wasabi import Printer
 
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from psycop.common.model_training.data_loader.utils import (
-    load_and_filter_split_from_cfg,
-)
+from psycop.common.model_training.data_loader.utils import load_and_filter_split_from_cfg
 from psycop.common.model_training.preprocessing.post_split.pipeline import (
     create_post_split_pipeline,
 )
@@ -77,8 +74,8 @@ def stratified_cross_validation(
 
         y_pred = pipe.predict_proba(X_train)[:, 1]
 
-        train_auc = round(roc_auc_score(y_train,y_pred), 3)
-        
+        train_auc = round(roc_auc_score(y_train, y_pred), 3)
+
         msg.info(f"{msg_prefix}: Train AUC = {train_auc}")  # type: ignore
 
         oof_y_pred = pipe.predict_proba(X.loc[val_idxs])[:, 1]  # type: ignore
@@ -125,9 +122,12 @@ def crossvalidate(
 
     df = df.rename(columns={"oof_y_hat": "y_hat_prob"})
 
-    return create_eval_dataset(
-        col_names=cfg.data.col_name, outcome_col_name=outcome_col_name, df=df
-    ), oof_aucs, train_aucs, training_shape  # type: ignore
+    return (
+        create_eval_dataset(col_names=cfg.data.col_name, outcome_col_name=outcome_col_name, df=df),
+        oof_aucs,
+        train_aucs,
+        training_shape,
+    )  # type: ignore
 
 
 def load_data(cfg: FullConfigSchema) -> pd.DataFrame:
@@ -215,8 +215,8 @@ def cross_validation_performance_table(
         "95 percent confidence interval": cfs,
         "Standard deviation": std_devs,
         "5-fold out-of-fold AUROC interval": oof_intervals,
-        "Number of training samples": n_train_rows ,  # type: ignore
-        "Number of outcomes in training data": n_outcomes  # type: ignore
+        "Number of training samples": n_train_rows,  # type: ignore
+        "Number of outcomes in training data": n_outcomes,  # type: ignore
     }
     df = pd.DataFrame(df_dict)
 
@@ -227,9 +227,8 @@ def cross_validation_performance_table(
 
 
 if __name__ == "__main__":
+    #### XGBOOST ####
 
-        #### XGBOOST ####
-    
     xg_df = pd.DataFrame(
         {
             "pretty_model_name": [
@@ -240,7 +239,7 @@ if __name__ == "__main__":
                 "Full predictor set",
                 "90 days lookahead - Full predictor set ",
                 "365 days lookahead - Full predictor set",
-                "No washout - Full predictor set"
+                "No washout - Full predictor set",
             ],
             "model_name": [
                 "limited_model_demographics_diagnoses",
@@ -250,7 +249,7 @@ if __name__ == "__main__":
                 "full_model_with_text_features_train_val",
                 "full_model_with_text_features_lookahead_90",
                 "full_model_with_text_features_lookahead_365",
-                "no_washout_full_model_with_text_features_train_val"
+                "no_washout_full_model_with_text_features_train_val",
             ],
             "group_name": [
                 "dismail-smilaceous",
@@ -263,7 +262,7 @@ if __name__ == "__main__":
                 "prelim-benched",
             ],
             # 0 is logistic regression and 1 is Xgboost
-            "model_type": [1,1,1,1,1,1,1,1],
+            "model_type": [1, 1, 1, 1, 1, 1, 1, 1],
             # change this for either XGboost or Logistic regression
             "pretty_model_type": [
                 "XGBoost",
@@ -292,7 +291,7 @@ if __name__ == "__main__":
                 "Full predictor set",
                 "90 days lookahead - Full predictor set ",
                 "365 days lookahead - Full predictor set",
-                "No washout - Full predictor set"
+                "No washout - Full predictor set",
             ],
             "model_name": [
                 "limited_model_demographics_diagnoses",
@@ -302,7 +301,7 @@ if __name__ == "__main__":
                 "full_model_with_text_features_train_val",
                 "full_model_with_text_features_lookahead_90",
                 "full_model_with_text_features_lookahead_365",
-                "no_washout_full_model_with_text_features_train_val"
+                "no_washout_full_model_with_text_features_train_val",
             ],
             "group_name": [
                 "dismail-smilaceous",

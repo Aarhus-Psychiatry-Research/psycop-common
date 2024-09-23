@@ -7,7 +7,6 @@ import numpy as np
 from psycop.projects.forced_admission_inpatient.model_eval.config import (
     BEST_POS_RATE,
     DEVELOPMENT_GROUP,
-    MODEL_ALGORITHM,
 )
 from psycop.projects.forced_admission_inpatient.model_eval.run_pipeline_on_val import (
     test_selected_model_pipeline,
@@ -20,7 +19,7 @@ from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
 )
 
 
-def decision_curve_analysis(run: ForcedAdmissionInpatientPipelineRun):
+def decision_curve_analysis(run: ForcedAdmissionInpatientPipelineRun) -> dict:  # type: ignore
     eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     # Calculate calibration curve
