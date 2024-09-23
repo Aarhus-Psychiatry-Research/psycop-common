@@ -74,7 +74,7 @@ def stratified_cross_validation(
 
         y_pred = pipe.predict_proba(X_train)[:, 1]
 
-        train_auc = round(roc_auc_score(y_train, y_pred), 3)
+        train_auc = round(roc_auc_score(y_train, y_pred), 3)  # type: ignore
 
         msg.info(f"{msg_prefix}: Train AUC = {train_auc}")  # type: ignore
 
@@ -123,7 +123,7 @@ def crossvalidate(
     df = df.rename(columns={"oof_y_hat": "y_hat_prob"})
 
     return (
-        create_eval_dataset(col_names=cfg.data.col_name, outcome_col_name=outcome_col_name, df=df),
+        create_eval_dataset(col_names=cfg.data.col_name, outcome_col_name=outcome_col_name, df=df),  # type: ignore
         oof_aucs,
         train_aucs,
         training_shape,

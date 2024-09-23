@@ -49,7 +49,7 @@ def train_model_on_different_training_data_amounts(
             else dataset.copy()
         )
 
-        eval_dataset, oof_aucs, train_aucs = crossvalidate(
+        eval_dataset, oof_aucs, train_aucs = crossvalidate(  # type: ignore
             cfg=cfg,
             train=fraction_dataset,
             pipe=pipe,

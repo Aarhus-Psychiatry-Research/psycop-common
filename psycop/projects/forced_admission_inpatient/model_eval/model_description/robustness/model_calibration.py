@@ -28,7 +28,7 @@ def calibration_plot(run: ForcedAdmissionInpatientPipelineRun):
     prob_pred = prob_pred[prob_pred < 0.2]
 
     # Create the subplots
-    fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, figsize=(8, 8))
+    fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, figsize=(8, 8))  # type: ignore
 
     # Plot the calibration curve
     ax1.plot(
