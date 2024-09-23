@@ -28,6 +28,9 @@ def logistic_regression_step(
     C: float = 1.0,
     l1_ratio: float = 0.5,
     max_iter: int = 100,
+    fit_intercept: bool = True,
+    tol: float = 0.0001,
+    intercept_scaling: bool = True,
 ) -> ModelStep:
     """Initialize logistic regression model with hparams specified as kwargs.
     The 'missing' hyperparameter specifies the value to be treated as missing
@@ -42,6 +45,9 @@ def logistic_regression_step(
             l1_ratio=l1_ratio,
             random_state=41,
             max_iter=max_iter,
+            fit_intercept=fit_intercept,
+            tol=tol,
+            intercept_scaling=intercept_scaling,
         ),  # Random_state is required for reproducibility, e.g. getting the same result on every test
     )
 

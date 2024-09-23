@@ -22,6 +22,7 @@ def populate_baseline_registry() -> None:
         ImputationSuggester,
     )
     from ..trainer.task.estimator_steps.scalers import standard_scaler_step
+    from ..trainer.task.estimator_steps.feature_selection import select_percentile
 
     # Preprocessing
     from ..trainer.preprocessing.pipeline import BaselinePreprocessingPipeline
