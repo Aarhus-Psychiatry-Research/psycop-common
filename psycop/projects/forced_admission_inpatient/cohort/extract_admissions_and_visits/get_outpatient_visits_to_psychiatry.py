@@ -19,7 +19,7 @@ def get_outpatient_visits_to_psychiatry() -> pd.DataFrame:
     sql = "SELECT " + cols_to_keep + " FROM [fct]." + view
     sql += "WHERE datotid_start > '2012-01-01' AND psykambbesoeg = 1"
 
-    df = pd.DataFrame(sql_load(sql, chunksize=None))  # type: ignore
+    df = pd.DataFrame(sql_load(sql))  # type: ignore
 
     df[["datotid_start", "datotid_slut"]] = df[["datotid_start", "datotid_slut"]].apply(
         pd.to_datetime
@@ -39,7 +39,7 @@ def outpatient_visits_timestamps() -> pd.DataFrame:
 
     sql = "SELECT * FROM [fct]." + view
 
-    outpatient_visits = pd.DataFrame(sql_load(sql, chunksize=None))  # type: ignore
+    outpatient_visits = pd.DataFrame(sql_load(sql))  # type: ignore
 
     outpatient_visits = outpatient_visits.rename(columns={"datotid_predict": "timestamp"})
 
