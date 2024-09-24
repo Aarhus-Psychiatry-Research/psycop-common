@@ -14,6 +14,7 @@ from psycop.projects.bipolar.feature_generation.feature_layers.bp_layer_1 import
 from psycop.projects.bipolar.feature_generation.feature_layers.bp_layer_2 import BpLayer2
 from psycop.projects.bipolar.feature_generation.feature_layers.bp_layer_3 import BpLayer3
 from psycop.projects.bipolar.feature_generation.feature_layers.bp_layer_4 import BpLayer4
+from psycop.projects.bipolar.feature_generation.feature_layers.bp_layer_5 import BpLayer5
 from psycop.projects.bipolar.feature_generation.feature_layers.value_specification import (
     ValueSpecification,
 )
@@ -24,7 +25,7 @@ if TYPE_CHECKING:
 log = logging.getLogger(__name__)
 
 
-BpFeatureLayers = {1: BpLayer1, 2: BpLayer2, 3: BpLayer3, 4: BpLayer4}
+BpFeatureLayers = {1: BpLayer1, 2: BpLayer2, 3: BpLayer3, 4: BpLayer4, 5: BpLayer5}
 
 
 def make_timedeltas_from_zero(look_days: list[float]) -> list[dt.timedelta]:
@@ -36,10 +37,10 @@ class BpFeatureSpecifier:
 
     def _get_outcome_specs(self) -> list[ValueSpecification]:
         log.info("-------- Generating outcome specs --------")
-           
+
         pred_times = get_first_bipolar_diagnosis()
         pred_times["bp_diagnosis"] = 1
-    
+
         return [
             OutcomeSpec(
                 value_frame=ValueFrame(

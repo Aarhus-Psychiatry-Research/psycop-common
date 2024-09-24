@@ -1406,7 +1406,6 @@ def bipolar_a_diagnosis(
     )
 
 
-@data_loaders.register("depressive_disorders_a_diagnosis")
 def depressive_disorders_a_diagnosis(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
