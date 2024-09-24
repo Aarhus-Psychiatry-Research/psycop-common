@@ -37,3 +37,4 @@ lightgbm==4.3.0
 imbalanced-learn==0.12.3
 cleanlab==2.5.0
 rapidfuzz==3.6.1
+dalex==1.7.0
