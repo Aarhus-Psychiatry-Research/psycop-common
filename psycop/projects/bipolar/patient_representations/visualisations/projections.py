@@ -26,14 +26,7 @@ def plot_patient_projections():
 
     d_1 = {"size": 5}
 
-    d_2 = {
-        "name": "Prediction Type",
-        "orientation": "h",
-        "yanchor": "bottom",
-        "y": 1.02,
-        "xanchor": "right",
-        "x": 1,
-    }
+    d_2 = {"orientation": "h", "yanchor": "bottom", "y": 1.02, "xanchor": "right", "x": 1}
 
     # add a legend
     fig.update_traces(marker=d_1)
