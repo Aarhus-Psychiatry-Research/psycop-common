@@ -18,12 +18,12 @@ if __name__ == "__main__":
     generate_feature_set(
         project_info=get_bp_project_info(),
         eligible_prediction_times_frame=BipolarCohortDefiner.get_prediction_times(
-            interval_days=100
+            interval_days=150
         ),
-        feature_specs=BpFeatureSpecifier().get_feature_specs(max_layer=5, lookbehind_days=[200]),
-        n_workers=10,
+        feature_specs=BpFeatureSpecifier().get_feature_specs(max_layer=5, lookbehind_days=[300]),
+        n_workers=None,
         do_dataset_description=False,
-        feature_set_name="structured_predictors_5_layer_interval_days_100",
+        feature_set_name="structured_predictors_5_layer_interval_days_150",
     )
     t = time.time()
     print(f"Time taken: {t - t0}")

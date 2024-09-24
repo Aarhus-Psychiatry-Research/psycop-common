@@ -20,7 +20,7 @@ class BpLayer5(BpFeatureLayer):
     def get_features(self, lookbehind_days: list[float]) -> Sequence[ValueSpecification]:
         layer = 5
 
-        note_types = ["aktuelt_psykisk", "all_relevant"]
+        note_types = ["aktuelt_psykisk"]
         model_name = "tfidf-500"
 
         tfidf_features = BpTextFeatures().get_feature_specs(
