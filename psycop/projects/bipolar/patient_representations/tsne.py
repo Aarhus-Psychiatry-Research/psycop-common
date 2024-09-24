@@ -1,3 +1,9 @@
+import os
+
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["OMP_NUM_THREADS"] = "1"
+
+import numpy as np
 import pandas as pd
 from sklearn.manifold import TSNE
 
@@ -7,10 +13,10 @@ from psycop.projects.bipolar.synthetic_data.bp_synthetic_data import bp_syntheti
 
 
 def perform_tsne(
-    df: pd.DataFrame, n_components: int = 2, perplexity: int = 30, n_iter: int = 1000
+    df: pd.DataFrame, n_components: int = 2, perplexity: int = 20, n_iter: int = 1000
 ) -> pd.DataFrame:
     # Convert NAs to 0s
-    df = df.fillna(0)
+    df = df.fillna(0)[0:2000]
 
     # Drop columns that don't start with 'pred_'
     pred_cols = [col for col in df.columns if col.startswith("pred_")]
@@ -31,7 +37,7 @@ def perform_tsne(
 
 if __name__ == "__main__":
     # Load eval data
-    best_experiment = "bipolar_test"
+    best_experiment = "bipolar_model_training_full_feature_v2"
     eval_data = (
         MlflowClientWrapper()
         .get_best_run_from_experiment(experiment_name=best_experiment, metric="all_oof_BinaryAUROC")
@@ -43,7 +49,7 @@ if __name__ == "__main__":
     eval_data = eval_data.rename(columns={"pred_time_uuid": "prediction_time_uuid"})
 
     # Load flattened df
-    df = load_bp_feature_set("structured_predictors_2_layer_interval_days_100")
+    df = load_bp_feature_set("bipolar_full_feature_set_interval_days_150")
 
     # Convert df to pandas
     df = df.to_pandas()

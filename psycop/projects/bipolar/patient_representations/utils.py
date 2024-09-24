@@ -5,17 +5,13 @@ from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClien
 from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
 )
-from psycop.projects.bipolar.feature_generation.inspect_feature_sets import (
-    load_bp_feature_set,
-)
+from psycop.projects.bipolar.feature_generation.inspect_feature_sets import load_bp_feature_set
 
 
-def prepare_eval_data_for_pca() -> pd.DataFrame:
-    # Load eval data
-    best_experiment = "bipolar_full_test"
+def prepare_eval_data_for_projections(experiment_name: str, predictor_df_name: str) -> pd.DataFrame:
     eval_data = (
         MlflowClientWrapper()
-        .get_best_run_from_experiment(experiment_name=best_experiment, metric="all_oof_BinaryAUROC")
+        .get_best_run_from_experiment(experiment_name=experiment_name, metric="all_oof_BinaryAUROC")
         .eval_frame()
         .frame.to_pandas()
     )
@@ -24,7 +20,7 @@ def prepare_eval_data_for_pca() -> pd.DataFrame:
     eval_data = eval_data.rename(columns={"pred_time_uuid": "prediction_time_uuid"})
 
     # Load flattened df
-    df = load_bp_feature_set("structured_predictors_2_layer_interval_days_100")
+    df = load_bp_feature_set(predictor_df_name)
 
     # convert df to pandas
     df = df.to_pandas()
@@ -48,4 +44,7 @@ def prepare_eval_data_for_pca() -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    df = prepare_eval_data_for_pca()
+    df = prepare_eval_data_for_projections(
+        experiment_name="bipolar_model_training_full_feature_v2",
+        predictor_df_name="bipolar_full_feature_set_interval_days_150",
+    )

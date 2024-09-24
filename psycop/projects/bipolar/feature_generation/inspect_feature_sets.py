@@ -19,6 +19,5 @@ def load_embedded_text(name: str) -> pl.DataFrame:
 
 
 if __name__ == "__main__":
-    df = load_bp_feature_set("structured_predictors_2_layer_interval_days_100")
-
-    
+    df = load_bp_feature_set("bipolar_full_feature_set_interval_days_150")
+    print("Hi")

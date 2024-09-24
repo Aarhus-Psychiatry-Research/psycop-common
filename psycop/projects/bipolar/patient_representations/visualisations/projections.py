@@ -1,22 +1,29 @@
+from typing import Literal
+
 import numpy as np
+import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import plotly.offline
 
 from psycop.projects.bipolar.patient_representations.pca import perform_pca
-from psycop.projects.bipolar.patient_representations.utils import prepare_eval_data_for_pca
+from psycop.projects.bipolar.patient_representations.tsne import perform_tsne
+from psycop.projects.bipolar.patient_representations.utils import prepare_eval_data_for_projections
 
 
-def plot_patient_projections():
-    df = prepare_eval_data_for_pca()
-    pca_df = perform_pca(df)
+def plot_patient_projections(df: pd.DataFrame, projecton_method: Literal["pca", "tsne"]):
+    match projecton_method:
+        case "pca":
+            projection_df = perform_pca(df)
+        case "tsne":
+            projection_df = perform_tsne(df)
 
     # keep only patients with TN and TP
-    pca_df = pca_df[pca_df["prediction_type"].isin(["TN", "TP"])]
+    projection_df = projection_df[projection_df["prediction_type"].isin(["TN", "TP", "FP"])]  # type: ignore
 
     # create a scatter plot of the PCA components with color based on prediction type
     fig = px.scatter(
-        pca_df,
+        projection_df,
         x="component_1",
         y="component_2",
         color="prediction_type",
@@ -35,5 +42,18 @@ def plot_patient_projections():
     fig.show()
 
 
+def plot_pca_projections(df: pd.DataFrame):
+    plot_patient_projections(df=df, projecton_method="pca")
+
+
+def plot_tsne_projections(df: pd.DataFrame):
+    plot_patient_projections(df=df, projecton_method="tsne")
+
+
 if __name__ == "__main__":
-    plot_patient_projections()
+    df = prepare_eval_data_for_projections(
+        experiment_name="bipolar_model_training_full_feature_v2",
+        predictor_df_name="bipolar_full_feature_set_interval_days_150",
+    )
+    plot_pca_projections(df)
+    plot_tsne_projections(df)
