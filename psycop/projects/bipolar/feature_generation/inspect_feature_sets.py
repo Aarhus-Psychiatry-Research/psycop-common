@@ -8,6 +8,7 @@ def load_bp_feature_set(feature_set_name: str) -> pl.DataFrame:
         OVARTACI_SHARED_DIR
         / "bipolar"
         / "flattened_datasets"
+        / "flattened_datasets"
         / feature_set_name
         / f"{feature_set_name}.parquet"
     )

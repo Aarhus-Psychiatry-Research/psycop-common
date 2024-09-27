@@ -74,13 +74,17 @@ from psycop.common.feature_generation.loaders.raw.load_visits import (
 )
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR, TEXT_EMBEDDINGS_DIR
 from psycop.projects.bipolar.cohort_definition.bipolar_cohort_definition import BipolarCohortDefiner
-from psycop.projects.bipolar.cohort_definition.diagnosis_timestamps.first_bipolar_diagnosis import get_first_bipolar_diagnosis
+from psycop.projects.bipolar.cohort_definition.diagnosis_timestamps.first_bipolar_diagnosis import (
+    get_first_bipolar_diagnosis,
+)
 
 TEXT_FILE_NAME = "text_embeddings_all_relevant_tfidf-1000.parquet"
 
 
 def get_bipolar_project_info() -> ProjectInfo:
-    return ProjectInfo(project_name="bipolar", project_path=OVARTACI_SHARED_DIR / "bipolar" / "flattened_datasets")
+    return ProjectInfo(
+        project_name="bipolar", project_path=OVARTACI_SHARED_DIR / "bipolar" / "flattened_datasets"
+    )
 
 
 def _init_bp_predictor(

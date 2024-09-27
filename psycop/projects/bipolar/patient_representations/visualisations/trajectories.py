@@ -8,6 +8,8 @@ import plotly.graph_objects as go
 import plotly.offline
 
 from psycop.projects.bipolar.patient_representations.pca import perform_pca
+from psycop.projects.bipolar.patient_representations.tsne import perform_tsne
+from psycop.projects.bipolar.patient_representations.utils import prepare_eval_data_for_projections
 
 
 def _prepare_df_for_trajectories(
@@ -297,26 +299,114 @@ def plot_trajectories_with_fading_points(
 
 
 if __name__ == "__main__":
-    file_path = Path(
-        "E:/shared_resources/bipolar/flattened_datasets/structured_predictors_4_layers_interval_days_100/structured_predictors_4_layers_interval_days_100.parquet"
+    df = prepare_eval_data_for_projections(
+        experiment_name="bipolar_model_training_text_feature_lb_200_interval_150",
+        predictor_df_name="bipolar_text_feature_set_interval_days_150",
     )
-    df = pd.read_parquet(file_path)
-    pca_df = perform_pca(df)
 
-    # Define point color legend dict specifcation for the plot (1st color represents 'False negative', 2nd color represents 'True positive')
-    point_color_legend = {0: "No lithium", 1: "Lithium"}
+    projection_df = perform_pca(df)
 
-    patients_to_keep = pca_df["dw_ek_borger"].unique()[:1]
-    pca_df = pca_df[pca_df["dw_ek_borger"].isin(patients_to_keep)]
+    point_color_legend = {0: "False Positive", 1: "True Positive"}
 
+    # Define the range conditions for component_1 and component_2
+    condition_1_min, condition_1_max = -10000, -8500
+    condition_2_min, condition_2_max = 0.34, 0.351
+
+    # Function to check if any row in a patient's group satisfies the condition
+    def patient_in_range(group):  # type: ignore # noqa: ANN201, ANN001
+        return (
+            (group["component_1"] >= condition_1_min)
+            & (group["component_1"] <= condition_1_max)
+            & (group["component_2"] >= condition_2_min)
+            & (group["component_2"] <= condition_2_max)
+        ).any()
+
+    # Filter the DataFrame by keeping all rows for patients that satisfy the condition
+    filtered_df = projection_df.groupby("dw_ek_borger").filter(patient_in_range)
+
+    patients_with_tp_or_fp = filtered_df[filtered_df["prediction_type"].isin(["TP", "FP"])][
+        "dw_ek_borger"
+    ].unique()
+
+    filtered_df = filtered_df[filtered_df["dw_ek_borger"].isin(patients_with_tp_or_fp)]
+
+    # Step 1: Identify patients with at least one 'TP'
+    tp_patients = filtered_df[filtered_df["prediction_type"] == "TP"]["dw_ek_borger"].unique()
+
+    # Step 2: Identify patients with at least one 'FP'
+    fp_patients = filtered_df[filtered_df["prediction_type"] == "FP"]["dw_ek_borger"].unique()
+
+    # Step 3: Update 'prediction_type' column for TP patients
+    filtered_df.loc[filtered_df["dw_ek_borger"].isin(tp_patients), "prediction_type"] = "TP"
+
+    # Step 4: Update 'prediction_type' column for FP patients (this will overwrite any TP patients with FP if both exist)
+    filtered_df.loc[filtered_df["dw_ek_borger"].isin(fp_patients), "prediction_type"] = "FP"
+
+    filtered_df["prediction_type_int"] = filtered_df["prediction_type"].apply(
+        lambda x: 1 if x == "TP" else 0
+    )
+
+    filtered_df["component_2"] = filtered_df["component_2"] * 100
+
+    ## TSNE ##
     plot_trajectories_with_fading_points(
-        pca_df,
+        filtered_df,
         component_1_col_name="component_1",
         component_2_col_name="component_2",
         id_col_name="dw_ek_borger",
         timestamp_col_name="timestamp",
-        label_col_name="pred_lithium_layer_4_within_0_to_200_days_bool_fallback_0",
-        size_col_name="pred_layer_1_age_years_fallback_nan",
+        label_col_name="prediction_type_int",
+        size_col_name="y_hat_prob",
+        save=False,
+        point_color_legend=point_color_legend,
+        keep_points=False,
+    )
+
+    patients_to_keep = [1392046]  # 6570800
+    patient_df = filtered_df.copy()[filtered_df.copy()["dw_ek_borger"].isin(patients_to_keep)]
+    patient_df = patient_df.drop([5292, 51075, 53341])
+
+    plot_trajectories_with_fading_points(
+        patient_df,
+        component_1_col_name="component_1",
+        component_2_col_name="component_2",
+        id_col_name="dw_ek_borger",
+        timestamp_col_name="timestamp",
+        label_col_name="prediction_type_int",
+        size_col_name="y_hat_prob",
+        save=False,
+        point_color_legend=point_color_legend,
+        keep_points=False,
+    )
+    ## TSNE ##
+
+    df = prepare_eval_data_for_projections(
+        experiment_name="bipolar_model_training_full_feature_lb_200_interval_150",
+        predictor_df_name="bipolar_all_features_interval_days_150",
+    )
+
+    projection_df = perform_tsne(df)
+
+    # keep only patients with TN and TP
+    projection_df = projection_df[projection_df["prediction_type"].isin(["TP", "FP"])]  # type: ignore
+
+    point_color_legend = {0: "True Positive", 1: "False Positive"}
+
+    projection_df["prediction_type_int"] = projection_df["prediction_type"].apply(
+        lambda x: 0 if x == "TP" else 1
+    )
+
+    patients_to_keep = projection_df["dw_ek_borger"].unique()[:5]
+    projection_df = projection_df[projection_df["dw_ek_borger"].isin(patients_to_keep)]
+
+    plot_trajectories_with_fading_points(
+        projection_df,
+        component_1_col_name="component_1",
+        component_2_col_name="component_2",
+        id_col_name="dw_ek_borger",
+        timestamp_col_name="timestamp",
+        label_col_name="prediction_type_int",
+        size_col_name="y_hat_prob",
         save=False,
         point_color_legend=point_color_legend,
         keep_points=False,

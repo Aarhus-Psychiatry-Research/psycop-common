@@ -10,8 +10,8 @@ if __name__ == "__main__":
     populate_baseline_registry()
     populate_with_bp_registry()
     OptunaHyperParameterOptimization().from_file(
-        (Path(__file__).parent / "bp_baseline.cfg"),
-        study_name="bipolar_model_training_full_feature_lb_200_interval_150",
+        (Path(__file__).parent / "bp_text_model.cfg"),
+        study_name="bipolar_model_training_text_feature_lb_200_interval_150",
         n_trials=150,
         n_jobs=10,
         direction="maximize",
