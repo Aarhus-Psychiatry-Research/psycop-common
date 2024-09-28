@@ -17,7 +17,14 @@ import numpy as np
 import polars as pl
 
 from psycop.common.global_utils.cache import shared_cache
+from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
+    generate_performance_by_ppr_table,
+)
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.projects.forced_admission_outpatient.model_eval.model_description.performance.performance_by_ppr import (
+    _get_num_of_unique_outcome_events,
+    _get_number_of_outcome_events_with_at_least_one_true_positve,
+)
 
 CostBenefitDF = NewType("CostBenefitDF", pl.DataFrame)
 CostBenefitDistributionsDF = NewType("CostBenefitDistributionsDF", pl.DataFrame)
@@ -61,12 +68,12 @@ class CostBenefitDistributions:
 
 
 @shared_cache().cache()
-def cost_benefit_from_monte_carlo_simulations_model(
+def cost_benefit_model(
     eval_df: EvalDataset,
     cost_benefit_distributions: CostBenefitDistributions,
     pprs: Sequence[float],
     per_true_positive: bool,
-    min_alert_days: int,
+    min_alert_days: int | None,
 ) -> CostBenefitDF:
     cost_benefit_descriptive_stats = cost_benefit_distributions.get_cost_benefit_descriptive_stats()
 
@@ -93,4 +100,34 @@ def calculate_cost_benefit_from_eval_dataset(
     min_alert_days: None | int,
     positive_rates: Sequence[float],
 ) -> pl.DataFrame:
-    pass
+    df = generate_performance_by_ppr_table(  # type: ignore
+        eval_dataset=eval_df, positive_rates=positive_rates
+    )
+
+    df["Total number of unique outcome events"] = _get_num_of_unique_outcome_events(
+        eval_dataset=eval_df
+    )
+
+    df["Number of positive outcomes in test set (TP+FN)"] = (
+        df["true_positives"] + df["false_negatives"]
+    )
+
+    df["Number of unique outcome events detected ≥1"] = [
+        _get_number_of_outcome_events_with_at_least_one_true_positve(
+            eval_dataset=eval_df, positive_rate=pos_rate, min_alert_days=min_alert_days
+        )
+        for pos_rate in positive_rates
+    ]
+
+    if per_true_positive:
+        df["benefit_harm"] = (
+            (df["true_positives"] * cost_benefit_ratio) - (df["false_positives"])
+        ) / df["Number of positive outcomes in test set (TP+FN)"]
+
+    else:
+        df["benefit_harm"] = (
+            (df["Number of unique outcome events detected ≥1"] * cost_benefit_ratio)
+            - (df["false_positives"])
+        ) / df["Total number of unique outcome events"]
+
+    return pl.from_pandas(df[["benefit_harm", "positive_rate"]])
