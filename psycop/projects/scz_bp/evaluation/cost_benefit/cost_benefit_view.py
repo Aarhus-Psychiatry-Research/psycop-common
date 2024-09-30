@@ -149,5 +149,6 @@ def plot_cost_benefit_by_ppr(df: CostBenefitDF, per_true_positive: bool) -> pn.g
         p += pn.ggtitle("Cost/benefit pr. unique outcomes")
 
     for value in legend_order:
-        p += pn.geom_path(df[df["cost_benefit_ratio_str"] == value], group=1)  # type: ignore
+        
+        p += pn.geom_path(df.filter(pl.col("cost_benefit_ratio_str") == value), group=1)  # type: ignore
     return p

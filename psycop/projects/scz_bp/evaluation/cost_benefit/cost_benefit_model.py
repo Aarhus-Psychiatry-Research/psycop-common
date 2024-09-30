@@ -85,9 +85,8 @@ def cost_benefit_model(
             per_true_positive=per_true_positive,
             min_alert_days=min_alert_days,
             positive_rates=pprs,
-        )
-        # Convert to string to allow distinct scales for color
-        cost_benefit_df["cost_benefit_ratio_str"] = str(stat)
+        ).with_columns(cost_benefit_ratio_str = pl.lit(str(stat)))
+        
         cost_benefit_dfs.append(cost_benefit_df)
     df = pl.concat(cost_benefit_dfs)
     return CostBenefitDF(df)
