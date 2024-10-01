@@ -34,14 +34,14 @@ def test_e2e(tmp_path: Path):
 
     prediction_times_df = str_to_df(
         """entity_id,timestamp
-999,2000-01-02, # Late start of dataset to avoid filtering
+999,2000-01-02 00:00:00, # Late start of dataset to avoid filtering
 1,2020-01-02 00:00:00,
 2,2020-01-02 00:00:00,
 3,2020-01-02 00:00:00,
 4,2020-01-02 00:00:00,
 5,2020-01-02 00:00:00,
 6,2020-01-02 00:00:00,
-999,2030-01-01, # Late end of dataset to avoid filtering
+999,2030-01-01 00:00:00, # Late end of dataset to avoid filtering
 """
     )
 
@@ -155,14 +155,14 @@ def test_e2e_multilabel(tmp_path: Path):
 
     prediction_times_df = str_to_df(
         """entity_id,timestamp
-999,2000-01-02, # Late start of dataset to avoid filtering
+999,2000-01-02 00:00:00, # Late start of dataset to avoid filtering
 1,2020-01-02 00:00:00,
 2,2020-01-02 00:00:00,
 3,2020-01-02 00:00:00,
 4,2020-01-02 00:00:00,
 5,2020-01-02 00:00:00,
 6,2020-01-02 00:00:00,
-999,2030-01-01, # Late end of dataset to avoid filtering
+999,2030-01-01 00:00:00, # Late end of dataset to avoid filtering
 """
     )
 

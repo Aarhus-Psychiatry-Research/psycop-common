@@ -18,9 +18,8 @@ def convert_cols_with_matching_colnames_to_datetime(
     Returns:
         pd.DataFrame: The converted dataframe.
     """
-    df.loc[:, df.columns.str.contains(colname_substr)] = df.loc[
-        :, df.columns.str.contains(colname_substr)
-    ].apply(pd.to_datetime)
+    timestamp_cols = df.columns[df.columns.str.contains(colname_substr)]
+    df = df.apply(lambda x: pd.to_datetime(x) if x.name in timestamp_cols else x)
     return df
 
 
@@ -62,7 +61,7 @@ def str_to_df(
 
         # Remove leading whitespace
         if " #" in line:
-            line = line[: line.rfind("#")]  # noqa
+            line = line[: line.rfind(" #")]  # noqa
 
         line_sans_leading_trailing_whitespace = line.strip()
         line_without_ending_comma = (
