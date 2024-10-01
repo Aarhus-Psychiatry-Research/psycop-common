@@ -10,9 +10,7 @@ if __name__ == "__main__":
     populate_with_restraint_registry()
     train_baseline_model(
         MlflowClientWrapper()
-        .get_best_run_from_experiment(
-            experiment_name="restraint_hyperparam_search", metric="all_oof_BinaryAUROC"
-        )
+        .get_best_run_from_experiment(experiment_name="bipolar_test", metric="all_oof_BinaryAUROC")
         .get_config()["project_info"]["experiment_path"]
         / "eval_df.parquet"
     )

@@ -1,6 +1,8 @@
 import pandas as pd
 from sklearn.decomposition import PCA
 
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
+from psycop.projects.bipolar.feature_generation.inspect_feature_sets import load_bp_feature_set
 from psycop.projects.bipolar.synthetic_data.bp_synthetic_data import bp_synthetic_data
 
 
@@ -26,6 +28,28 @@ def perform_pca(df: pd.DataFrame, n_components: int = 2) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
+    # Load eval data
+    best_experiment = "bipolar_test"
+    eval_data = (
+        MlflowClientWrapper()
+        .get_best_run_from_experiment(experiment_name=best_experiment, metric="all_oof_BinaryAUROC")
+        .eval_frame()
+        .frame.to_pandas()
+    )
+
+    # rename pred_time to prediction_time_uuid
+    eval_data = eval_data.rename(columns={"pred_time_uuid": "prediction_time_uuid"})
+
+    # Load flattened df
+    df = load_bp_feature_set("structured_predictors_2_layer_interval_days_100")
+
+    # convert df to pandas
+    df = df.to_pandas()
+
+    # merge df onto eval_data on prediction_time_uuid
+    df = eval_data.merge(df, on="prediction_time_uuid", how="left")
+
+    ### SYNTH ###
     # Generate synthetic data
     synthetic_df = bp_synthetic_data(num_patients=100)
 

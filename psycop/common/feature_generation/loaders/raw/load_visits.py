@@ -305,3 +305,19 @@ def get_time_of_first_visit_to_psychiatry() -> pl.DataFrame:
         .agg(pl.col("timestamp").min())
     )
     return first_visit
+
+
+def get_time_of_last_visit_to_psychiatry() -> pl.DataFrame:
+    last_visit = (
+        pl.from_pandas(
+            physical_visits_to_psychiatry(
+                n_rows=None,
+                timestamps_only=False,
+                return_value_as_visit_length_days=False,
+                timestamp_for_output="start",
+            )
+        )
+        .groupby("dw_ek_borger")
+        .agg(pl.col("timestamp").max())
+    )
+    return last_visit
