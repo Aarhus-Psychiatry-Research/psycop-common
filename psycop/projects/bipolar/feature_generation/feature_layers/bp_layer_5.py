@@ -1,10 +1,5 @@
 from collections.abc import Sequence
 
-from timeseriesflattener import PredictorGroupSpec
-from timeseriesflattener.v1.aggregation_fns import boolean
-from timeseriesflattener.v1.feature_specs.group_specs import NamedDataframe
-
-from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.projects.bipolar.feature_generation.feature_layers.bp_feature_layer import (
     BpFeatureLayer,
 )

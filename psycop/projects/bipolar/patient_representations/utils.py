@@ -1,5 +1,4 @@
 import pandas as pd
-from sklearn.decomposition import PCA
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_training.training_output.dataclasses import (

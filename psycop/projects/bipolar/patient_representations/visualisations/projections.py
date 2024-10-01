@@ -1,10 +1,7 @@
 from typing import Literal
 
-import numpy as np
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
-import plotly.offline
 
 from psycop.projects.bipolar.patient_representations.pca import perform_pca
 from psycop.projects.bipolar.patient_representations.tsne import perform_tsne
