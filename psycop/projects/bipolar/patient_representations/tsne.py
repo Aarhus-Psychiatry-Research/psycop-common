@@ -11,9 +11,7 @@ from psycop.projects.bipolar.feature_generation.inspect_feature_sets import load
 from psycop.projects.bipolar.synthetic_data.bp_synthetic_data import bp_synthetic_data
 
 
-def perform_tsne(
-    df: pd.DataFrame, n_components: int = 2, perplexity: int = 20, n_iter: int = 1000
-) -> pd.DataFrame:
+def perform_tsne(df: pd.DataFrame, n_components: int = 2, perplexity: int = 20) -> pd.DataFrame:
     # Convert NAs to 0s
     df = df.fillna(0)[0:2000]
 
@@ -22,7 +20,7 @@ def perform_tsne(
     df_filtered = df[pred_cols]
 
     # Perform t-SNE
-    tsne = TSNE(n_components=n_components, perplexity=perplexity, n_iter=n_iter, random_state=42)
+    tsne = TSNE(n_components=n_components, perplexity=perplexity, random_state=42)
     components = tsne.fit_transform(df_filtered)
 
     tsne_df = pd.DataFrame(components, columns=["component_1", "component_2"])
