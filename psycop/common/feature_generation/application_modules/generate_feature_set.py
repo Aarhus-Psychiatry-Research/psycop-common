@@ -71,7 +71,6 @@ def generate_feature_set(
         feature_specs=feature_specs,
         prediction_times_frame=eligible_prediction_times_frame,
         n_workers=n_workers,
-        compute_lazily=compute_lazily,
         step_size=step_size,
     )
     if do_dataset_description:

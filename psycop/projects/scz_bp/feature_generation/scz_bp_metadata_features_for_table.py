@@ -16,9 +16,9 @@ from timeseriesflattener import (
     TimeDeltaSpec,
     TimestampValueFrame,
     ValueFrame,
+    ValueSpecification,
 )
 from timeseriesflattener.aggregators import CountAggregator, MaxAggregator
-from timeseriesflattener.flattener import ValueSpecification
 from timeseriesflattener.v1.aggregation_fns import boolean
 from timeseriesflattener.v1.feature_specs.group_specs import NamedDataframe
 

@@ -44,9 +44,8 @@ def sczbp_generate_feature_set(
             timestamp_col_name=eligible_prediction_times.timestamp_col_name,
         ),
         n_workers=n_workers,
-        compute_lazily=False,
     )
-    return flattener.aggregate_timeseries(specs=feature_specs, step_size=step_size).df.collect()
+    return flattener.aggregate_timeseries(specs=feature_specs, step_size=step_size).df
 
 
 def split_feature_set_by_prevalence(feat_set: pl.DataFrame, prevalent_col_name: str) -> FeatureSets:
@@ -82,9 +81,8 @@ def generate_feature_set_split_by_prevalence(
             timestamp_col_name=eligible_prediction_times.timestamp_col_name,
         ),
         n_workers=n_workers,
-        compute_lazily=False,
     )
-    feat_set = flattener.aggregate_timeseries(specs=feature_specs, step_size=step_size).df.collect()
+    feat_set = flattener.aggregate_timeseries(specs=feature_specs, step_size=step_size).df
 
     t = time.time()
     print(f"Feature generation took: {t - t0}. step_size: {step_size}, n_workers: {n_workers}")
