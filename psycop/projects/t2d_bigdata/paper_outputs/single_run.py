@@ -49,8 +49,7 @@ from psycop.projects.t2d_bigdata.model_evaluation.single_run.single_run_robustne
 
 
 class T2DBigDataArtifactFacade(Protocol):
-    def __call__(self, output_dir: Path) -> None:
-        ...
+    def __call__(self, output_dir: Path) -> None: ...
 
 
 def _markdown_artifacts_facade(

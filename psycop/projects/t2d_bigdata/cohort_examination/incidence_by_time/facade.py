@@ -1,6 +1,8 @@
 from pathlib import Path
 
-from psycop.projects.t2d_bigdata.cohort_examination.incidence_by_time.model import incidence_by_time_model
+from psycop.projects.t2d_bigdata.cohort_examination.incidence_by_time.model import (
+    incidence_by_time_model,
+)
 from psycop.projects.t2d_bigdata.cohort_examination.incidence_by_time.view import (
     incidence_by_time_distribution,
     incidence_by_time_faceted,
