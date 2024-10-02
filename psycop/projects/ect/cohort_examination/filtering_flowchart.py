@@ -16,10 +16,9 @@ from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     BaselinePreprocessingPipeline,
     PreprocessingPipeline,
 )
-from psycop.projects.cvd.feature_generation.cohort_definition.cvd_cohort_definition import (
-    cvd_pred_filtering,
+from psycop.projects.ect.feature_generation.cohort_definition.ect_cohort_definition import (
+    ect_pred_filtering,
 )
-from psycop.projects.cvd.model_training.populate_cvd_registry import populate_with_cvd_registry
 
 
 @shared_cache().cache
@@ -63,13 +62,11 @@ def filtering_flowchart_facade(
 ):
     cfg = run.get_config()
 
-    filled = filled_cfg_from_run(
-        run, populate_registry_fns=[populate_baseline_registry, populate_with_cvd_registry]
-    )
+    filled = filled_cfg_from_run(run, populate_registry_fns=[populate_baseline_registry])
 
-    pipeline: BaselinePreprocessingPipeline = filled["trainer"].preprocessing_pipeline
+    pipeline: BaselinePreprocessingPipeline = filled["trainer"].training_preprocessing_pipeline
     pipeline._logger = TerminalLogger()  # type: ignore
-    pipeline.steps[0].splits_to_keep = ["train", "val", "test"]  # type: ignore # Do not filter by region
+    pipeline.steps[0].splits_to_keep = ["train", "val", "test"]  # type: ignore # Do not filter by split
 
     flattened_data = pl.scan_parquet(cfg["trainer"]["training_data"]["paths"][0]).lazy()
 
@@ -84,7 +81,7 @@ def filtering_flowchart_facade(
 
     lines = [_stepdelta_line(prior, cur) for prior, cur in zip(step_deltas, step_deltas[1:])]
 
-    outcome_matcher = pl.col(cfg["trainer"]["outcome_col_name"]) == pl.lit(1)
+    outcome_matcher = pl.col(cfg["trainer"]["training_outcome_col_name"]) == pl.lit(1)
     lines.append(f"With outcome: {len(flattened_data.filter(outcome_matcher).collect()):,}")
     lines.append(
         f"Without outcome: {len(flattened_data.filter(outcome_matcher.not_()).collect()):,}"
@@ -96,7 +93,9 @@ def filtering_flowchart_facade(
 
 if __name__ == "__main__":
     filtering_flowchart_facade(
-        prediction_time_bundle=cvd_pred_filtering(),
-        run=MlflowClientWrapper().get_run(experiment_name="CVD", run_name="CVD layer 1, base"),
-        output_dir=pathlib.Path(),
+        prediction_time_bundle=ect_pred_filtering(),
+        run=MlflowClientWrapper().get_run(
+            "ECT hparam, structured_only, xgboost", "handsome-smelt-991"
+        ),
+        output_dir=pathlib.Path(__file__).parent,
     )

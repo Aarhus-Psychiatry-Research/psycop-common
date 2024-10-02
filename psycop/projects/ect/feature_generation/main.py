@@ -399,7 +399,7 @@ if __name__ == "__main__":
                 lookbehind_distances=[datetime.timedelta(days=730)],
                 aggregators=[MeanAggregator()],
                 fallback=np.nan,
-                column_prefix="pred_text",
+                column_prefix="pred_layer_text",
             )
         ],
     }

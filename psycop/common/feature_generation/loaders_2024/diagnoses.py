@@ -2,23 +2,25 @@
 
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING, Literal
 
 import pandas as pd
 
+from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
+from psycop.common.feature_generation.loaders.raw.utils import (
+    list_to_sql_logic,
+    str_to_sql_match_logic,
+)
 from psycop.common.feature_generation.loaders_2024.diabetes_filters import (
     keep_rows_where_diag_matches_t1d_diag,
     keep_rows_where_diag_matches_t2d_diag,
 )
-from psycop.common.feature_generation.loaders_2024.sql import (
-    list_to_sql_logic,
-    log,
-    sql_load,
-    str_to_sql_match_logic,
-)
 
 if TYPE_CHECKING:
     import pandas as pd
+
+log = logging.getLogger(__name__)
 
 
 def from_contacts(
