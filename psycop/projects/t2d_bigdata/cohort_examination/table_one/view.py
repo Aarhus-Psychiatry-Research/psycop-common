@@ -15,7 +15,7 @@ from psycop.common.global_utils.cache import shared_cache
 
 # from psycop.projects.t2d_bigdata.cohort_examination.label_by_outcome_type import (
 #     label_by_outcome_type,
-# )
+# )  # noqa: ERA001
 from psycop.projects.t2d_bigdata.cohort_examination.table_one.model import TableOneModel
 
 
@@ -182,11 +182,11 @@ def _visit_frame(
     # Order by category
     specs = sorted(specs, key=lambda x: f"{x.category.value}_{x.readable_name}")
 
-    # visits_labelled = label_by_outcome_type(
+    # visits_labelled = label_by_outcome_type(  # noqa: ERA001
     #     model.frame, procedure_col="cause", output_col_name="outcome_type"
     # ).select(
-    #     [r.source_col_name for r in specs if r.source_col_name not in ["age_grouped"]] + ["dataset"]
-    # )
+    #     [r.source_col_name for r in specs if r.source_col_name not in ["age_grouped"]] + ["dataset"]  # noqa: ERA001
+    # )  # noqa: ERA001
 
     # data["age_grouped"] = pd.Series(
     #     bin_continuous_data(data["pred_age_in_years"], bins=[18, *list(range(19, 90, 10))])[0]  # noqa: ERA001
@@ -208,10 +208,10 @@ def _patient_frame(
         pl.col(model.outcome_col_name).max().alias(model.outcome_col_name),
         pl.col("timestamp").min().alias("first_contact_timestamp"),
         pl.col("dataset").first().alias("dataset"),
-        # pl.col("cause").first().alias("outcome_cause"),
+        # pl.col("cause").first().alias("outcome_cause"),  # noqa: ERA001
     )
 
-    # patient_df_labelled = label_by_outcome_type(patient_df, procedure_col="outcome_cause")
+    # patient_df_labelled = label_by_outcome_type(patient_df, procedure_col="outcome_cause")  # noqa: ERA001
 
     return _to_table_one(specs, data=patient_df.to_pandas(), groupby_col_name="dataset")
 

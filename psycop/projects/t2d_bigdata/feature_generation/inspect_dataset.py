@@ -1,4 +1,5 @@
 from pathlib import Path
+
 import polars as pl
 
 from psycop.common.model_training_v2.config.config_utils import PsycopConfig

@@ -34,7 +34,6 @@ from psycop.projects.t2d_bigdata.cohort_examination.table_one.facade import tabl
 from psycop.projects.t2d_bigdata.feature_generation.cohort_definition.t2d_bigdata_cohort_definer import (
     t2d_bigdata_outcome_timestamps,
     t2d_bigdata_pred_filtering,
-    t2d_bigdata_pred_times,
 )
 from psycop.projects.t2d_bigdata.model_evaluation.single_run.performance_by_ppr.model import (
     performance_by_ppr_model,

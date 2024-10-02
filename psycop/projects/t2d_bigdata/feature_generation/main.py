@@ -18,42 +18,7 @@ from psycop.common.feature_generation.application_modules.generate_feature_set i
 )
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
-from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
-    angina,
-    atrial_fibrillation,
-    chronic_kidney_failure,
-    chronic_lung_disease,
-    f0_disorders,
-    f1_disorders,
-    f2_disorders,
-    f3_disorders,
-    f4_disorders,
-    f5_disorders,
-    f6_disorders,
-    f7_disorders,
-    f8_disorders,
-    f9_disorders,
-    type_1_diabetes,
-    type_2_diabetes,
-)
-from psycop.common.feature_generation.loaders.raw.load_lab_results import (
-    hba1c,
-    hdl,
-    ldl,
-    total_cholesterol,
-)
-from psycop.common.feature_generation.loaders.raw.load_medications import (
-    antihypertensives,
-    top_10_weight_gaining_antipsychotics,
-)
-from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
-    bmi,
-    height_in_cm,
-    smoking_categorical,
-    smoking_continuous,
-    systolic_blood_pressure,
-    weight_in_kg,
-)
+from psycop.common.feature_generation.loaders.raw.load_lab_results import hba1c
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.projects.t2d_bigdata.feature_generation.cohort_definition.t2d_bigdata_cohort_definer import (
     t2d_bigdata_outcome_timestamps,
@@ -170,21 +135,21 @@ if __name__ == "__main__":
         ],
         1: [ContinuousSpec(hba1c)],
         # 2: [BooleanSpec(f0_disorders),
-        #     BooleanSpec(f1_disorders),
-        #     BooleanSpec(f2_disorders),
-        #     BooleanSpec(f3_disorders),
-        #     BooleanSpec(f4_disorders),
-        #     BooleanSpec(f5_disorders),
-        #     BooleanSpec(f6_disorders),
-        #     BooleanSpec(f7_disorders),
-        #     BooleanSpec(f8_disorders),
-        #     BooleanSpec(f9_disorders),
-        #     BooleanSpec(top_10_weight_gaining_antipsychotics),
-        #     ContinuousSpec(hdl),
+        #     BooleanSpec(f1_disorders),  # noqa: ERA001
+        #     BooleanSpec(f2_disorders),  # noqa: ERA001
+        #     BooleanSpec(f3_disorders),  # noqa: ERA001
+        #     BooleanSpec(f4_disorders),  # noqa: ERA001
+        #     BooleanSpec(f5_disorders),  # noqa: ERA001
+        #     BooleanSpec(f6_disorders),  # noqa: ERA001
+        #     BooleanSpec(f7_disorders),  # noqa: ERA001
+        #     BooleanSpec(f8_disorders),  # noqa: ERA001
+        #     BooleanSpec(f9_disorders),  # noqa: ERA001
+        #     BooleanSpec(top_10_weight_gaining_antipsychotics),  # noqa: ERA001
+        #     ContinuousSpec(hdl),  # noqa: ERA001
         # ],
         # 3: [ContinuousSpec(weight_in_kg),
-        #     ContinuousSpec(height_in_cm),
-        #     ContinuousSpec(bmi),
+        #     ContinuousSpec(height_in_cm),  # noqa: ERA001
+        #     ContinuousSpec(bmi),  # noqa: ERA001
         # ],
     }
 

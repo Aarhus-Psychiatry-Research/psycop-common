@@ -19,5 +19,3 @@ def table_one_facade(
 
 if __name__ == "__main__":
     table_one_facade(Path(), MlflowClientWrapper().get_run("T2D-bigdata", "kindly-squirrel-385"))
-
-    pass
