@@ -60,7 +60,7 @@ def str_to_df(
             line = ",".join(header_items_stripped)  # noqa: PLW2901
 
         # Remove leading whitespace
-        line = line[: line.rfind(" #")] if " #" in line  # noqa
+        line = line[: line.rfind(" #")] if " #" in line else line # noqa
 
         line_sans_leading_trailing_whitespace = line.strip()
         line_without_ending_comma = (
