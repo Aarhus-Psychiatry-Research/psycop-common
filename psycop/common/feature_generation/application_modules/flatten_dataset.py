@@ -62,7 +62,6 @@ def create_flattened_dataset(
     feature_specs: Sequence[ValueSpecification],
     prediction_times_frame: PredictionTimeFrame,
     n_workers: int | None,
-    compute_lazily: bool,
     step_size: dt.timedelta | None = None,
 ) -> pl.DataFrame:
     flattener = Flattener(
@@ -71,10 +70,9 @@ def create_flattened_dataset(
             entity_id_col_name=prediction_times_frame.entity_id_col_name,
             timestamp_col_name=prediction_times_frame.timestamp_col_name,
         ),
-        compute_lazily=compute_lazily,
         n_workers=n_workers,
     )
-    return flattener.aggregate_timeseries(specs=feature_specs, step_size=step_size).df.collect()
+    return flattener.aggregate_timeseries(specs=feature_specs, step_size=step_size).df
 
 
 def create_flattened_dataset_tsflattener_v1(

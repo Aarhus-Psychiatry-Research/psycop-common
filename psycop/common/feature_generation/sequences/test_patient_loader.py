@@ -36,11 +36,11 @@ def test_keep_min_n_visits():
     1,2023-01-01
     1,2023-01-01
     1,2023-01-01
-    1,2023-01-01               # Discard, since all diagnoses are from the same visit
+    1,2023-01-01 # Discard, since all diagnoses are from the same visit
     2,2023-01-01
     2,2023-01-02
     2,2023-01-03
-    2,2023-01-04               # Keep, visits = 4
+    2,2023-01-04 # Keep, visits = 4
     """
     )
 

@@ -47,7 +47,6 @@ def generate_feature_set(
     n_workers: int | None,
     do_dataset_description: bool,
     step_size: datetime.timedelta | None = None,
-    compute_lazily: bool = False,
 ) -> None:
     feature_set_dir = project_info.flattened_dataset_dir / feature_set_name
     if feature_set_dir.exists():
@@ -71,7 +70,6 @@ def generate_feature_set(
         feature_specs=feature_specs,
         prediction_times_frame=eligible_prediction_times_frame,
         n_workers=n_workers,
-        compute_lazily=compute_lazily,
         step_size=step_size,
     )
     if do_dataset_description:
