@@ -65,6 +65,11 @@ if __name__ == "__main__":
 
     df = bundle.prediction_times.frame.to_pandas()
 
+    n_patients = df['dw_ek_borger'].nunique()
+    print(f"Antal unikke ID'er der har mindst én kontakt hvor de ikke har været indlagt akut i somatikken inden for de sidste 2 år: {n_patients}")
+    antal_kontakter = df.shape[0]
+    print(f"Antal kontakter hvor patienten ikke ikke har været indlagt akut i somatikken inden for de sidste 2 år: {antal_kontakter}")
+
     df_no_washout = bundle_no_washout.prediction_times.frame.to_pandas()
 
     outcome_timestamps = SomaticAdmissionCohortDefiner.get_outcome_timestamps()

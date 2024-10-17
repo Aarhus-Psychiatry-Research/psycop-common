@@ -11,8 +11,8 @@ if __name__ == "__main__":
     populate_with_somatic_registry()
     OptunaHyperParameterOptimization().from_file(
         (Path(__file__).parent / "somatic_hyperparam.cfg"),
-        study_name="somatic_hyper_param_lim_lookbehind_temp",
-        n_trials=3,
+        study_name="somatic_hyper_param_tot_experiments__",
+        n_trials=100,
         n_jobs=30,
         direction="maximize",
         catch=(Exception,),

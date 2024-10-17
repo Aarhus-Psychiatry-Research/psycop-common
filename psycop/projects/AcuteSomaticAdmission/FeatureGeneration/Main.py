@@ -25,11 +25,11 @@ if __name__ == "__main__":
         project_info=project_info,
         min_set_for_debug=False,  # Remember to set to False when generating full dataset
         limited_feature_set=False,
-        lookbehind_180d_mean=True,
+        lookbehind_180d_mean=False,
     ).get_feature_specs()
     generate_feature_set_tsflattener_v1(
         project_info=project_info,
         eligible_prediction_times=eligible_prediction_times,
         feature_specs=feature_specs,
-        feature_set_name="somatic_lim_lookbehind_experiments",
+        feature_set_name="somatic_tot_experiments",
     )

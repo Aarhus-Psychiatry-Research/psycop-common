@@ -7,7 +7,7 @@ Jeg skal dog være opmærksom på patienter som indlægges pga selvmordsforsøg 
 """
 import pandas as pd
 
-from psycop.common.global_utils.sql.loader import sql_load
+from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 
 def get_contacts_to_somatic_emergency(timestamps_only: bool = False, timestamp_as_value_col: bool = False) -> pd.DataFrame:
  #først hentes LPR2 data
@@ -23,7 +23,7 @@ def get_contacts_to_somatic_emergency(timestamps_only: bool = False, timestamp_a
     sql += " AND datotid_indlaeggelse IS NOT NULL AND datotid_udskrivning IS NOT NULL;"
     #sql += " AND SUBSTRING(adiagnosekode,2,2) IN ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N');"
 
-    df_LPR2 = pd.DataFrame(sql_load(sql, chunksize=None)).drop_duplicates()  # type: ignore
+    df_LPR2 = pd.DataFrame(sql_load(sql)).drop_duplicates()  # type: ignore
 
     #Da jeg ikke kan finde ud af at sortere på diagnoser i SQL-kaldet bliver jeg nød til at gøre det nu (for udvælgelse af diagnoser se filen onedrive/forskning/søren østergaard/PSYCOP/akut somatisk indlæggelse/Akutte somatiske indlæggelsesdiagnoser adiagnoser)
     df_LPR2 = df_LPR2[df_LPR2['adiagnosekode'].str.slice(1, 2).isin(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'])]
@@ -39,7 +39,7 @@ def get_contacts_to_somatic_emergency(timestamps_only: bool = False, timestamp_a
     sql += " AND pt_type = 'Indlæggelse' AND prioritet = 'Akut' AND SUBSTRING(shakkode_lpr3kontaktansvarlig, 1, 4) != '6600'"
     sql += " AND datotid_lpr3kontaktstart IS NOT NULL AND datotid_lpr3kontaktslut IS NOT NULL;"
 
-    df_LPR3 = pd.DataFrame(sql_load(sql, chunksize=None)).drop_duplicates()  # type: ignore
+    df_LPR3 = pd.DataFrame(sql_load(sql)).drop_duplicates()  # type: ignore
 
     #Da jeg ikke kan finde ud af at sortere på diagnoser i SQL-kaldet bliver jeg nød til at gøre det nu (for udvælgelse af diagnoser se filen onedrive/forskning/søren østergaard/PSYCOP/akut somatisk indlæggelse/Akutte somatiske indlæggelsesdiagnoser adiagnoser)
     df_LPR3 = df_LPR3[df_LPR3['adiagnosekode'].str.slice(1, 2).isin(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'])]
