@@ -5,10 +5,10 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
+import numpy as np
+import pandas as pd
 
-if TYPE_CHECKING:
-    import pandas as pd
+from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 
 log = logging.getLogger(__name__)
 
@@ -22,8 +22,9 @@ def urine_loader(n_rows: int | None = None) -> pd.DataFrame:
     Returns:
         pd.DataFrame
     """
+    cols = 'dw_ek_borger, datotidprv, prvnr, proeve_type, undersoegelse_tekst, proeve_type_tekst, materiale_tekst, bakterie_absolut_maengde, bakterienavn, bakterie_volumen'
 
-    sql = "SELECT * FROM [fct].[FOR_Mikrobiologi_urin_inkl_2021_okt2024]"
+    sql = f"SELECT {cols} FROM [fct].[FOR_Mikrobiologi_urin_inkl_2021_okt2024]"
 
     df = sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
 
@@ -221,9 +222,36 @@ def pathogen_group_b(n_rows: int | None = None) -> pd.DataFrame:
     return df
 
 
-def uvi_positive():
-    pass
+def uvi_positive(n_rows: int | None = None) -> pd.DataFrame:
+    df = pd.concat([pathogen_group_a(n_rows=n_rows), pathogen_group_b(n_rows=n_rows)]).reset_index(drop=True)
+
+    df = df.sort_values(["dw_ek_borger", "prvnr", "datotidprv"])
+
+    df["pureprv"] = df["prvnr"].duplicated(keep=False).astype(int)
+
+    # Set default value
+    df['value'] = 0
+
+    # Create conditions for updating the 'value' column
+    ## OBS - Keep bacteria Xs and make sure bac. A in condition 3 is the highest in the group
+    condition_A_0 = (df['pureprv'] == 0) & (df['gruppe'] == "A") & (df['bakterie_absolut_maengde'] >= 10 ** 4)
+    condition_B_0 = (df['pureprv'] == 0) & (df['gruppe'] == "B") & (df['bakterie_absolut_maengde'] >= 10 ** 5)
+    condition_A_1 = (df['pureprv'] == 1) & (df['gruppe'] == "A") & (df['bakterie_absolut_maengde'] >= 10 ** 5)
+
+    # Use numpy's where to set 'value' based on the conditions
+    df['value'] = np.where(condition_A_0 | condition_B_0 | condition_A_1, 1, 0)
+
+    # keep only positive samples
+    df = df[df["value"] == 1]
+
+    # keep only one row per prvnr
+    df = df.drop_duplicates(subset=["dw_ek_borger", "prvnr"], keep="first")
+
+    df = df.rename(columns={"datotidprv": "timestamp"})
+
+    return df[["dw_ek_borger", "timestamp", "value"]]
+
 
 
 if __name__ == "__main__":
-    urine_loader()
+    uvi_positive()

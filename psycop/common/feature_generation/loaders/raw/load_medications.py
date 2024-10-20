@@ -1289,3 +1289,25 @@ def gerd_drugs(
         administration_route=administration_route,
         administration_method=administration_method,
     )
+
+
+def uti_relevant_antibiotics(
+    n_rows: int | None = None,
+    load_prescribed: bool = False,
+    load_administered: bool = True,
+    administration_route: str | None = None,
+    administration_method: str | None = None,
+) -> pd.DataFrame:
+    """Load all administered UIT-relevant (non-preventative) antibiotic medication"""
+    return load(
+        atc_code="J01",
+        load_prescribed=load_prescribed,
+        load_administered=load_administered,
+        wildcard_code=True,
+        n_rows=n_rows,
+        administration_route=administration_route,
+        administration_method=administration_method,
+    )
+
+if __name__ == "__main__":
+    uti_relevant_antibiotics()
