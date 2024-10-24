@@ -13,7 +13,7 @@ df_combined = combine_structured_and_text_outcome()
 
 plot_all = (
     pn.ggplot(df_combined, pn.aes(x="timestamp"))
-    + pn.geom_histogram(binwidth=30, fill="blue", color="blue")
+    + pn.geom_histogram(binwidth=140, fill="blue", color="blue")
     + pn.labs(
         title="Histogram of combined validated outcome timestamps 2013-2021 ",
         x="Dates",
@@ -30,7 +30,7 @@ df_combined_incident = df_combined[df_combined["timestamp"] > min_date]
 
 plot_incident = (
     pn.ggplot(df_combined_incident, pn.aes(x="timestamp"))
-    + pn.geom_histogram(binwidth=30, fill="red", color="green")
+    + pn.geom_histogram(binwidth=120, fill="red", color="green")
     + pn.labs(title="Histogram of incident outcome timestamps 2014-2021 ", x="Dates", y="Frequency")
 )
 
@@ -45,7 +45,7 @@ mean_cases_per_year = cases_per_year.mean()
 print(f"Mean number of unique cases per year 2014-2021: {mean_cases_per_year}")
 
 
-### prescription  validation ##
+### text validation on prescription ##
 df_only_structured_prescriptions = get_first_clozapine_prescription()
 
 min_date = pd.Timestamp("2016-10-01")
@@ -58,11 +58,18 @@ print(
     f"total number of unique cases in prescription data 2016-2021:{total_num_df_prescription_stable}"
 )
 
-df_val_incident_stable = df_combined[df_combined["timestamp"] > min_date]
+### text data
+validated_text_outcome_clozapine = pd.read_parquet(
+    "E:/shared_resources/clozapine/text_outcome/validated_text_outcome_unsure_corrected.parquet"
+)
+
+df_val_incident_stable = validated_text_outcome_clozapine[
+    validated_text_outcome_clozapine["timestamp"] > min_date
+]
 total_num_df_val_incident_stable = df_val_incident_stable["dw_ek_borger"].nunique()
 print(f"total number of unique cases in text data 2016-2021:{total_num_df_val_incident_stable}")
 
-
+## merge
 merged_df_stable = pd.merge(
     df_val_incident_stable,
     df_prescription_stable,
