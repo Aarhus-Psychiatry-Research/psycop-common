@@ -302,7 +302,7 @@ if __name__ == "__main__":
         predictor_df_name="bipolar_text_feature_set_interval_days_150",
     )
 
-    projection_df = perform_projection(df, projecton_algortithm='pca')
+    projection_df = perform_projection(df, projecton_algortithm="pca")
 
     point_color_legend = {0: "False Positive", 1: "True Positive"}
 
@@ -343,7 +343,7 @@ if __name__ == "__main__":
     filtered_df["prediction_type_int"] = filtered_df["prediction_type"].apply(
         lambda x: 1 if x == "TP" else 0
     )
-    
+
     filtered_df["component_2"] = filtered_df["component_2"] * 100
 
     ## TSNE ##
@@ -380,9 +380,9 @@ if __name__ == "__main__":
     df = prepare_eval_data_for_projections(
         experiment_name="bipolar_model_training_full_feature_lb_200_interval_150",
         predictor_df_name="bipolar_all_features_interval_days_150",
-    ) 
+    )
 
-    projection_df = perform_projection(df, projecton_algortithm='pca')
+    projection_df = perform_projection(df, projecton_algortithm="pca")
 
     # keep only patients with TN and TP
     projection_df = projection_df[projection_df["prediction_type"].isin(["TP", "FP"])]  # type: ignore

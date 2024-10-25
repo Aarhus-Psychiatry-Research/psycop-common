@@ -4,7 +4,6 @@ import pandas as pd
 import plotly.express as px
 
 from psycop.projects.bipolar.patient_representations.representations import perform_projection
-
 from psycop.projects.bipolar.patient_representations.utils import prepare_eval_data_for_projections
 
 
@@ -13,7 +12,6 @@ def plot_patient_projections(
     projecton_method: Literal["pca", "tsne"],
     cut_off_values: list[list[int | float]] | None = None,
 ):
-
     projection_df = perform_projection(df, projecton_method)
 
     if cut_off_values is not None:

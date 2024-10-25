@@ -57,7 +57,6 @@ def perform_projection(
 
 
 if __name__ == "__main__":
-    
     # Load eval data
     df = prepare_eval_data_for_projections(
         experiment_name="bipolar_model_training_full_feature_lb_200_interval_150",
