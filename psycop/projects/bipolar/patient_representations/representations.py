@@ -4,8 +4,7 @@ import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
-from psycop.projects.bipolar.feature_generation.inspect_feature_sets import load_bp_feature_set
+from psycop.projects.bipolar.patient_representations.utils import prepare_eval_data_for_projections
 from psycop.projects.bipolar.synthetic_data.bp_synthetic_data import bp_synthetic_data
 
 
@@ -58,26 +57,12 @@ def perform_projection(
 
 
 if __name__ == "__main__":
+    
     # Load eval data
-    best_experiment = "bipolar_model_training_full_feature_v2"
-    eval_data = (
-        MlflowClientWrapper()
-        .get_best_run_from_experiment(experiment_name=best_experiment, metric="all_oof_BinaryAUROC")
-        .eval_frame()
-        .frame.to_pandas()
+    df = prepare_eval_data_for_projections(
+        experiment_name="bipolar_model_training_full_feature_lb_200_interval_150",
+        predictor_df_name="bipolar_all_features_interval_days_150",
     )
-
-    # Rename pred_time_uuid to prediction_time_uuid
-    eval_data = eval_data.rename(columns={"pred_time_uuid": "prediction_time_uuid"})
-
-    # Load flattened df
-    df = load_bp_feature_set("bipolar_full_feature_set_interval_days_150")
-
-    # Convert df to pandas
-    df = df.to_pandas()
-
-    # Merge df onto eval_data on prediction_time_uuid
-    df = eval_data.merge(df, on="prediction_time_uuid", how="left")
 
     pca_df = perform_projection(df, projecton_algortithm="pca")
 

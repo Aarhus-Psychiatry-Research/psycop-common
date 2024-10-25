@@ -3,8 +3,8 @@ from typing import Literal
 import pandas as pd
 import plotly.express as px
 
-from psycop.projects.bipolar.patient_representations.pca import perform_pca
-from psycop.projects.bipolar.patient_representations.tsne import perform_tsne
+from psycop.projects.bipolar.patient_representations.representations import perform_projection
+
 from psycop.projects.bipolar.patient_representations.utils import prepare_eval_data_for_projections
 
 
@@ -13,11 +13,8 @@ def plot_patient_projections(
     projecton_method: Literal["pca", "tsne"],
     cut_off_values: list[list[int | float]] | None = None,
 ):
-    match projecton_method:
-        case "pca":
-            projection_df = perform_pca(df)
-        case "tsne":
-            projection_df = perform_tsne(df)
+
+    projection_df = perform_projection(df, projecton_method)
 
     if cut_off_values is not None:
         projection_df = projection_df[
@@ -64,5 +61,6 @@ if __name__ == "__main__":
         experiment_name="bipolar_model_training_text_feature_lb_200_interval_150",
         predictor_df_name="bipolar_text_feature_set_interval_days_150",
     )
+
     plot_pca_projections(df, cut_off_values=[[-10000, 21000], [0.34, 0.40]])
     plot_tsne_projections(df)
