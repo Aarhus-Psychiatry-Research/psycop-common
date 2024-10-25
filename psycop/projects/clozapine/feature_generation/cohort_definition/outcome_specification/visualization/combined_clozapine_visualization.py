@@ -15,7 +15,7 @@ plot_all = (
     pn.ggplot(df_combined, pn.aes(x="timestamp"))
     + pn.geom_histogram(binwidth=140, fill="blue", color="blue")
     + pn.labs(
-        title="Histogram of combined validated outcome timestamps 2013-2021 ",
+        title="Histogram of combined validated outcome timestamps 2013-2024 ",
         x="Dates",
         y="Frequency",
     )
@@ -31,18 +31,18 @@ df_combined_incident = df_combined[df_combined["timestamp"] > min_date]
 plot_incident = (
     pn.ggplot(df_combined_incident, pn.aes(x="timestamp"))
     + pn.geom_histogram(binwidth=120, fill="red", color="green")
-    + pn.labs(title="Histogram of incident outcome timestamps 2014-2021 ", x="Dates", y="Frequency")
+    + pn.labs(title="Histogram of incident outcome timestamps 2014-2024 ", x="Dates", y="Frequency")
 )
 
 print(plot_incident)
-print("Number of unique outcomes in incident df 2014-2021 :", len(df_combined_incident))
+print("Number of unique outcomes in incident df 2014-2024 :", len(df_combined_incident))
 
 cases_per_year = df_combined_incident.groupby("year").size()
 
 # Calculate the mean number of cases per year
 mean_cases_per_year = cases_per_year.mean()
 
-print(f"Mean number of unique cases per year 2014-2021: {mean_cases_per_year}")
+print(f"Mean number of unique cases per year 2014-2024: {mean_cases_per_year}")
 
 
 ### text validation on prescription ##
