@@ -11,9 +11,14 @@ from psycop.projects.bipolar.feature_generation.inspect_feature_sets import load
 from psycop.projects.bipolar.synthetic_data.bp_synthetic_data import bp_synthetic_data
 
 
-def perform_tsne(df: pd.DataFrame, n_components: int = 2, perplexity: int = 20) -> pd.DataFrame:
+def perform_tsne(
+    df: pd.DataFrame, n_components: int = 2, perplexity: int = 20, n_rows: None | int = 2000
+) -> pd.DataFrame:
     # Convert NAs to 0s
-    df = df.fillna(0)[0:2000]
+    df = df.fillna(0)
+
+    if n_rows:
+        df = df[0:n_rows]
 
     # Drop columns that don't start with 'pred_'
     pred_cols = [col for col in df.columns if col.startswith("pred_")]
