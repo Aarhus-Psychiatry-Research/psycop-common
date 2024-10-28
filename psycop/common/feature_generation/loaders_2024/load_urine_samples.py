@@ -31,7 +31,7 @@ def urine_loader(n_rows: int | None = None) -> pd.DataFrame:
     return df
 
 
-def _pathogen_group_a_list() -> Sequence:
+def _pathogen_group_a_list() -> Sequence[str]:
     return [
         "E. coli",
         "Enterokokker",
@@ -162,7 +162,7 @@ def _pathogen_group_a_list() -> Sequence:
     ]
 
 
-def _pathogen_group_b_list() -> Sequence:
+def _pathogen_group_b_list() -> Sequence[str]:
     return [
         "Non-hæmolysende streptokokker",
         "Aerococcer",
@@ -222,7 +222,7 @@ def pathogen_group_b(n_rows: int | None = None) -> pd.DataFrame:
     return df
 
 
-def uvi_positive(n_rows: int | None = None) -> pd.DataFrame:
+def uti_positive_urine_samples(n_rows: int | None = None) -> pd.DataFrame:
     df = pd.concat([pathogen_group_a(n_rows=n_rows), pathogen_group_b(n_rows=n_rows)]).reset_index(drop=True)
 
     df = df.sort_values(["dw_ek_borger", "prvnr", "datotidprv"])
@@ -254,4 +254,4 @@ def uvi_positive(n_rows: int | None = None) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    uvi_positive()
+    uti_positive_urine_samples()
