@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Sequence
 
 import numpy as np
 import pandas as pd
@@ -31,7 +31,7 @@ def urine_loader(n_rows: int | None = None) -> pd.DataFrame:
     return df
 
 
-def _pathogen_group_a_list() -> list:
+def _pathogen_group_a_list() -> Sequence:
     return [
         "E. coli",
         "Enterokokker",
@@ -162,7 +162,7 @@ def _pathogen_group_a_list() -> list:
     ]
 
 
-def _pathogen_group_b_list() -> list:
+def _pathogen_group_b_list() -> Sequence:
     return [
         "Non-hæmolysende streptokokker",
         "Aerococcer",
@@ -249,7 +249,7 @@ def uvi_positive(n_rows: int | None = None) -> pd.DataFrame:
 
     df = df.rename(columns={"datotidprv": "timestamp"})
 
-    return df[["dw_ek_borger", "timestamp", "value"]]
+    return df[["dw_ek_borger", "timestamp", "value", "bakterienavn", "gruppe", "bakterie_absolut_maengde", "bakterie_volumen"]]
 
 
 

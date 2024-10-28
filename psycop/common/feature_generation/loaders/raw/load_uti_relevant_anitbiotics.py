@@ -56,7 +56,7 @@ def load_administered_med_from_codes(
         pd.DataFrame: A pandas dataframe with dw_ek_borger, timestamp and
             output_col_name = 1
     """
-    fct = "[FOR_Medicin_administreret_inkl_2021_feb2022]"
+    fct = "[FOR_Medicin_administreret_inkl_2021_okt2024]"
 
     match codes_to_match:
         case str():
@@ -214,8 +214,6 @@ def load_administered_med_from_codes(
 
 def uti_relevant_antibiotics(
     n_rows: int | None = None,
-    load_prescribed: bool = False,
-    load_administered: bool = True,
     administration_route: str | None = None,
     administration_method: str | None = None,
 ) -> pd.DataFrame:
@@ -223,7 +221,7 @@ def uti_relevant_antibiotics(
     return load_administered_med_from_codes(
         codes_to_match="J01",
         code_col_name="atc",
-        source_timestamp_col_name="datotid_ordinationstart",
+        source_timestamp_col_name="datotid_administration_start",
         match_with_wildcard=True,
         n_rows=n_rows,
         administration_route=administration_route,
