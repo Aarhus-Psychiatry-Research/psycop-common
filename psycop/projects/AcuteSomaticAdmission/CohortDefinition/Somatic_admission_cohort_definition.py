@@ -29,11 +29,11 @@ class SomaticAdmissionCohortDefiner(CohortDefiner):
     def get_filtered_prediction_times_bundle(
         washout_on_prior_somatic_contacts: bool = True,
     ) -> FilteredPredictionTimeBundle:
-        unfiltered_prediction_times = get_outpatient_visits_to_psychiatry().lazy()
+        unfiltered_prediction_times = pl.from_pandas(get_outpatient_visits_to_psychiatry())
 
         if washout_on_prior_somatic_contacts:
             return filter_prediction_times(
-                prediction_times=unfiltered_prediction_times,
+                prediction_times=unfiltered_prediction_times.lazy(),
                 filtering_steps=(
                     SomaticAdmissionMinDateFilter(),
                     SomaticAdmissionMinAgeFilter(),
@@ -44,7 +44,7 @@ class SomaticAdmissionCohortDefiner(CohortDefiner):
             )
 
         return filter_prediction_times(
-            prediction_times=unfiltered_prediction_times,
+            prediction_times=unfiltered_prediction_times.lazy(),
             filtering_steps=(SomaticAdmissionMinDateFilter(), SomaticAdmissionMinAgeFilter()),
             entity_id_col_name="dw_ek_borger",
         )
