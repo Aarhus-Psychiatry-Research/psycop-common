@@ -29,7 +29,7 @@ class SomaticAdmissionCohortDefiner(CohortDefiner):
     def get_filtered_prediction_times_bundle(
         washout_on_prior_somatic_contacts: bool = True,
     ) -> FilteredPredictionTimeBundle:
-        unfiltered_prediction_times = pl.from_pandas(get_outpatient_visits_to_psychiatry())
+        unfiltered_prediction_times = get_outpatient_visits_to_psychiatry()
 
         if washout_on_prior_somatic_contacts:
             return filter_prediction_times(

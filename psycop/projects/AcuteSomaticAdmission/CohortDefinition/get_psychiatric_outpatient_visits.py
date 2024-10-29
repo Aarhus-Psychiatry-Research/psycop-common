@@ -2,13 +2,12 @@
 Script for obtaining and writing all ambulant psychiatric visits. Handles LPR2 to LPR3 transition and duplicates
 """
 
-import pandas as pd
 import polars as pl
 
 from psycop.common.feature_generation.loaders.raw.load_visits import ambulatory_visits
 
 
-def get_outpatient_visits_to_psychiatry() -> pd.DataFrame:
+def get_outpatient_visits_to_psychiatry() -> pl.DataFrame:
     # Load all physical visits data
     prediction_times = pl.from_pandas(
         ambulatory_visits(
