@@ -46,7 +46,7 @@ def _generate_general_descriptive_stats(df: pd.DataFrame, split_name: str) -> pd
 
     return stats
 
-def main()
+def main():
     df_train = pd.read_parquet("E:/shared_resources/AcuteSomaticAdmission/feature_set/flattened_datasets/somatic_tot_experiments/train.parquet")
     df_val = pd.read_parquet("E:/shared_resources/AcuteSomaticAdmission/feature_set/flattened_datasets/somatic_tot_experiments/val.parquet")
     df_test = pd.read_parquet("E:/shared_resources/AcuteSomaticAdmission/feature_set/flattened_datasets/somatic_tot_experiments/test.parquet")
