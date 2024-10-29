@@ -28,8 +28,7 @@ def get_outpatient_visits_to_psychiatry() -> pd.DataFrame:
 
 if __name__ == "__main__":
     df_pl = get_outpatient_visits_to_psychiatry()
-    df_pd = df_pl.to_pandas()
-    n_patients = df_pd["dw_ek_borger"].nunique()
+    n_patients = df_pl["dw_ek_borger"].nunique()
     print(f"Antal unikke ID'er der har mindst én ambulant kontakt er: {n_patients}")
-    antal_kontakter = df_pd.shape[0]
+    antal_kontakter = df_pl.shape[0]
     print(f"Antal ambulante kontakter: {antal_kontakter}")
