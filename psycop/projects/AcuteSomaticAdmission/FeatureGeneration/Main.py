@@ -25,7 +25,7 @@ if __name__ == "__main__":
     eligible_prediction_times = SomaticAdmissionCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.frame.to_pandas()
     feature_specs = FeatureSpecifier(
         project_info=project_info,
-        min_set_for_debug=False,  # Remember to set to False when generating full dataset
+        min_set_for_debug=True,  # Remember to set to False when generating full dataset
         limited_feature_set=False,
         lookbehind_180d_mean=False,
     ).get_feature_specs()
@@ -33,5 +33,5 @@ if __name__ == "__main__":
         project_info=project_info,
         eligible_prediction_times=eligible_prediction_times,
         feature_specs=feature_specs,
-        feature_set_name="somatic_tot_experiments",
+        feature_set_name="somatic_min_set_experiments",
     )
