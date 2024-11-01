@@ -1,12 +1,12 @@
 import pandas as pd
 import polars as pl
 
-
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 
 
 def load_admissions_discharge_timestamps() -> pd.DataFrame:
     return sql_load("SELECT * FROM fct.[FOR_kohorte_indhold_pt_journal_inkl_2021_feb2022]")
+
 
 def concat_readmissions(
     df_patient: pd.DataFrame, readmission_interval_hours: int = 4
@@ -83,7 +83,6 @@ def concat_readmissions(
     ].sort_values(["dw_ek_borger", "timestamp"])
 
 
-
 def preprocess_readmissions(df: pl.DataFrame) -> pl.LazyFrame:
     df_ = df.to_pandas()
 
@@ -140,6 +139,7 @@ def unpack_adm_days(idx: int, row: pd.Series, pred_hour: int = 6) -> pd.DataFram
         days_unpacked = days_unpacked.iloc[:-1, :]
 
     return days_unpacked.drop(columns=0)
+
 
 def explode_admissions(df: pl.LazyFrame) -> pl.LazyFrame:
     df_ = df.collect().to_pandas()

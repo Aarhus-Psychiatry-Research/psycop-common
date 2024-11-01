@@ -3,16 +3,19 @@
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
-import pandas as pd
-
-from psycop.common.feature_generation.loaders.raw.utils import (
-    str_to_sql_match_logic,
-    list_to_sql_logic,
-)
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
+from psycop.common.feature_generation.loaders.raw.utils import (
+    list_to_sql_logic,
+    str_to_sql_match_logic,
+)
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 log = logging.getLogger(__name__)
+
 
 def load_administered_med_from_codes(
     codes_to_match: list[str] | str,
@@ -39,11 +42,10 @@ def load_administered_med_from_codes(
             Takes either 'diagnosegruppestreng' or 'atc' as input.
         source_timestamp_col_name (str): Name of the timestamp column in the SQL
             view.
+        cols_to_load (str, optional): Columns to load from the SQL view.
         output_col_name (str, optional): Name of output_col_name. Contains 1 if
             atc_code matches atc_code_prefix, 0 if not.Defaults to
             {atc_code_prefix}_value.
-        output_col_name (str, optional): Name of new column string. Defaults to
-            None.
         match_with_wildcard (bool, optional): Whether to match on icd_code* / atc_code*.
             Defaults to true.
         n_rows: Number of rows to return. Defaults to None.
@@ -83,9 +85,7 @@ def load_administered_med_from_codes(
         case list():
             raise ValueError("List is neither of len==1 or len>1")
 
-    sql = (
-        f"SELECT {cols_to_load} FROM [fct].{fct} WHERE {source_timestamp_col_name} IS NOT NULL AND ({match_col_sql_str})"
-    )
+    sql = f"SELECT {cols_to_load} FROM [fct].{fct} WHERE {source_timestamp_col_name} IS NOT NULL AND ({match_col_sql_str})"
 
     if administration_method:
         allowed_administration_methods = (
@@ -227,6 +227,7 @@ def uti_relevant_antibiotics(
         administration_route=administration_route,
         administration_method=administration_method,
     )
+
 
 if __name__ == "__main__":
     uti_relevant_antibiotics()

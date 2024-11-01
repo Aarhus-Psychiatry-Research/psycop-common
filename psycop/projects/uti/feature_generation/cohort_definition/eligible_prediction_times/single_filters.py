@@ -1,6 +1,7 @@
+from datetime import datetime
+
 import polars as pl
 from wasabi import Printer
-from datetime import datetime
 
 from psycop.common.feature_generation.loaders.raw.load_moves import MoveIntoRMBaselineLoader
 
@@ -17,9 +18,11 @@ from psycop.projects.uti.feature_generation.cohort_definition.eligible_predictio
     MIN_DATE,
 )
 
+
 class UTIExcludeFirstDayFilter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         return df.filter(pl.col("pred_adm_day_count") != 1)
+
 
 class UTIAdmissionFilter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
@@ -27,6 +30,7 @@ class UTIAdmissionFilter(PredictionTimeFilter):
             (pl.col("datotid_slut").is_not_null())
             & (pl.col("datotid_slut") <= datetime(year=2021, month=11, day=22))
         )
+
 
 class UTIAdmissionTypeFilter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
@@ -42,6 +46,7 @@ class UTIMinDateFilter(PredictionTimeFilter):
 class UTIMinAgeFilter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         return df.filter(pl.col("alder_start") >= MIN_AGE)
+
 
 class UTIWashoutMove(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
