@@ -35,7 +35,6 @@ def main(note_type: str, model_name: str):
         feature_specs=feature_specs,  # type: ignore
         prediction_times_frame=PredictionTimeFrame(pl.DataFrame(restraint_pred_times)),
         n_workers=None,
-        compute_lazily=False,
         step_size=dt.timedelta(days=200),
     )
 
