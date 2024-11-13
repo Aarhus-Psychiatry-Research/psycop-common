@@ -22,7 +22,7 @@ from psycop.projects.bipolar.cohort_definition.diagnosis_timestamps.first_bipola
 from psycop.projects.uti.feature_generation.cohort_definition.uti_cohort_definer import (
     uti_pred_times,
 )
-from psycop.projects.uti.feature_generation.outcome_definition.uti_outcomes import uti_outcome_timestamps
+from psycop.projects.uti.feature_generation.outcome_definition.uti_outcomes import uti_outcome_timestamps, uti_outcomes, uti_postive_urine_sample_outcomes, uti_relevant_antibiotics_outcomes
 
 def get_uti_project_info() -> ProjectInfo:
     return ProjectInfo(
@@ -130,8 +130,7 @@ if __name__ == "__main__":
         stream=sys.stdout,
     )
 
-    outcome_df = get_first_bipolar_diagnosis()
-    outcome_df["value"] = 1
+    outcome_df = uti_outcomes()
     
     feature_layers = {
         "basic": [

@@ -17,6 +17,14 @@ from psycop.common.global_utils.cache import shared_cache
 def uti_outcome_timestamps() -> pd.DataFrame:
     return uti_outcomes()
 
+@shared_cache().cache()
+def uti_postive_urine_sample_outcome_timestamps() -> pd.DataFrame:
+    return uti_postive_urine_sample_outcomes()
+
+@shared_cache().cache()
+def uti_relevant_antibiotics_administrations_outcome_timestamps() -> pd.DataFrame:
+    return uti_relevant_antibiotics_outcomes()
+
 def uti_outcomes() -> pd.DataFrame:
     # load data
     antibiotics_df = uti_relevant_antibiotics()
@@ -36,9 +44,25 @@ def uti_outcomes() -> pd.DataFrame:
     # Filter for antibiotic prescriptions between 1 day before and 5 days after the sample date
     filtered_df = merged_df[(merged_df["time_diff"] >= -1) & (merged_df["time_diff"] <= 5)]
 
-    filtered_df = filtered_df.rename(columns={"sample_time": "timestamp", "value_x": "value"})
+    # Create sample uuid 
+    filtered_df['sample_uuid'] = filtered_df.dw_ek_borger.astype(str) + filtered_df.sample_time.astype(str)
 
-    return filtered_df[["dw_ek_borger", "timestamp"]]
+    # Keep only one row per sample
+    filtered_df = filtered_df.drop_duplicates(subset='sample_uuid')
+    
+    filtered_df = filtered_df.rename(columns={"sample_time": "timestamp", "afsnit_administration": "value"})
+
+    return filtered_df[["dw_ek_borger", "timestamp", "value"]]
+
+
+def uti_postive_urine_sample_outcomes() -> pd.DataFrame:
+
+    return uti_positive_urine_samples()[["dw_ek_borger", "timestamp", "value"]]
+
+
+def uti_relevant_antibiotics_outcomes() -> pd.DataFrame:
+
+    return uti_relevant_antibiotics()[["dw_ek_borger", "timestamp", "value"]]
 
 
 if __name__ == "__main__":
