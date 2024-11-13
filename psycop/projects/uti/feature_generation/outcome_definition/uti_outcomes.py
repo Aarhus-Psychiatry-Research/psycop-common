@@ -3,13 +3,19 @@
 # Join to admission id and keep only first positive outcome during each admission
 import pandas as pd
 
+from psycop.common.cohort_definition import OutcomeTimestampFrame
 from psycop.common.feature_generation.loaders_2024.load_urine_samples import (
     uti_positive_urine_samples,
 )
 from psycop.common.feature_generation.loaders_2024.load_uti_relevant_anitbiotics import (
     uti_relevant_antibiotics,
 )
+from psycop.common.global_utils.cache import shared_cache
 
+
+@shared_cache().cache()
+def uti_outcome_timestamps() -> pd.DataFrame:
+    return uti_outcomes()
 
 def uti_outcomes() -> pd.DataFrame:
     # load data

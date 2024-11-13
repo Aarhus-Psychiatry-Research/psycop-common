@@ -7,26 +7,22 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Callable
 
-import numpy as np
 import pandas as pd
 import polars as pl
 import timeseriesflattener as ts
-from timeseriesflattener.aggregators import HasValuesAggregator, LatestAggregator, MeanAggregator
+from timeseriesflattener.aggregators import HasValuesAggregator
 
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
     generate_feature_set,
 )
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
-from psycop.common.feature_generation.loaders.raw.load_structured_sfi import bmi
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
+from psycop.projects.bipolar.cohort_definition.diagnosis_timestamps.first_bipolar_diagnosis import get_first_bipolar_diagnosis
 from psycop.projects.uti.feature_generation.cohort_definition.uti_cohort_definer import (
-    UTICohortDefiner,
+    uti_pred_times,
 )
-from psycop.projects.uti.feature_generation.outcome_definition.uti_outcomes import uti_outcomes
-
-TEXT_FILE_NAME = "text_embeddings_all_relevant_tfidf-1000.parquet"
-
+from psycop.projects.uti.feature_generation.outcome_definition.uti_outcomes import uti_outcome_timestamps
 
 def get_uti_project_info() -> ProjectInfo:
     return ProjectInfo(
@@ -134,11 +130,14 @@ if __name__ == "__main__":
         stream=sys.stdout,
     )
 
+    outcome_df = get_first_bipolar_diagnosis()
+    outcome_df["value"] = 1
+    
     feature_layers = {
         "basic": [
             ts.OutcomeSpec(
                 value_frame=ts.ValueFrame(
-                    init_df=uti_outcomes(),
+                    init_df=outcome_df,
                     entity_id_col_name="dw_ek_borger",
                     value_timestamp_col_name="timestamp",
                 ),
@@ -163,16 +162,6 @@ if __name__ == "__main__":
                 output_name="age",
             ),
         ],
-        "bmi": [
-            ContinuousSpec(
-                bmi,
-                aggregation_fns=[
-                    LatestAggregator(timestamp_col_name="timestamp"),
-                    MeanAggregator(),
-                ],
-                fallback=np.NaN,
-            )
-        ],
     }
 
     layer_spec_pairs = [
@@ -187,9 +176,9 @@ if __name__ == "__main__":
     logging.info("Generating feature set")
     generate_feature_set(
         project_info=get_uti_project_info(),
-        eligible_prediction_times_frame=UTICohortDefiner.get_filtered_prediction_times_bundle().prediction_times,
+        eligible_prediction_times_frame=uti_pred_times().prediction_times,
         feature_specs=specs,
-        feature_set_name="uti_bmi_feature_set",
+        feature_set_name="uti_outcomes_lina_definition",
         n_workers=None,
         step_size=datetime.timedelta(days=365),
         do_dataset_description=False,

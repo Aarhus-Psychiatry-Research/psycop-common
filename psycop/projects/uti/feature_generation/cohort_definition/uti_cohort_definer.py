@@ -13,6 +13,7 @@ from psycop.projects.uti.feature_generation.cohort_definition.eligible_predictio
     load_admissions_discharge_timestamps,
     preprocess_readmissions,
 )
+from psycop.common.global_utils.cache import shared_cache
 from psycop.projects.uti.feature_generation.cohort_definition.eligible_prediction_times.single_filters import (
     UTIAdmissionFilter,
     UTIAdmissionTypeFilter,
@@ -24,6 +25,9 @@ from psycop.projects.uti.feature_generation.outcome_definition.uti_outcomes impo
 
 msg = Printer(timestamp=True)
 
+@shared_cache().cache()
+def uti_pred_times() -> FilteredPredictionTimeBundle:
+    return UTICohortDefiner.get_filtered_prediction_times_bundle()
 
 @SequenceRegistry.cohorts.register("uti")
 class UTICohortDefiner(CohortDefiner):
@@ -34,7 +38,7 @@ class UTICohortDefiner(CohortDefiner):
                 load_admissions_discharge_timestamps().rename(
                     columns={"datotid_start": "timestamp"}
                 )
-            )[0:10000]
+            )
         )
 
         filtered_prediction_times = filter_prediction_times(
