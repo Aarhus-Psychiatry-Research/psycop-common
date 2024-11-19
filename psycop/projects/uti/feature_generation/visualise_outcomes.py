@@ -8,7 +8,7 @@ from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
 
 data_path = OVARTACI_SHARED_DIR / "uti" / "flattened_datasets" / "flattened_datasets"
-output_path = OVARTACI_SHARED_DIR / "uti" / "data_visualisations" / "outcomes"
+output_path = OVARTACI_SHARED_DIR / "uti" / "data_visualisations"
 
 np.random.seed(42)
 
@@ -95,11 +95,11 @@ def plot_outcomes_by_shak_code(df: pd.DataFrame, outcome_col_name: str = "out_va
 
 
 def uti_patchwork_data_plot(
-    df: pd.DataFrame, output_path: Path, name: str = "uti_data_pathwork"
+    df: pd.DataFrame, output_path: Path, name: str = "uti_data_pathwork", outcome_col_name='outc_uti_value_within_0_to_1_days_max_fallback_0',
 ) -> None:
     pred_per_year = plot_prediction_times_by_year(df)
-    outc_per_year = plot_outcomes_by_year(df)
-    outc_per_shak = plot_outcomes_by_shak_code(df)
+    outc_per_year = plot_outcomes_by_year(df,outcome_col_name)
+    outc_per_shak = plot_outcomes_by_shak_code(df,outcome_col_name)
 
     plots = [pred_per_year, outc_per_year, outc_per_shak]
 
