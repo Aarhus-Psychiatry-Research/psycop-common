@@ -93,16 +93,21 @@ def plot_outcomes_by_shak_code(df: pd.DataFrame, outcome_col_name: str = "out_va
 
     return plot
 
+
 def plot_outcomes_gender(df: pd.DataFrame, outcome_col_name: str = "out_value") -> pn.ggplot:
+    df[outcome_col_name] = df[outcome_col_name].replace("Ukendt", "1111")
+    df[outcome_col_name] = pd.to_numeric(df[outcome_col_name], errors="coerce")
 
     # keep only outcomes that are not 0
     df = df[df[outcome_col_name] != 0]
 
     # plot the number of prediction times by shak code as a bar plot
     plot = (
-        pn.ggplot(df, pn.aes(x="pred_adm_day_count", fill="pred_adm_day_count"))
+        pn.ggplot(df, pn.aes(x="pred_sex_female_fallback_0", fill="pred_sex_female_fallback_0"))
         + pn.geom_bar(fill="#1f77b4")  # Dark blue color
-        + pn.labs(title="UTI-outcome - admission day distribution", x="Day of admissions", y="Number of outcomes")
+        + pn.labs(
+            title="UTI-outcome - sex distribution", x="Day of admissions", y="Number of outcomes"
+        )
         + pn.theme_classic()  # Modern theme
         + pn.theme(
             text=pn.element_text(size=12),
@@ -115,15 +120,24 @@ def plot_outcomes_gender(df: pd.DataFrame, outcome_col_name: str = "out_value") 
 
 
 def plot_outcomes_adm_day(df: pd.DataFrame, outcome_col_name: str = "out_value") -> pn.ggplot:
+    df[outcome_col_name] = df[outcome_col_name].replace("Ukendt", "1111")
+    df[outcome_col_name] = pd.to_numeric(df[outcome_col_name], errors="coerce")
 
     # keep only outcomes that are not 0
     df = df[df[outcome_col_name] != 0]
 
+    adm_day_counts = df["pred_adm_day_count"].value_counts()
+    df_filtered = df[df["pred_adm_day_count"].isin(adm_day_counts[adm_day_counts >= 5].index)]
+
     # plot the number of prediction times by shak code as a bar plot
     plot = (
-        pn.ggplot(df, pn.aes(x="pred_sex_female_fallback_0", fill="pred_sex_female_fallback_0"))
+        pn.ggplot(df_filtered, pn.aes(x="pred_adm_day_count", fill="pred_adm_day_count"))
         + pn.geom_bar(fill="#1f77b4")  # Dark blue color
-        + pn.labs(title="UTI-outcome - sex distribution", x="Gender", y="Number of outcomes times")
+        + pn.labs(
+            title="UTI-outcome - admission day  distribution",
+            x="Gender",
+            y="Number of outcomes times",
+        )
         + pn.theme_classic()  # Modern theme
         + pn.theme(
             text=pn.element_text(size=12),
@@ -134,12 +148,15 @@ def plot_outcomes_adm_day(df: pd.DataFrame, outcome_col_name: str = "out_value")
 
     return plot
 
-def uti_patchwork_data_plot(
-    df: pd.DataFrame, output_path: Path, name: str = "uti_data_pathwork", outcome_col_name: str = 'outc_uti_value_within_0_to_1_days_max_fallback_0',
-) -> None:
 
-    outc_per_year = plot_outcomes_by_year(df,outcome_col_name)
-    outc_per_shak = plot_outcomes_by_shak_code(df,outcome_col_name)
+def uti_patchwork_data_plot(
+    df: pd.DataFrame,
+    output_path: Path,
+    name: str = "uti_data_pathwork",
+    outcome_col_name: str = "outc_uti_value_within_0_to_1_days_max_fallback_0",
+) -> None:
+    outc_per_year = plot_outcomes_by_year(df, outcome_col_name)
+    outc_per_shak = plot_outcomes_by_shak_code(df, outcome_col_name)
     outc_gender = plot_outcomes_gender(df, outcome_col_name)
     outc_adm_day = plot_outcomes_adm_day(df, outcome_col_name)
 
@@ -163,4 +180,3 @@ if __name__ == "__main__":
     antibiotics = pd.read_parquet(
         data_path / "uti_outcomes_antibiotics" / "uti_outcomes_antibiotics.parquet"
     )
-
