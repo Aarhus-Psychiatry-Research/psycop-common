@@ -43,7 +43,9 @@ def plot_prediction_times_by_year(df: pd.DataFrame) -> pn.ggplot:
     return plot
 
 
-def plot_outcomes_by_year(df: pd.DataFrame, outcome_col_name: str = "out_value") -> pn.ggplot:
+def plot_outcomes_by_year(
+    df: pd.DataFrame, outcome_col_name: str = "out_value", outcome_def: str = "UTIs"
+) -> pn.ggplot:
     df[outcome_col_name] = df[outcome_col_name].replace("Ukendt", "1111")
     df[outcome_col_name] = pd.to_numeric(df[outcome_col_name], errors="coerce")
 
@@ -56,12 +58,22 @@ def plot_outcomes_by_year(df: pd.DataFrame, outcome_col_name: str = "out_value")
     plot = (
         pn.ggplot(df, pn.aes(x="year", fill="year"))
         + pn.geom_bar(fill="#1f77b4")  # Dark blue color
-        + pn.labs(title="UTI-outcomes pr. år", x="Year", y="Number of outcomes")
+        + pn.labs(title=f"UTI-outcomes pr. år {outcome_def}", x="Year", y="Number of outcomes")
         + pn.theme_classic()  # Modern theme
         + pn.theme(
             text=pn.element_text(size=12),
             axis_title=pn.element_text(size=14),
             title=pn.element_text(size=16),
+        )
+        + pn.annotate(
+            "text",
+            x=0.9,
+            y=0.9,
+            label=f"Dataset length: {len(df)}",
+            ha="left",
+            va="top",
+            size=10,
+            color="red",
         )
     )
 
@@ -78,9 +90,15 @@ def plot_outcomes_by_shak_code(df: pd.DataFrame, outcome_col_name: str = "out_va
     # keep only the first four digits of the outcome code
     df["shak_code"] = df[outcome_col_name].astype(str).str[:4]
 
+    # delete rows with nan values in the shake code column
+    df = df[df["shak_code"] != "nan"]
+
+    counts = df["shak_code"].value_counts()
+    df_filtered = df[df["shak_code"].isin(counts[counts >= 5].index)]
+
     # plot the number of prediction times by shak code as a bar plot
     plot = (
-        pn.ggplot(df, pn.aes(x="shak_code", fill="shak_code"))
+        pn.ggplot(df_filtered, pn.aes(x="shak_code", fill="shak_code"))
         + pn.geom_bar(fill="#1f77b4")  # Dark blue color
         + pn.labs(title="UTI-udfald pr. afdeling", x="Shak code", y="Number of outomces")
         + pn.theme_classic()  # Modern theme
@@ -100,6 +118,10 @@ def plot_outcomes_gender(df: pd.DataFrame, outcome_col_name: str = "out_value") 
 
     # keep only outcomes that are not 0
     df = df[df[outcome_col_name] != 0]
+
+    df["pred_sex_female_fallback_0"] = df["pred_sex_female_fallback_0"].replace(
+        {0: "Male", 1: "Female"}
+    )
 
     # plot the number of prediction times by shak code as a bar plot
     plot = (
@@ -154,8 +176,9 @@ def uti_patchwork_data_plot(
     output_path: Path,
     name: str = "uti_data_pathwork",
     outcome_col_name: str = "outc_uti_value_within_0_to_1_days_max_fallback_0",
+    outcome_def: str = "UTIs",
 ) -> None:
-    outc_per_year = plot_outcomes_by_year(df, outcome_col_name)
+    outc_per_year = plot_outcomes_by_year(df, outcome_col_name, outcome_def)
     outc_per_shak = plot_outcomes_by_shak_code(df, outcome_col_name)
     outc_gender = plot_outcomes_gender(df, outcome_col_name)
     outc_adm_day = plot_outcomes_adm_day(df, outcome_col_name)
@@ -172,11 +195,24 @@ if __name__ == "__main__":
         data_path / "uti_outcomes_full_definition" / "uti_outcomes_full_definition.parquet"
     )
 
-    uti_patchwork_data_plot(full_definition, output_path, "full_definition")
+    uti_patchwork_data_plot(
+        full_definition, output_path, name="full_definition", outcome_def="Full definition"
+    )
 
     urine_samples = pd.read_parquet(
         data_path / "uti_outcomes_urine_samples" / "uti_outcomes_urine_samples.parquet"
     )
+
+    uti_patchwork_data_plot(
+        urine_samples, output_path, name="urine_amples", outcome_def="Positive urine samples"
+    )
+
     antibiotics = pd.read_parquet(
         data_path / "uti_outcomes_antibiotics" / "uti_outcomes_antibiotics.parquet"
+    )
+
+    uti_patchwork_data_plot(antibiotics, output_path, name="antibiotics", outcome_def="Antibiotics")
+
+    plot_prediction_times_by_year(full_definition).save(
+        output_path / "prediction_times_by_year.png"
     )
