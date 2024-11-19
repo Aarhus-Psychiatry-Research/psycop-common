@@ -50,20 +50,26 @@ def uti_outcomes() -> pd.DataFrame:
     # Keep only one row per sample
     filtered_df = filtered_df.drop_duplicates(subset='sample_uuid')
     
-    filtered_df = filtered_df.rename(columns={"sample_time": "timestamp", "afsnit_administration": "value"})
+    filtered_df = filtered_df.rename(columns={"sample_time": "timestamp", "afsnit_administration": "value",})
 
-    return filtered_df[["dw_ek_borger", "timestamp", "value"]]
+    return filtered_df[["dw_ek_borger", "timestamp", "value",]]
 
 
 def uti_postive_urine_sample_outcomes() -> pd.DataFrame:
 
-    return uti_positive_urine_samples()[["dw_ek_borger", "timestamp", "value"]]
+    df = uti_positive_urine_samples()[["dw_ek_borger", "timestamp", "afdeling_rekivernt"]]
 
+    df = df.rename(columns={"afdeling_rekivernt": "value"})
+    
+    return df
 
 def uti_relevant_antibiotics_outcomes() -> pd.DataFrame:
+    
+    df = uti_relevant_antibiotics()[["dw_ek_borger", "timestamp", "afsnit_administration"]]
+    
+    df = df.rename(columns={"afsnit_administration": "value"})
 
-    return uti_relevant_antibiotics()[["dw_ek_borger", "timestamp", "value"]]
-
+    return df
 
 if __name__ == "__main__":
     df = uti_outcomes()

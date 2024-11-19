@@ -38,7 +38,7 @@ class UTICohortDefiner(CohortDefiner):
                 load_admissions_discharge_timestamps().rename(
                     columns={"datotid_start": "timestamp"}
                 )
-            )[0:200]
+            )
         )
 
         filtered_prediction_times = filter_prediction_times(

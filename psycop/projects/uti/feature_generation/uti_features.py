@@ -5,7 +5,7 @@ import logging
 import sys
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, Literal
 
 import pandas as pd
 import polars as pl
@@ -22,7 +22,7 @@ from psycop.projects.bipolar.cohort_definition.diagnosis_timestamps.first_bipola
 from psycop.projects.uti.feature_generation.cohort_definition.uti_cohort_definer import (
     uti_pred_times,
 )
-from psycop.projects.uti.feature_generation.outcome_definition.uti_outcomes import uti_outcome_timestamps, uti_outcomes, uti_postive_urine_sample_outcomes, uti_relevant_antibiotics_outcomes
+from psycop.projects.uti.feature_generation.outcome_definition.uti_outcomes import uti_outcome_timestamps, uti_outcomes, uti_postive_urine_sample_outcome_timestamps, uti_relevant_antibiotics_administrations_outcome_timestamps
 
 def get_uti_project_info() -> ProjectInfo:
     return ProjectInfo(
@@ -119,19 +119,22 @@ def _pair_to_spec(pair: LayerSpecPair) -> AnySpec:
         case ts.PredictorSpec() | ts.OutcomeSpec() | ts.StaticSpec() | ts.TimeDeltaSpec():
             return pair.spec
 
-
-if __name__ == "__main__":
-    import coloredlogs
-
-    coloredlogs.install(  # type: ignore
-        level="INFO",
-        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-        datefmt="%Y/%m/%d %H:%M:%S",
-        stream=sys.stdout,
-    )
-
-    outcome_df = uti_outcomes()
+def uti_generate_features(
+    outcomes: Literal['combined', 'urine_samples', 'antibiotics'], 
+    lookahead_days: int = 3,
+    feature_set_name: str = "uti_outcomes_full_definition",
+    add_feature_layers: dict[str, list[ts.PredictorSpec | ts.OutcomeSpec | ts.StaticSpec | ts.TimeDeltaSpec]] | None = None,
+    ):
     
+    match outcomes:
+        case 'combined':
+            outcome_df = uti_outcome_timestamps()
+        case 'urine_samples':
+            outcome_df = uti_postive_urine_sample_outcome_timestamps()
+        case 'antibiotics':
+            outcome_df = uti_relevant_antibiotics_administrations_outcome_timestamps()
+    
+
     feature_layers = {
         "basic": [
             ts.OutcomeSpec(
@@ -140,7 +143,7 @@ if __name__ == "__main__":
                     entity_id_col_name="dw_ek_borger",
                     value_timestamp_col_name="timestamp",
                 ),
-                lookahead_distances=[datetime.timedelta(days=3)],
+                lookahead_distances=[datetime.timedelta(days=lookahead_days)],
                 aggregators=[ts.MaxAggregator()],
                 fallback=0,
                 column_prefix="outc_uti",
@@ -163,6 +166,10 @@ if __name__ == "__main__":
         ],
     }
 
+    if add_feature_layers:
+        for layer_name, layer_specs in add_feature_layers.items():
+            feature_layers[layer_name] = layer_specs # type: ignore
+
     layer_spec_pairs = [
         LayerSpecPair(layer, spec)
         for layer, spec_list in feature_layers.items()
@@ -177,8 +184,34 @@ if __name__ == "__main__":
         project_info=get_uti_project_info(),
         eligible_prediction_times_frame=uti_pred_times().prediction_times,
         feature_specs=specs,
-        feature_set_name="uti_outcomes_lina_definition",
+        feature_set_name=feature_set_name,
         n_workers=None,
         step_size=datetime.timedelta(days=365),
         do_dataset_description=False,
+    )
+    
+if __name__ == "__main__":
+    import coloredlogs
+
+    coloredlogs.install(  # type: ignore
+        level="INFO",
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+        datefmt="%Y/%m/%d %H:%M:%S",
+        stream=sys.stdout,
+    )
+    uti_generate_features(
+        outcomes="combined",
+        lookahead_days=1,
+        feature_set_name="uti_outcomes_full_definition"
+    )
+    uti_generate_features(
+        outcomes="urine_samples",
+        lookahead_days=1,
+        feature_set_name="uti_outcomes_urine_samples"
+    )
+
+    uti_generate_features(
+        outcomes="antibiotics",
+        lookahead_days=1,
+        feature_set_name="uti_outcomes_antibiotics"
     )
