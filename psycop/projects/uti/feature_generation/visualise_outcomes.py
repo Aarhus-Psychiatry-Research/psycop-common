@@ -32,7 +32,7 @@ def plot_prediction_times_by_year(df: pd.DataFrame) -> pn.ggplot:
         pn.ggplot(df, pn.aes(x="year", fill="year"))
         + pn.geom_bar(fill="#1f77b4")  # Dark blue color
         + pn.labs(title="Predictions pr. år", x="Year", y="Number of prediction times")
-        + pn.theme_minimal()  # Modern theme
+        + pn.theme_classic()  # Modern theme
         + pn.theme(
             text=pn.element_text(size=12),
             axis_title=pn.element_text(size=14),
@@ -44,6 +44,9 @@ def plot_prediction_times_by_year(df: pd.DataFrame) -> pn.ggplot:
 
 
 def plot_outcomes_by_year(df: pd.DataFrame, outcome_col_name: str = "out_value") -> pn.ggplot:
+    df[outcome_col_name] = df[outcome_col_name].replace("Ukendt", "1111")
+    df[outcome_col_name] = pd.to_numeric(df[outcome_col_name], errors="coerce")
+
     # keep only outcomes that are not 0
     df = df[df[outcome_col_name] != 0]
 
@@ -54,7 +57,7 @@ def plot_outcomes_by_year(df: pd.DataFrame, outcome_col_name: str = "out_value")
         pn.ggplot(df, pn.aes(x="year", fill="year"))
         + pn.geom_bar(fill="#1f77b4")  # Dark blue color
         + pn.labs(title="UTI-outcomes pr. år", x="Year", y="Number of outcomes")
-        + pn.theme_minimal()  # Modern theme
+        + pn.theme_classic()  # Modern theme
         + pn.theme(
             text=pn.element_text(size=12),
             axis_title=pn.element_text(size=14),
@@ -80,7 +83,7 @@ def plot_outcomes_by_shak_code(df: pd.DataFrame, outcome_col_name: str = "out_va
         pn.ggplot(df, pn.aes(x="shak_code", fill="shak_code"))
         + pn.geom_bar(fill="#1f77b4")  # Dark blue color
         + pn.labs(title="UTI-udfald pr. afdeling", x="Shak code", y="Number of outomces")
-        + pn.theme_minimal()  # Modern theme
+        + pn.theme_classic()  # Modern theme
         + pn.theme(
             text=pn.element_text(size=12),
             axis_title=pn.element_text(size=14),
