@@ -103,7 +103,7 @@ def plot_outcomes_gender(df: pd.DataFrame, outcome_col_name: str = "out_value") 
         pn.ggplot(df, pn.aes(x="pred_adm_day_count", fill="pred_adm_day_count"))
         + pn.geom_bar(fill="#1f77b4")  # Dark blue color
         + pn.labs(title="UTI-outcome - admission day distribution", x="Day of admissions", y="Number of outcomes")
-        + pn.theme_minimal()  # Modern theme
+        + pn.theme_classic()  # Modern theme
         + pn.theme(
             text=pn.element_text(size=12),
             axis_title=pn.element_text(size=14),
@@ -124,14 +124,13 @@ def plot_outcomes_adm_day(df: pd.DataFrame, outcome_col_name: str = "out_value")
         pn.ggplot(df, pn.aes(x="pred_sex_female_fallback_0", fill="pred_sex_female_fallback_0"))
         + pn.geom_bar(fill="#1f77b4")  # Dark blue color
         + pn.labs(title="UTI-outcome - sex distribution", x="Gender", y="Number of outcomes times")
-        + pn.theme_minimal()  # Modern theme
+        + pn.theme_classic()  # Modern theme
         + pn.theme(
             text=pn.element_text(size=12),
             axis_title=pn.element_text(size=14),
             title=pn.element_text(size=16),
         )
     )
-
 
     return plot
 
