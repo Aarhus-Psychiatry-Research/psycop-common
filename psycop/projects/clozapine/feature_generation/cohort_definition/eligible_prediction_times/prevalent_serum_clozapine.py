@@ -1,6 +1,6 @@
 import pandas as pd
 
-from psycop.common.feature_generation.loaders.raw.load_lab_results import p_clozapine
+from psycop.projects.clozapine.loaders.lab import p_clozapine
 
 
 def find_plasma_clozapine_between_2013_2014() -> pd.DataFrame:

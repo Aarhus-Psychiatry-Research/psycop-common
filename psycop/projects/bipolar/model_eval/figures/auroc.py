@@ -89,7 +89,7 @@ if __name__ == "__main__":
     save_dir = Path(__file__).parent / "figures"
     save_dir.mkdir(parents=True, exist_ok=True)
 
-    best_experiment = "bipolar_test"
+    best_experiment = "bipolar_model_training_text_feature_lb_200_interval_150"
     eval_data = (
         MlflowClientWrapper()
         .get_best_run_from_experiment(experiment_name=best_experiment, metric="all_oof_BinaryAUROC")

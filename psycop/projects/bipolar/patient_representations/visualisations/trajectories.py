@@ -6,8 +6,7 @@ import plotly.express as px  # Import Plotly Express
 import plotly.graph_objects as go
 import plotly.offline
 
-from psycop.projects.bipolar.patient_representations.pca import perform_pca
-from psycop.projects.bipolar.patient_representations.tsne import perform_tsne
+from psycop.projects.bipolar.patient_representations.representations import perform_projection
 from psycop.projects.bipolar.patient_representations.utils import prepare_eval_data_for_projections
 
 
@@ -303,7 +302,7 @@ if __name__ == "__main__":
         predictor_df_name="bipolar_text_feature_set_interval_days_150",
     )
 
-    projection_df = perform_pca(df)
+    projection_df = perform_projection(df, projecton_algortithm="pca")
 
     point_color_legend = {0: "False Positive", 1: "True Positive"}
 
@@ -378,13 +377,12 @@ if __name__ == "__main__":
         keep_points=False,
     )
     ## TSNE ##
-
     df = prepare_eval_data_for_projections(
         experiment_name="bipolar_model_training_full_feature_lb_200_interval_150",
         predictor_df_name="bipolar_all_features_interval_days_150",
     )
 
-    projection_df = perform_tsne(df)
+    projection_df = perform_projection(df, projecton_algortithm="pca")
 
     # keep only patients with TN and TP
     projection_df = projection_df[projection_df["prediction_type"].isin(["TP", "FP"])]  # type: ignore
