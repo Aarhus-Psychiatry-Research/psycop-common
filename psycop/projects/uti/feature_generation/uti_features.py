@@ -18,11 +18,15 @@ from psycop.common.feature_generation.application_modules.generate_feature_set i
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
-from psycop.projects.bipolar.cohort_definition.diagnosis_timestamps.first_bipolar_diagnosis import get_first_bipolar_diagnosis
 from psycop.projects.uti.feature_generation.cohort_definition.uti_cohort_definer import (
     uti_pred_times,
 )
-from psycop.projects.uti.feature_generation.outcome_definition.uti_outcomes import uti_outcome_timestamps, uti_outcomes, uti_postive_urine_sample_outcome_timestamps, uti_relevant_antibiotics_administrations_outcome_timestamps
+from psycop.projects.uti.feature_generation.outcome_definition.uti_outcomes import (
+    uti_outcome_timestamps,
+    uti_postive_urine_sample_outcome_timestamps,
+    uti_relevant_antibiotics_administrations_outcome_timestamps,
+)
+
 
 def get_uti_project_info() -> ProjectInfo:
     return ProjectInfo(
@@ -119,21 +123,23 @@ def _pair_to_spec(pair: LayerSpecPair) -> AnySpec:
         case ts.PredictorSpec() | ts.OutcomeSpec() | ts.StaticSpec() | ts.TimeDeltaSpec():
             return pair.spec
 
+
 def uti_generate_features(
-    outcomes: Literal['combined', 'urine_samples', 'antibiotics'], 
+    outcomes: Literal["combined", "urine_samples", "antibiotics"],
     lookahead_days: int = 3,
     feature_set_name: str = "uti_outcomes_full_definition",
-    add_feature_layers: dict[str, list[ts.PredictorSpec | ts.OutcomeSpec | ts.StaticSpec | ts.TimeDeltaSpec]] | None = None,
-    ):
-    
+    add_feature_layers: dict[
+        str, list[ts.PredictorSpec | ts.OutcomeSpec | ts.StaticSpec | ts.TimeDeltaSpec]
+    ]
+    | None = None,
+):
     match outcomes:
-        case 'combined':
+        case "combined":
             outcome_df = uti_outcome_timestamps()
-        case 'urine_samples':
+        case "urine_samples":
             outcome_df = uti_postive_urine_sample_outcome_timestamps()
-        case 'antibiotics':
+        case "antibiotics":
             outcome_df = uti_relevant_antibiotics_administrations_outcome_timestamps()
-    
 
     feature_layers = {
         "basic": [
@@ -163,12 +169,12 @@ def uti_generate_features(
                 fallback=0,
                 output_name="age",
             ),
-        ],
+        ]
     }
 
     if add_feature_layers:
         for layer_name, layer_specs in add_feature_layers.items():
-            feature_layers[layer_name] = layer_specs # type: ignore
+            feature_layers[layer_name] = layer_specs  # type: ignore
 
     layer_spec_pairs = [
         LayerSpecPair(layer, spec)
@@ -189,7 +195,8 @@ def uti_generate_features(
         step_size=datetime.timedelta(days=365),
         do_dataset_description=False,
     )
-    
+
+
 if __name__ == "__main__":
     import coloredlogs
 
@@ -200,18 +207,12 @@ if __name__ == "__main__":
         stream=sys.stdout,
     )
     uti_generate_features(
-        outcomes="combined",
-        lookahead_days=1,
-        feature_set_name="uti_outcomes_full_definition"
+        outcomes="combined", lookahead_days=1, feature_set_name="uti_outcomes_full_definition"
     )
     uti_generate_features(
-        outcomes="urine_samples",
-        lookahead_days=1,
-        feature_set_name="uti_outcomes_urine_samples"
+        outcomes="urine_samples", lookahead_days=1, feature_set_name="uti_outcomes_urine_samples"
     )
 
     uti_generate_features(
-        outcomes="antibiotics",
-        lookahead_days=1,
-        feature_set_name="uti_outcomes_antibiotics"
+        outcomes="antibiotics", lookahead_days=1, feature_set_name="uti_outcomes_antibiotics"
     )

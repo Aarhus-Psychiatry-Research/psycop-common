@@ -145,9 +145,9 @@ def explode_admissions(df: pl.LazyFrame) -> pl.LazyFrame:
     df_ = df.collect().to_pandas()
 
     df_concat = pd.concat([unpack_adm_days(idx, row) for idx, row in df_.iterrows()])  # type: ignore
-    
-    df_concat = df_concat[['dw_ek_borger', 'pred_time', 'pred_adm_day_count']]
+
+    df_concat = df_concat[["dw_ek_borger", "pred_time", "pred_adm_day_count"]]
 
     df_concat = df_concat.rename(columns={"pred_time": "timestamp"})
-    
+
     return pl.LazyFrame(df_concat)

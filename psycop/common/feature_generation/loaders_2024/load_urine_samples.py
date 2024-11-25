@@ -27,7 +27,7 @@ def urine_loader(n_rows: int | None = None) -> pd.DataFrame:
     """
     cols = "dw_ek_borger, datotidprv, prvnr, proeve_type, undersoegelse_tekst, proeve_type_tekst, materiale_tekst, bakterie_absolut_maengde, bakterienavn, bakterie_volumen"
 
-    sql = f"SELECT * FROM [fct].[FOR_Mikrobiologi_urin_inkl_2021_okt2024]"
+    sql = "SELECT * FROM [fct].[FOR_Mikrobiologi_urin_inkl_2021_okt2024]"
 
     df = sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
 
