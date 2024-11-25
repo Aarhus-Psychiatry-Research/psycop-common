@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "Python",
-            "type": "debugpy",
+            "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
@@ -17,8 +17,8 @@
         },
         {
             "name": "Debug Pytest",
-            "type": "debugpy",
-            "request": "launch",
+            "type": "python",
+            "request": "test",
             "console": "integratedTerminal",
             // "justMyCode": false,
             "env": {
