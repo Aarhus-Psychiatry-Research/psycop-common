@@ -20,6 +20,7 @@ from psycop.projects.uti.feature_generation.cohort_definition.eligible_predictio
     UTIExcludeFirstDayFilter,
     UTIMinAgeFilter,
     UTIMinDateFilter,
+    UTIShakCodeFilter,
 )
 from psycop.projects.uti.feature_generation.outcome_definition.uti_outcomes import uti_outcomes
 
@@ -37,7 +38,7 @@ class UTICohortDefiner(CohortDefiner):
     def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle:
         unfiltered_prediction_times = pl.LazyFrame(
             pl.from_pandas(
-                load_admissions_discharge_timestamps().rename(
+                load_admissions_discharge_timestamps()[0:100].rename(
                     columns={"datotid_start": "timestamp"}
                 )
             )
@@ -45,7 +46,7 @@ class UTICohortDefiner(CohortDefiner):
 
         filtered_prediction_times = filter_prediction_times(
             prediction_times=unfiltered_prediction_times,
-            filtering_steps=(UTIAdmissionTypeFilter(), UTIMinAgeFilter()),
+            filtering_steps=(UTIAdmissionTypeFilter(), UTIShakCodeFilter(), UTIMinAgeFilter()),
             entity_id_col_name="dw_ek_borger",
         ).prediction_times.frame.select(  # type: ignore
             pl.col(["dw_ek_borger", "timestamp", "datotid_slut", "shakkode_ansvarlig"])

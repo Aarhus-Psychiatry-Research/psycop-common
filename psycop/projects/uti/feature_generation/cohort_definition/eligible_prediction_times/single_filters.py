@@ -37,6 +37,11 @@ class UTIAdmissionTypeFilter(PredictionTimeFilter):
         return df.filter(pl.col("pt_type") == ADMISSION_TYPE)
 
 
+class UTIShakCodeFilter(PredictionTimeFilter):
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
+        return df.filter(pl.col("shakkode_ansvarlig").cast(pl.Utf8).str.slice(0, 4) != "6600")
+
+
 class UTIMinDateFilter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         after_df = df.filter(pl.col("timestamp") > MIN_DATE)
