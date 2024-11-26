@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from functools import partial
-from multiprocessing import Pool
 from typing import TYPE_CHECKING
 
 import pandas as pd
@@ -54,9 +52,8 @@ def get_valid_text_sfi_names() -> set[str]:
     }
 
 
-def _load_text_sfis_for_year(
-    year: str,
-    text_sfi_names: str | list[str],
+def load_text_sfis(
+    text_sfi_names: str | Iterable[str],
     include_sfi_name: bool = False,
     view: str | None = "Clozapin_fritekst_resultat",
     n_rows: int | None = None,
@@ -77,33 +74,6 @@ def _load_text_sfis_for_year(
         pd.DataFrame: Dataframe with clinical notes
     """
 
-    sql = "SELECT dw_ek_borger, datotid_senest_aendret_i_sfien, fritekst"
-
-    if include_sfi_name:
-        sql += ", overskrift"
-
-    sql += f" FROM [fct].[{view}_{year}]" + f" WHERE overskrift IN {text_sfi_names}"
-
-    return sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
-
-
-def load_text_sfis(
-    text_sfi_names: str | Iterable[str], include_sfi_name: bool = False, n_rows: int | None = None
-) -> pd.DataFrame:
-    """Loads all clinical notes that match the specified note from all years.
-
-    Args:
-        text_sfi_names (Union[str, list[str]]): Which sfi types to load. See
-            `get_all_valid_text_sfi_names()` for valid sfi types.
-        include_sfi_name (bool): Whether to include column with sfi name ("overskrift"). Defaults to False.
-        n_rows (Optional[int], optional): Number of rows to load. Defaults to None.
-
-    Raises:
-        ValueError: If given invalid note type
-
-    Returns:
-        pd.DataFrame: Featurized clinical notes
-    """
     if isinstance(text_sfi_names, str):
         text_sfi_names = [text_sfi_names]
 
@@ -116,24 +86,19 @@ def load_text_sfis(
     # convert text_sfi_names to sql query
     text_sfi_names = "('" + "', '".join(text_sfi_names) + "')"
 
+    sql = "SELECT dw_ek_borger, datotid_senest_aendret_i_sfien, fritekst"
+
+    if include_sfi_name:
+        sql += ", overskrift"
     view = "Clozapin_fritekst_resultat"
 
-    text_sfi_year_loader = partial(
-        _load_text_sfis_for_year,
-        text_sfi_names=text_sfi_names,
-        include_sfi_name=include_sfi_name,
-        view=view,
-        n_rows=n_rows,
-    )
+    sql += f" FROM [fct].[{view}]" + f" WHERE overskrift IN {text_sfi_names}"
 
-    years = list(range(2011, 2024))
+    df = sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
 
-    with Pool(processes=len(years)) as p:
-        dfs = p.map(text_sfi_year_loader, [str(y) for y in years])
-
-    df = pd.concat(dfs)
     df = df.rename({"datotid_senest_aendret_i_sfien": "timestamp", "fritekst": "value"}, axis=1)
-    return df
+
+    return sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
 
 
 def load_text_split(
@@ -153,9 +118,7 @@ def load_text_split(
     Returns:
         pd.DataFrame: Chosen sfis from chosen splits
     """
-    text_df = load_text_sfis(
-        text_sfi_names=text_sfi_names, include_sfi_name=include_sfi_name, n_rows=None
-    )
+    text_df = load_text_sfis(text_sfi_names=text_sfi_names, include_sfi_name=include_sfi_name)
 
     text_split_df = (
         split_ids_presplit_step.apply(pl.from_pandas(text_df).lazy()).collect().to_pandas()
@@ -182,37 +145,9 @@ def load_all_notes(n_rows: int | None = None, include_sfi_name: bool = False) ->
     )
 
 
-def load_aktuel_psykisk(n_rows: int | None = None) -> pd.DataFrame:
-    """Returns 'Aktuelt psykisk' notes from all years.
-
-    Args:
-        n_rows (Optional[int], optional): Number of rows to load. Defaults to None.
-
-    Returns:
-        pd.DataFrame: (Featurized) notes
-    """
-    return load_text_sfis(text_sfi_names="Aktuelt psykisk", n_rows=n_rows)
-
-
-def load_arbitrary_notes(
-    text_sfi_names: str | list[str], n_rows: int | None = None
-) -> pd.DataFrame:
-    """Returns one or multiple note types from all years.
-
-    Args:
-        text_sfi_names (Union[str, list[str]]): Which note types to load. See
-            `get_all_valid_text_sfi_names()` for a list of valid note types.
-        n_rows (Optional[int], optional): Number of rows to load. Defaults to None.
-
-    Returns:
-        pd.DataFrame: (Featurized) notes
-    """
-    return load_text_sfis(text_sfi_names, n_rows=n_rows)
-
-
 def load_preprocessed_sfis(
     text_sfi_names: set[str] | None = None,
-    corpus_name: str = "psycop.train_val_all_sfis_preprocessed",
+    corpus_name: str = "clozapine_train_val_all_sfis_preprocessed",
 ) -> pd.DataFrame:
     """Returns preprocessed sfis from preprocessed view/SQL table that includes the "overskrift" column.
     Preprocessed views are created using the function text_preprocessing_pipeline under text_models/preprocessing.
@@ -230,13 +165,14 @@ def load_preprocessed_sfis(
     # if not text_sfi_names, include all sfis
     if not text_sfi_names:
         corpus = pd.read_parquet(
-            path=f"E:/shared_resources/preprocessed_text/{corpus_name}.parquet"
+            path=f"E:/shared_resources/clozapine/preprocessed_text/{corpus_name}.parquet"
         )
     # if text_sfi_names, include only chosen sfis
     else:
         filter_list = [[("overskrift", "=", f"{sfi}")] for sfi in text_sfi_names]
         corpus = pd.read_parquet(
-            path=f"E:/shared_resources/preprocessed_text/{corpus_name}.parquet", filters=filter_list
+            path=f"E:/shared_resources/clozapine/preprocessed_text/{corpus_name}.parquet",
+            filters=filter_list,
         )
 
     return corpus
