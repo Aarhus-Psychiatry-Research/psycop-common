@@ -5,7 +5,7 @@ from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 
 
 def load_admissions_discharge_timestamps() -> pd.DataFrame:
-    return sql_load("SELECT * FROM fct.[FOR_kohorte_indhold_pt_journal_inkl_2021_feb2022]")
+    return sql_load("SELECT * FROM fct.[FOR_kohorte_indhold_pt_journal_psyk_somatik_inkl_2021_feb2022]")
 
 
 def concat_readmissions(
@@ -146,7 +146,9 @@ def explode_admissions(df: pl.LazyFrame) -> pl.LazyFrame:
 
     df_concat = pd.concat([unpack_adm_days(idx, row) for idx, row in df_.iterrows()])  # type: ignore
 
-    df_concat = df_concat[["dw_ek_borger", "pred_time", "pred_adm_day_count"]]
+    df_concat["adm_uuid"] = df_concat["dw_ek_borger"].astype(str) + "_" + df_concat["timestamp"].astype(str)
+
+    df_concat = df_concat[["dw_ek_borger", "adm_uuid", "pred_time", "pred_adm_day_count"]]
 
     df_concat = df_concat.rename(columns={"pred_time": "timestamp"})
 
