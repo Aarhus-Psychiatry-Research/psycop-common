@@ -1,15 +1,15 @@
 import pandas as pd
 
-from psycop.projects.t2d_extended.cohort_definition.outcome_specification.lab_results import (
+from psycop.projects.t2d_extended.feature_generation.cohort_definition.outcome_specification.lab_results import (
     get_first_diabetes_lab_result_above_threshold,
 )
-from psycop.projects.t2d_extended.cohort_definition.outcome_specification.medications import (
+from psycop.projects.t2d_extended.feature_generation.cohort_definition.outcome_specification.medications import (
     get_first_antidiabetic_medication,
 )
-from psycop.projects.t2d_extended.cohort_definition.outcome_specification.t1d_diagnoses import (
+from psycop.projects.t2d_extended.feature_generation.cohort_definition.outcome_specification.t1d_diagnoses import (
     get_first_type_1_diabetes_diagnosis,
 )
-from psycop.projects.t2d_extended.cohort_definition.outcome_specification.t2d_diagnoses import (
+from psycop.projects.t2d_extended.feature_generation.cohort_definition.outcome_specification.t2d_diagnoses import (
     get_first_type_2_diabetes_diagnosis,
 )
 

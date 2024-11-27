@@ -83,15 +83,19 @@ def eval_stratified_split(
 
 
 if __name__ == "__main__":
-    populate_baseline_registry()
+    # populate_baseline_registry()
 
-    aurocs = {
-        y: eval_stratified_split(
-            PsycopConfig().from_disk(Path(__file__).parent / "t2d_extended.cfg"),
-            training_end_date="2018-01-01",
-            evaluation_interval=(f"20{y}-01-01", f"20{y}-12-31"),
-        )
-        for y in range(18, 23)
-    }
+    # aurocs = {
+    #     y: eval_stratified_split(
+    #         PsycopConfig().from_disk(Path(__file__).parent / "t2d_extended.cfg"),
+    #         training_end_date="2018-01-01",
+    #         evaluation_interval=(f"20{y}-01-01", f"20{y}-12-31"),
+    #     )
+    #     for y in range(18, 23)
+    # }
 
-    print(aurocs)
+    # print(aurocs)
+
+
+    from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
+    df = MlflowClientWrapper().get_all_metrics_for_experiment("T2D-extended, temporal validation")

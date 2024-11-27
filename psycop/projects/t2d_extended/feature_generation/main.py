@@ -20,7 +20,7 @@ from psycop.common.feature_generation.application_modules.project_setup import P
 from psycop.common.feature_generation.loaders_2024.demographics import birthdays, sex_female
 from psycop.common.feature_generation.loaders_2024.lab import hba1c
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
-from psycop.projects.t2d_extended.cohort_definition.t2d_cohort_definer import (
+from psycop.projects.t2d_extended.feature_generation.cohort_definition.t2d_cohort_definer import (
     t2d_outcome_timestamps,
     t2d_pred_times,
 )
@@ -109,7 +109,7 @@ if __name__ == "__main__":
                 ),
                 lookahead_distances=[
                     datetime.timedelta(days=365 * 2),
-                    datetime.timedelta(days=365 * 5),
+                    # datetime.timedelta(days=365 * 5),
                 ],
                 aggregators=[ts.MaxAggregator()],
                 fallback=0,
@@ -148,7 +148,8 @@ if __name__ == "__main__":
     logging.info("Generating feature set")
     generate_feature_set(
         project_info=ProjectInfo(
-            project_name="t2d_extended", project_path=OVARTACI_SHARED_DIR / "t2d_extended"
+            project_name="t2d_extended", 
+            project_path=OVARTACI_SHARED_DIR / "t2d_extended" / "feature_set",
         ),
         eligible_prediction_times_frame=t2d_pred_times().prediction_times,
         feature_specs=specs,
