@@ -10,8 +10,8 @@ from timeseriesflattener.v1.aggregation_fns import (
     count,
     earliest,
     maximum,
-    mean,
     summed,
+    unique_count,
 )
 from timeseriesflattener.v1.feature_specs.group_specs import (
     NamedDataframe,
@@ -27,22 +27,35 @@ from timeseriesflattener.v1.feature_specs.single_specs import (
 )
 
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
-from psycop.common.feature_generation.loaders.raw.load_coercion import (
-    af_legemlig_lidelse,
-    baelte,
+from psycop.common.feature_generation.loaders.raw.load_lab_results import (
+    cancelled_standard_lab_results,
+    p_aripiprazol,
+    p_clozapine,
+    p_ethanol,
+    p_haloperidol,
+    p_olanzapine,
+    p_paliperidone,
+    p_paracetamol,
+    p_risperidone,
+)
+from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
+    broeset_violence_checklist,
+    suicide_risk_assessment,
+)
+from psycop.projects.clozapine.feature_generation.cohort_definition.clozapine_cohort_definition import (
+    ClozapineCohortDefiner,
+)
+from psycop.projects.clozapine.feature_generation.cohort_definition.outcome_specification.first_clozapine_prescription import (
+    get_first_clozapine_prescription,
+)
+from psycop.projects.clozapine.loaders.coercion import (
     beroligende_medicin,
-    ect,
-    farlighed,
-    fastholden,
-    medicinering,
-    remme,
     skema_1,
     skema_2_without_nutrition,
     skema_3,
-    tvangstilbageholdelse,
 )
-from psycop.common.feature_generation.loaders.raw.load_demographic import sex_female
-from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
+from psycop.projects.clozapine.loaders.demographics import sex_female
+from psycop.projects.clozapine.loaders.diagnoses import (
     cluster_b,
     f0_disorders,
     f1_disorders,
@@ -55,21 +68,7 @@ from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     f9_disorders,
     manic_and_bipolar,
 )
-from psycop.common.feature_generation.loaders.raw.load_lab_results import (
-    cancelled_standard_lab_results,
-    p_aripiprazol,
-    p_clomipramine,
-    p_clozapine,
-    p_ethanol,
-    p_haloperidol,
-    p_lithium,
-    p_nortriptyline,
-    p_olanzapine,
-    p_paliperidone,
-    p_paracetamol,
-    p_risperidone,
-)
-from psycop.common.feature_generation.loaders.raw.load_medications import (
+from psycop.projects.clozapine.loaders.medications import (
     alcohol_abstinence,
     analgesic,
     antidepressives,
@@ -90,26 +89,13 @@ from psycop.common.feature_generation.loaders.raw.load_medications import (
     second_gen_antipsychotics,
     zuclopenthixol_depot,
 )
-from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
-    broeset_violence_checklist,
-    hamilton_d17,
-    mas_m,
-    suicide_risk_assessment,
-)
-from psycop.common.feature_generation.loaders.raw.load_visits import (
-    physical_visits_to_psychiatry,
-    physical_visits_to_somatic,
-)
-from psycop.projects.clozapine.feature_generation.cohort_definition.clozapine_cohort_definition import (
-    ClozapineCohortDefiner,
-)
-from psycop.projects.clozapine.feature_generation.cohort_definition.outcome_specification.first_clozapine_prescription import (
-    get_first_clozapine_prescription,
+from psycop.projects.clozapine.loaders.visits import (
+    admissions_clozapine_2024,
+    physical_visits_to_psychiatry_clozapine_2024,
+    physical_visits_to_somatic_clozapine_2024,
 )
 
 log = logging.getLogger(__name__)
-
-from psycop.common.feature_generation.loaders.raw.load_visits import admissions
 
 
 class SpecSet(BaseModel):
@@ -127,12 +113,12 @@ class FeatureSpecifier:
         project_info: ProjectInfo,
         min_set_for_debug: bool = False,
         limited_feature_set: bool = False,
-        lookbehind_180d_mean: bool = False,
+        unique_count_antipsychotics: bool = False,
     ):
         self.min_set_for_debug = min_set_for_debug
         self.project_info = project_info
         self.limited_feature_set = limited_feature_set
-        self.lookbehind_180d_mean = lookbehind_180d_mean
+        self.unique_count_antipsychotics = unique_count_antipsychotics
 
     def _get_static_predictor_specs(self) -> list[StaticSpec]:
         """Get static predictor specs."""
@@ -189,10 +175,15 @@ class FeatureSpecifier:
         visits = PredictorGroupSpec(
             named_dataframes=(
                 NamedDataframe(
-                    df=physical_visits_to_psychiatry(return_value_as_visit_length_days=False),
+                    df=physical_visits_to_psychiatry_clozapine_2024(
+                        return_value_as_visit_length_days=False
+                    ),
                     name="physical_visits_to_psychiatry",
                 ),
-                NamedDataframe(df=physical_visits_to_somatic(), name="physical_visits_to_somatic"),
+                NamedDataframe(
+                    df=physical_visits_to_somatic_clozapine_2024(),
+                    name="physical_visits_to_somatic",
+                ),
             ),
             lookbehind_days=interval_days,
             aggregation_fns=resolve_multiple,
@@ -210,7 +201,8 @@ class FeatureSpecifier:
         admissions_df = PredictorGroupSpec(
             named_dataframes=[
                 NamedDataframe(
-                    df=admissions(return_value_as_visit_length_days=True), name="admissions"
+                    df=admissions_clozapine_2024(return_value_as_visit_length_days=True),
+                    name="admissions",
                 )
             ],
             lookbehind_days=interval_days,
@@ -257,6 +249,26 @@ class FeatureSpecifier:
 
         return psychiatric_medications
 
+    def _get_unique_count_medication_specs(
+        self, resolve_multiple: list[AggregationFunType], interval_days: list[float]
+    ) -> list[PredictorSpec]:
+        """Get unique count medications."""
+        log.info("-------- Generating unique count medications specs --------")
+
+        unique_count_medications = PredictorGroupSpec(
+            named_dataframes=(
+                NamedDataframe(df=antipsychotics(), name="antipsychotics"),
+                NamedDataframe(df=antidepressives(), name="antidepressives"),
+                NamedDataframe(df=anxiolytics(), name="anxiolytics"),
+                NamedDataframe(df=analgesic(), name="analgesics"),
+            ),
+            aggregation_fns=resolve_multiple,
+            lookbehind_days=interval_days,
+            fallback=[0],
+        ).create_combinations()
+
+        return unique_count_medications
+
     def _get_diagnoses_specs(
         self, resolve_multiple: list[AggregationFunType], interval_days: list[float]
     ) -> list[PredictorSpec]:
@@ -293,16 +305,8 @@ class FeatureSpecifier:
         coercion = PredictorGroupSpec(
             named_dataframes=(
                 NamedDataframe(df=skema_1(), name="skema_1"),
-                NamedDataframe(df=tvangstilbageholdelse(), name="tvangstilbageholdelse"),
                 NamedDataframe(df=skema_2_without_nutrition(), name="skema_2_without_nutrition"),
-                NamedDataframe(df=medicinering(), name="medicinering"),
-                NamedDataframe(df=ect(), name="ect"),
-                NamedDataframe(df=af_legemlig_lidelse(), name="af_legemlig_lidelse"),
                 NamedDataframe(df=skema_3(), name="skema_3"),
-                NamedDataframe(df=fastholden(), name="fastholden"),
-                NamedDataframe(df=baelte(), name="baelte"),
-                NamedDataframe(df=remme(), name="remme"),
-                NamedDataframe(df=farlighed(), name="farlighed"),
             ),
             aggregation_fns=resolve_multiple,
             lookbehind_days=interval_days,
@@ -338,8 +342,6 @@ class FeatureSpecifier:
             named_dataframes=(
                 NamedDataframe(df=broeset_violence_checklist(), name="broeset_violence_checklist"),
                 NamedDataframe(df=suicide_risk_assessment(), name="selvmordsrisiko"),
-                NamedDataframe(df=hamilton_d17(), name="hamilton_d17"),
-                NamedDataframe(df=mas_m(), name="mas_m"),
             ),
             aggregation_fns=resolve_multiple,
             lookbehind_days=interval_days,
@@ -356,7 +358,6 @@ class FeatureSpecifier:
 
         lab_results = PredictorGroupSpec(
             named_dataframes=(
-                NamedDataframe(df=p_lithium(), name="p_lithium"),
                 NamedDataframe(df=p_clozapine(), name="p_clozapine"),
                 NamedDataframe(df=p_olanzapine(), name="p_olanzapine"),
                 NamedDataframe(df=p_aripiprazol(), name="p_aripiprazol"),
@@ -365,8 +366,6 @@ class FeatureSpecifier:
                 NamedDataframe(df=p_haloperidol(), name="p_haloperidol"),
                 NamedDataframe(df=p_paracetamol(), name="p_paracetamol"),
                 NamedDataframe(df=p_ethanol(), name="p_ethanol"),
-                NamedDataframe(df=p_nortriptyline(), name="p_nortriptyline"),
-                NamedDataframe(df=p_clomipramine(), name="p_clomipramine"),
             ),
             aggregation_fns=resolve_multiple,
             lookbehind_days=interval_days,
@@ -425,58 +424,20 @@ class FeatureSpecifier:
                     prefix=self.project_info.prefix.predictor,
                 )
             ]
-        if self.lookbehind_180d_mean:
-            interval_days = [180.0]
-            resolve_multiple = [mean]
 
-            visits = self._get_visits_specs(
-                resolve_multiple=resolve_multiple, interval_days=interval_days
-            )
+        if self.unique_count_antipsychotics:
+            return [
+                PredictorSpec(
+                    timeseries_df=antipsychotics(unique_count=True),
+                    feature_base_name="antipsychotics",
+                    lookbehind_days=365,
+                    aggregation_fn=unique_count,
+                    fallback=np.nan,
+                    prefix=self.project_info.prefix.predictor,
+                )
+            ]
 
-            admissions = self._get_admissions_specs(
-                resolve_multiple=resolve_multiple, interval_days=interval_days
-            )
-
-            diagnoses = self._get_diagnoses_specs(
-                resolve_multiple=resolve_multiple, interval_days=interval_days
-            )
-
-            medications = self._get_medication_specs(
-                resolve_multiple=resolve_multiple, interval_days=interval_days
-            )
-
-            beroligende_medicin = self._get_beroligende_medicin_specs(
-                resolve_multiple=[boolean], interval_days=interval_days
-            )
-
-            coercion = self._get_coercion_specs(
-                resolve_multiple=resolve_multiple, interval_days=interval_days
-            )
-
-            structured_sfi = self._get_structured_sfi_specs(
-                resolve_multiple=resolve_multiple, interval_days=interval_days
-            )
-
-            lab_results = self._get_lab_result_specs(
-                resolve_multiple=resolve_multiple, interval_days=interval_days
-            )
-
-            cancelled_lab_results = self._get_cancelled_lab_result_specs(
-                resolve_multiple=resolve_multiple, interval_days=interval_days
-            )
-            return (
-                visits
-                + admissions
-                + medications
-                + diagnoses
-                + beroligende_medicin
-                + coercion
-                + structured_sfi
-                + lab_results
-                + cancelled_lab_results
-            )
-
-        interval_days = [10.0, 30.0, 180.0, 365.0]
+        interval_days = [30.0, 180.0, 365.0]
 
         visits = self._get_visits_specs(resolve_multiple=[count], interval_days=interval_days)
 
@@ -485,11 +446,15 @@ class FeatureSpecifier:
         )
 
         diagnoses = self._get_diagnoses_specs(
-            resolve_multiple=[count, boolean], interval_days=interval_days
+            resolve_multiple=[count, boolean, unique_count], interval_days=interval_days
         )
 
         medications = self._get_medication_specs(
             resolve_multiple=[count, boolean], interval_days=interval_days
+        )
+
+        unique_count_medications = self._get_unique_count_medication_specs(
+            resolve_multiple=[unique_count], interval_days=[365.0]
         )
 
         beroligende_medicin = self._get_beroligende_medicin_specs(
@@ -515,8 +480,11 @@ class FeatureSpecifier:
             visits
             + admissions
             + medications
+            + unique_count_medications
             + diagnoses
             + beroligende_medicin
+            + lab_results
+            + cancelled_lab_results
             + coercion
             + structured_sfi
         )
@@ -540,10 +508,7 @@ class FeatureSpecifier:
                 + self._get_outcome_timestamp_specs()
             )
 
-        if self.lookbehind_180d_mean:
-            log.warning(
-                "--- !!! Using all features, but only a lookbehind of 180 days and mean as aggregation function !!! ---"
-            )
+        if self.unique_count_antipsychotics:
             return (
                 self._get_temporal_predictor_specs()
                 + self._get_static_predictor_specs()

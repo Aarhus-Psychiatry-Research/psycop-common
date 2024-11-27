@@ -90,6 +90,7 @@ def load_from_codes(
     shak_code: int | None = None,
     keep_code_col: bool = False,
     shak_sql_operator: str | None = None,
+    unique_count: bool = False,
 ) -> pd.DataFrame:
     """Load the visits that have diagnoses that match icd_code or atc code from
     the beginning of their adiagnosekode or atc code string. Aggregates all
@@ -121,6 +122,7 @@ def load_from_codes(
         shak_code (int, optional): Shak code indicating where to keep/not keep visits from (e.g. 6600). Defaults to None.
         keep_code_col (bool, optional): Whether to keep the code column. Defaults to False.
         shak_sql_operator (str, optional): Operator indicating how to filter shak_code, e.g. "!= 6600" or "= 6600". Defaults to None.
+        unique_count: Should be set to true if used for the aggregation method "unique_count". If false, the value columns is set to 1. Defaults to False.
 
     Returns:
         pd.DataFrame: A pandas dataframe with dw_ek_borger, timestamp and
@@ -282,6 +284,9 @@ def load_from_codes(
             output_col_name = codes_to_match
 
     df[output_col_name] = 1
+
+    if unique_count is True:
+        df[output_col_name] = df["atc"]
 
     if not keep_code_col:
         df = df.drop([f"{code_col_name}"], axis="columns")
