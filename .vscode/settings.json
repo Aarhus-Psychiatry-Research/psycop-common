@@ -45,4 +45,5 @@
         "--extend-ignore",
         "PIE790" // Do not delete unnecessary pass on save, only on pr creation
     ],
+    "r.lsp.promptToInstall": false,
 }

@@ -11,13 +11,13 @@ from psycop.common.feature_generation.loaders_2024.demographics import birthdays
 from psycop.common.feature_generation.loaders_2024.visits import physical_visits_to_psychiatry_2024
 from psycop.common.global_utils.cache import shared_cache
 from psycop.common.sequence_models.registry import SequenceRegistry
-from psycop.projects.t2d_extended.cohort_definition.eligible_prediction_times.single_filters import (
+from psycop.projects.t2d_extended.feature_generation.cohort_definition.eligible_prediction_times.single_filters import (
     NoIncidentDiabetes,
     T2DMinAgeFilter,
     T2DMinDateFilter,
     WithoutPrevalentDiabetes,
 )
-from psycop.projects.t2d_extended.cohort_definition.outcome_specification.lab_results import (
+from psycop.projects.t2d_extended.feature_generation.cohort_definition.outcome_specification.lab_results import (
     get_first_diabetes_lab_result_above_threshold,
 )
 
