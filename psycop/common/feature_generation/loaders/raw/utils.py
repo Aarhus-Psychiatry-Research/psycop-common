@@ -283,7 +283,6 @@ def load_from_codes(
         else:
             output_col_name = codes_to_match
 
-
     if add_code_to_output_col:
         df[output_col_name] = df[code_col_name]
     else:
