@@ -122,7 +122,7 @@ def load_from_codes(
         shak_code (int, optional): Shak code indicating where to keep/not keep visits from (e.g. 6600). Defaults to None.
         keep_code_col (bool, optional): Whether to keep the code column. Defaults to False.
         shak_sql_operator (str, optional): Operator indicating how to filter shak_code, e.g. "!= 6600" or "= 6600". Defaults to None.
-        unique_count: Should be set to true if used for the aggregation method "unique_count". If false, the value columns is set to 1. Defaults to False.
+        add_code_to_output_col: When set to True, the value columns is set to contain the codes. This function is e.g. need for the "unique_count()" aggregation function. If False, the value column is set to 1. Defaults to False.
 
     Returns:
         pd.DataFrame: A pandas dataframe with dw_ek_borger, timestamp and
