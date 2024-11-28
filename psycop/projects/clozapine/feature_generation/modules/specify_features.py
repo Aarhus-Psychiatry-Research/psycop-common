@@ -257,10 +257,14 @@ class FeatureSpecifier:
 
         unique_count_medications = PredictorGroupSpec(
             named_dataframes=(
-                NamedDataframe(df=antipsychotics(), name="antipsychotics"),
-                NamedDataframe(df=antidepressives(), name="antidepressives"),
-                NamedDataframe(df=anxiolytics(), name="anxiolytics"),
-                NamedDataframe(df=analgesic(), name="analgesics"),
+                NamedDataframe(
+                    df=antipsychotics(add_code_to_output_col=True), name="antipsychotics"
+                ),
+                NamedDataframe(
+                    df=antidepressives(add_code_to_output_col=True), name="antidepressives"
+                ),
+                NamedDataframe(df=anxiolytics(add_code_to_output_col=True), name="anxiolytics"),
+                NamedDataframe(df=analgesic(add_code_to_output_col=True), name="analgesics"),
             ),
             aggregation_fns=resolve_multiple,
             lookbehind_days=interval_days,
@@ -428,7 +432,7 @@ class FeatureSpecifier:
         if self.unique_count_antipsychotics:
             return [
                 PredictorSpec(
-                    timeseries_df=antipsychotics(unique_count=True),
+                    timeseries_df=antipsychotics(add_code_to_output_col=True),
                     feature_base_name="antipsychotics",
                     lookbehind_days=365,
                     aggregation_fn=unique_count,
