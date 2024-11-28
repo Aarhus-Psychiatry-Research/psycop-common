@@ -90,7 +90,7 @@ def load_from_codes(
     shak_code: int | None = None,
     keep_code_col: bool = False,
     shak_sql_operator: str | None = None,
-    unique_count: bool = False,
+    add_code_to_output_col: bool = False,
 ) -> pd.DataFrame:
     """Load the visits that have diagnoses that match icd_code or atc code from
     the beginning of their adiagnosekode or atc code string. Aggregates all
