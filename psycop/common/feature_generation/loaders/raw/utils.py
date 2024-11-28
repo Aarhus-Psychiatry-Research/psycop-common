@@ -283,11 +283,11 @@ def load_from_codes(
         else:
             output_col_name = codes_to_match
 
-    df[output_col_name] = 1
 
-    if unique_count is True:
-        df[output_col_name] = df["atc"]
-
+    if add_code_to_output_col:
+        df[output_col_name] = df[code_col_name]
+    else:
+        df[output_col_name] = 1
     if not keep_code_col:
         df = df.drop([f"{code_col_name}"], axis="columns")
 
