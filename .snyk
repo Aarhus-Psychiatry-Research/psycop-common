@@ -1,5 +1,5 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.25.0
+version: v1.25.1
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
   SNYK-PYTHON-JUPYTERSERVER-6099119:
@@ -117,16 +117,24 @@ ignore:
   SNYK-PYTHON-PYTORCHLIGHTNING-7411413:
     - '*':
         reason: >-
-          Vulnerability in pytorch lightning through the /v1/runs 
-          API endpoint when extracting tar.gz files which we do not. 
-          Exception approved via Slack conversation
-          in programming channel on 2024-08-05.
+          Vulnerability in pytorch lightning through the /v1/runs  API endpoint
+          when extracting tar.gz files which we do not.  Exception approved via
+          Slack conversation in programming channel on 2024-08-05.
         created: 2024-08-01T15:45:50.944Z
   SNYK-PYTHON-NLTK-7411380:
     - '*':
         reason: >-
-          Vulnerability in nltk which we do not use
-          Exception approved via Slack conversation
-          in programming channel on 2024-08-05.
+          Vulnerability in nltk which we do not use Exception approved via Slack
+          conversation in programming channel on 2024-08-05.
         created: 2024-08-01T15:50:53.944Z
+  SNYK-PYTHON-TRANSFORMERS-8400823:
+    - '*':
+        reason: Vulnerability related to loading in malicious model files, which is not relevant for us. Exception approved via Slack conversation in programming channel on 03/12/2024.        created: 2024-12-03T08:02:34.487Z
+  SNYK-PYTHON-TRANSFORMERS-8400822:
+    - '*':
+        reason: Vulnerability related to loading in malicious model files, which is not relevant for us. Exception approved via Slack conversation in programming channel on 03/12/2024.        created: 2024-12-03T08:02:58.812Z
+  SNYK-PYTHON-TRANSFORMERS-8400820:
+    - '*':
+        reason: Vulnerability related to loading in malicious model files, which is not relevant for us. Exception approved via Slack conversation in programming channel on 03/12/2024.
+        created: 2024-12-03T08:03:06.650Z
 patch: {}
