@@ -129,12 +129,14 @@ ignore:
         created: 2024-08-01T15:50:53.944Z
   SNYK-PYTHON-TRANSFORMERS-8400823:
     - '*':
-        reason: Vulnerability related to loading in malicious model files, which is not relevant for us. Exception approved via Slack conversation in programming channel on 03/12/2024.        created: 2024-12-03T08:02:34.487Z
+        reason: Vulnerability related to loading in malicious model files, which is not relevant for us. Exception approved via Slack conversation in programming channel on 03/06/2024.
+        created: 2024-12-03T08:02:34.487Z
   SNYK-PYTHON-TRANSFORMERS-8400822:
     - '*':
-        reason: Vulnerability related to loading in malicious model files, which is not relevant for us. Exception approved via Slack conversation in programming channel on 03/12/2024.        created: 2024-12-03T08:02:58.812Z
+        reason: Vulnerability related to loading in malicious model files, which is not relevant for us. Exception approved via Slack conversation in programming channel on 03/06/2024.
+        created: 2024-12-03T08:02:58.812Z
   SNYK-PYTHON-TRANSFORMERS-8400820:
     - '*':
-        reason: Vulnerability related to loading in malicious model files, which is not relevant for us. Exception approved via Slack conversation in programming channel on 03/12/2024.
+        reason: Vulnerability related to loading in malicious model files, which is not relevant for us. Exception approved via Slack conversation in programming channel on 03/06/2024.
         created: 2024-12-03T08:03:06.650Z
 patch: {}
