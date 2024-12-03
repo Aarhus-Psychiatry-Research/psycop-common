@@ -1,6 +1,7 @@
 # Find all instances of positive urine samples that are followed by/preceeded by administration UVI-related antibiotics
 
 # Join to admission id and keep only first positive outcome during each admission
+
 import pandas as pd
 
 from psycop.common.feature_generation.loaders_2024.load_urine_samples import (
@@ -13,11 +14,6 @@ from psycop.common.global_utils.cache import shared_cache
 
 
 @shared_cache().cache()
-def uti_outcome_timestamps() -> pd.DataFrame:
-    return uti_outcomes()
-
-
-@shared_cache().cache()
 def uti_postive_urine_sample_outcome_timestamps() -> pd.DataFrame:
     return uti_postive_urine_sample_outcomes()
 
@@ -27,7 +23,7 @@ def uti_relevant_antibiotics_administrations_outcome_timestamps() -> pd.DataFram
     return uti_relevant_antibiotics_outcomes()
 
 
-def uti_outcomes() -> pd.DataFrame:
+def uti_outcomes(antibiotics_window: tuple[int, int] = (-1, 5)) -> pd.DataFrame:
     # load data
     antibiotics_df = uti_relevant_antibiotics()
 
@@ -44,7 +40,10 @@ def uti_outcomes() -> pd.DataFrame:
     merged_df["time_diff"] = (merged_df["administration_time"] - merged_df["sample_time"]).dt.days
 
     # Filter for antibiotic prescriptions between 1 day before and 5 days after the sample date
-    filtered_df = merged_df[(merged_df["time_diff"] >= -1) & (merged_df["time_diff"] <= 5)]
+    filtered_df = merged_df[
+        (merged_df["time_diff"] >= antibiotics_window[0])
+        & (merged_df["time_diff"] <= antibiotics_window[1])
+    ]
 
     # Create sample uuid
     filtered_df["sample_uuid"] = filtered_df.dw_ek_borger.astype(
