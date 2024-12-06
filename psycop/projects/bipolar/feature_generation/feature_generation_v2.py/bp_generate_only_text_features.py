@@ -18,13 +18,14 @@ from psycop.common.feature_generation.application_modules.generate_feature_set i
 )
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
-from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR, TEXT_EMBEDDINGS_DIR
+from psycop.common.feature_generation.loaders.raw.load_embedded_text import EmbeddedTextLoader
+from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.projects.bipolar.cohort_definition.bipolar_cohort_definition import BipolarCohortDefiner
 from psycop.projects.bipolar.cohort_definition.diagnosis_timestamps.first_bipolar_diagnosis import (
     get_first_bipolar_diagnosis,
 )
 
-TEXT_FILE_NAME = "text_embeddings_all_relevant_tfidf-1000.parquet"
+TEXT_FILE_NAME = "text_embeddings_all_relevant_tfidf-1000"
 
 
 def get_bipolar_project_info() -> ProjectInfo:
@@ -168,9 +169,7 @@ if __name__ == "__main__":
         "layer_text": [
             ts.PredictorSpec(
                 value_frame=ts.ValueFrame(
-                    init_df=pl.read_parquet(TEXT_EMBEDDINGS_DIR / TEXT_FILE_NAME).drop(
-                        "overskrift"
-                    ),
+                    init_df=EmbeddedTextLoader.load_embedded_text(TEXT_FILE_NAME),
                     entity_id_col_name="dw_ek_borger",
                     value_timestamp_col_name="timestamp",
                 ),

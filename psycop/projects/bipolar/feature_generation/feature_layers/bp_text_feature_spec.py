@@ -2,6 +2,7 @@ import datetime as dt
 from typing import Union
 
 import numpy as np
+import pandas as pd
 import polars as pl
 from timeseriesflattener import (
     BooleanOutcomeSpec,
@@ -13,7 +14,7 @@ from timeseriesflattener import (
 )
 from timeseriesflattener.aggregators import MeanAggregator
 
-from psycop.common.global_utils.paths import TEXT_EMBEDDINGS_DIR
+from psycop.common.feature_generation.loaders.raw.load_embedded_text import EmbeddedTextLoader
 
 ValueSpecification = Union[
     PredictorSpec, OutcomeSpec, BooleanOutcomeSpec, TimeDeltaSpec, StaticSpec
@@ -26,7 +27,10 @@ def make_timedeltas_from_zero(lookbehind_days: list[float]) -> list[dt.timedelta
 
 class BpTextFeatures:
     def _text_specs_from_embedding_df(
-        self, embedded_text_df: pl.DataFrame, name_prefix: str, lookbehind_days: list[float]
+        self,
+        embedded_text_df: pl.DataFrame | pd.DataFrame,
+        name_prefix: str,
+        lookbehind_days: list[float],
     ) -> list[ValueSpecification]:
         return [
             PredictorSpec(
@@ -46,7 +50,7 @@ class BpTextFeatures:
         self, note_type: str, model_name: str, lookbehind_days: list[float]
     ) -> list[ValueSpecification]:
         filename = f"text_embeddings_{note_type}_{model_name}.parquet"
-        embedded_text_df = pl.read_parquet(TEXT_EMBEDDINGS_DIR / filename)
+        embedded_text_df = EmbeddedTextLoader.load_embedded_text(filename)
         if "overskrift" in embedded_text_df.columns:
             embedded_text_df = embedded_text_df.drop("overskrift")
 

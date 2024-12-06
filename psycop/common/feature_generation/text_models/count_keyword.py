@@ -9,7 +9,7 @@ from psycop.common.feature_generation.loaders.raw.load_text import load_preproce
 from psycop.common.feature_generation.text_models.encode_text_as_tfidf_scores import (
     encode_tfidf_values_to_df,
 )
-from psycop.common.global_utils.paths import TEXT_EMBEDDINGS_DIR
+from psycop.common.global_utils.sql.writer import write_df_to_sql
 
 
 def get_present_state_examination_keywords() -> Iterable[str]:
@@ -32,5 +32,7 @@ if __name__ == "__main__":
     counts = encode_tfidf_values_to_df(vec, corpus["value"].to_list())  # type: ignore
 
     corpus = corpus.drop(["value"])
-    counts = pl.concat([corpus, counts], how="horizontal")
-    counts.write_parquet(TEXT_EMBEDDINGS_DIR / "pse_keyword_counts_all_sfis.parquet")
+    counts = pl.concat([corpus, counts], how="horizontal").to_pandas()
+
+    # save embeddings to sql server
+    write_df_to_sql(counts, "text_embeddings_pse_keyword_counts_all_sfis")

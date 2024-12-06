@@ -19,7 +19,7 @@ from timeseriesflattener.aggregators import HasValuesAggregator, MeanAggregator
 
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
-from psycop.common.global_utils.paths import TEXT_EMBEDDINGS_DIR
+from psycop.common.feature_generation.loaders.raw.load_embedded_text import EmbeddedTextLoader
 from psycop.projects.restraint.cohort.restraint_cohort_definer import RestraintCohortDefiner
 
 log = logging.getLogger(__name__)
@@ -89,8 +89,10 @@ class TextFeatureSpecifier:
     def _get_text_specs_by_type_and_model(
         self, note_type: str, model_name: str, lookbehind_days: dt.timedelta
     ) -> PredictorSpec:
-        filename = f"text_embeddings_{note_type}_{model_name}.parquet"
-        embedded_text = pd.read_parquet(TEXT_EMBEDDINGS_DIR / filename)
+        view = f"text_embeddings_{model_name}"
+
+        embedded_text = EmbeddedTextLoader.load_embedded_text(view)
+
         if "overskrift" in embedded_text.columns:
             embedded_text = embedded_text.drop(columns="overskrift")
 

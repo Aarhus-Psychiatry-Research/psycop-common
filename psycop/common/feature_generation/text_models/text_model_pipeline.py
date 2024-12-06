@@ -51,7 +51,7 @@ def create_model_filename(
 
 def text_model_pipeline(
     model: Literal["bow", "tfidf"],
-    split_ids_presplit_step: PresplitStep,
+    split_ids_presplit_step: PresplitStep | None = None,
     corpus_name: str = "psycop_train_val_all_sfis_preprocessed",
     corpus_preproceseed: bool = False,
     sfi_type: Optional[Sequence[str] | str] = None,
