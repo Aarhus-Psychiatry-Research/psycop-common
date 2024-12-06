@@ -11,7 +11,7 @@ import pandas as pd
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Iterable, Sequence
 
     from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 
@@ -136,7 +136,7 @@ def load_text_sfis(
 
 
 def load_text_split(
-    text_sfi_names: str | Iterable[str],
+    text_sfi_names: str | Iterable[str] | None,
     split_ids_presplit_step: PresplitStep,
     include_sfi_name: bool = False,
     n_rows: int | None = None,
@@ -152,8 +152,12 @@ def load_text_split(
     Returns:
         pd.DataFrame: Chosen sfis from chosen splits
     """
-    text_df = load_text_sfis(
-        text_sfi_names=text_sfi_names, include_sfi_name=include_sfi_name, n_rows=None
+    text_df = (
+        load_text_sfis(
+            text_sfi_names=text_sfi_names, include_sfi_name=include_sfi_name, n_rows=None
+        )
+        if text_sfi_names
+        else load_all_notes(n_rows=None, include_sfi_name=include_sfi_name)
     )
 
     text_split_df = (
@@ -210,7 +214,7 @@ def load_arbitrary_notes(
 
 
 def load_preprocessed_sfis(
-    text_sfi_names: set[str] | None = None,
+    text_sfi_names: Sequence[str] | None = None,
     corpus_name: str = "psycop.train_val_all_sfis_preprocessed",
 ) -> pd.DataFrame:
     """Returns preprocessed sfis from preprocessed view/SQL table that includes the "overskrift" column.
