@@ -215,7 +215,7 @@ def load_arbitrary_notes(
 
 def load_preprocessed_sfis(
     text_sfi_names: Sequence[str] | None = None,
-    corpus_name: str = "psycop.train_val_all_sfis_preprocessed",
+    corpus_name: str = "psycop_train_val_all_sfis_preprocessed",
 ) -> pd.DataFrame:
     """Returns preprocessed sfis from preprocessed view/SQL table that includes the "overskrift" column.
     Preprocessed views are created using the function text_preprocessing_pipeline under text_models/preprocessing.
@@ -230,16 +230,18 @@ def load_preprocessed_sfis(
     """
 
     # load corpus
+    view = f"[{corpus_name}]"
+    sql = f"SELECT * FROM [fct].{view}"
+
     # if not text_sfi_names, include all sfis
     if not text_sfi_names:
-        corpus = pd.read_parquet(
-            path=f"E:/shared_resources/preprocessed_text/{corpus_name}.parquet"
-        )
+        corpus = sql_load(query=sql, server="BI-DPA-PROD", database="USR_PS_Forsk", n_rows=None)
+
     # if text_sfi_names, include only chosen sfis
     else:
-        filter_list = [[("overskrift", "=", f"{sfi}")] for sfi in text_sfi_names]
-        corpus = pd.read_parquet(
-            path=f"E:/shared_resources/preprocessed_text/{corpus_name}.parquet", filters=filter_list
-        )
+        corpus = sql_load(query=sql, server="BI-DPA-PROD", database="USR_PS_Forsk", n_rows=None)
+
+        # keep only chosen sfis
+        corpus = corpus[corpus["overskrift"].isin(text_sfi_names)]
 
     return corpus
