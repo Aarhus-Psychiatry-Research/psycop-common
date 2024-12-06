@@ -3,11 +3,10 @@
 from collections.abc import Iterable
 from time import time
 
-import pandas as pd
 import polars as pl
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-from psycop.common.feature_generation.text_models.text_model_paths import PREPROCESSED_TEXT_DIR
+from psycop.common.feature_generation.loaders.raw.load_text import load_preprocessed_sfis
 from psycop.common.feature_generation.text_models.utils import load_text_model
 from psycop.common.global_utils.paths import TEXT_EMBEDDINGS_DIR
 
@@ -25,9 +24,9 @@ if __name__ == "__main__":
         "tfidf_psycop_train_all_sfis_preprocessed_sfi_type_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750.pkl"
     )
 
-    corpus = pl.from_pandas(
-        pd.read_parquet(path=PREPROCESSED_TEXT_DIR / "psycop_train_all_sfis_preprocessed.parquet")
-    )
+    # load preprocessed text from sql
+    corpus = pl.from_pandas(load_preprocessed_sfis())
+
     print("Loaded text")
     tfidf_values = encode_tfidf_values_to_df(tfidf_model, corpus["value"].to_list())  # type: ignore
 
