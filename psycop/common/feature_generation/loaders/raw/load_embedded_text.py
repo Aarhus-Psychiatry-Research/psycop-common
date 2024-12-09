@@ -1,7 +1,7 @@
-import polars as pl
+import pandas as pd
 
 from psycop.common.feature_generation.loaders.raw.load_text import get_valid_text_sfi_names
-from psycop.common.global_utils.paths import TEXT_EMBEDDINGS_DIR
+from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 
 
 class EmbeddedTextLoader:
@@ -17,33 +17,42 @@ class EmbeddedTextLoader:
             )
 
     @staticmethod
-    def _validate_input(text_sfi_names: list[str], filename: str):
-        EmbeddedTextLoader._validate_sfi_names(text_sfi_names=text_sfi_names)
-        if not (TEXT_EMBEDDINGS_DIR / filename).exists():
-            raise FileNotFoundError(f"File {filename} not found in {TEXT_EMBEDDINGS_DIR}")
-
-    @staticmethod
     def load_embedded_text(
-        filename: str, text_sfi_names: list[str], include_sfi_name: bool, n_rows: int | None
-    ) -> pl.DataFrame:
+        embedding_view_name: str = "text_train_val_test_tfidf_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750",
+        text_sfi_names: list[str] | None = None,
+        n_rows: int | None = None,
+        include_sfi_name: bool = False,
+    ) -> pd.DataFrame:
         """Loads embedded text (e.g. from sentence-transformers) from disk.
 
         Args:
-            filename (str): Name of file to load from disk. Assumes file is
-                located in TEXT_EMBEDDINGS_DIR.
+            embedding_view_name (str): Name of view to load from SQL database. Defaults to
+                "text_train_val_test_tfidf_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750".
             text_sfi_names (list[str]): Which note types to load. See
-                `get_all_valid_text_sfi_names()` for a list of valid note types.
-            include_sfi_name (bool): Whether to include column with sfi name
-                ("overskrift").
+                `get_all_valid_text_sfi_names()` for a list of valid note types. Defaults to None,
             n_rows (int | None): Number of rows to load. Defaults to None which
-                loads all rows."""
-        EmbeddedTextLoader._validate_input(text_sfi_names=text_sfi_names, filename=filename)
+                loads all rows. Defaults to None.
+            include_sfi_name (bool): Whether to include column with sfi name ("overskrift"). Defaults to False.
+        """
 
-        embedded_text_df = pl.scan_parquet(TEXT_EMBEDDINGS_DIR / filename).filter(
-            pl.col("overskrift").is_in(text_sfi_names)
-        )
-        if n_rows is not None:
-            embedded_text_df = embedded_text_df.head(n_rows)
-        if not include_sfi_name:
-            embedded_text_df = embedded_text_df.drop("overskrift")
-        return embedded_text_df.collect()
+        if text_sfi_names:
+            EmbeddedTextLoader._validate_sfi_names(text_sfi_names=text_sfi_names)
+
+        # load embeddings
+        view = f"[{embedding_view_name}]"
+        sql = f"SELECT * FROM [fct].{view}"
+
+        if text_sfi_names:
+            sfis_to_keep = ", ".join("?" for _ in text_sfi_names)
+
+            sql += f" WHERE overskrift IN ({sfis_to_keep})"
+
+        if n_rows:
+            sql += f" LIMIT {n_rows}"
+
+        embeddings = sql_load(query=sql, server="BI-DPA-PROD", database="USR_PS_Forsk", n_rows=None)
+
+        if include_sfi_name:
+            embeddings = embeddings.drop(columns=["overskrift"])
+
+        return embeddings
