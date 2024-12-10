@@ -16,7 +16,7 @@ from psycop.common.global_utils.cache import shared_cache
 # from psycop.projects.t2d_bigdata.cohort_examination.label_by_outcome_type import (
 #     label_by_outcome_type,
 # )  # noqa: ERA001
-from psycop.projects.t2d_extended.paper_outputs.table_one.model import TableOneModel
+from psycop.projects.t2d_extended.model_evaluation.table_one.model import TableOneModel
 
 
 class RowCategory(enum.Enum):

@@ -4,8 +4,8 @@ from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
     MlflowClientWrapper,
     PsycopMlflowRun,
 )
-from psycop.projects.t2d_extended.paper_outputs.table_one.model import table_one_model_train, table_one_model_val
-from psycop.projects.t2d_extended.paper_outputs.table_one.view import t2d_extended_table_one
+from psycop.projects.t2d_extended.model_evaluation.table_one.model import table_one_model_train, table_one_model_val
+from psycop.projects.t2d_extended.model_evaluation.table_one.view import t2d_extended_table_one
 
 
 def table_one_facade(
@@ -25,4 +25,3 @@ if __name__ == "__main__":
     run_name = "2018-01-01_2021-01-01_2021-12-31"
     table_one_facade(Path(), MlflowClientWrapper().get_run("T2D-extended, temporal validation", run_name), run_name=run_name, train_or_val=train_or_val)
 
-    # TODO: make one for train set as well, make new table_one_model
