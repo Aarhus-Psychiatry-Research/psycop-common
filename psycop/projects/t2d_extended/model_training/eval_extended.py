@@ -46,5 +46,5 @@ if __name__ == "__main__":
     populate_with_cvd_registry()
 
     eval_geographic_test_set(
-        MlflowClientWrapper().get_run("CVD, h, l-2, XGB", "classy-wren-652").get_config()
+        MlflowClientWrapper().get_run("CVD, h, l-2, XGB", "classy-wren-652").get_config() # TODO fh:
     )

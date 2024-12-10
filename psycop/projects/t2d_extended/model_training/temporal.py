@@ -84,6 +84,7 @@ def eval_stratified_split(
 
 if __name__ == "__main__":
     # populate_baseline_registry()
+    # populate_t2d_extended_registry()
 
     # aurocs = {
     #     y: eval_stratified_split(
