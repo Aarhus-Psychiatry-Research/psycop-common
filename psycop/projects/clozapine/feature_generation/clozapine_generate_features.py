@@ -217,7 +217,7 @@ if __name__ == "__main__":
                     entity_id_col_name="dw_ek_borger",
                     value_timestamp_col_name="timestamp",
                 ),
-                lookahead_distances=[datetime.timedelta(days=10000)],
+                lookahead_distances=[datetime.timedelta(days=365)],
                 aggregators=[ts.MaxAggregator()],
                 fallback=0,
                 column_prefix="outc_clozapine",
