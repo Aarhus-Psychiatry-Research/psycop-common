@@ -6,7 +6,7 @@ import polars as pl
 from sentence_transformers import SentenceTransformer
 
 from psycop.common.feature_generation.loaders.raw.load_text import load_all_notes
-from psycop.common.global_utils.paths import TEXT_EMBEDDINGS_DIR
+from psycop.common.global_utils.sql.writer import write_df_to_sql
 
 
 def embed_text_to_df(model: SentenceTransformer, text: list[str]) -> pl.DataFrame:
@@ -27,9 +27,7 @@ if __name__ == "__main__":
 
     all_notes = pl.from_pandas(all_notes).drop(columns=["value"])  # type: ignore
 
-    embedded_notes = pl.concat([all_notes, embeddings], how="horizontal")
+    embedded_notes = pl.concat([all_notes, embeddings], how="horizontal").to_pandas()  # type: ignore
 
-    TEXT_EMBEDDINGS_DIR.mkdir(exist_ok=True, parents=True)
-    embedded_notes.write_parquet(
-        TEXT_EMBEDDINGS_DIR / f"text_embeddings_{model_str}_added_konklusion.parquet"
-    )
+    # save embeddings to sql server
+    write_df_to_sql(embedded_notes, f"text_embeddings_{model_str}")
