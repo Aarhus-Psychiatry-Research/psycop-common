@@ -9,7 +9,6 @@ jobs:
   review-safety-checklist:
     permissions:
       pull-requests: write
-    if: ${{ github.actor != 'dependabot[bot]' }}
     runs-on: ubuntu-latest
     steps:
       - uses: mshick/add-pr-comment@v2
