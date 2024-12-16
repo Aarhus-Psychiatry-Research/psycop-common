@@ -1,0 +1,23 @@
+# GitHub action to check if pre-commit has been run. Runs from .pre-commit-config.yaml, where the pre-commit actions are.
+
+name: modified-library-files
+
+on:
+  pull_request_review:
+    types: [submitted]
+jobs:
+  modified-library-files:
+    permissions:
+      pull-requests: write
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: mshick/add-pr-comment@v2
+        id: add_comment
+        with:
+          message: |
+            Remember to prioritise safety in your review. Make sure the following points have been covered:
+              [] New packages have been vetted
+              [] Only aggregate data is saved to disk
+              [] Comments or examples do not contain actual data
+              [] The code does not log sensitive information
