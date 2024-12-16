@@ -65,7 +65,7 @@ def text_model_pipeline(
 
     Args:
         model (Literal[str]): Which model to use. Takes either "bow" or "tfidf".
-        corpus_name (str, optional): Name of SQL file with preprocessed text data or chosen name of the corpus being fitted. Defaults to "psycop_text".
+        corpus_name (str, optional): SQL table with text data (preprocessed or not) to fit model on. Defaults to "psycop_train_val_all_sfis_preprocessed".
         corpus_preproceseed (bool, optional): Whether the corpus is already preprocessed. Defaults to False.
         sfi_type (Sequence[str], optional): Which sfi types to include. Defaults to None.
         ngram_range (tuple, optional): The lower and upper boundary of the range of n-values for different word n-grams or char n-grams to be extracted. All values of n such such that min_n <= n <= max_n will be used. For example an ngram_range of (1, 1) means only unigrams, (1, 2) means unigrams and bigrams. Defaults to (1, 2).
