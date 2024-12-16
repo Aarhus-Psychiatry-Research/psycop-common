@@ -19,4 +19,4 @@ jobs:
           message: |
             Looks like your PR modifies shared library files in `psycop/common/`. 
             
-            We highly recommend getting your code reviewed by one of the core maintainers to avoid breaking other projects that depend on these files :-)
+            We highly recommend getting your code reviewed by one of the core maintainers to avoid breaking other projects that depend on these files :-) TEST

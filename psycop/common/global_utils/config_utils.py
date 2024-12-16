@@ -19,6 +19,8 @@ def flatten_nested_dict(
 
     Returns:
         Dict: The flattened dict.
+
+        TEST
     """
 
     items: list[tuple[str, Any]] = []
