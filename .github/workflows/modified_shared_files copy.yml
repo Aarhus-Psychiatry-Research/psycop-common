@@ -3,8 +3,8 @@
 name: modified-library-files
 
 on:
-  pull_request_review:
-    types: [submitted]
+  pull_request_target:
+    types: [review_requested]
 jobs:
   modified-library-files:
     permissions:
