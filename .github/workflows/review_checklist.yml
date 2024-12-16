@@ -19,4 +19,4 @@ jobs:
               - [ ] New packages have been vetted
               - [ ] Only aggregate data is saved to disk
               - [ ] Comments or examples do not contain actual data
-              - [ ] The code does not log sensitive information
+              - [ ] The code does not log sensitive information TEST
