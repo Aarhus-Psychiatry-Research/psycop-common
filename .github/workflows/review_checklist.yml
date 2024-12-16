@@ -5,8 +5,6 @@ name: review-safety-checklist
 on:
   pull_request:
     types: [opened, synchronize, ready_for_review, rewiew_requested]
-    branches:
-      - pr-template
 jobs:
   review-safety-checklist:
     permissions:
