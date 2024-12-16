@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: mshick/add-pr-comment@v2
-        id: add_comment_safety
+        id: add_comment
         with:
           message: |
             Looks like your PR modifies shared library files in `psycop/common/`. 
