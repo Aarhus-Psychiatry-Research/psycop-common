@@ -82,12 +82,18 @@ def write_df_to_sql(
     engine.dispose()  # type: ignore
 
 
-
 if __name__ == "__main__":
     from psycop.common.global_utils.paths import TEXT_EMBEDDINGS_DIR
 
-    all_tfidf_path = TEXT_EMBEDDINGS_DIR / "text_train_val_test_tfidf_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750.parquet"
+    all_tfidf_path = (
+        TEXT_EMBEDDINGS_DIR
+        / "text_train_val_test_tfidf_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750.parquet"
+    )
 
     all_tfidf_df = pd.read_parquet(all_tfidf_path)
 
-    write_df_to_sql(all_tfidf_df, "text_train_val_test_tfidf_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750", if_exists='replace')
+    write_df_to_sql(
+        all_tfidf_df,
+        "text_train_val_test_tfidf_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750",
+        if_exists="replace",
+    )
