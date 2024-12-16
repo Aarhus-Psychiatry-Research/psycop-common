@@ -4,7 +4,9 @@ name: review-safety-checklist
 
 on:
   pull_request_target:
-    types: [review_requested]
+    types: [opened, synchronize]
+    branches:
+      - pr-template
 jobs:
   review-safety-checklist:
     permissions:
