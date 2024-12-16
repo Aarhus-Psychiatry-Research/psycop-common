@@ -4,7 +4,6 @@ name: review-safety-checklist
 
 on:
   pull_request:
-    types: [rewiew_requested]
 jobs:
   review-safety-checklist:
     permissions:
