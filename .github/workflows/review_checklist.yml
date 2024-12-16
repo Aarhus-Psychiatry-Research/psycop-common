@@ -14,6 +14,7 @@ jobs:
       - uses: mshick/add-pr-comment@v2
         id: add_comment_safety
         with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
           message: |
             Remember to prioritise safety in your review. Make sure the following points have been covered:
               - [ ] New packages have been vetted
