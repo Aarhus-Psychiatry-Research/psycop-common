@@ -9,6 +9,7 @@ jobs:
   review-safety-checklist:
     permissions:
       pull-requests: write
+    if: ${{ github.event.review.state == 'requested' }}
     runs-on: ubuntu-latest
     steps:
       - uses: mshick/add-pr-comment@v2
