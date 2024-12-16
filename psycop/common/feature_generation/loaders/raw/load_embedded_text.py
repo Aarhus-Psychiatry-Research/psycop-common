@@ -31,7 +31,7 @@ class EmbeddedTextLoader:
             text_sfi_names (list[str]): Which note types to load. See
                 `get_all_valid_text_sfi_names()` for a list of valid note types. Defaults to None,
             n_rows (int | None): Number of rows to load. Defaults to None which
-                loads all rows. Defaults to None.
+                loads all rows.
             include_sfi_name (bool): Whether to include column with sfi name ("overskrift"). Defaults to False.
         """
 
