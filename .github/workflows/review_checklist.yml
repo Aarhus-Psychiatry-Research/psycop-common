@@ -8,7 +8,7 @@ jobs:
   review-safety-checklist:
     permissions:
       pull-requests: write
-    if: ${{ github.event.review.state == 'requested' }}
+    if: ${{ github.event.review.state == 'pending' }}
     runs-on: ubuntu-latest
     steps:
       - uses: mshick/add-pr-comment@v2
