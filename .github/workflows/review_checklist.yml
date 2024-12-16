@@ -4,6 +4,7 @@ name: review-safety-checklist
 
 on:
   pull_request:
+    types: [review_requested]
 jobs:
   review-safety-checklist:
     permissions:
@@ -19,4 +20,4 @@ jobs:
               - [ ] New packages have been vetted
               - [ ] Only aggregate data is saved to disk
               - [ ] Comments or examples do not contain actual data
-              - [ ] The code does not log sensitive information TEST
+              - [ ] The code does not log sensitive information
