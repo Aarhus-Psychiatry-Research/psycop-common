@@ -1,12 +1,12 @@
 # GitHub action to check if pre-commit has been run. Runs from .pre-commit-config.yaml, where the pre-commit actions are.
 
-name: review_safety_checklist
+name: review-safety-checklist
 
 on:
   pull_request_target:
     types: [review_requested]
 jobs:
-  review_safety_checklist:
+  review-safety-checklist:
     permissions:
       pull-requests: write
     if: ${{ github.actor != 'dependabot[bot]' }}
