@@ -3,7 +3,7 @@
 name: review-safety-checklist
 
 on:
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize]
     branches:
       - pr-template
