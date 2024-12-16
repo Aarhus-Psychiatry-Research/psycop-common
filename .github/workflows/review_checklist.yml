@@ -4,7 +4,7 @@ name: review-safety-checklist
 
 on:
   pull_request:
-    types: [rewiew_requested, opened, synchronize]
+    types: [rewiew_requested]
 jobs:
   review-safety-checklist:
     permissions:
@@ -17,7 +17,7 @@ jobs:
         with:
           message: |
             Remember to prioritise safety in your review. Make sure the following points have been covered:
-              - [] New packages have been vetted
-              - [] Only aggregate data is saved to disk
-              - [] Comments or examples do not contain actual data
-              - [] The code does not log sensitive information
+              - [ ] New packages have been vetted
+              - [ ] Only aggregate data is saved to disk
+              - [ ] Comments or examples do not contain actual data
+              - [ ] The code does not log sensitive information
