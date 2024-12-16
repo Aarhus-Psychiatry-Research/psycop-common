@@ -28,7 +28,7 @@ class TextFeatureSpecifier:
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         log.info("-------- Generating sentence transformer specs --------")
-        embedded_text_filename = "text_embeddings_paraphrase-multilingual-MiniLM-L12-v2.parquet"
+        embedded_text_filename = "text_embeddings_paraphrase-multilingual-MiniLM-L12-v2"
         TEXT_SFIS = [
             "Observation af patient, Psykiatri",
             "Samtale med behandlingssigte",
@@ -44,11 +44,11 @@ class TextFeatureSpecifier:
         ]
 
         embedded_text = EmbeddedTextLoader.load_embedded_text(
-            filename=embedded_text_filename,
+            embedding_view_name=embedded_text_filename,
             text_sfi_names=TEXT_SFIS,
             include_sfi_name=False,
             n_rows=None,
-        ).to_pandas()
+        )
 
         embedded_text = df_with_multiple_values_to_named_dataframes(
             df=embedded_text,
@@ -72,7 +72,9 @@ class TextFeatureSpecifier:
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         log.info("-------- Generating tfidf specs --------")
-        embedded_text_filename = "text_train_val_test_tfidf_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750.parquet"
+        embedded_text_filename = (
+            "text_train_val_test_tfidf_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750"
+        )
         TEXT_SFIS = [
             "Observation af patient, Psykiatri",
             "Samtale med behandlingssigte",
@@ -88,11 +90,11 @@ class TextFeatureSpecifier:
         ]
 
         embedded_text = EmbeddedTextLoader.load_embedded_text(
-            filename=embedded_text_filename,
+            embedding_view_name=embedded_text_filename,
             text_sfi_names=TEXT_SFIS,
             include_sfi_name=False,
             n_rows=None,
-        ).to_pandas()
+        )
 
         embedded_text = df_with_multiple_values_to_named_dataframes(
             df=embedded_text,
