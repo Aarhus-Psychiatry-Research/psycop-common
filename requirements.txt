@@ -11,7 +11,7 @@ Levenshtein==0.21.0
 mlflow==2.15.0
 # matplotlib==3.9.1
 numpy==1.26.0
-pandas==1.5.2
+pandas==2.0.3
 patchworklib==0.6.2
 plotly==5.22.0
 plotnine==0.12.2
@@ -29,12 +29,11 @@ shap==0.41.0
 sqlalchemy==1.4.39
 tableone==0.8.0
 tabulate==0.8.10
-timeseriesflattener==2.2.2
+timeseriesflattener==2.4.0
 wandb==0.15.12
 wasabi==0.9.1
 xgboost==1.7.3
 lightgbm==4.3.0
 imbalanced-learn==0.12.3
-cleanlab==2.5.0
 rapidfuzz==3.6.1
-dalex==1.7.0
+fairlearn==0.10.0

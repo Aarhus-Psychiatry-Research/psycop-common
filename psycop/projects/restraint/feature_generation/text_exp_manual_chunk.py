@@ -47,7 +47,6 @@ def main():
                     feature_specs=feature_specs,  # type: ignore
                     prediction_times_frame=PredictionTimeFrame(pl.DataFrame(chunk)),
                     n_workers=None,
-                    compute_lazily=False,
                 )
 
                 flattened_df.write_parquet(

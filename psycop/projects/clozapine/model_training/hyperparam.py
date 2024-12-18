@@ -17,7 +17,7 @@ FEATURE_SETS = {
         "coercion",
         "lab tests",
     ],
-    "text_only": ["layer_text"],
+    "text_only": ["text"],
     "structured_text": [
         "demographics",
         "contacts",
@@ -40,6 +40,8 @@ def hyperparameter_search(cfg: PsycopConfig):
 
     # Set run name
     for feature_set, features in FEATURE_SETS.items():
+        if feature_set != "text_only":
+            continue
         cfg.mut(
             "logger.*.mlflow.experiment_name",
             f"clozapine hparam, {feature_set}, xgboost, no lookbehind filter",

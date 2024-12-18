@@ -46,7 +46,6 @@ from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     cluster_b,
     f0_disorders,
     f1_disorders,
-    f2_disorders,
     f3_disorders,
     f4_disorders,
     f5_disorders,
@@ -55,8 +54,6 @@ from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     f8_disorders,
     f9_disorders,
     manic_and_bipolar,
-    schizoaffective,
-    schizophrenia,
 )
 from psycop.common.feature_generation.loaders.raw.load_lab_results import (
     cancelled_standard_lab_results,
@@ -270,9 +267,6 @@ class FeatureSpecifier:
             named_dataframes=(
                 NamedDataframe(df=f0_disorders(), name="f0_disorders"),
                 NamedDataframe(df=f1_disorders(), name="f1_disorders"),
-                NamedDataframe(df=f2_disorders(), name="f2_disorders"),
-                NamedDataframe(df=schizophrenia(), name="schizophrenia"),
-                NamedDataframe(df=schizoaffective(), name="schizoaffective"),
                 NamedDataframe(df=f3_disorders(), name="f3_disorders"),
                 NamedDataframe(df=manic_and_bipolar(), name="manic_and_bipolar"),
                 NamedDataframe(df=f4_disorders(), name="f4_disorders"),
@@ -502,11 +496,30 @@ class FeatureSpecifier:
             resolve_multiple=[count, boolean], interval_days=interval_days
         )
 
+        lab_results = self._get_lab_result_specs(
+            resolve_multiple=[summed, boolean], interval_days=interval_days
+        )
+
         coercion = self._get_coercion_specs(
             resolve_multiple=[count, summed, boolean], interval_days=interval_days
         )
+        structured_sfi = self._get_structured_sfi_specs(
+            resolve_multiple=[summed, maximum], interval_days=interval_days
+        )
 
-        return visits + admissions + medications + diagnoses + beroligende_medicin + coercion
+        cancelled_lab_results = self._get_cancelled_lab_result_specs(
+            resolve_multiple=[count, boolean], interval_days=interval_days
+        )
+
+        return (
+            visits
+            + admissions
+            + medications
+            + diagnoses
+            + beroligende_medicin
+            + coercion
+            + structured_sfi
+        )
 
     def get_feature_specs(self) -> list[Union[StaticSpec, OutcomeSpec, PredictorSpec]]:
         """Get a spec set."""

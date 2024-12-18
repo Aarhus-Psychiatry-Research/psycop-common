@@ -286,3 +286,9 @@ def diastolic_blood_pressure() -> pd.DataFrame:
     df = _get_blood_pressure_pulse(subtype="Diastolisk")
 
     return df.collect().to_pandas()
+
+
+def pulse() -> pd.DataFrame:
+    df = _get_blood_pressure_pulse(subtype="Pulsslag / min")
+
+    return df.collect().to_pandas()
