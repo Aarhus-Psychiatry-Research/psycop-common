@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Callable
 
 import polars as pl
-from rich.pretty import pprint
+#from rich.pretty import pprint
 
 
 @dataclass
@@ -88,7 +88,7 @@ def generate_feature_description_df(
             continue
 
     if errors:
-        pprint(errors)
+        print(errors)
         raise ValueError(errors)
 
     feature_rows = []
