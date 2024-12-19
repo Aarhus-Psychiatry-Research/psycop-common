@@ -1,11 +1,11 @@
 import re
-from pathlib import Path
+from collections.abc import Sequence
 from typing import Literal, Optional
 
 import pandas as pd
 
 from psycop.common.feature_generation.text_models.utils import stop_words
-from psycop.common.feature_generation.utils import write_df_to_file
+from psycop.common.global_utils.sql.writer import write_df_to_sql
 from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
     FilterByOutcomeStratifiedSplits,
@@ -14,7 +14,7 @@ from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_spli
 from psycop.projects.clozapine.loaders.text import get_valid_text_sfi_names, load_text_split
 
 
-def text_preprocessing(df: pd.DataFrame, text_column_name: str = "fritekst") -> pd.DataFrame:
+def text_preprocessing(df: pd.DataFrame, text_column_name: str = "value") -> pd.DataFrame:
     """Preprocess texts by lower casing, removing stopwords and symbols.
 
     Args:
@@ -45,24 +45,30 @@ def text_preprocessing(df: pd.DataFrame, text_column_name: str = "fritekst") -> 
 
 
 def text_preprocessing_pipeline(
-    split_ids_presplit_step: PresplitStep,
+    split_ids_presplit_step: PresplitStep | None = None,
     n_rows: Optional[int] = None,
-    save_path: str = "E:/shared_resources/projects/clozapine/preprocessed_text",
+    sfi_type: Optional[Sequence[str] | str] = None,
 ) -> str:
     """Pipeline for preprocessing all sfis from given splits. Filtering of which sfis to include in features happens in the loader.
 
     Args:
         split_ids_presplit_step: A PresplitStep (e.g. RegionalFilter or FilterByOutcomeStratifiedSplits) that filters rows by split ids
         n_rows (Optional[int], optional): How many rows to load. Defaults to None, which loads all rows.
-        save_path (str, optional): Where to save preprocessed text. Defaults to "E:/shared_resources/preprocessed_text".
+        sfi_type (Optional[Sequence[str] | str], optional): Which sfi types to include. Defaults to None, which includes all sfis.
 
     Returns:
         str: Text describing where preprocessed text has been saved.
     """
 
+    split_ids_presplit_step = (
+        split_ids_presplit_step
+        if split_ids_presplit_step
+        else FilterByOutcomeStratifiedSplits(splits_to_keep=["train", "val"])
+    )
+
     # Load text from splits
     df = load_text_split(
-        text_sfi_names=get_valid_text_sfi_names(),
+        text_sfi_names=sfi_type if sfi_type else get_valid_text_sfi_names(),
         split_ids_presplit_step=split_ids_presplit_step,
         include_sfi_name=True,
         n_rows=n_rows,
@@ -74,11 +80,11 @@ def text_preprocessing_pipeline(
     # save to parquet
     split_names = "_".join(split_ids_presplit_step.splits_to_keep)  # type: ignore
 
-    write_df_to_file(
-        df=df, file_path=Path(f"{save_path}/clozapine_{split_names}_all_sfis_preprocessed.parquet")
-    )
+    sfis = "_".join(sfi_type) if sfi_type else "all_sfis"
 
-    return f"Text preprocessed and saved as {save_path}/clozapine_{split_names}_all_sfis_preprocessed.parquet"
+    write_df_to_sql(df, f"clozapine_{split_names}_{sfis}_preprocessed")
+
+    return f"Text preprocessed and uploaded to SQL as {split_names}_{sfis}_preprocessed"
 
 
 if __name__ == "__main__":

@@ -1,10 +1,8 @@
 import polars as pl
 
+from psycop.common.feature_generation.loaders.raw.load_text import load_preprocessed_sfis
 from psycop.common.feature_generation.text_models.fit_text_models import fit_text_model
-from psycop.common.feature_generation.text_models.text_model_paths import (
-    PREPROCESSED_TEXT_DIR,
-    TEXT_MODEL_DIR,
-)
+from psycop.common.feature_generation.text_models.text_model_paths import TEXT_MODEL_DIR
 from psycop.common.feature_generation.text_models.text_model_pipeline import create_model_filename
 from psycop.common.feature_generation.text_models.utils import save_text_model_to_shared_dir
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
@@ -32,9 +30,9 @@ if __name__ == "__main__":
         ],
     }
 
-    all_preprocessed_text = pl.scan_parquet(
-        PREPROCESSED_TEXT_DIR / "psycop_train_val_test_all_sfis_preprocessed.parquet"
-    )
+    # load preprocessed text from sql
+    all_preprocessed_text = pl.from_pandas(load_preprocessed_sfis()).lazy()
+
     region_split_filter = RegionalFilter(splits_to_keep=["train", "val"])
     all_preprocessed_text = region_split_filter.apply(all_preprocessed_text)
 

@@ -27,9 +27,10 @@ if __name__ == "__main__":
 
     all_notes = pl.from_pandas(all_notes).drop(columns=["value"])  # type: ignore
 
-    embedded_notes = pl.concat([all_notes, embeddings], how="horizontal")
+    embedded_notes = pl.concat([all_notes, embeddings], how="horizontal")  # type: ignore
 
     TEXT_EMBEDDINGS_DIR.mkdir(exist_ok=True, parents=True)
+
     embedded_notes.write_parquet(
         TEXT_EMBEDDINGS_DIR / f"text_embeddings_{model_str}_added_konklusion.parquet"
     )
