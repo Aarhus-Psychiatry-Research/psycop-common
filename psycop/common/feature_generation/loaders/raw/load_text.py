@@ -233,15 +233,11 @@ def load_preprocessed_sfis(
     view = f"[{corpus_name}]"
     sql = f"SELECT * FROM [fct].{view}"
 
-    # if not text_sfi_names, include all sfis
-    if not text_sfi_names:
-        corpus = sql_load(query=sql, server="BI-DPA-PROD", database="USR_PS_Forsk", n_rows=None)
+    if text_sfi_names:
+        sfis_to_keep = ", ".join("?" for _ in text_sfi_names)
 
-    # if text_sfi_names, include only chosen sfis
-    else:
-        corpus = sql_load(query=sql, server="BI-DPA-PROD", database="USR_PS_Forsk", n_rows=None)
+        sql += f" WHERE overskrift IN ({sfis_to_keep})"
 
-        # keep only chosen sfis
-        corpus = corpus[corpus["overskrift"].isin(text_sfi_names)]
+    corpus = sql_load(query=sql, server="BI-DPA-PROD", database="USR_PS_Forsk", n_rows=None)
 
     return corpus

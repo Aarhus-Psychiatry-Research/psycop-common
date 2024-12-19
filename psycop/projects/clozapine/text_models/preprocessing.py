@@ -14,7 +14,7 @@ from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_spli
 from psycop.projects.clozapine.loaders.text import get_valid_text_sfi_names, load_text_split
 
 
-def text_preprocessing(df: pd.DataFrame, text_column_name: str = "fritekst") -> pd.DataFrame:
+def text_preprocessing(df: pd.DataFrame, text_column_name: str = "value") -> pd.DataFrame:
     """Preprocess texts by lower casing, removing stopwords and symbols.
 
     Args:
@@ -82,7 +82,7 @@ def text_preprocessing_pipeline(
 
     sfis = "_".join(sfi_type) if sfi_type else "all_sfis"
 
-    write_df_to_sql(df, f"{split_names}_{sfis}_preprocessed")
+    write_df_to_sql(df, f"clozapine_{split_names}_{sfis}_preprocessed")
 
     return f"Text preprocessed and uploaded to SQL as {split_names}_{sfis}_preprocessed"
 

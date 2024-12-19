@@ -8,7 +8,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 from psycop.common.feature_generation.loaders.raw.load_text import load_preprocessed_sfis
 from psycop.common.feature_generation.text_models.utils import load_text_model
-from psycop.common.global_utils.sql.writer import write_df_to_sql
+from psycop.common.global_utils.paths import TEXT_EMBEDDINGS_DIR
 
 
 def encode_tfidf_values_to_df(model: TfidfVectorizer, text: Iterable[str]) -> pl.DataFrame:
@@ -34,7 +34,11 @@ if __name__ == "__main__":
 
     corpus = corpus.drop(["value"])
 
-    tfidf_notes = pl.concat([corpus, tfidf_values], how="horizontal").to_pandas()
+    tfidf_notes = pl.concat([corpus, tfidf_values], how="horizontal")
 
-    # save embeddings to sql server
-    write_df_to_sql(tfidf_notes, f"clozapine_text_embeddings_{text_model_name}")
+    TEXT_EMBEDDINGS_DIR.mkdir(exist_ok=True, parents=True)
+
+    tfidf_notes.write_parquet(
+        TEXT_EMBEDDINGS_DIR
+        / "clozapine_text_tfidf_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750.parquet"
+    )

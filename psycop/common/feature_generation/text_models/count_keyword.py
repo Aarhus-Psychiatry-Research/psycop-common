@@ -5,11 +5,11 @@ import polars as pl
 import yaml
 from sklearn.feature_extraction.text import CountVectorizer
 
-from psycop.common.feature_generation.loaders.raw.load_text import load_preprocessed_sfis
 from psycop.common.feature_generation.text_models.encode_text_as_tfidf_scores import (
     encode_tfidf_values_to_df,
 )
-from psycop.common.global_utils.sql.writer import write_df_to_sql
+from psycop.common.feature_generation.text_models.text_model_paths import PREPROCESSED_TEXT_DIR
+from psycop.common.global_utils.paths import TEXT_EMBEDDINGS_DIR
 
 
 def get_present_state_examination_keywords() -> Iterable[str]:
@@ -26,13 +26,13 @@ if __name__ == "__main__":
     vocab = get_present_state_examination_keywords()
     vec = CountVectorizer(vocabulary=vocab)
 
-    # load preprocessed text from sql
-    corpus = pl.from_pandas(load_preprocessed_sfis())
+    corpus = pl.read_parquet(
+        source=PREPROCESSED_TEXT_DIR / "psycop_train_val_test_all_sfis_preprocessed.parquet",
+        low_memory=True,
+    )
 
     counts = encode_tfidf_values_to_df(vec, corpus["value"].to_list())  # type: ignore
 
     corpus = corpus.drop(["value"])
-    counts = pl.concat([corpus, counts], how="horizontal").to_pandas()
-
-    # save embeddings to sql server
-    write_df_to_sql(counts, "text_embeddings_pse_keyword_counts_all_sfis")
+    counts = pl.concat([corpus, counts], how="horizontal")
+    counts.write_parquet(TEXT_EMBEDDINGS_DIR / "pse_keyword_counts_all_sfis.parquet")

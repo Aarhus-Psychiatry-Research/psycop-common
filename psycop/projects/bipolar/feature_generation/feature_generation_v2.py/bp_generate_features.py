@@ -39,7 +39,6 @@ from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     f8_disorders,
     f9_disorders,
 )
-from psycop.common.feature_generation.loaders.raw.load_embedded_text import EmbeddedTextLoader
 from psycop.common.feature_generation.loaders.raw.load_medications import (
     antidepressives,
     antipsychotics,
@@ -73,7 +72,7 @@ from psycop.common.feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
     physical_visits_to_somatic,
 )
-from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
+from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR, TEXT_EMBEDDINGS_DIR
 from psycop.projects.bipolar.cohort_definition.bipolar_cohort_definition import BipolarCohortDefiner
 from psycop.projects.bipolar.cohort_definition.diagnosis_timestamps.first_bipolar_diagnosis import (
     get_first_bipolar_diagnosis,
@@ -398,7 +397,9 @@ if __name__ == "__main__":
         "layer_text": [
             ts.PredictorSpec(
                 value_frame=ts.ValueFrame(
-                    init_df=EmbeddedTextLoader.load_embedded_text(TEXT_FILE_NAME),
+                    init_df=pl.read_parquet(TEXT_EMBEDDINGS_DIR / TEXT_FILE_NAME).drop(
+                        "overskrift"
+                    ),
                     entity_id_col_name="dw_ek_borger",
                     value_timestamp_col_name="timestamp",
                 ),

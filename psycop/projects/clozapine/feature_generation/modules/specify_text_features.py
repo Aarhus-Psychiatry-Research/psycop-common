@@ -44,11 +44,11 @@ class TextFeatureSpecifier:
         ]
 
         embedded_text = EmbeddedTextLoader.load_embedded_text(
-            embedding_view_name=embedded_text_filename,
+            filename=embedded_text_filename,
             text_sfi_names=TEXT_SFIS,
             include_sfi_name=False,
             n_rows=None,
-        )
+        ).to_pandas()
 
         embedded_text = df_with_multiple_values_to_named_dataframes(
             df=embedded_text,
@@ -88,11 +88,11 @@ class TextFeatureSpecifier:
         ]
 
         embedded_text = EmbeddedTextLoader.load_embedded_text(
-            embedding_view_name=embedded_text_filename,
+            filename=embedded_text_filename,
             text_sfi_names=TEXT_SFIS,
             include_sfi_name=False,
             n_rows=None,
-        )
+        ).to_pandas()
 
         embedded_text = df_with_multiple_values_to_named_dataframes(
             df=embedded_text,
