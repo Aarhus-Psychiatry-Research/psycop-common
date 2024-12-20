@@ -113,8 +113,5 @@ class MLFlowLogger(BaselineLogger):
         mlflow.log_artifact(local_path=local_path.__str__())
 
     def log_dataset(self, dataframe: DataFrame, filename: str) -> None:
-        self._init_run()
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            tmp_file = Path(tmp_dir) / filename
-            dataframe.write_parquet(tmp_file)
-            mlflow.log_artifact(local_path=tmp_file.__str__())
+        pass
+
