@@ -46,16 +46,16 @@ def coercion_duration(
     df = sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
 
     # add end time as start time for acute sedation
-    df.loc[df.TYPE_TXT == "Beroligende medicin", "datotid_slut_sei"] = df["datotid_start_sei"]
+    df.loc[df.TYPE_TXT == "Beroligende medicin", "datotid_slut"] = df["datotid_start"]
 
     # drop nas for coercion end times
-    df = df.dropna(subset="datotid_slut_sei")
+    df = df.dropna(subset="datotid_slut")
 
     # Drop duplicate rows
     df = df.drop_duplicates(keep="first")
 
     df = df.rename(  # type: ignore
-        columns={"datotid_slut_sei": "timestamp", "varighed_timer_sei": "value"}
+        columns={"datotid_slut": "timestamp", "VARIGHED_TIMER_AFL": "value"}
     )
 
     # Change NaNs to 0
@@ -63,7 +63,7 @@ def coercion_duration(
 
     if unpack_to_intervals:
         df = unpack_intervals(
-            df, starttime_col="datotid_start_sei", endtime_col="timestamp", unpack_freq=unpack_freq
+            df, starttime_col="datotid_start", endtime_col="timestamp", unpack_freq=unpack_freq
         )
 
     return df[["dw_ek_borger", "timestamp", "value"]].reset_index(drop=True)

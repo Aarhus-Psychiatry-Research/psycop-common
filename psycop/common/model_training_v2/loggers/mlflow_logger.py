@@ -114,4 +114,3 @@ class MLFlowLogger(BaselineLogger):
 
     def log_dataset(self, dataframe: DataFrame, filename: str) -> None:
         pass
-

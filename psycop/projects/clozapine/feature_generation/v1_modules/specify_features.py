@@ -27,21 +27,6 @@ from timeseriesflattener.v1.feature_specs.single_specs import (
 )
 
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
-from psycop.common.feature_generation.loaders.raw.load_lab_results import (
-    cancelled_standard_lab_results,
-    p_aripiprazol,
-    p_clozapine,
-    p_ethanol,
-    p_haloperidol,
-    p_olanzapine,
-    p_paliperidone,
-    p_paracetamol,
-    p_risperidone,
-)
-from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
-    broeset_violence_checklist,
-    suicide_risk_assessment,
-)
 from psycop.projects.clozapine.feature_generation.cohort_definition.clozapine_cohort_definition import (
     ClozapineCohortDefiner,
 )
@@ -68,6 +53,17 @@ from psycop.projects.clozapine.loaders.diagnoses import (
     f9_disorders,
     manic_and_bipolar,
 )
+from psycop.projects.clozapine.loaders.lab_results import (
+    cancelled_standard_lab_results,
+    p_aripiprazol,
+    p_clozapine,
+    p_ethanol,
+    p_haloperidol,
+    p_olanzapine,
+    p_paliperidone,
+    p_paracetamol,
+    p_risperidone,
+)
 from psycop.projects.clozapine.loaders.medications import (
     alcohol_abstinence,
     analgesic,
@@ -88,6 +84,10 @@ from psycop.projects.clozapine.loaders.medications import (
     risperidone_depot,
     second_gen_antipsychotics,
     zuclopenthixol_depot,
+)
+from psycop.projects.clozapine.loaders.structured_sfi import (
+    broeset_violence_checklist,
+    suicide_risk_assessment,
 )
 from psycop.projects.clozapine.loaders.visits import (
     admissions_clozapine_2024,
