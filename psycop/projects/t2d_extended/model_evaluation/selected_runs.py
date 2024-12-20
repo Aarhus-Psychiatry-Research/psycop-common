@@ -6,14 +6,14 @@ from psycop.projects.t2d_extended.utils.pipeline_objects import T2DExtendedPipel
 def get_best_dev_pipeline() -> T2DExtendedPipelineRun:
     return T2DExtendedPipelineRun(
         group=DEVELOPMENT_GROUP,
-        name="nonviolentstigmaria", # TODO fh: change
+        name="2018-01-01_2022-01-01_2022-12-31", # TODO fh: change
         pos_rate=BEST_POS_RATE,
         additional_cfg_keys={
             "project": {
                 "project_path": "E:/shared_resources/t2d_extended",
                 "seed": "42",
                 "gpu": "true",
-                "name": "nonviolentstigmaria", # TODO fh: change
+                "name": "2018-01-01_2022-01-01_2022-12-31", # TODO fh: change
             }
         },
         remove_cfg_keys={"name", "project_path", "seed", "gpu", "wandb"}, # TODO fh: check, compare with forced admissions
