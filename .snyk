@@ -129,14 +129,30 @@ ignore:
         created: 2024-08-01T15:50:53.944Z
   SNYK-PYTHON-TRANSFORMERS-8400823:
     - '*':
-        reason: Vulnerability related to loading in malicious model files, which is not relevant for us. Exception approved via Slack conversation in programming channel on 03/06/2024.
+        reason: >-
+          Vulnerability related to loading in malicious model files, which is
+          not relevant for us. Exception approved via Slack conversation in
+          programming channel on 03/06/2024.
         created: 2024-12-03T08:02:34.487Z
   SNYK-PYTHON-TRANSFORMERS-8400822:
     - '*':
-        reason: Vulnerability related to loading in malicious model files, which is not relevant for us. Exception approved via Slack conversation in programming channel on 03/06/2024.
+        reason: >-
+          Vulnerability related to loading in malicious model files, which is
+          not relevant for us. Exception approved via Slack conversation in
+          programming channel on 03/06/2024.
         created: 2024-12-03T08:02:58.812Z
   SNYK-PYTHON-TRANSFORMERS-8400820:
     - '*':
-        reason: Vulnerability related to loading in malicious model files, which is not relevant for us. Exception approved via Slack conversation in programming channel on 03/06/2024.
+        reason: >-
+          Vulnerability related to loading in malicious model files, which is
+          not relevant for us. Exception approved via Slack conversation in
+          programming channel on 03/06/2024.
         created: 2024-12-03T08:03:06.650Z
+  SNYK-PYTHON-PANDAS-8549481:
+    - '*':
+        reason: >-
+          Vulnerability related to injecting code into the query() function. 
+          Exception approvedvia Slack conversation in
+          programming channel on 02/01/2025.
+        created: 2025-01-02T13:32:08.040Z
 patch: {}
