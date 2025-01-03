@@ -33,7 +33,6 @@ timeseriesflattener==2.5.1
 wandb==0.15.12
 wasabi==0.9.1
 xgboost==1.7.3
-lightgbm==4.3.0
 imbalanced-learn==0.12.3
 rapidfuzz==3.6.1
 fairlearn==0.10.0
