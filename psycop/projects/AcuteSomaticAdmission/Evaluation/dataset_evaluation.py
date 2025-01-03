@@ -69,3 +69,4 @@ def main():
     tot_stats = _generate_general_descriptive_stats(df_tot, split_name="tot")
 
     stats = pd.concat([train_stats, val_stats, test_stats], axis=0).reset_index(drop=True)
+    print(stats)
