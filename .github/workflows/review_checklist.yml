@@ -1,0 +1,25 @@
+# GitHub action to check if pre-commit has been run. Runs from .pre-commit-config.yaml, where the pre-commit actions are.
+
+name: review-safety-checklist
+
+on:
+  pull_request:
+    types: [review_requested]
+jobs:
+  review-safety-checklist:
+    permissions:
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: mshick/add-pr-comment@v2
+        id: add_comment_safety
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          message: |
+            Remember to prioritise safety in your review. Make sure the following points have been covered:
+              - [ ] New packages have been vetted
+              - [ ] Only aggregate data is saved to disk
+              - [ ] Comments or examples do not contain actual data
+              - [ ] The code does not log sensitive information
+              - [ ]s _Save_ parameter in all user-facing functions default to `false`
+              - [ ] If working with text data, ensure that trained models and raw text are saved to USR_PS_FORSK
