@@ -21,3 +21,5 @@ jobs:
               - [ ] Only aggregate data is saved to disk
               - [ ] Comments or examples do not contain actual data
               - [ ] The code does not log sensitive information
+              - [ ]s _Save_ parameter in all user-facing functions default to `false`
+              - [ ] If working with text data, ensure that trained models and raw text are saved to USR_PS_FORSK
