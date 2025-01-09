@@ -19,7 +19,7 @@ df_cohort = sql_load(
     "SELECT * FROM fct.[psycop_coercion_cohort_with_all_days_without_labels_feb2022]",
 )
 
-lookahead_days = 2
+lookahead_days = 7
 
 
 # First coercion to pred_time

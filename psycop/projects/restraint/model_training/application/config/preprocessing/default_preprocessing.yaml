@@ -9,7 +9,7 @@ preprocessing:
     drop_patient_if_exclusion_before_date: false
     drop_visits_after_exclusion_timestamp: false
     min_prediction_time_date: 2015-01-01
-    min_lookahead_days: 2
+    min_lookahead_days: 7
     lookbehind_combination: [1, 3, 7, 10, 30, 180, 365, 730]
     min_age: 18
     keep_only_one_outcome_col: true
@@ -18,9 +18,9 @@ preprocessing:
     imputation_method: "mean"
     scaling: "null"
     feature_selection:
-      name: "null"
+      name: "f_classif"
       params:
-        # percentile: 20 # (int): Percent of features to keep. Defaults to 10.
+        percentile: 90 # (int): Percent of features to keep. Defaults to 10.
 
 # Parameters that will only take effect if running with --multirun
 hydra:

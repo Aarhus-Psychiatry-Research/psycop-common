@@ -22,7 +22,7 @@ DEV_GROUP_NAME = "coercion"
 DEVELOPMENT_GROUP = RunGroup(name=DEV_GROUP_NAME)
 BEST_DEV_RUN = Run(
     group=DEVELOPMENT_GROUP,
-    name="baveniteunvisor",
+    name="shootingdecipherable",
     pos_rate=POS_RATE,
 )
 

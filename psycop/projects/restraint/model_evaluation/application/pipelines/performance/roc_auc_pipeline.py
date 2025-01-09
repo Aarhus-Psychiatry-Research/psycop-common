@@ -12,8 +12,6 @@ from psycop.projects.restraint.model_evaluation.config import (
     FIGURES_PATH,
     MODEL_NAME,
     PN_THEME,
-    TEXT_EVAL_RUN,
-    TEXT_FIGURES_PATH,
 )
 from psycop.projects.restraint.utils.best_runs import Run
 
@@ -124,4 +122,3 @@ def roc_auc_pipeline(run: Run, path: Path):
 
 if __name__ == "__main__":
     roc_auc_pipeline(BEST_DEV_RUN, FIGURES_PATH)
-    roc_auc_pipeline(TEXT_EVAL_RUN, TEXT_FIGURES_PATH)

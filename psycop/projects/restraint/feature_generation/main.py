@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 import wandb
+from psycop.common.feature_generation.application_modules.chunked_feature_generation import ChunkedFeatureGenerator
 
 from psycop.common.feature_generation.application_modules.describe_flattened_dataset import (
     save_flattened_dataset_description_to_disk,
@@ -24,8 +25,9 @@ from psycop.common.feature_generation.application_modules.wandb_utils import (
 from psycop.projects.restraint.feature_generation.modules.loaders.load_coercion_df_with_prediction_times_and_outcome import (
     load_coercion_prediction_times,
 )
-from psycop.projects.restraint.feature_generation.modules.specify_features import (
-    FeatureSpecifier,
+from psycop.projects.restraint.feature_generation.modules.specify_features import FeatureSpecifier
+from psycop.projects.restraint.feature_generation.modules.specify_text_features import (
+    TextFeatureSpecifier,
 )
 from psycop.projects.restraint.restraint_global_config import RESTRAINT_PROJECT_INFO
 
@@ -33,23 +35,37 @@ log = logging.getLogger()
 
 
 @wandb_alert_on_exception
-def main():
+def main(add_text_features: bool = False, generate_in_chunks: bool = False):
     """Main function for loading, generating and evaluating a flattened
     dataset."""
     project_info = RESTRAINT_PROJECT_INFO
 
     feature_specs = FeatureSpecifier(
         project_info=project_info,
-        min_set_for_debug=False,  # Remember to set to False when generating full dataset
+        min_set_for_debug=False, 
     ).get_feature_specs()
 
-    flattened_df = create_flattened_dataset(
-        feature_specs=feature_specs,  # type: ignore
-        prediction_times_df=load_coercion_prediction_times(),
-        drop_pred_times_with_insufficient_look_distance=False,
+    if add_text_features:
+        feature_specs += TextFeatureSpecifier(
         project_info=project_info,
-        add_birthdays=True,
-    )
+        min_set_for_debug=False,  
+    ).get_feature_specs()
+
+        flattened_df = ChunkedFeatureGenerator.create_flattened_dataset_with_chunking(
+            project_info=project_info,
+            eligible_prediction_times=load_coercion_prediction_times(),
+            feature_specs=feature_specs,  # type: ignore
+            chunksize=10,
+        )
+
+    else:
+        flattened_df = create_flattened_dataset(
+            feature_specs=feature_specs,  # type: ignore
+            prediction_times_df=load_coercion_prediction_times(),
+            drop_pred_times_with_insufficient_look_distance=False,
+            project_info=project_info,
+            add_birthdays=True,
+        )
 
     split_and_save_dataset_to_disk(
         flattened_df=flattened_df,
@@ -91,4 +107,4 @@ if __name__ == "__main__":
         mode="offline",
     )
 
-    main()
+    main(add_text_features = True)

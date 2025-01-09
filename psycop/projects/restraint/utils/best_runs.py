@@ -97,13 +97,19 @@ class Run:
         # Load json
         path = self.eval_dir / "cfg.json"
         return json.loads(json.loads(path.read_text()))
+    
+    def get_eval_df(self) -> pd.DataFrame:
+        return pd.read_parquet(self.eval_dir / "evaluation_dataset.parquet")
 
     def get_eval_dataset(
         self,
+        custom_columns: Optional[Sequence[str]] = None,
     ) -> EvalDataset:
         df = pd.read_parquet(self.eval_dir / "evaluation_dataset.parquet")
 
-        return df  # type: ignore
+        eval_dataset = df_to_eval_dataset(df, custom_columns=custom_columns)
+
+        return eval_dataset  # type: ignore
 
     def get_auroc(self) -> float:
         df = self.group.all_runs_performance_df
@@ -130,7 +136,7 @@ def df_to_eval_dataset(
     return EvalDataset(
         ids=df["ids"],
         y=df["y"],
-        y_hat_probs=pd.DataFrame(df.loc[:, df.columns.str.startswith("y_hat_prob")]),
+        y_hat_probs=df["y_hat_prob"],
         pred_timestamps=df["pred_timestamps"],
         outcome_timestamps=df["outcome_timestamps"],
         age=df["age"],

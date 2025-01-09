@@ -36,7 +36,7 @@ class TextFeatureSpecifier:
         interval_days: list[float],
         embedded_text_filename: str,
     ) -> list[PredictorSpec]:
-        log.info("-------- Generating tf-idf specs --------")
+        log.info("-------- Generating text specs --------")
         embedded_text_filename = embedded_text_filename
 
         TEXT_SFIS = [
@@ -67,14 +67,14 @@ class TextFeatureSpecifier:
             name_prefix="sent_",
         )
 
-        tfidf_specs = PredictorGroupSpec(
+        text_specs = PredictorGroupSpec(
             named_dataframes=embedded_text,
             lookbehind_days=interval_days,
             aggregation_fns=resolve_multiple,
             fallback=[np.nan],
         ).create_combinations()
 
-        return tfidf_specs
+        return text_specs
 
     def get_feature_specs(
         self,
@@ -86,7 +86,7 @@ class TextFeatureSpecifier:
             return self._get_text_specs(
                 resolve_multiple=[mean],
                 interval_days=[1],
-                embedded_text_filename="text_tfidf.parquet",
+                embedded_text_filename="text_embeddings_paraphrase-multilingual-MiniLM-L12-v2.parquet",
             )  # type: ignore
 
         resolve_multiple = [mean]
@@ -98,10 +98,10 @@ class TextFeatureSpecifier:
             embedded_text_filename="text_tfidf.parquet",
         )
 
-        self._get_text_specs(
+        embedding_features = self._get_text_specs(
             resolve_multiple=resolve_multiple,
             interval_days=interval_days,
             embedded_text_filename="text_embeddings_paraphrase-multilingual-MiniLM-L12-v2.parquet",
         )
 
-        return tfidf_features
+        return embedding_features

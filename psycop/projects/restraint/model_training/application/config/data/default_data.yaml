@@ -7,10 +7,10 @@ data:
 
   # Feature specs
   pred_prefix: pred_
-  outc_prefix: outcome_coercion_bool
+  outc_prefix: outcome_coercion_bool_within_7
 
-  splits_for_training: ["train", "val"]
-  splits_for_evaluation: null
+  splits_for_training: ["train"]
+  splits_for_evaluation: ["val"]
 
   col_name:
     pred_timestamp: timestamp
