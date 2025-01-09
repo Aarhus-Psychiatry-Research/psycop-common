@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 def sql_load(
     query: str,
     server: str = "BI-DPA-PROD",
-    database: str = "USR_PS_Forsk",
+    database: str = "USR_PS_FORSK",
     format_timestamp_cols_to_datetime: bool | None = True,
     n_rows: int | None = None,
 ) -> pd.DataFrame:
@@ -61,7 +61,6 @@ def sql_load(
         query = query.replace("SELECT", f"SELECT TOP {n_rows} ")
 
     engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
-
     conn = engine.connect().execution_options(stream_results=True, fast_executemany=True)
     log.info(f"Loading {query}")
     df = pd.read_sql(text(query), conn)  # type: ignore

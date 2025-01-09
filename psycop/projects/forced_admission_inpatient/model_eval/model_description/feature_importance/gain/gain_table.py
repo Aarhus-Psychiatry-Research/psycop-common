@@ -70,7 +70,7 @@ def generate_feature_importance_table(
     # Map tfidf indices with actual ngrams from vocabulary
     pd_df["Feature Name"][pd_df["Feature Name"].str.contains("tfidf")] = pd_df["Feature Name"][
         pd_df["Feature Name"].str.contains("tfidf")
-    ].str.replace(r"\d+$", lambda x: vocab.loc[int(x.group())]["Word"])
+    ].str.replace(r"\d+$", lambda x: vocab.loc[int(x.group())]["Word"])  # type: ignore
 
     with (pipeline_run.paper_outputs.paths.tables / "feature_importance_by_gain.html").open(
         "w"
