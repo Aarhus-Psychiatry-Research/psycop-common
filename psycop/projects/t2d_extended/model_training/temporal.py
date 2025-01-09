@@ -3,6 +3,7 @@ from pathlib import Path
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
 from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
+from psycop.projects.t2d_extended.model_training.populate_t2d_registry import populate_with_t2d_extended_registry
 
 
 def eval_stratified_split(
@@ -84,6 +85,7 @@ def eval_stratified_split(
 
 if __name__ == "__main__":
     populate_baseline_registry()
+    populate_with_t2d_extended_registry
 
     aurocs = {
         y: eval_stratified_split(
