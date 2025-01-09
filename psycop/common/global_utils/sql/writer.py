@@ -47,7 +47,7 @@ def write_df_to_sql(
     table_name: str,
     rows_per_chunk: int = 5000,
     server: Optional[str] = "BI-DPA-PROD",
-    database: Optional[str] = "USR_PS_Forsk",
+    database: Optional[str] = "USR_PS_FORSK",
     if_exists: str = "fail",
 ):
     """Writes a pandas dataframe to the SQL server.
@@ -60,13 +60,15 @@ def write_df_to_sql(
         if_exists (str): What to do if the table already exists. Takes {'fail', 'replace', 'append'}. Defaults to “fail”.
     """
 
-    driver = "ODBC Driver 17 for SQL Server"
+    # Driver for Kubeflow is different from driver on Ovartaci
+    driver = "SQL Server"
+
     params = urllib.parse.quote(
-        f"DRIVER={driver};SERVER={server};DATABASE={database};Trusted_Connection=yes"
+        f"DRIVER={driver};SERVER={server};DATABASE={database};Trusted_Connection=yes;"
     )
-    url = f"mssql+pyodbc:///?odbc_connect={params}"
-    engine = create_engine(url=url, fast_executemany=True)
-    conn = engine.connect()
+
+    engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
+    conn = engine.connect().execution_options(stream_results=True, fast_executemany=True)
     if if_exists == "replace":
         msg.warn(
             "'replace' only replaces rows, not the table. If you want to delete rows, drop the entire table first (sql_load(query='DROP TABLE [fct].[psycop_train_ids]'))."
@@ -80,20 +82,3 @@ def write_df_to_sql(
     )
     conn.close()  # type: ignore
     engine.dispose()  # type: ignore
-
-
-if __name__ == "__main__":
-    from psycop.common.global_utils.paths import TEXT_EMBEDDINGS_DIR
-
-    all_tfidf_path = (
-        TEXT_EMBEDDINGS_DIR
-        / "text_train_val_test_tfidf_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750.parquet"
-    )
-
-    all_tfidf_df = pd.read_parquet(all_tfidf_path)
-
-    write_df_to_sql(
-        all_tfidf_df,
-        "text_train_val_test_tfidf_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750",
-        if_exists="replace",
-    )
