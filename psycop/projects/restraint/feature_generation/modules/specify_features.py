@@ -1,7 +1,7 @@
 """Feature specification module."""
 
 import logging
-from typing import Literal, Union
+from typing import Union
 
 import numpy as np
 from timeseriesflattener.v1.aggregation_fns import (
@@ -113,15 +113,7 @@ log = logging.getLogger(__name__)
 class FeatureSpecifier:
     """Specify features based on prediction time."""
 
-    def __init__(
-        self,
-        project_info: ProjectInfo,
-        min_set_for_debug: bool = False,
-        outcome_definition: Literal[
-            "mechanical_restraint", "manual_restraint", "chemical_restraint", "all_restraint"
-        ] = "all_restraint",
-    ):
-        self.outcome_definition = outcome_definition
+    def __init__(self, project_info: ProjectInfo, min_set_for_debug: bool = False):
         self.min_set_for_debug = min_set_for_debug
         self.project_info = project_info
 
@@ -546,31 +538,29 @@ class FeatureSpecifier:
         """Generate outcome specs."""
         log.info("-------- Generating outcome specs --------")
 
-        match self.outcome_definition:
-            case "mechanical_restraint":
-                outcome_col_name = "first_mechanical_restraint"
-            case "manual_restraint":
-                outcome_col_name = "first_manual_restraint"
-            case "chemical_restraint":
-                outcome_col_name = "first_forced_medication"
-            case "all_restraint":
-                outcome_col_name = "datotid_start_sei"
-            case _:
-                outcome_col_name = "timestamp"
+        outcome_specs = []
 
-        mechanical_restraint_spec = OutcomeSpec(
-            timeseries_df=load_restraint_outcome_timestamps()[["dw_ek_borger", outcome_col_name]]
-            .assign(value=1)
-            .rename(columns={outcome_col_name: "timestamp"})  # type: ignore
-            .dropna(subset="timestamp"),
-            lookahead_days=2,
-            aggregation_fn=boolean,
-            fallback=0,
-            incident=False,
-            feature_base_name=f"outcome_{self.outcome_definition}",
-        )
+        for restraint_type in [
+            "mechanical_restraint",
+            "manual_restraint",
+            "chemical_restraint",
+            "all_restraint",
+        ]:
+            spec = OutcomeSpec(
+                timeseries_df=load_restraint_outcome_timestamps()[["dw_ek_borger", restraint_type]]
+                .assign(value=1)
+                .rename(columns={restraint_type: "timestamp"})  # type: ignore
+                .dropna(subset="timestamp"),
+                lookahead_days=2,
+                aggregation_fn=boolean,
+                fallback=0,
+                incident=False,
+                feature_base_name=f"outcome_{restraint_type}",
+            )
 
-        return [mechanical_restraint_spec]
+            outcome_specs.append(spec)
+
+        return outcome_specs
 
     def _get_temporal_predictor_specs(self) -> list[PredictorSpec]:
         """Generate predictor spec list."""

@@ -3,7 +3,6 @@
 import logging
 import sys
 from pathlib import Path
-from typing import Literal
 
 from psycop.common.feature_generation.application_modules.chunked_feature_generation import (
     ChunkedFeatureGenerator,
@@ -31,9 +30,6 @@ log = logging.getLogger()
 
 
 def main(
-    outcome_definition: Literal[
-        "mechanical_restraint", "manual_restraint", "chemical_restraint", "all_restraint"
-    ] = "all_restraint",
     add_text_features: bool = True,
     generate_in_chunks: bool = True,
     min_set_for_debug: bool = False,
@@ -45,9 +41,7 @@ def main(
     project_info = RESTRAINT_PROJECT_INFO
 
     if feature_set_name:
-        feature_set_dir = (
-            project_info.flattened_dataset_dir / f"{feature_set_name}_outcome_{outcome_definition}"
-        )
+        feature_set_dir = project_info.flattened_dataset_dir / feature_set_name
     else:
         feature_set_dir = project_info.flattened_dataset_dir
 
