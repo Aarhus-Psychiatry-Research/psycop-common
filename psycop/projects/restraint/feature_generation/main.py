@@ -33,7 +33,7 @@ def main(
     min_set_for_debug: bool = False,
     feature_set_name: str | None = None,
     chunksize: int = 10,
-) -> None:
+) -> None | Path:
     """Main function for loading, generating and evaluating a flattened
     dataset."""
     project_info = RESTRAINT_PROJECT_INFO
