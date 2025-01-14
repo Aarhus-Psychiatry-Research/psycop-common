@@ -14,4 +14,13 @@ def load_restraint_outcome_timestamps() -> pd.DataFrame:
 
     msg.good("Finished loading data frame for coercion with prediction times and outcomes.")
 
+    df = df.rename(
+        columns={
+            "datotid_start_sei": "all_restraint",
+            "first_mechanical_restraint": "mechanical_restraint",
+            "first_forced_medication": "chemical_restraint",
+            "first_manual_restraint": "manual_restraint",
+        }
+    )
+
     return df.reset_index(drop=True)
