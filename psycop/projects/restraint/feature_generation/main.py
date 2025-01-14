@@ -4,8 +4,9 @@ import logging
 import sys
 from pathlib import Path
 
-import wandb
-
+from psycop.common.feature_generation.application_modules.chunked_feature_generation import (
+    ChunkedFeatureGenerator,
+)
 from psycop.common.feature_generation.application_modules.describe_flattened_dataset import (
     save_flattened_dataset_description_to_disk,
 )
@@ -18,24 +19,69 @@ from psycop.common.feature_generation.application_modules.save_dataset_to_disk i
 )
 from psycop.projects.restraint.cohort.restraint_cohort_definer import RestraintCohortDefiner
 from psycop.projects.restraint.feature_generation.modules.specify_features import FeatureSpecifier
+from psycop.projects.restraint.feature_generation.modules.specify_text_features import (
+    TextFeatureSpecifier,
+)
 from psycop.projects.restraint.restraint_global_config import RESTRAINT_PROJECT_INFO
 
 log = logging.getLogger()
 
 
-def main():
+def main(
+    add_text_features: bool = True,
+    generate_in_chunks: bool = True,
+    min_set_for_debug: bool = False,
+    feature_set_name: str | None = None,
+    chunksize: int = 10,
+) -> None:
     """Main function for loading, generating and evaluating a flattened
     dataset."""
     project_info = RESTRAINT_PROJECT_INFO
 
+    if feature_set_name:
+        feature_set_dir = project_info.flattened_dataset_dir / feature_set_name
+    else:
+        feature_set_dir = project_info.flattened_dataset_dir
+
+    if Path.exists(feature_set_dir):
+        while True:
+            response = input(
+                f"The path '{feature_set_dir}' already exists. Do you want to potentially overwrite the contents of this folder with new feature sets? (yes/no): "
+            )
+
+            if response.lower() not in ["yes", "y", "no", "n"]:
+                print("Invalid response. Please enter 'yes/y' or 'no/n'.")
+            if response.lower() in ["no", "n"]:
+                print("Process stopped.")
+                return feature_set_dir
+            if response.lower() in ["yes", "y"]:
+                print(f"Folder '{feature_set_dir}' will be overwritten.")
+                break
+
     feature_specs = FeatureSpecifier(
         project_info=project_info,
-        min_set_for_debug=False,  # Remember to set to False when generating full dataset
+        min_set_for_debug=min_set_for_debug,  # Remember to set to False when generating full dataset
     ).get_feature_specs()
+
+    if add_text_features:
+        text_feature_specs = TextFeatureSpecifier(
+            project_info=project_info,
+            min_set_for_debug=min_set_for_debug,  # Remember to set to False when generating full dataset
+        ).get_text_feature_specs()  # type: ignore
+
+        feature_specs += text_feature_specs
+
+    if generate_in_chunks:
+        flattened_df = ChunkedFeatureGenerator.create_flattened_dataset_with_chunking(
+            project_info=project_info,
+            eligible_prediction_times=RestraintCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.frame.to_pandas(),
+            feature_specs=feature_specs,  # type: ignore
+            chunksize=chunksize,
+        )
 
     flattened_df = create_flattened_dataset_tsflattener_v1(
         feature_specs=feature_specs,  # type: ignore
-        prediction_times_df=RestraintCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas(),  # type: ignore
+        prediction_times_df=RestraintCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.frame.to_pandas(),  # type: ignore
         drop_pred_times_with_insufficient_look_distance=True,
         project_info=project_info,
         add_birthdays=True,
@@ -52,12 +98,11 @@ def main():
         feature_specs=feature_specs,  # type: ignore
         feature_set_dir=project_info.flattened_dataset_dir,
     )
+    return None
 
 
 if __name__ == "__main__":
     project_info = RESTRAINT_PROJECT_INFO
-
-    main()  # move back to bottom!
 
     init_root_logger(project_info=project_info)
 
@@ -73,9 +118,9 @@ if __name__ == "__main__":
             exist_ok=True, parents=True
         )
 
-    wandb.init(
-        project=f"{project_info.project_name}-feature-generation",
-        entity="psycop",
-        config={"feature_set_path": project_info.flattened_dataset_dir},
-        mode="offline",
+    main(
+        add_text_features=True,
+        min_set_for_debug=False,
+        feature_set_name="full_feature_set_structured_tfidf_750",
+        generate_in_chunks=False,
     )
