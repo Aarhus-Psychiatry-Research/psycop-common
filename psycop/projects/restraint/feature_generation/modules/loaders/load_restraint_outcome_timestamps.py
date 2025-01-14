@@ -10,10 +10,8 @@ def load_restraint_outcome_timestamps() -> pd.DataFrame:
     Returns:
         pd.DataFrame: A dataframe with ids and outcome timestamps
     """
-    df = sql_load(
-        "SELECT * FROM fct.psycop_coercion_outcome_timestamps_2"
-    )
-    
+    df = sql_load("SELECT * FROM fct.psycop_coercion_outcome_timestamps_2")
+
     msg.good("Finished loading data frame for coercion with prediction times and outcomes.")
-    
+
     return df.reset_index(drop=True)

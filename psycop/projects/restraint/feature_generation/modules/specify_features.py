@@ -3,7 +3,6 @@
 import logging
 from typing import Literal, Union
 
-import polars as pl
 import numpy as np
 from timeseriesflattener.v1.aggregation_fns import (
     AggregationFunType,
@@ -104,8 +103,9 @@ from psycop.common.feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
     physical_visits_to_somatic,
 )
-from psycop.projects.restraint.cohort.restraint_cohort_definer import RestraintCohortDefiner
-from psycop.projects.restraint.feature_generation.modules.loaders.load_restraint_outcome_timestamps import load_restraint_outcome_timestamps
+from psycop.projects.restraint.feature_generation.modules.loaders.load_restraint_outcome_timestamps import (
+    load_restraint_outcome_timestamps,
+)
 
 log = logging.getLogger(__name__)
 
@@ -113,7 +113,14 @@ log = logging.getLogger(__name__)
 class FeatureSpecifier:
     """Specify features based on prediction time."""
 
-    def __init__(self, project_info: ProjectInfo, min_set_for_debug: bool = False, outcome_definition: Literal["mechanical_restraint", "manual_restraint", "chemical_restraint", "all_restraint"] = "all_restraint"):
+    def __init__(
+        self,
+        project_info: ProjectInfo,
+        min_set_for_debug: bool = False,
+        outcome_definition: Literal[
+            "mechanical_restraint", "manual_restraint", "chemical_restraint", "all_restraint"
+        ] = "all_restraint",
+    ):
         self.outcome_definition = outcome_definition
         self.min_set_for_debug = min_set_for_debug
         self.project_info = project_info
@@ -538,7 +545,7 @@ class FeatureSpecifier:
     def _get_outcome_specs(self) -> list[OutcomeSpec]:
         """Generate outcome specs."""
         log.info("-------- Generating outcome specs --------")
-        
+
         match self.outcome_definition:
             case "mechanical_restraint":
                 outcome_col_name = "first_mechanical_restraint"
@@ -552,7 +559,7 @@ class FeatureSpecifier:
                 outcome_col_name = "timestamp"
 
         mechanical_restraint_spec = OutcomeSpec(
-            timeseries_df=load_restraint_outcome_timestamps()[['dw_ek_borger', outcome_col_name]]
+            timeseries_df=load_restraint_outcome_timestamps()[["dw_ek_borger", outcome_col_name]]
             .assign(value=1)
             .rename(columns={outcome_col_name: "timestamp"})  # type: ignore
             .dropna(subset="timestamp"),
@@ -647,7 +654,9 @@ class FeatureSpecifier:
         """Get a spec set."""
 
         if self.min_set_for_debug:
-            return self._get_outcome_specs() + self._get_weight_and_height_specs(resolve_multiple=[latest], interval_days=[10.0]) # type: ignore
+            return self._get_outcome_specs() + self._get_weight_and_height_specs(
+                resolve_multiple=[latest], interval_days=[10.0]
+            )  # type: ignore
 
         return (
             self._get_static_predictor_specs()

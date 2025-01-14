@@ -18,19 +18,22 @@ from psycop.common.feature_generation.application_modules.loggers import init_ro
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
     split_and_save_dataset_to_disk,
 )
-from psycop.projects.restraint.cohort.restraint_cohort_definer import RestraintCohortDefiner
+from psycop.projects.restraint.feature_generation.modules.loaders.load_restraint_prediction_timestamps import (
+    load_restraint_prediction_timestamps,
+)
 from psycop.projects.restraint.feature_generation.modules.specify_features import FeatureSpecifier
 from psycop.projects.restraint.feature_generation.modules.specify_text_features import (
     TextFeatureSpecifier,
 )
 from psycop.projects.restraint.restraint_global_config import RESTRAINT_PROJECT_INFO
-from psycop.projects.restraint.feature_generation.modules.loaders.load_restraint_prediction_timestamps import load_restraint_prediction_timestamps
 
 log = logging.getLogger()
 
 
 def main(
-    outcome_definition: Literal["mechanical_restraint", "manual_restraint", "chemical_restraint", "all_restraint"] = "all_restraint",
+    outcome_definition: Literal[
+        "mechanical_restraint", "manual_restraint", "chemical_restraint", "all_restraint"
+    ] = "all_restraint",
     add_text_features: bool = True,
     generate_in_chunks: bool = True,
     min_set_for_debug: bool = False,
@@ -42,7 +45,9 @@ def main(
     project_info = RESTRAINT_PROJECT_INFO
 
     if feature_set_name:
-        feature_set_dir = project_info.flattened_dataset_dir / f"{feature_set_name}_outcome_{outcome_definition}"
+        feature_set_dir = (
+            project_info.flattened_dataset_dir / f"{feature_set_name}_outcome_{outcome_definition}"
+        )
     else:
         feature_set_dir = project_info.flattened_dataset_dir
 
@@ -77,23 +82,23 @@ def main(
     if generate_in_chunks:
         flattened_df = ChunkedFeatureGenerator.create_flattened_dataset_with_chunking(
             project_info=project_info,
-            eligible_prediction_times=load_restraint_prediction_timestamps()[['dw_ek_borger', 'timestamp']],
+            eligible_prediction_times=load_restraint_prediction_timestamps()[
+                ["dw_ek_borger", "timestamp"]
+            ],
             feature_specs=feature_specs,  # type: ignore
             chunksize=chunksize,
         )
 
     flattened_df = create_flattened_dataset_tsflattener_v1(
         feature_specs=feature_specs,  # type: ignore
-        prediction_times_df=load_restraint_prediction_timestamps()[['dw_ek_borger', 'timestamp']],
+        prediction_times_df=load_restraint_prediction_timestamps()[["dw_ek_borger", "timestamp"]],
         drop_pred_times_with_insufficient_look_distance=True,
         project_info=project_info,
         add_birthdays=True,
     )
 
     split_and_save_dataset_to_disk(
-        flattened_df=flattened_df,
-        project_info=project_info,
-        feature_set_dir=feature_set_dir,
+        flattened_df=flattened_df, project_info=project_info, feature_set_dir=feature_set_dir
     )
 
     save_flattened_dataset_description_to_disk(
