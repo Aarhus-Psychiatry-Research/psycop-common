@@ -79,6 +79,7 @@ def main(
             eligible_prediction_times=load_restraint_prediction_timestamps()[
                 ["dw_ek_borger", "timestamp"]
             ],
+            feature_set_dir=feature_set_dir,
             feature_specs=feature_specs,  # type: ignore
             chunksize=chunksize,
         )
@@ -122,7 +123,7 @@ if __name__ == "__main__":
 
     main(
         add_text_features=True,
-        min_set_for_debug=True,
-        feature_set_name="full_feature_set_structured_tfidf_750",
-        generate_in_chunks=False,
+        min_set_for_debug=False,
+        feature_set_name="full_feature_set_structured_tfidf_750_all_outcomes",
+        generate_in_chunks=True,
     )
