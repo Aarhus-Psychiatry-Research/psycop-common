@@ -23,8 +23,8 @@ class ChunkedFeatureGenerator:
         chunksize: int = 400,
     ) -> pd.DataFrame:
         """Generate features in chunks to avoid memory issues"""
-        
-        if not feature_set_dir: 
+
+        if not feature_set_dir:
             feature_set_dir = project_info.flattened_dataset_dir
 
         ChunkedFeatureGenerator.remove_files_from_dir(  # Ensures that all saved chunks from previous crashed run are removed
@@ -43,9 +43,7 @@ class ChunkedFeatureGenerator:
             save_chunk_to_disk(flattened_df_chunk, i, feature_set_dir)
 
         print("Feature generation done. Merging feature sets...")
-        df = ChunkedFeatureGenerator.merge_feature_sets_from_dirs(
-            feature_set_dir
-        )
+        df = ChunkedFeatureGenerator.merge_feature_sets_from_dirs(feature_set_dir)
 
         ChunkedFeatureGenerator.remove_files_from_dir(feature_set_dir)
 

@@ -18,7 +18,9 @@ from psycop.common.feature_generation.utils import write_df_to_file
 log = logging.getLogger(__name__)
 
 
-def save_chunk_to_disk(flattened_df_chunk: pd.DataFrame, chunk: int, feature_set_dir: Path | None = None):
+def save_chunk_to_disk(
+    flattened_df_chunk: pd.DataFrame, chunk: int, feature_set_dir: Path | None = None
+):
     """Save split to disk."""
     # Version table with current date and time
     filename = f"flattened_dataset_chunk_{chunk}.parquet"
