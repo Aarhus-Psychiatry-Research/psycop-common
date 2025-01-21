@@ -41,7 +41,9 @@ class ClozapineCohortDefiner(CohortDefiner):
     @staticmethod
     def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle:
         unfiltered_prediction_times = pl.from_pandas(
-            physical_visits_to_psychiatry_clozapine_2024(timestamps_only=True, timestamp_for_output="start")
+            physical_visits_to_psychiatry_clozapine_2024(
+                timestamps_only=True, timestamp_for_output="start"
+            )
         )
 
         result = filter_prediction_times(

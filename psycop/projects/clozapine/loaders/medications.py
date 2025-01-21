@@ -165,6 +165,7 @@ def antipsychotics(
         exclude_atc_codes=["N05AN01"],
     )
 
+
 def antipsychotics_fast(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -507,6 +508,7 @@ def clozapine(
         administration_method=administration_method,
     )
 
+
 def anxiolytics(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -525,6 +527,7 @@ def anxiolytics(
         administration_method=administration_method,
         add_code_to_output_col=add_code_to_output_col,
     )
+
 
 def anxiolytics_fast(
     n_rows: int | None = None,
@@ -781,6 +784,8 @@ def antidepressives(
         administration_method=administration_method,
         add_code_to_output_col=add_code_to_output_col,
     )
+
+
 def antidepressives_fast(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -1028,6 +1033,7 @@ def analgesic(
         administration_method=administration_method,
         add_code_to_output_col=add_code_to_output_col,
     )
+
 
 def analgesic_fast(
     n_rows: int | None = None,

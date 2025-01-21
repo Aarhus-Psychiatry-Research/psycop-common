@@ -104,10 +104,7 @@ TEXT_FILE_NAME = "not_labelled_yet_clozapine_text.parquet"
 
 
 def get_clozapine_project_info() -> ProjectInfo:
-    return ProjectInfo(
-        project_name="clozapine",
-        project_path=OVARTACI_SHARED_DIR / "clozapine",
-    )
+    return ProjectInfo(project_name="clozapine", project_path=OVARTACI_SHARED_DIR / "clozapine")
 
 
 def _init_clozapine_predictor(
@@ -340,8 +337,12 @@ if __name__ == "__main__":
             BooleanSpec(benzodiazepine_related_sleeping_agents),
         ],
         "unique_count_medication": [
-            ContinuousSpec(antipsychotics_fast, aggregation_fns=[UniqueCountAggregator()], fallback=0),
-            ContinuousSpec(antidepressives_fast, aggregation_fns=[UniqueCountAggregator()], fallback=0),
+            ContinuousSpec(
+                antipsychotics_fast, aggregation_fns=[UniqueCountAggregator()], fallback=0
+            ),
+            ContinuousSpec(
+                antidepressives_fast, aggregation_fns=[UniqueCountAggregator()], fallback=0
+            ),
             ContinuousSpec(anxiolytics_fast, aggregation_fns=[UniqueCountAggregator()], fallback=0),
             ContinuousSpec(analgesic_fast, aggregation_fns=[UniqueCountAggregator()], fallback=0),
         ],
