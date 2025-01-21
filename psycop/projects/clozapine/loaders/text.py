@@ -120,6 +120,10 @@ def load_text_split(
     """
     text_df = load_text_sfis(text_sfi_names=text_sfi_names, include_sfi_name=include_sfi_name)
 
+    text_df = text_df.rename(
+        {"datotid_senest_aendret_i_sfien": "timestamp", "fritekst": "value"}, axis=1
+    )
+
     text_split_df = (
         split_ids_presplit_step.apply(pl.from_pandas(text_df).lazy()).collect().to_pandas()
     )

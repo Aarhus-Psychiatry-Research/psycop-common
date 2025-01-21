@@ -82,7 +82,7 @@ def text_preprocessing_pipeline(
 
     sfis = "_".join(sfi_type) if sfi_type else "all_sfis"
 
-    write_df_to_sql(df, f"clozapine_{split_names}_{sfis}_preprocessed")
+    write_df_to_sql(df, f"psycop_clozapine_{split_names}_{sfis}_preprocessed")
 
     return f"Text preprocessed and uploaded to SQL as {split_names}_{sfis}_preprocessed"
 
