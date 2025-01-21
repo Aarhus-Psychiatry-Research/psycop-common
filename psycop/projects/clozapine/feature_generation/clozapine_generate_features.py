@@ -28,7 +28,7 @@ from psycop.common.feature_generation.application_modules.generate_feature_set i
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.projects.clozapine.feature_generation.cohort_definition.clozapine_cohort_definition import (
-    clozapine_pred_times,
+    ClozapineCohortDefiner,
 )
 from psycop.projects.clozapine.feature_generation.cohort_definition.outcome_specification.combine_text_structured_clozapine_outcome import (
     combine_structured_and_text_outcome,
@@ -67,9 +67,11 @@ from psycop.projects.clozapine.loaders.lab_results import (
 from psycop.projects.clozapine.loaders.medications import (
     alcohol_abstinence,
     analgesic,
-    antidepressives,
-    antipsychotics,
+    analgesic_fast,
+    antidepressives_fast,
+    antipsychotics_fast,
     anxiolytics,
+    anxiolytics_fast,
     aripiprazole_depot,
     benzodiazepine_related_sleeping_agents,
     benzodiazepines,
@@ -104,7 +106,7 @@ TEXT_FILE_NAME = "not_labelled_yet_clozapine_text.parquet"
 def get_clozapine_project_info() -> ProjectInfo:
     return ProjectInfo(
         project_name="clozapine",
-        project_path=OVARTACI_SHARED_DIR / "clozapine" / "flattened_datasets",
+        project_path=OVARTACI_SHARED_DIR / "clozapine",
     )
 
 
@@ -207,7 +209,6 @@ if __name__ == "__main__":
         datefmt="%Y/%m/%d %H:%M:%S",
         stream=sys.stdout,
     )
-    pred_times = clozapine_pred_times()
 
     feature_layers = {
         "basic": [
@@ -339,10 +340,10 @@ if __name__ == "__main__":
             BooleanSpec(benzodiazepine_related_sleeping_agents),
         ],
         "unique_count_medication": [
-            ContinuousSpec(antipsychotics, aggregation_fns=[UniqueCountAggregator()], fallback=0),
-            ContinuousSpec(antidepressives, aggregation_fns=[UniqueCountAggregator()], fallback=0),
-            ContinuousSpec(anxiolytics, aggregation_fns=[UniqueCountAggregator()], fallback=0),
-            ContinuousSpec(analgesic, aggregation_fns=[UniqueCountAggregator()], fallback=0),
+            ContinuousSpec(antipsychotics_fast, aggregation_fns=[UniqueCountAggregator()], fallback=0),
+            ContinuousSpec(antidepressives_fast, aggregation_fns=[UniqueCountAggregator()], fallback=0),
+            ContinuousSpec(anxiolytics_fast, aggregation_fns=[UniqueCountAggregator()], fallback=0),
+            ContinuousSpec(analgesic_fast, aggregation_fns=[UniqueCountAggregator()], fallback=0),
         ],
         "depot-medication": [
             BooleanSpec(aripiprazole_depot),
@@ -414,12 +415,14 @@ if __name__ == "__main__":
     logging.info("Loading specifications")
     specs = [_pair_to_spec(layer_spec) for layer_spec in layer_spec_pairs]
 
+    pred_times = ClozapineCohortDefiner.get_filtered_prediction_times_bundle().prediction_times
+
     logging.info("Generating feature set")
     generate_feature_set(
         project_info=get_clozapine_project_info(),
-        eligible_prediction_times_frame=clozapine_pred_times(),
+        eligible_prediction_times_frame=pred_times,
         feature_specs=specs,
-        feature_set_name="clozapine_full_feature_set_with_text",
+        feature_set_name="clozapine_full_feature_set_no_text",
         n_workers=None,
         step_size=datetime.timedelta(days=365),
         do_dataset_description=False,

@@ -8,7 +8,6 @@ from psycop.common.cohort_definition import (
     PredictionTimeFrame,
     filter_prediction_times,
 )
-from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits_to_psychiatry
 from psycop.common.global_utils.cache import shared_cache
 from psycop.projects.clozapine.feature_generation.cohort_definition.eligible_prediction_times.single_filters import (
     ClozapineMinAgeFilter,
@@ -20,6 +19,7 @@ from psycop.projects.clozapine.feature_generation.cohort_definition.eligible_pre
 from psycop.projects.clozapine.feature_generation.cohort_definition.outcome_specification.combine_text_structured_clozapine_outcome import (
     combine_structured_and_text_outcome,
 )
+from psycop.projects.clozapine.loaders.visits import physical_visits_to_psychiatry_clozapine_2024
 
 
 @shared_cache().cache()
@@ -41,7 +41,7 @@ class ClozapineCohortDefiner(CohortDefiner):
     @staticmethod
     def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle:
         unfiltered_prediction_times = pl.from_pandas(
-            physical_visits_to_psychiatry(timestamps_only=True, timestamp_for_output="start")
+            physical_visits_to_psychiatry_clozapine_2024(timestamps_only=True, timestamp_for_output="start")
         )
 
         result = filter_prediction_times(

@@ -165,6 +165,30 @@ def antipsychotics(
         exclude_atc_codes=["N05AN01"],
     )
 
+def antipsychotics_fast(
+    n_rows: int | None = None,
+    load_prescribed: bool = False,
+    load_administered: bool = True,
+    administration_route: str | None = None,
+    add_code_to_output_col: bool = False,
+) -> pd.DataFrame:
+    """All antipsyhotics, except Lithium.
+
+    Lithium is typically considered a mood stabilizer, not an
+    antipsychotic.
+    """
+    return load(
+        atc_code="N05A",
+        load_prescribed=load_prescribed,
+        load_administered=load_administered,
+        wildcard_code=True,
+        n_rows=n_rows,
+        administration_route=administration_route,
+        administration_method="Fast",
+        add_code_to_output_col=add_code_to_output_col,
+        exclude_atc_codes=["N05AN01"],
+    )
+
 
 # 1. generation antipsychotics [flupentixol, pimozid, haloperidol, zuclopenthixol, melperon,pipamperon, chlorprotixen]
 
@@ -483,7 +507,6 @@ def clozapine(
         administration_method=administration_method,
     )
 
-
 def anxiolytics(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -500,6 +523,24 @@ def anxiolytics(
         n_rows=n_rows,
         administration_route=administration_route,
         administration_method=administration_method,
+        add_code_to_output_col=add_code_to_output_col,
+    )
+
+def anxiolytics_fast(
+    n_rows: int | None = None,
+    load_prescribed: bool = False,
+    load_administered: bool = True,
+    administration_route: str | None = None,
+    add_code_to_output_col: bool = False,
+) -> pd.DataFrame:
+    return load(
+        atc_code="N05B",
+        load_prescribed=load_prescribed,
+        load_administered=load_administered,
+        wildcard_code=True,
+        n_rows=n_rows,
+        administration_route=administration_route,
+        administration_method="Fast",
         add_code_to_output_col=add_code_to_output_col,
     )
 
@@ -740,6 +781,23 @@ def antidepressives(
         administration_method=administration_method,
         add_code_to_output_col=add_code_to_output_col,
     )
+def antidepressives_fast(
+    n_rows: int | None = None,
+    load_prescribed: bool = False,
+    load_administered: bool = True,
+    administration_route: str | None = None,
+    add_code_to_output_col: bool = False,
+) -> pd.DataFrame:
+    return load(
+        atc_code="N06A",
+        load_prescribed=load_prescribed,
+        load_administered=load_administered,
+        wildcard_code=True,
+        n_rows=n_rows,
+        administration_route=administration_route,
+        administration_method="Fast",
+        add_code_to_output_col=add_code_to_output_col,
+    )
 
 
 # SSRIs, escitalopram, citalopram, fluvoxamin, fluoxetin, paroxetin
@@ -968,5 +1026,23 @@ def analgesic(
         n_rows=n_rows,
         administration_route=administration_route,
         administration_method=administration_method,
+        add_code_to_output_col=add_code_to_output_col,
+    )
+
+def analgesic_fast(
+    n_rows: int | None = None,
+    load_prescribed: bool = False,
+    load_administered: bool = True,
+    administration_route: str | None = None,
+    add_code_to_output_col: bool = True,
+) -> pd.DataFrame:
+    return load(
+        atc_code="N02",
+        load_prescribed=load_prescribed,
+        load_administered=load_administered,
+        wildcard_code=True,
+        n_rows=n_rows,
+        administration_route=administration_route,
+        administration_method="Fast",
         add_code_to_output_col=add_code_to_output_col,
     )
