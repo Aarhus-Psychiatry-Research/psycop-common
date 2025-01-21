@@ -8,7 +8,7 @@ from typing import Optional
 from sqlalchemy import create_engine
 
 
-def write_df_to_sql(
+def get_sql_table_names(
     driver: Optional[str] = "SQL Server",
     server: Optional[str] = "BI-DPA-PROD",
     database: Optional[str] = "USR_PS_FORSK",
