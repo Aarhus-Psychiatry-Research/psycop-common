@@ -5,18 +5,15 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Literal, Optional
 
-from psycop.common.feature_generation.loaders.raw.load_text import (
-    load_preprocessed_sfis,
-    load_text_split,
-)
-from psycop.common.feature_generation.text_models.fit_text_models import fit_text_model
-from psycop.common.feature_generation.text_models.text_model_paths import TEXT_MODEL_DIR
-from psycop.common.feature_generation.text_models.utils import save_text_model_to_shared_dir
 from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
     FilterByOutcomeStratifiedSplits,
 )
+from psycop.projects.clozapine.loaders.text import load_preprocessed_sfis, load_text_split
+from psycop.projects.clozapine.text_models.clozapine_text_model_paths import TEXT_MODEL_DIR
+from psycop.projects.clozapine.text_models.fit_text_models import fit_text_model
 from psycop.projects.clozapine.text_models.preprocessing import text_preprocessing
+from psycop.projects.clozapine.text_models.utils import save_text_model_to_shared_dir
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
@@ -52,7 +49,7 @@ def create_model_filename(
 def text_model_pipeline(
     model: Literal["bow", "tfidf"],
     split_ids_presplit_step: PresplitStep | None = None,
-    corpus_name: str = "psycop_train_val_all_sfis_preprocessed",
+    corpus_name: str = "psycop_clozapine_train_val_all_sfis_preprocessed",
     corpus_preproceseed: bool = False,
     sfi_type: Optional[Sequence[str] | str] = None,
     ngram_range: tuple[int, int] = (1, 1),
@@ -103,11 +100,11 @@ def text_model_pipeline(
         return model_path
 
     if corpus_preproceseed:
-        corpus = load_preprocessed_sfis(text_sfi_names=sfi_type, corpus_name=corpus_name)
+        corpus = load_preprocessed_sfis(corpus_name=corpus_name)
 
     else:
         corpus = load_text_split(
-            text_sfi_names=sfi_type,
+            text_sfi_names=None,
             split_ids_presplit_step=split_ids_presplit_step,
             include_sfi_name=True,
             n_rows=n_rows,
