@@ -16,7 +16,6 @@ from timeseriesflattener.aggregators import (
     CountAggregator,
     HasValuesAggregator,
     LatestAggregator,
-    MaxAggregator,
     MeanAggregator,
     SumAggregator,
     UniqueCountAggregator,
@@ -28,17 +27,12 @@ from psycop.common.feature_generation.application_modules.generate_feature_set i
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.projects.clozapine.feature_generation.cohort_definition.clozapine_cohort_definition import (
-    ClozapineCohortDefiner,
+    clozapine_pred_times,
 )
 from psycop.projects.clozapine.feature_generation.cohort_definition.outcome_specification.combine_text_structured_clozapine_outcome import (
     combine_structured_and_text_outcome,
 )
-from psycop.projects.clozapine.loaders.coercion import (
-    beroligende_medicin,
-    skema_1,
-    skema_2_without_nutrition,
-    skema_3,
-)
+from psycop.projects.clozapine.loaders.coercion import skema_1, skema_2_without_nutrition, skema_3
 from psycop.projects.clozapine.loaders.demographics import birthdays, sex_female
 from psycop.projects.clozapine.loaders.diagnoses import (
     cluster_b,
@@ -68,6 +62,7 @@ from psycop.projects.clozapine.loaders.medications import (
     alcohol_abstinence,
     analgesic,
     analgesic_fast,
+    antidepressives,
     antidepressives_fast,
     antipsychotics_fast,
     anxiolytics,
@@ -104,7 +99,10 @@ TEXT_FILE_NAME = "not_labelled_yet_clozapine_text.parquet"
 
 
 def get_clozapine_project_info() -> ProjectInfo:
-    return ProjectInfo(project_name="clozapine", project_path=OVARTACI_SHARED_DIR / "clozapine")
+    return ProjectInfo(
+        project_name="clozapine",
+        project_path=OVARTACI_SHARED_DIR / "clozapine" / "flattened_datasets",
+    )
 
 
 def _init_clozapine_predictor(
@@ -206,9 +204,10 @@ if __name__ == "__main__":
         datefmt="%Y/%m/%d %H:%M:%S",
         stream=sys.stdout,
     )
+    pred_times = clozapine_pred_times()
 
     feature_layers = {
-        "basic": [
+        "demographic": [
             ts.OutcomeSpec(
                 value_frame=ts.ValueFrame(
                     init_df=combine_structured_and_text_outcome(),
@@ -327,6 +326,7 @@ if __name__ == "__main__":
             BooleanSpec(second_gen_antipsychotics),
             BooleanSpec(lithium),
             BooleanSpec(anxiolytics),
+            BooleanSpec(antidepressives),
             BooleanSpec(hyperactive_disorders_medications),
             BooleanSpec(benzodiazepines),
             BooleanSpec(hypnotics),
@@ -368,42 +368,11 @@ if __name__ == "__main__":
         ],
         "coercion": [
             # coercion loaders return duration of coercion
+            ContinuousSpec(skema_1, aggregation_fns=[MeanAggregator()], fallback=0),
             ContinuousSpec(
-                skema_1,
-                aggregation_fns=[
-                    MeanAggregator(),
-                    MaxAggregator(),
-                    LatestAggregator(timestamp_col_name="timestamp"),
-                ],
-                fallback=0,
+                skema_2_without_nutrition, aggregation_fns=[MeanAggregator()], fallback=0
             ),
-            ContinuousSpec(
-                skema_2_without_nutrition,
-                aggregation_fns=[
-                    MeanAggregator(),
-                    MaxAggregator(),
-                    LatestAggregator(timestamp_col_name="timestamp"),
-                ],
-                fallback=0,
-            ),
-            ContinuousSpec(
-                skema_3,
-                aggregation_fns=[
-                    MeanAggregator(),
-                    MaxAggregator(),
-                    LatestAggregator(timestamp_col_name="timestamp"),
-                ],
-                fallback=0,
-            ),
-            ContinuousSpec(
-                beroligende_medicin,
-                aggregation_fns=[
-                    MeanAggregator(),
-                    MaxAggregator(),
-                    LatestAggregator(timestamp_col_name="timestamp"),
-                ],
-                fallback=0,
-            ),
+            ContinuousSpec(skema_3, aggregation_fns=[MeanAggregator()], fallback=0),
         ],
     }
 
@@ -416,14 +385,12 @@ if __name__ == "__main__":
     logging.info("Loading specifications")
     specs = [_pair_to_spec(layer_spec) for layer_spec in layer_spec_pairs]
 
-    pred_times = ClozapineCohortDefiner.get_filtered_prediction_times_bundle().prediction_times
-
     logging.info("Generating feature set")
     generate_feature_set(
         project_info=get_clozapine_project_info(),
-        eligible_prediction_times_frame=pred_times,
+        eligible_prediction_times_frame=clozapine_pred_times(),
         feature_specs=specs,
-        feature_set_name="clozapine_full_feature_set_no_text",
+        feature_set_name="clozapine_full_feature_set_without_text",
         n_workers=None,
         step_size=datetime.timedelta(days=365),
         do_dataset_description=False,
