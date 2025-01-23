@@ -10,7 +10,6 @@ from psycop.common.feature_generation.application_modules.flatten_dataset import
     create_flattened_dataset,
 )
 from psycop.projects.restraint.cohort.restraint_cohort_definer import RestraintCohortDefiner
-from psycop.projects.restraint.cohort.utils.loaders import load_prediction_timestamps_deprecated
 from psycop.projects.restraint.feature_generation.modules.specify_text_features import (
     TextFeatureSpecifier,
 )
@@ -36,7 +35,6 @@ def main(note_type: str, model_name: str):
         feature_specs=feature_specs,  # type: ignore
         prediction_times_frame=PredictionTimeFrame(pl.DataFrame(restraint_pred_times)),
         n_workers=None,
-        compute_lazily=False,
         step_size=dt.timedelta(days=200),
     )
 

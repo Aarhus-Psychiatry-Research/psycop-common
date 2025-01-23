@@ -5,6 +5,6 @@ lefthook==0.1.2
 pre-commit==3.4.0
 pyright==1.1.368
 pytest-sugar==0.9.7
-ruff==0.4.4
+ruff==0.6.3
 pandas-stubs==2.1.1.230928
 glances==3.4.0.5

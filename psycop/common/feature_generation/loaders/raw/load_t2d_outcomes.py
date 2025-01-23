@@ -5,10 +5,8 @@ from __future__ import annotations
 import pandas as pd
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
-from psycop.common.feature_generation.utils import data_loaders
 
 
-@data_loaders.register("t2d")
 def t2d(n_rows: int | None = None) -> pd.DataFrame:
     df = sql_load(
         "SELECT dw_ek_borger, timestamp FROM [fct].[psycop_t2d_first_diabetes_t2d] WHERE timestamp IS NOT NULL",
@@ -24,7 +22,6 @@ def t2d(n_rows: int | None = None) -> pd.DataFrame:
     return df.reset_index(drop=True)  # type: ignore
 
 
-@data_loaders.register("any_diabetes")
 def any_diabetes(n_rows: int | None = None) -> pd.DataFrame:
     df = sql_load(
         "SELECT * FROM [fct].[psycop_t2d_first_diabetes_any] WHERE timestamp IS NOT NULL",

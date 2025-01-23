@@ -105,14 +105,12 @@ ignore = [
   "COM812",
   "E402",
   "E501",
-  "F401",
   "F841",
   "RUF100",
   "RET504",
   "SIM108",
   "TCH001",
 ]
-ignore-init-module-imports = true
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 unfixable = ["ERA"]
 # Exclude a variety of commonly ignored directories.

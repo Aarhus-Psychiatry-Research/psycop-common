@@ -1,9 +1,6 @@
 import polars as pl
 
-from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
-    schizoaffective,
-    schizophrenia,
-)
+from psycop.projects.clozapine.loaders.diagnoses import schizoaffective, schizophrenia
 
 
 def add_only_patients_with_schizo() -> pl.DataFrame:

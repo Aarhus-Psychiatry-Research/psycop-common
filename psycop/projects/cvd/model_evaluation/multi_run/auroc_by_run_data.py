@@ -7,11 +7,10 @@ import polars as pl
 from psycop.common.global_utils.cache import shared_cache
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_evaluation.binary.global_performance.roc_auc import bootstrap_roc
-from psycop.common.model_training_v2.loggers.mlflow_logger import MLFlowLogger
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import RunSelector
 
 
-@shared_cache.cache()
+@shared_cache().cache()
 def _run_auroc_with_ci(df: pl.DataFrame, n_bootstraps: int = 5) -> pl.DataFrame:
     logging.info(f"Bootstrapping {df['run_name'][0]}")
     _, aucs_bootstrapped, _ = bootstrap_roc(
@@ -48,7 +47,7 @@ def _get_run(selector: RunSelector) -> pl.DataFrame:
     )
 
 
-@shared_cache.cache()
+@shared_cache().cache()
 def model(runs: Sequence[RunSelector]) -> pl.DataFrame:
     eval_dfs = [_get_run(r) for r in runs]
     run_performances = [_run_auroc_with_ci(df=df) for df in eval_dfs]

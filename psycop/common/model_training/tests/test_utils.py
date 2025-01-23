@@ -20,8 +20,13 @@ def test_drop_records_if_datediff_days_smaller_than():
     """
     )
 
-    test_df = test_df.append(
-        pd.DataFrame({"timestamp_2": pd.NaT, "timestamp_1": "2021-01-01"}, index=[1])
+    test_df = pd.concat(
+        [
+            test_df,
+            pd.DataFrame(
+                {"timestamp_2": pd.NaT, "timestamp_1": pd.Timestamp("2021-01-01")}, index=[1]
+            ),
+        ]
     )  # type: ignore
 
     test_df = drop_records_if_datediff_days_smaller_than(

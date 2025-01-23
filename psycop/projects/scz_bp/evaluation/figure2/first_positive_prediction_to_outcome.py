@@ -129,7 +129,7 @@ def plot_scz_bp_first_pred_to_event_stratified(
 
 
 if __name__ == "__main__":
-    best_experiment = "sczbp/test_tfidf_1000"
+    best_experiment = "sczbp/test_dfm_encoder"
     best_pos_rate = 0.04
     eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(
         experiment_name=best_experiment, model_type="joint"
@@ -137,5 +137,5 @@ if __name__ == "__main__":
 
     # p = scz_bp_first_pred_to_event(eval_ds=eval_ds, ppr=best_pos_rate) # noqa: ERA001
     p = plot_scz_bp_first_pred_to_event_stratified(
-        eval_ds=eval_ds, ppr=best_pos_rate, groups_to_plot=["BP"]
+        eval_ds=eval_ds, ppr=best_pos_rate, groups_to_plot=["BP", "SCZ"]
     )

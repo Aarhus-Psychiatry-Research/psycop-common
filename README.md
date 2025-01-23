@@ -32,10 +32,10 @@ The shared code across the PSYCOP projects.
 5. Profit! 
 
 ### Method 2: Ovartaci
-If you're working on Ovartaci, all you need is to activate the shared environment by
+If you're working on Ovartaci, all you need is to activate the shared environment by using the following command:
 
 ```
-conda activate psycop-main
+conda activate psycop-next
 ```
 
 To reinstall the packages in the environment, run `inv install-requirements`.

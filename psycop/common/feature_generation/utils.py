@@ -9,13 +9,10 @@ import os
 from collections.abc import Hashable
 from typing import TYPE_CHECKING, Any
 
-import catalogue
 import pandas as pd
 
 if TYPE_CHECKING:
     from pathlib import Path
-
-data_loaders = catalogue.create("timeseriesflattener", "data_loaders")
 
 
 def format_dict_for_printing(d: dict[str, Any]) -> str:

@@ -1,4 +1,3 @@
-from importlib.metadata import distribution
 from pathlib import Path
 
 from psycop.projects.cvd.cohort_examination.incidence_by_time.model import incidence_by_time_model

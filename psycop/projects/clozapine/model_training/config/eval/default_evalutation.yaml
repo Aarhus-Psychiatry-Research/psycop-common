@@ -1,6 +1,0 @@
-top_n_feature_importances: 10
-positive_rates: [5, 3, 2, 1, 0.5, 0.3, 0.1]
-save_model_predictions_on_overtaci: true
-lookahead_bins: [91,182,365]
-lookbehind_bins: [10, 30, 180, 365]
-descriptive_stats_table: false

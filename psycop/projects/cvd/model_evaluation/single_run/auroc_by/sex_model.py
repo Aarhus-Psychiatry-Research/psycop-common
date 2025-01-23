@@ -9,7 +9,7 @@ from psycop.projects.cvd.model_evaluation.uuid_parsers import parse_dw_ek_borger
 AurocBySexDF = NewType("AurocBySexDF", pl.DataFrame)
 
 
-@shared_cache.cache()
+@shared_cache().cache()
 def auroc_by_sex_model(eval_df: pl.DataFrame, sex_df: pl.DataFrame) -> AurocBySexDF:
     eval_dataset = (
         parse_dw_ek_borger_from_uuid(eval_df)

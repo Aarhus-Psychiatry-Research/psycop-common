@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING, Literal
 import polars as pl
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
-from psycop.common.feature_generation.utils import data_loaders
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -57,7 +56,6 @@ def sfi_loader(
     return df.reset_index(drop=True)
 
 
-@data_loaders.register("broeset_violence_checklist")
 def broeset_violence_checklist(n_rows: int | None = None) -> pd.DataFrame:
     return sfi_loader(
         aktivitetstypenavn="Brøset Violence Checkliste (BVC)",
@@ -67,7 +65,6 @@ def broeset_violence_checklist(n_rows: int | None = None) -> pd.DataFrame:
     )
 
 
-@data_loaders.register("broeset_violence_checklist_physical_threats")
 def broeset_violence_checklist_physical_threats(n_rows: int | None = None) -> pd.DataFrame:
     df = sfi_loader(
         aktivitetstypenavn="Brøset Violence Checkliste (BVC)",
@@ -83,8 +80,7 @@ def broeset_violence_checklist_physical_threats(n_rows: int | None = None) -> pd
     return df
 
 
-@data_loaders.register("selvmordsrisiko")
-def selvmordsrisiko(n_rows: int | None = None) -> pd.DataFrame:
+def suicide_risk_assessment(n_rows: int | None = None) -> pd.DataFrame:
     df = sfi_loader(
         aktivitetstypenavn="Screening for selvmordsrisiko",
         elementledetekst="ScrSelvmordlRisikoniveauKonkl",
@@ -105,7 +101,6 @@ def selvmordsrisiko(n_rows: int | None = None) -> pd.DataFrame:
     return df
 
 
-@data_loaders.register("hamilton_d17")
 def hamilton_d17(n_rows: int | None = None) -> pd.DataFrame:
     return sfi_loader(
         aktivitetstypenavn="Vurdering af depressionssværhedsgrad med HAM-D17",
@@ -115,7 +110,6 @@ def hamilton_d17(n_rows: int | None = None) -> pd.DataFrame:
     )
 
 
-@data_loaders.register("mas_m")
 def mas_m(n_rows: int | None = None) -> pd.DataFrame:
     return sfi_loader(
         aktivitetstypenavn="MAS-M maniscoringsskema (Modificeret Bech-Rafaelsen Maniskala)",
@@ -125,7 +119,6 @@ def mas_m(n_rows: int | None = None) -> pd.DataFrame:
     )
 
 
-@data_loaders.register("height_in_cm")
 def height_in_cm(n_rows: int | None = None) -> pd.DataFrame:
     return sfi_loader(
         aktivitetstypenavn="Måling af patienthøjde (cm)",
@@ -135,7 +128,6 @@ def height_in_cm(n_rows: int | None = None) -> pd.DataFrame:
     )
 
 
-@data_loaders.register("weight_in_kg")
 def weight_in_kg(n_rows: int | None = None) -> pd.DataFrame:
     df = sfi_loader(
         aktivitetstypenavn="Måling af patientvægt (kg)",
@@ -149,7 +141,6 @@ def weight_in_kg(n_rows: int | None = None) -> pd.DataFrame:
     return df
 
 
-@data_loaders.register("bmi")
 def bmi(n_rows: int | None = None) -> pd.DataFrame:
     df = sfi_loader(
         aktivitetstypenavn="Bestemmelse af Body Mass Index (BMI)",
@@ -163,7 +154,6 @@ def bmi(n_rows: int | None = None) -> pd.DataFrame:
     return df
 
 
-@data_loaders.register("no_temporary_leave")
 def no_temporary_leave(n_rows: int | None = None) -> pd.DataFrame:
     df = sfi_loader(
         aktivitetstypenavn="Udgang, ordination",
@@ -178,7 +168,6 @@ def no_temporary_leave(n_rows: int | None = None) -> pd.DataFrame:
     return df
 
 
-@data_loaders.register("temporary_leave")
 def temporary_leave(n_rows: int | None = None) -> pd.DataFrame:
     df = sfi_loader(
         aktivitetstypenavn="Udgang, ordination",
@@ -197,7 +186,6 @@ def temporary_leave(n_rows: int | None = None) -> pd.DataFrame:
     return df
 
 
-@data_loaders.register("supervised_temporary_leave")
 def supervised_temporary_leave(n_rows: int | None = None) -> pd.DataFrame:
     df = sfi_loader(
         aktivitetstypenavn="Udgang, ordination",
@@ -215,7 +203,6 @@ def supervised_temporary_leave(n_rows: int | None = None) -> pd.DataFrame:
     return df
 
 
-@data_loaders.register("unsupervised_temporary_leave")
 def unsupervised_temporary_leave(n_rows: int | None = None) -> pd.DataFrame:
     df = sfi_loader(
         aktivitetstypenavn="Udgang, ordination",
@@ -247,9 +234,9 @@ def smoking_categorical(mapping: dict[str, int] | None = None) -> pd.DataFrame:
     """Smoking as a categorical variable. See mapping within the function for definition, or provide your own."""
     if mapping is None:
         mapping = {
-            "Ryger dagligt": 6,
-            "Ryger": 5,
-            "Ryger lejlighedsvis": 4,
+            "Ryger dagligt": 4,
+            "Ryger": 4,
+            "Ryger lejlighedsvis": 3,
             "Andet": 3,
             "Andet (f.eks. snus, e-cigaretter mv.)": 3,
             "Eks ryger": 2,
@@ -297,5 +284,11 @@ def systolic_blood_pressure() -> pd.DataFrame:
 
 def diastolic_blood_pressure() -> pd.DataFrame:
     df = _get_blood_pressure_pulse(subtype="Diastolisk")
+
+    return df.collect().to_pandas()
+
+
+def pulse() -> pd.DataFrame:
+    df = _get_blood_pressure_pulse(subtype="Pulsslag / min")
 
     return df.collect().to_pandas()

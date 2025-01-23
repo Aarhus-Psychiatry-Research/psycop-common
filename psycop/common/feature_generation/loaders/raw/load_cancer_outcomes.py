@@ -6,10 +6,8 @@ from typing import Literal
 import pandas as pd
 
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import from_contacts
-from psycop.common.feature_generation.utils import data_loaders
 
 
-@data_loaders.register("any_cancer_outcome")
 def any_cancer(
     n_rows: int | None = None,
     shak_location_col: str | None = None,

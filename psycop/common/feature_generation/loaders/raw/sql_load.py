@@ -9,13 +9,15 @@ import urllib.parse
 import pandas as pd
 from sqlalchemy import create_engine, text
 
+from psycop.automation.environment import on_ovartaci
+
 log = logging.getLogger(__name__)
 
 
 def sql_load(
     query: str,
     server: str = "BI-DPA-PROD",
-    database: str = "USR_PS_Forsk",
+    database: str = "USR_PS_FORSK",
     format_timestamp_cols_to_datetime: bool | None = True,
     n_rows: int | None = None,
 ) -> pd.DataFrame:
@@ -40,16 +42,25 @@ def sql_load(
         >>> sql = "SELECT * FROM [fct]." + view
         >>> df = sql_load(sql)
     """
+    # Driver for Kubeflow is different from driver on Ovartaci
     driver = "SQL Server"
+
+    # Separate setup for kubeflow
+    if not on_ovartaci():
+        driver = "ODBC Driver 18 for SQL Server"
+        server = "rmsqls0175.onerm.dk"
+
     params = urllib.parse.quote(
-        f"DRIVER={driver};SERVER={server};DATABASE={database};Trusted_Connection=yes"
+        f"DRIVER={driver};SERVER={server};DATABASE={database};Trusted_Connection=yes;"
     )
+
+    if not on_ovartaci():
+        params += "TrustServerCertificate=yes;"
 
     if n_rows:
         query = query.replace("SELECT", f"SELECT TOP {n_rows} ")
 
     engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
-
     conn = engine.connect().execution_options(stream_results=True, fast_executemany=True)
     log.info(f"Loading {query}")
     df = pd.read_sql(text(query), conn)  # type: ignore

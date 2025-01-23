@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import logging
+import os
 from typing import TYPE_CHECKING
 
-import psutil
 from timeseriesflattener import Flattener
 from timeseriesflattener import PredictionTimeFrame as FlattenerPredictionTimeFrame
 from timeseriesflattener.v1.flattened_dataset import TimeseriesFlattener
@@ -62,7 +62,6 @@ def create_flattened_dataset(
     feature_specs: Sequence[ValueSpecification],
     prediction_times_frame: PredictionTimeFrame,
     n_workers: int | None,
-    compute_lazily: bool,
     step_size: dt.timedelta | None = None,
 ) -> pl.DataFrame:
     flattener = Flattener(
@@ -71,10 +70,9 @@ def create_flattened_dataset(
             entity_id_col_name=prediction_times_frame.entity_id_col_name,
             timestamp_col_name=prediction_times_frame.timestamp_col_name,
         ),
-        compute_lazily=compute_lazily,
         n_workers=n_workers,
     )
-    return flattener.aggregate_timeseries(specs=feature_specs, step_size=step_size).df.collect()
+    return flattener.aggregate_timeseries(specs=feature_specs, step_size=step_size).df
 
 
 def create_flattened_dataset_tsflattener_v1(
@@ -99,9 +97,13 @@ def create_flattened_dataset_tsflattener_v1(
         FlattenedDataset: Flattened dataset.
     """
 
+    cpu_count = os.cpu_count()
+    if cpu_count is None:
+        cpu_count = 4
+
     flattened_dataset = TimeseriesFlattener(
         prediction_times_df=prediction_times_df,
-        n_workers=min(len(feature_specs), psutil.cpu_count(logical=True)),
+        n_workers=min(len(feature_specs), cpu_count),
         cache=None,
         drop_pred_times_with_insufficient_look_distance=drop_pred_times_with_insufficient_look_distance,
         predictor_col_name_prefix=project_info.prefix.predictor,

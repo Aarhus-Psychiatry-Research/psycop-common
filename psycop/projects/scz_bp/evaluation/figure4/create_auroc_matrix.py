@@ -6,7 +6,6 @@ from confection import Config
 from psycop.common.model_evaluation.binary.performance_by_type.auroc_by_outcome import (
     EvaluationFrame,
     auroc_by_outcome,
-    plot_auroc_by_outcome,
 )
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 from psycop.projects.scz_bp.dataset_description.scz_bp_table_one import SczBpTableOne
@@ -73,6 +72,16 @@ if __name__ == "__main__":
             model_names=(list(mapping.keys())), validation_outcomes=validation_outcomes
         )
         m = m.replace(mapping)
+        m["ci_low"] = m["ci_low"].round(2)
+        m["ci_high"] = m["ci_high"].round(2)
+        m["estimate"] = (
+            m["estimate"].astype(str)
+            + " ("
+            + m["ci_low"].astype(str)
+            + ", "
+            + m["ci_high"].astype(str)
+            + ")"
+        )
         m = m.pivot(columns="validation_outcome", index="model_name", values="estimate")
         m = m.sort_index(ascending=False)
         # reverse order of columns to get scz first

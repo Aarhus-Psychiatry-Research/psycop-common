@@ -47,7 +47,6 @@ def generate_feature_set(
     n_workers: int | None,
     do_dataset_description: bool,
     step_size: datetime.timedelta | None = None,
-    compute_lazily: bool = False,
 ) -> None:
     feature_set_dir = project_info.flattened_dataset_dir / feature_set_name
     if feature_set_dir.exists():
@@ -71,16 +70,17 @@ def generate_feature_set(
         feature_specs=feature_specs,
         prediction_times_frame=eligible_prediction_times_frame,
         n_workers=n_workers,
-        compute_lazily=compute_lazily,
         step_size=step_size,
     )
     if do_dataset_description:
         # TODO #826
-        print(
+        logging.info(
             "Dataset description not yet implemented for tsflattener v2 specs. Perhaps you should implement it?"
         )
 
-    flattened_df.write_parquet(feature_set_dir / f"{feature_set_name}.parquet")
+    feature_set_path = feature_set_dir / f"{feature_set_name}.parquet"
+    flattened_df.write_parquet(feature_set_path)
+    logging.info(f"Writing feature set to {feature_set_path}")
     return
 
 

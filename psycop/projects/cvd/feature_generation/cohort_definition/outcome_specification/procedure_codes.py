@@ -3,7 +3,7 @@ import polars as pl
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 
 CVD_PROCEDURE_CODES = {
-    "AMI": ["DI21", "DI22", "DI23"],
+    "MI": ["DI21", "DI22", "DI23"],
     "Stroke": ["DI6"],
     "PCI": ["KFNG02", "KFNG05", "KFNG96"],
     "CABG": ["KFNA", "KFNB", "KFNC", "KFND", "KFNE"],
@@ -28,8 +28,10 @@ CVD_PROCEDURE_CODES = {
         "KPFN",
         "KPFP",
         "KPFQ",
+        "KFNQ",  # Amputation
+        "KNGQ",  # Amputation
+        "KNHQ",  # Amputation
     ],
-    "Amputation": ["KNFQ", "KNGQ", "KNHQ"],
 }
 
 

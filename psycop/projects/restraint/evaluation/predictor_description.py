@@ -12,7 +12,6 @@ from psycop.common.feature_generation.data_checks.flattened.feature_describer_ts
     parse_predictor_column_name,
     tsflattener_v2_column_is_static,
 )
-from psycop.common.feature_generation.data_checks.utils import save_df_to_pretty_html_table
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 from psycop.common.model_training_v2.loggers.dummy_logger import DummyLogger

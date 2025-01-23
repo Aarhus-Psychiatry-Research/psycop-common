@@ -15,7 +15,6 @@ from psycop.common.feature_generation.loaders.filters.diabetes_filters import (
     keep_rows_where_diag_matches_t2d_diag,
 )
 from psycop.common.feature_generation.loaders.raw.utils import load_from_codes
-from psycop.common.feature_generation.utils import data_loaders
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -96,7 +95,6 @@ def from_contacts(
     return df.reset_index(drop=True)  # type: ignore
 
 
-@data_loaders.register("essential_hypertension")
 def essential_hypertension(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -115,7 +113,6 @@ def essential_hypertension(
     )
 
 
-@data_loaders.register("hyperlipidemia")
 def hyperlipidemia(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -134,7 +131,6 @@ def hyperlipidemia(
     )
 
 
-@data_loaders.register("liverdisease_unspecified")
 def liverdisease_unspecified(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -153,7 +149,6 @@ def liverdisease_unspecified(
     )
 
 
-@data_loaders.register("polycystic_ovarian_syndrome")
 def polycystic_ovarian_syndrome(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -172,7 +167,6 @@ def polycystic_ovarian_syndrome(
     )
 
 
-@data_loaders.register("sleep_apnea")
 def sleep_apnea(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -191,7 +185,6 @@ def sleep_apnea(
     )
 
 
-@data_loaders.register("sleep_problems_unspecified")
 def sleep_problems_unspecified(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -210,7 +203,6 @@ def sleep_problems_unspecified(
     )
 
 
-@data_loaders.register("copd")
 def copd(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -229,7 +221,6 @@ def copd(
     )
 
 
-@data_loaders.register("type_2_diabetes")
 def type_2_diabetes(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -263,7 +254,7 @@ def type_2_diabetes(
 
     df_filtered = keep_rows_where_diag_matches_t2d_diag(df=df, col_name="diagnosegruppestreng")
 
-    return df_filtered
+    return df_filtered.drop("diagnosegruppestreng", axis=1)
 
 
 def ischemic_stroke(
@@ -340,6 +331,26 @@ def acute_myocardial_infarction(
     return df
 
 
+def atrial_fibrillation(
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    df = from_contacts(
+        icd_code="I48",
+        wildcard_icd_code=True,
+        n_rows=n_rows,
+        shak_location_col=shak_location_col,
+        shak_code=shak_code,
+        shak_sql_operator=shak_sql_operator,
+        timestamp_purpose=timestamp_purpose,
+    )
+
+    return df
+
+
 def SCORE2_CVD(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -386,7 +397,6 @@ def peripheral_artery_disease(
     )
 
 
-@data_loaders.register("type_1_diabetes")
 def type_1_diabetes(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -420,12 +430,51 @@ def type_1_diabetes(
 
     df_filtered = keep_rows_where_diag_matches_t1d_diag(df=df, col_name="diagnosegruppestreng")
 
-    return df_filtered
+    return df_filtered.drop("diagnosegruppestreng", axis=1)
+
+
+def angina(
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    df = from_contacts(
+        icd_code="I20",
+        wildcard_icd_code=True,
+        n_rows=n_rows,
+        shak_location_col=shak_location_col,
+        shak_code=shak_code,
+        shak_sql_operator=shak_sql_operator,
+        timestamp_purpose=timestamp_purpose,
+    )
+    return df
+
+
+def chronic_kidney_failure(
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    df = from_contacts(
+        icd_code="N18",
+        wildcard_icd_code=True,
+        n_rows=n_rows,
+        shak_location_col=shak_location_col,
+        shak_code=shak_code,
+        shak_sql_operator=shak_sql_operator,
+        timestamp_purpose=timestamp_purpose,
+    )
+    return df
 
 
 # Psychiatric diagnoses
 # data loaders for all diagnoses in the f0-chapter (organic mental disorders)
-@data_loaders.register("f0_disorders")
+
+
 def f0_disorders(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -444,7 +493,6 @@ def f0_disorders(
     )
 
 
-@data_loaders.register("dementia")
 def dementia(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -463,7 +511,6 @@ def dementia(
     )
 
 
-@data_loaders.register("delirium")
 def delirium(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -482,7 +529,6 @@ def delirium(
     )
 
 
-@data_loaders.register("miscellaneous_organic_mental_disorders")
 def misc_organic_mental_disorders(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -502,7 +548,8 @@ def misc_organic_mental_disorders(
 
 
 # data loaders for all diagnoses in the f1-chapter (mental and behavioural disorders due to psychoactive substance use)
-@data_loaders.register("f1_disorders")
+
+
 def f1_disorders(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -521,7 +568,6 @@ def f1_disorders(
     )
 
 
-@data_loaders.register("alcohol_dependency")
 def alcohol_dependency(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -540,7 +586,6 @@ def alcohol_dependency(
     )
 
 
-@data_loaders.register("opioid_dependency")
 def opioids_and_sedatives(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -559,7 +604,6 @@ def opioids_and_sedatives(
     )
 
 
-@data_loaders.register("cannabinoid_dependency")
 def cannabinoid_dependency(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -578,7 +622,6 @@ def cannabinoid_dependency(
     )
 
 
-@data_loaders.register("sedative_dependency")
 def sedative_dependency(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -597,7 +640,6 @@ def sedative_dependency(
     )
 
 
-@data_loaders.register("stimulant_dependencies")
 def stimulant_deo(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -616,7 +658,6 @@ def stimulant_deo(
     )
 
 
-@data_loaders.register("hallucinogen_dependency")
 def hallucinogen_dependency(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -635,7 +676,6 @@ def hallucinogen_dependency(
     )
 
 
-@data_loaders.register("tobacco_dependency")
 def tobacco_dependency(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -654,7 +694,6 @@ def tobacco_dependency(
     )
 
 
-@data_loaders.register("miscellaneous_drug_dependencies")
 def misc_drugs(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -676,7 +715,6 @@ def misc_drugs(
 # data loaders for all diagnoses in the f2-chapter (schizophrenia, schizotypal and delusional disorders)
 
 
-@data_loaders.register("f2_disorders")
 def f2_disorders(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -695,7 +733,6 @@ def f2_disorders(
     )
 
 
-@data_loaders.register("schizophrenia")
 def schizophrenia(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -714,7 +751,6 @@ def schizophrenia(
     )
 
 
-@data_loaders.register("schizoaffective")
 def schizoaffective(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -733,7 +769,6 @@ def schizoaffective(
     )
 
 
-@data_loaders.register("miscellaneous_psychotic_disorders")
 def misc_psychosis(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -755,7 +790,6 @@ def misc_psychosis(
 # data loaders for all diagnoses in the f3-chapter (mood (affective) disorders).
 
 
-@data_loaders.register("f3_disorders")
 def f3_disorders(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -774,7 +808,6 @@ def f3_disorders(
     )
 
 
-@data_loaders.register("manic_and_bipolar")
 def manic_and_bipolar(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -793,7 +826,6 @@ def manic_and_bipolar(
     )
 
 
-@data_loaders.register("bipolar")
 def bipolar(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -812,7 +844,6 @@ def bipolar(
     )
 
 
-@data_loaders.register("depressive_disorders")
 def depressive_disorders(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -831,7 +862,6 @@ def depressive_disorders(
     )
 
 
-@data_loaders.register("miscellaneous_affective_disorders")
 def misc_affective_disorders(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -853,7 +883,6 @@ def misc_affective_disorders(
 # data loaders for all diagnoses in the f4-chapter (neurotic, stress-related and somatoform disorders).
 
 
-@data_loaders.register("f4_disorders")
 def f4_disorders(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -872,7 +901,6 @@ def f4_disorders(
     )
 
 
-@data_loaders.register("phobic_anxiety_ocd")
 def phobic_and_anxiety(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -891,7 +919,6 @@ def phobic_and_anxiety(
     )
 
 
-@data_loaders.register("reaction_to_severe_stress_and_adjustment_disorders")
 def stress_and_adjustment(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -910,7 +937,6 @@ def stress_and_adjustment(
     )
 
 
-@data_loaders.register("dissociative_somatoform_miscellaneous")
 def dissociative_somatoform_and_misc(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -932,7 +958,6 @@ def dissociative_somatoform_and_misc(
 # data loaders for all diagnoses in the f5-chapter (behavioural syndromes associated with physiological disturbances and physical factors).
 
 
-@data_loaders.register("f5_disorders")
 def f5_disorders(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -951,7 +976,6 @@ def f5_disorders(
     )
 
 
-@data_loaders.register("eating_disorders")
 def eating_disorders(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -970,7 +994,6 @@ def eating_disorders(
     )
 
 
-@data_loaders.register("sleeping_and_sexual_disorders")
 def sleeping_and_sexual_disorders(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -989,7 +1012,6 @@ def sleeping_and_sexual_disorders(
     )
 
 
-@data_loaders.register("miscellaneous_f5_disorders")
 def misc_f5(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -1009,7 +1031,8 @@ def misc_f5(
 
 
 # data loaders for all diagnoses in the f6-chapter (disorders of adult personality and behaviour).
-@data_loaders.register("f6_disorders")
+
+
 def f6_disorders(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -1028,7 +1051,6 @@ def f6_disorders(
     )
 
 
-@data_loaders.register("cluster_a")
 def cluster_a(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -1047,7 +1069,6 @@ def cluster_a(
     )
 
 
-@data_loaders.register("cluster_b")
 def cluster_b(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -1066,7 +1087,6 @@ def cluster_b(
     )
 
 
-@data_loaders.register("cluster_c")
 def cluster_c(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -1085,7 +1105,6 @@ def cluster_c(
     )
 
 
-@data_loaders.register("miscellaneous_personality_disorders")
 def misc_personality_disorders(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -1104,7 +1123,6 @@ def misc_personality_disorders(
     )
 
 
-@data_loaders.register("sexual_disorders")
 def misc_personality(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -1126,7 +1144,8 @@ def misc_personality(
 
 
 # data loaders for all diagnoses in the f7-chapter (mental retardation).
-@data_loaders.register("f7_disorders")
+
+
 def f7_disorders(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -1145,7 +1164,6 @@ def f7_disorders(
     )
 
 
-@data_loaders.register("mild_mental_retardation")
 def mild_mental_retardation(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -1164,7 +1182,6 @@ def mild_mental_retardation(
     )
 
 
-@data_loaders.register("moderate_mental_retardation")
 def moderate_mental_retardation(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -1183,7 +1200,6 @@ def moderate_mental_retardation(
     )
 
 
-@data_loaders.register("severe_mental_retardation")
 def severe_mental_retardation(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -1202,7 +1218,6 @@ def severe_mental_retardation(
     )
 
 
-@data_loaders.register("miscellaneous_mental_retardation_disorders")
 def misc_mental_retardation(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -1222,7 +1237,8 @@ def misc_mental_retardation(
 
 
 # data loaders for all diagnoses in the f8-chapter (disorders of psychological development).
-@data_loaders.register("f8_disorders")
+
+
 def f8_disorders(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -1241,7 +1257,6 @@ def f8_disorders(
     )
 
 
-@data_loaders.register("pervasive_developmental_disorders")
 def pervasive_developmental_disorders(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -1260,7 +1275,6 @@ def pervasive_developmental_disorders(
     )
 
 
-@data_loaders.register("miscellaneous_f8_disorders")
 def misc_f8(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -1280,7 +1294,8 @@ def misc_f8(
 
 
 # data loaders for all diagnoses in the f9-chapter (child and adolescent disorders).
-@data_loaders.register("f9_disorders")
+
+
 def f9_disorders(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -1299,7 +1314,6 @@ def f9_disorders(
     )
 
 
-@data_loaders.register("hyperkinetic_disorders")
 def hyperkinetic_disorders(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -1318,7 +1332,6 @@ def hyperkinetic_disorders(
     )
 
 
-@data_loaders.register("behavioural_disorders")
 def behavioural_disorders(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -1337,7 +1350,6 @@ def behavioural_disorders(
     )
 
 
-@data_loaders.register("tics_and_miscellaneous_f9")
 def tics_and_misc(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -1356,7 +1368,6 @@ def tics_and_misc(
     )
 
 
-@data_loaders.register("gerd")
 def gerd(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -1376,7 +1387,6 @@ def gerd(
     )
 
 
-@data_loaders.register("bipolar_a_diagnosis")
 def bipolar_a_diagnosis(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -1386,6 +1396,25 @@ def bipolar_a_diagnosis(
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["f31"],
+        code_col_name="adiagnose4kar",
+        wildcard_icd_code=True,
+        n_rows=n_rows,
+        shak_location_col=shak_location_col,
+        shak_code=shak_code,
+        shak_sql_operator=shak_sql_operator,
+        timestamp_purpose=timestamp_purpose,
+    )
+
+
+def depressive_disorders_a_diagnosis(
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    return from_contacts(
+        icd_code=["f32", "f33", "f34", "f38"],
         code_col_name="adiagnose4kar",
         wildcard_icd_code=True,
         n_rows=n_rows,

@@ -1,7 +1,4 @@
-from audioop import reverse
 from pathlib import Path
-
-import confection
 
 from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
@@ -12,20 +9,18 @@ from psycop.projects.cvd.model_training.populate_cvd_registry import populate_wi
 
 
 def hyperparameter_search(cfg: PsycopConfig):
-    cfg.mutate(
+    cfg.mut(
         "trainer.task.task_pipe.sklearn_pipe.*.model",
         {"@estimator_steps_suggesters": "xgboost_suggester"},
     )
 
     # Set run name
     for i in reversed([1, 2, 3, 4]):
-        cfg.mutate(
-            "logger.*.mlflow.experiment_name", f"CVD hyperparam tuning, layer {i}, xgboost, v2"
-        )
+        cfg.mut("logger.*.mlflow.experiment_name", f"CVD hyperparam tuning, layer {i}, xgboost, v2")
 
         layer_regex = "|".join([str(i) for i in range(1, i + 1)])
 
-        cfg.mutate(
+        cfg.mut(
             "trainer.preprocessing_pipeline.*.layer_selector.keep_matching",
             f".+_layer_({layer_regex}).+",
         )
