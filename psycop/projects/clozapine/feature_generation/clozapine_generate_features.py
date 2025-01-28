@@ -47,7 +47,6 @@ from psycop.projects.clozapine.loaders.diagnoses import (
     f9_disorders,
     manic_and_bipolar,
 )
-from psycop.projects.clozapine.loaders.ect import ect_all
 from psycop.projects.clozapine.loaders.lab_results import (
     cancelled_standard_lab_results,
     p_aripiprazol,
@@ -104,10 +103,7 @@ def make_timedeltas_from_zero(look_days: list[float]) -> list[datetime.timedelta
 
 
 def get_clozapine_project_info() -> ProjectInfo:
-    return ProjectInfo(
-        project_name="clozapine",
-        project_path=OVARTACI_SHARED_DIR / "clozapine" / "flattened_datasets",
-    )
+    return ProjectInfo(project_name="clozapine", project_path=OVARTACI_SHARED_DIR / "clozapine")
 
 
 def _init_clozapine_predictor(
@@ -380,10 +376,6 @@ if __name__ == "__main__":
                 skema_2_without_nutrition, aggregation_fns=[MeanAggregator()], fallback=0
             ),
             ContinuousSpec(skema_3, aggregation_fns=[MeanAggregator()], fallback=0),
-        ],
-        "ect": [
-            # coercion loaders return duration of coercion
-            ContinuousSpec(ect_all, aggregation_fns=[MeanAggregator()], fallback=0)
         ],
     }
 
