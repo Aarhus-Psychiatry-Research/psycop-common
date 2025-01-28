@@ -34,7 +34,7 @@ def main(
     generate_in_chunks: bool = True,
     min_set_for_debug: bool = False,
     feature_set_name: str | None = None,
-    chunksize: int = 10,
+    chunksize: int = 5,
 ) -> None | Path:
     """Main function for loading, generating and evaluating a flattened
     dataset."""
@@ -122,8 +122,8 @@ if __name__ == "__main__":
         )
 
     main(
-        add_text_features=True,
+        add_text_features=False,
         min_set_for_debug=False,
-        feature_set_name="full_feature_set_structured_tfidf_750_all_outcomes",
-        generate_in_chunks=True,
+        feature_set_name="full_feature_set_structured_all_outcomes",
+        generate_in_chunks=False,
     )

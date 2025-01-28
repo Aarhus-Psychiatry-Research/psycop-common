@@ -27,9 +27,9 @@ class ChunkedFeatureGenerator:
         if not feature_set_dir:
             feature_set_dir = project_info.flattened_dataset_dir
 
-        ChunkedFeatureGenerator.remove_files_from_dir(  # Ensures that all saved chunks from previous crashed run are removed
-            feature_set_dir
-        )
+        # ChunkedFeatureGenerator.remove_files_from_dir(  # Ensures that all saved chunks from previous crashed run are removed
+        #     feature_set_dir
+        # )
 
         print(f"Generating features in chunks of {chunksize}")
         for i in range(0, len(feature_specs), chunksize):
@@ -45,7 +45,7 @@ class ChunkedFeatureGenerator:
         print("Feature generation done. Merging feature sets...")
         df = ChunkedFeatureGenerator.merge_feature_sets_from_dirs(feature_set_dir)
 
-        ChunkedFeatureGenerator.remove_files_from_dir(feature_set_dir)
+        # ChunkedFeatureGenerator.remove_files_from_dir(feature_set_dir)
 
         return df.to_pandas()
 
