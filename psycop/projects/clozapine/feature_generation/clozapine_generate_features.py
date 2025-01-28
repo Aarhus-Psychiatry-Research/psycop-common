@@ -47,6 +47,7 @@ from psycop.projects.clozapine.loaders.diagnoses import (
     f9_disorders,
     manic_and_bipolar,
 )
+from psycop.projects.clozapine.loaders.ect import ect_all
 from psycop.projects.clozapine.loaders.lab_results import (
     cancelled_standard_lab_results,
     p_aripiprazol,
@@ -377,6 +378,7 @@ if __name__ == "__main__":
             ),
             ContinuousSpec(skema_3, aggregation_fns=[MeanAggregator()], fallback=0),
         ],
+        "ect": [BooleanSpec(ect_all)],
     }
 
     layer_spec_pairs = [
