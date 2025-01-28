@@ -26,6 +26,7 @@ from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema
+from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 from psycop.common.model_training_v2.trainer.base_trainer import BaselineTrainer
 from psycop.common.model_training_v2.trainer.cross_validator_trainer import CrossValidatorTrainer
@@ -136,6 +137,25 @@ def scz_bp_get_eval_ds_from_best_run_in_experiment(
     return scz_bp_df_to_eval_df(df=df, model_type=model_type)
 
 
+def scz_bp_get_eval_ds_from_disk(
+    experiment_path: str, model_type: Literal["joint", "scz", "bp"]
+) -> EvalDataset:
+    min_eval_ds = pl.read_parquet(experiment_path + "/eval_df.parquet")
+    cohort_data = _load_validation_data_from_schema(schema=BaselineSchema(**BaselineRegistry.resolve(PsycopConfig().from_disk(path=experiment_path + "/config.cfg")))).select([
+            pl.col("prediction_time_uuid"),
+            pl.col("dw_ek_borger"),
+            pl.col("timestamp"),
+            pl.col("pred_age_in_years"),
+            pl.col("pred_sex_female_layer_1"),
+        ],
+    ).rename({"prediction_time_uuid": "pred_time_uuid"})
+    cohort_metadata = load_sczbp_metadata()
+    df = min_eval_ds.join(
+        cohort_data, how="left", on="pred_time_uuid"
+    ).join(cohort_metadata, how="left", on="pred_time_uuid", validate="1:1")
+    return scz_bp_df_to_eval_df(df=df, model_type=model_type)
+
+
 if __name__ == "__main__":
     experiment_name = "scz-bp/develop"
     best_run = MlflowClientWrapper().get_best_run_from_experiment(
@@ -159,3 +179,5 @@ if __name__ == "__main__":
     ).rename({"prediction_time_uuid": "pred_time_uuid"})
     df = min_eval_ds.frame.join(cohort_metadata, how="left", on=min_eval_ds.pred_time_uuid_col_name)
     eval_ds = scz_bp_df_to_eval_df(df=df, model_type="joint")
+
+

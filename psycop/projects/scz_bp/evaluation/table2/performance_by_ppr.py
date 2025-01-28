@@ -13,6 +13,7 @@ from psycop.projects.scz_bp.evaluation.figure2.first_positive_prediction_to_outc
 )
 from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
     scz_bp_get_eval_ds_from_best_run_in_experiment,
+    scz_bp_get_eval_ds_from_disk,
 )
 
 
@@ -101,9 +102,9 @@ def median_years_to_scz_and_bp_by_ppr(
 
 if __name__ == "__main__":
     best_experiment = "sczbp/test_tfidf_1000"
-    positive_rates = [0.08, 0.06, 0.04, 0.02, 0.01]
-    eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(
-        experiment_name=best_experiment, model_type="joint"
+    positive_rates = [0.04]
+    eval_ds = scz_bp_get_eval_ds_from_disk(
+        experiment_path="E:/shared_resources/scz_bp/testing", model_type="joint"
     )
 
     df = generate_performance_by_ppr_table(  # type: ignore
