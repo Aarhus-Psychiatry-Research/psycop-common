@@ -32,10 +32,7 @@ def make_timedeltas_from_zero(look_days: list[float]) -> list[datetime.timedelta
 
 
 def get_clozapine_project_info() -> ProjectInfo:
-    return ProjectInfo(
-        project_name="clozapine",
-        project_path=OVARTACI_SHARED_DIR / "clozapine" / "flattened_datasets",
-    )
+    return ProjectInfo(project_name="clozapine", project_path=OVARTACI_SHARED_DIR / "clozapine")
 
 
 def _init_clozapine_predictor(
@@ -191,7 +188,7 @@ if __name__ == "__main__":
         project_info=get_clozapine_project_info(),
         eligible_prediction_times_frame=clozapine_pred_times(),
         feature_specs=specs,
-        feature_set_name="clozapine_demo_unique_count_antipsych_feature_set",
+        feature_set_name="clozapine_demo_unique_count_antipsych_ect_test",
         n_workers=None,
         step_size=datetime.timedelta(days=365),
         do_dataset_description=False,
