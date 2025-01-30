@@ -1,4 +1,4 @@
-import polars as pl
+import pandas as pd
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 
@@ -19,7 +19,7 @@ ECT_PROCEDURE_CODES = {
 }
 
 
-def get_ect_procedures(coercion_filter: str | None = None) -> pl.DataFrame:
+def get_ect_procedures(coercion_filter: str | None = None) -> pd.DataFrame:
     """
     Retrieve ECT procedures with an optional coercion filter.
 
@@ -43,27 +43,28 @@ def get_ect_procedures(coercion_filter: str | None = None) -> pl.DataFrame:
 
     ect_procedure_codes_str = f"""'{"', '".join(procedure_codes)}'"""
 
-    df = (
-        pl.from_pandas(
-            sql_load(
-                query=f"SELECT {cols} FROM {table} WHERE procedurekodetekst IN ({ect_procedure_codes_str}) AND procedureart = 'P'"
-            )
-        )
-        .rename({"datotid_udfoert": "timestamp"})
-        .drop("procedureart")
+    df = sql_load(
+        query=f"SELECT {cols} FROM {table} WHERE procedurekodetekst IN ({ect_procedure_codes_str}) AND procedureart = 'P'"
     )
+
+    df = df.rename(columns={"datotid_udfoert": "timestamp"})
+
+    df = df.drop(columns=["procedureart", "procedurekodetekst"])
+
+    df["value"] = 1
+
     return df
 
 
-def ect_coercion() -> pl.DataFrame:
+def ect_coercion() -> pd.DataFrame:
     return get_ect_procedures(coercion_filter="Coercion")
 
 
-def ect_non_coercion() -> pl.DataFrame:
+def ect_non_coercion() -> pd.DataFrame:
     return get_ect_procedures(coercion_filter="Non-coercion")
 
 
-def ect_all() -> pl.DataFrame:
+def ect_all() -> pd.DataFrame:
     return get_ect_procedures(coercion_filter=None)
 
 

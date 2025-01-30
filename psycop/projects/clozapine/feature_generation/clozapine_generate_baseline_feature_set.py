@@ -27,11 +27,12 @@ from psycop.projects.clozapine.loaders.demographics import birthdays, sex_female
 from psycop.projects.clozapine.loaders.medications import antipsychotics_fast
 
 
+def make_timedeltas_from_zero(look_days: list[float]) -> list[datetime.timedelta]:
+    return [datetime.timedelta(days=lookbehind_day) for lookbehind_day in look_days]
+
+
 def get_clozapine_project_info() -> ProjectInfo:
-    return ProjectInfo(
-        project_name="clozapine",
-        project_path=OVARTACI_SHARED_DIR / "clozapine" / "flattened_datasets",
-    )
+    return ProjectInfo(project_name="clozapine", project_path=OVARTACI_SHARED_DIR / "clozapine")
 
 
 def _init_clozapine_predictor(
@@ -143,7 +144,9 @@ if __name__ == "__main__":
                     entity_id_col_name="dw_ek_borger",
                     value_timestamp_col_name="timestamp",
                 ),
-                lookahead_distances=[datetime.timedelta(days=365)],
+                lookahead_distances=make_timedeltas_from_zero(
+                    look_days=[year * 365 for year in (1, 2, 3, 4, 5)]
+                ),
                 aggregators=[ts.MaxAggregator()],
                 fallback=0,
                 column_prefix="outc_clozapine",
@@ -185,7 +188,7 @@ if __name__ == "__main__":
         project_info=get_clozapine_project_info(),
         eligible_prediction_times_frame=clozapine_pred_times(),
         feature_specs=specs,
-        feature_set_name="clozapine_demo_unique_count_antipsych_feature_set",
+        feature_set_name="clozapine_demo_unique_count_antipsych_ect_test",
         n_workers=None,
         step_size=datetime.timedelta(days=365),
         do_dataset_description=False,

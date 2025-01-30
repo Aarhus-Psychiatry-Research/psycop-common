@@ -50,7 +50,7 @@ def text_model_pipeline(
     model: Literal["bow", "tfidf"],
     split_ids_presplit_step: PresplitStep | None = None,
     corpus_name: str = "psycop_clozapine_train_val_all_sfis_preprocessed",
-    corpus_preproceseed: bool = False,
+    corpus_preprocessed: bool = False,
     sfi_type: Optional[Sequence[str] | str] = None,
     ngram_range: tuple[int, int] = (1, 1),
     max_df: float = 1.0,
@@ -63,7 +63,7 @@ def text_model_pipeline(
     Args:
         model (Literal[str]): Which model to use. Takes either "bow" or "tfidf".
         corpus_name (str, optional): SQL table with text data (preprocessed or not) to fit model on. Defaults to "psycop_train_val_all_sfis_preprocessed".
-        corpus_preproceseed (bool, optional): Whether the corpus is already preprocessed. Defaults to False.
+        corpus_preprocessed (bool, optional): Whether the corpus is already preprocessed. Defaults to False.
         sfi_type (Sequence[str], optional): Which sfi types to include. Defaults to None.
         ngram_range (tuple, optional): The lower and upper boundary of the range of n-values for different word n-grams or char n-grams to be extracted. All values of n such such that min_n <= n <= max_n will be used. For example an ngram_range of (1, 1) means only unigrams, (1, 2) means unigrams and bigrams. Defaults to (1, 2).
         max_df (float, optional): The proportion of documents the words should appear in to be included. Defaults to 0.95.
@@ -99,7 +99,7 @@ def text_model_pipeline(
         log.warning(f"Text model with the chosen params already exists in dir: {model_path}.")
         return model_path
 
-    if corpus_preproceseed:
+    if corpus_preprocessed:
         corpus = load_preprocessed_sfis(corpus_name=corpus_name)
 
     else:
@@ -109,8 +109,7 @@ def text_model_pipeline(
             include_sfi_name=True,
             n_rows=n_rows,
         )
-
-    corpus = text_preprocessing(corpus)
+        corpus = text_preprocessing(corpus)
 
     # fit model
     vec = fit_text_model(

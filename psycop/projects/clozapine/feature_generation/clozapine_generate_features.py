@@ -47,6 +47,7 @@ from psycop.projects.clozapine.loaders.diagnoses import (
     f9_disorders,
     manic_and_bipolar,
 )
+from psycop.projects.clozapine.loaders.ect import ect_all
 from psycop.projects.clozapine.loaders.lab_results import (
     cancelled_standard_lab_results,
     p_aripiprazol,
@@ -98,11 +99,12 @@ from psycop.projects.clozapine.loaders.visits import (
 TEXT_FILE_NAME = "not_labelled_yet_clozapine_text.parquet"
 
 
+def make_timedeltas_from_zero(look_days: list[float]) -> list[datetime.timedelta]:
+    return [datetime.timedelta(days=lookbehind_day) for lookbehind_day in look_days]
+
+
 def get_clozapine_project_info() -> ProjectInfo:
-    return ProjectInfo(
-        project_name="clozapine",
-        project_path=OVARTACI_SHARED_DIR / "clozapine" / "flattened_datasets",
-    )
+    return ProjectInfo(project_name="clozapine", project_path=OVARTACI_SHARED_DIR / "clozapine")
 
 
 def _init_clozapine_predictor(
@@ -214,7 +216,9 @@ if __name__ == "__main__":
                     entity_id_col_name="dw_ek_borger",
                     value_timestamp_col_name="timestamp",
                 ),
-                lookahead_distances=[datetime.timedelta(days=365)],
+                lookahead_distances=make_timedeltas_from_zero(
+                    look_days=[year * 365 for year in (1, 2, 3, 4, 5)]
+                ),
                 aggregators=[ts.MaxAggregator()],
                 fallback=0,
                 column_prefix="outc_clozapine",
@@ -374,6 +378,7 @@ if __name__ == "__main__":
             ),
             ContinuousSpec(skema_3, aggregation_fns=[MeanAggregator()], fallback=0),
         ],
+        "ect": [BooleanSpec(ect_all)],
     }
 
     layer_spec_pairs = [
