@@ -30,6 +30,7 @@ log = logging.getLogger()
 
 
 def main(
+    add_structured_features: bool = True,
     add_text_features: bool = True,
     generate_in_chunks: bool = True,
     min_set_for_debug: bool = False,
@@ -60,10 +61,13 @@ def main(
                 print(f"Folder '{feature_set_dir}' will be overwritten.")
                 break
 
-    feature_specs = FeatureSpecifier(
-        project_info=project_info,
-        min_set_for_debug=min_set_for_debug,  # Remember to set to False when generating full dataset
-    ).get_feature_specs()
+    if add_structured_features:
+        feature_specs = FeatureSpecifier(
+            project_info=project_info,
+            min_set_for_debug=min_set_for_debug,  # Remember to set to False when generating full dataset
+        ).get_feature_specs()
+    else:
+        feature_specs = []
 
     if add_text_features:
         text_feature_specs = TextFeatureSpecifier(
@@ -83,14 +87,14 @@ def main(
             feature_specs=feature_specs,  # type: ignore
             chunksize=chunksize,
         )
-
-    flattened_df = create_flattened_dataset_tsflattener_v1(
-        feature_specs=feature_specs,  # type: ignore
-        prediction_times_df=load_restraint_prediction_timestamps()[["dw_ek_borger", "timestamp"]],
-        drop_pred_times_with_insufficient_look_distance=True,
-        project_info=project_info,
-        add_birthdays=True,
-    )
+    else:
+        flattened_df = create_flattened_dataset_tsflattener_v1(
+            feature_specs=feature_specs,  # type: ignore
+            prediction_times_df=load_restraint_prediction_timestamps()[["dw_ek_borger", "timestamp"]],
+            drop_pred_times_with_insufficient_look_distance=False,
+            project_info=project_info,
+            add_birthdays=True,
+        )
 
     split_and_save_dataset_to_disk(
         flattened_df=flattened_df, project_info=project_info, feature_set_dir=feature_set_dir
@@ -122,8 +126,9 @@ if __name__ == "__main__":
         )
 
     main(
-        add_text_features=False,
+        add_structured_features=True,
+        add_text_features=True,
         min_set_for_debug=False,
-        feature_set_name="full_feature_set_structured_all_outcomes",
-        generate_in_chunks=False,
+        feature_set_name="full_feature_set_structured_tfidf_750_all_outcomes",
+        generate_in_chunks=True,
     )
