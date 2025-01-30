@@ -12,7 +12,6 @@ from psycop.projects.scz_bp.evaluation.figure2.first_positive_prediction_to_outc
     scz_bp_first_pred_to_event_stratified,
 )
 from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
-    scz_bp_get_eval_ds_from_best_run_in_experiment,
     scz_bp_get_eval_ds_from_disk,
 )
 

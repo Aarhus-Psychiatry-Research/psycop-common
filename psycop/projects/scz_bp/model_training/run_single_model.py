@@ -8,8 +8,4 @@ if __name__ == "__main__":
     populate_baseline_registry()
     populate_scz_bp_registry()
 
-    train_baseline_model(
-        Path(__file__).parent / "config" / "test_set" / "text_only.cfg"
-    )
-
-    pass
+    train_baseline_model(Path(__file__).parent / "config" / "test_set" / "text_only.cfg")
