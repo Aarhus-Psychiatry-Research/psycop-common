@@ -1,4 +1,5 @@
 import re
+import sys
 from collections.abc import Sequence
 from typing import Literal, Optional
 
@@ -35,11 +36,16 @@ def text_preprocessing(df: pd.DataFrame, text_column_name: str = "value") -> pd.
     regex_symbol_removal_and_stop_words = re.compile(f"{regex_stop_words}|{regex_symbol_removal}")
 
     # lower case and remove stop words and symbols
-    df[text_column_name] = (
-        df[text_column_name]
-        .str.lower()
-        .replace(regex_symbol_removal_and_stop_words, value="", regex=True)  # type: ignore
-    )
+    total_rows = len(df)
+    for i, text in enumerate(df[text_column_name]):
+        df.at[i, text_column_name] = re.sub(regex_symbol_removal_and_stop_words, "", text.lower())
+
+        # Update progress bar
+        progress = (i + 1) / total_rows
+        sys.stdout.write(f"\rProcessing: [{'#' * int(progress * 50):<50}] {progress * 100:.1f}%")
+        sys.stdout.flush()
+
+    print()  # Add a newline at the end of the progress bar
 
     return df
 
@@ -82,7 +88,7 @@ def text_preprocessing_pipeline(
 
     sfis = "_".join(sfi_type) if sfi_type else "all_sfis"
 
-    write_df_to_sql(df, f"{split_names}_{sfis}_preprocessed")
+    write_df_to_sql(df, f"psycop_clozapine_{split_names}_{sfis}_preprocessed")
 
     return f"Text preprocessed and uploaded to SQL as {split_names}_{sfis}_preprocessed"
 

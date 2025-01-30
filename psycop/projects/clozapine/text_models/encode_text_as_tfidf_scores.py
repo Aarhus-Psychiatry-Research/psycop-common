@@ -20,7 +20,9 @@ def encode_tfidf_values_to_df(model: TfidfVectorizer, text: Iterable[str]) -> pl
 
 
 if __name__ == "__main__":
-    text_model_name = "tfidf_psycop_train_all_sfis_preprocessed_added_konklusion_sfi_type_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750"
+    text_model_name = "tfidf_clozapine_train_all_sfis_preprocessed_sfi_type_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750"
+
+    tfidf_model = load_text_model(f"{text_model_name}.pkl")
 
     tfidf_model = load_text_model(f"{text_model_name}.pkl")
 
@@ -35,7 +37,8 @@ if __name__ == "__main__":
     tfidf_notes = pl.concat([corpus, tfidf_values], how="horizontal")
 
     TEXT_EMBEDDINGS_DIR.mkdir(exist_ok=True, parents=True)
+
     tfidf_notes.write_parquet(
         TEXT_EMBEDDINGS_DIR
-        / "text_tfidf_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750.parquet"
+        / "clozapine_text_tfidf_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750.parquet"
     )

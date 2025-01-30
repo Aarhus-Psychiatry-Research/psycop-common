@@ -67,7 +67,7 @@ def from_contacts(
         codes_to_match=icd_code,
         code_col_name=code_col_name,
         source_timestamp_col_name=source_timestamp_col_name,
-        view="Clozapin_kohorte_demografi",
+        view="Clozapin_kohorte_indhold",
         output_col_name=output_col_name,
         match_with_wildcard=wildcard_icd_code,
         n_rows=n_rows,
@@ -95,4 +95,118 @@ def schizoaffective(
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f25", wildcard_icd_code=True, n_rows=n_rows, timestamp_purpose=timestamp_purpose
+    )
+
+
+def f0_disorders(
+    n_rows: int | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    return from_contacts(
+        icd_code="f0", wildcard_icd_code=True, n_rows=n_rows, timestamp_purpose=timestamp_purpose
+    )
+
+
+def f1_disorders(
+    n_rows: int | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    return from_contacts(
+        icd_code="f1", wildcard_icd_code=True, n_rows=n_rows, timestamp_purpose=timestamp_purpose
+    )
+
+
+def f2_disorders(
+    n_rows: int | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    return from_contacts(
+        icd_code="f2", wildcard_icd_code=True, n_rows=n_rows, timestamp_purpose=timestamp_purpose
+    )
+
+
+def f3_disorders(
+    n_rows: int | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    return from_contacts(
+        icd_code="f3", wildcard_icd_code=True, n_rows=n_rows, timestamp_purpose=timestamp_purpose
+    )
+
+
+def manic_and_bipolar(
+    n_rows: int | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    return from_contacts(
+        icd_code=["f30", "f31"],
+        wildcard_icd_code=True,
+        n_rows=n_rows,
+        timestamp_purpose=timestamp_purpose,
+    )
+
+
+def f4_disorders(
+    n_rows: int | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    return from_contacts(
+        icd_code="f4", wildcard_icd_code=True, n_rows=n_rows, timestamp_purpose=timestamp_purpose
+    )
+
+
+def f5_disorders(
+    n_rows: int | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    return from_contacts(
+        icd_code="f5", wildcard_icd_code=True, n_rows=n_rows, timestamp_purpose=timestamp_purpose
+    )
+
+
+def f6_disorders(
+    n_rows: int | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    return from_contacts(
+        icd_code="f6", wildcard_icd_code=True, n_rows=n_rows, timestamp_purpose=timestamp_purpose
+    )
+
+
+def cluster_b(
+    n_rows: int | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    return from_contacts(
+        icd_code=["f602", "f603", "f604"],
+        wildcard_icd_code=True,
+        n_rows=n_rows,
+        timestamp_purpose=timestamp_purpose,
+    )
+
+
+def f7_disorders(
+    n_rows: int | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    return from_contacts(
+        icd_code="f7", wildcard_icd_code=True, n_rows=n_rows, timestamp_purpose=timestamp_purpose
+    )
+
+
+def f8_disorders(
+    n_rows: int | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    return from_contacts(
+        icd_code="f8", wildcard_icd_code=True, n_rows=n_rows, timestamp_purpose=timestamp_purpose
+    )
+
+
+def f9_disorders(
+    n_rows: int | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    return from_contacts(
+        icd_code="f9", wildcard_icd_code=True, n_rows=n_rows, timestamp_purpose=timestamp_purpose
     )

@@ -6,7 +6,7 @@ import logging
 
 import pandas as pd
 
-from psycop.common.feature_generation.loaders_2024.diagnoses import load_from_codes
+from psycop.projects.clozapine.loaders.diagnoses import load_from_codes
 
 log = logging.getLogger(__name__)
 
@@ -22,6 +22,7 @@ def load(
     administration_route: str | None = None,
     administration_method: str | None = None,
     fixed_doses: tuple[int, ...] | None = None,
+    add_code_to_output_col: bool = False,
 ) -> pd.DataFrame:
     """Load medications. Aggregates prescribed/administered if both true. If
     wildcard_atc_code, match from atc_code*. Aggregates all that match. Beware
@@ -44,6 +45,8 @@ def load(
         administration_route (str, optional): Whether to subset by a specific administration route, e.g. 'OR', 'IM' or 'IV'. Only applicable for administered medication, not prescribed. Defaults to None.
         administration_method (str, optional): Whether to subset by method of administration, e.g. 'PN' or 'Fast'. Only applicable for administered medication, not prescribed. Defaults to None.
         fixed_doses ( tuple(int), optional): Whether to subset by specific doses. Doses are set as micrograms (e.g., 100 mg = 100000). Defaults to None which return all doses. Find standard dosage for medications on pro.medicin.dk.
+        add_code_to_output_col (bool): If unique_count aggregation method is used,this should be set to True. Defaults to False.
+
     Returns:
         pd.DataFrame: Cols: dw_ek_borger, timestamp, {atc_code_prefix}_value = 1
     """
@@ -78,6 +81,7 @@ def load(
             administration_route=administration_route,
             administration_method=administration_method,
             fixed_doses=fixed_doses,
+            add_code_to_output_col=add_code_to_output_col,
         )
 
         df = pd.concat([df, df_medication_prescribed])
@@ -96,6 +100,7 @@ def load(
             administration_route=administration_route,
             administration_method=administration_method,
             fixed_doses=fixed_doses,
+            add_code_to_output_col=add_code_to_output_col,
         )
         df = pd.concat([df, df_medication_administered])
 
@@ -141,6 +146,7 @@ def antipsychotics(
     load_administered: bool = True,
     administration_route: str | None = None,
     administration_method: str | None = None,
+    add_code_to_output_col: bool = False,
 ) -> pd.DataFrame:
     """All antipsyhotics, except Lithium.
 
@@ -155,6 +161,32 @@ def antipsychotics(
         n_rows=n_rows,
         administration_route=administration_route,
         administration_method=administration_method,
+        add_code_to_output_col=add_code_to_output_col,
+        exclude_atc_codes=["N05AN01"],
+    )
+
+
+def antipsychotics_fast(
+    n_rows: int | None = None,
+    load_prescribed: bool = False,
+    load_administered: bool = True,
+    administration_route: str | None = None,
+    add_code_to_output_col: bool = False,
+) -> pd.DataFrame:
+    """All antipsyhotics, except Lithium.
+
+    Lithium is typically considered a mood stabilizer, not an
+    antipsychotic.
+    """
+    return load(
+        atc_code="N05A",
+        load_prescribed=load_prescribed,
+        load_administered=load_administered,
+        wildcard_code=True,
+        n_rows=n_rows,
+        administration_route=administration_route,
+        administration_method="Fast",
+        add_code_to_output_col=add_code_to_output_col,
         exclude_atc_codes=["N05AN01"],
     )
 
@@ -483,6 +515,7 @@ def anxiolytics(
     load_administered: bool = True,
     administration_route: str | None = None,
     administration_method: str | None = None,
+    add_code_to_output_col: bool = False,
 ) -> pd.DataFrame:
     return load(
         atc_code="N05B",
@@ -492,6 +525,26 @@ def anxiolytics(
         n_rows=n_rows,
         administration_route=administration_route,
         administration_method=administration_method,
+        add_code_to_output_col=add_code_to_output_col,
+    )
+
+
+def anxiolytics_fast(
+    n_rows: int | None = None,
+    load_prescribed: bool = False,
+    load_administered: bool = True,
+    administration_route: str | None = None,
+    add_code_to_output_col: bool = False,
+) -> pd.DataFrame:
+    return load(
+        atc_code="N05B",
+        load_prescribed=load_prescribed,
+        load_administered=load_administered,
+        wildcard_code=True,
+        n_rows=n_rows,
+        administration_route=administration_route,
+        administration_method="Fast",
+        add_code_to_output_col=add_code_to_output_col,
     )
 
 
@@ -719,6 +772,7 @@ def antidepressives(
     load_administered: bool = True,
     administration_route: str | None = None,
     administration_method: str | None = None,
+    add_code_to_output_col: bool = False,
 ) -> pd.DataFrame:
     return load(
         atc_code="N06A",
@@ -728,6 +782,26 @@ def antidepressives(
         n_rows=n_rows,
         administration_route=administration_route,
         administration_method=administration_method,
+        add_code_to_output_col=add_code_to_output_col,
+    )
+
+
+def antidepressives_fast(
+    n_rows: int | None = None,
+    load_prescribed: bool = False,
+    load_administered: bool = True,
+    administration_route: str | None = None,
+    add_code_to_output_col: bool = False,
+) -> pd.DataFrame:
+    return load(
+        atc_code="N06A",
+        load_prescribed=load_prescribed,
+        load_administered=load_administered,
+        wildcard_code=True,
+        n_rows=n_rows,
+        administration_route=administration_route,
+        administration_method="Fast",
+        add_code_to_output_col=add_code_to_output_col,
     )
 
 
@@ -947,6 +1021,7 @@ def analgesic(
     load_administered: bool = True,
     administration_route: str | None = None,
     administration_method: str | None = None,
+    add_code_to_output_col: bool = True,
 ) -> pd.DataFrame:
     return load(
         atc_code="N02",
@@ -956,4 +1031,24 @@ def analgesic(
         n_rows=n_rows,
         administration_route=administration_route,
         administration_method=administration_method,
+        add_code_to_output_col=add_code_to_output_col,
+    )
+
+
+def analgesic_fast(
+    n_rows: int | None = None,
+    load_prescribed: bool = False,
+    load_administered: bool = True,
+    administration_route: str | None = None,
+    add_code_to_output_col: bool = True,
+) -> pd.DataFrame:
+    return load(
+        atc_code="N02",
+        load_prescribed=load_prescribed,
+        load_administered=load_administered,
+        wildcard_code=True,
+        n_rows=n_rows,
+        administration_route=administration_route,
+        administration_method="Fast",
+        add_code_to_output_col=add_code_to_output_col,
     )
