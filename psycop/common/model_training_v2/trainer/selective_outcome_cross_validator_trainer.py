@@ -22,8 +22,6 @@ class SelectiveOutcomeCrossValidatorTrainer(BaselineTrainer):
     preprocessing_pipeline: PreprocessingPipeline
     training_outcome_col_name: str
     validation_outcome_col_name: str
-    training_preprocessing_pipeline: PreprocessingPipeline
-    validation_preprocessing_pipeline: PreprocessingPipeline
     task: BaselineTask
     metric: BaselineMetric
     n_splits: int = 5
@@ -37,13 +35,10 @@ class SelectiveOutcomeCrossValidatorTrainer(BaselineTrainer):
 
     @property
     def non_predictor_columns(self) -> Sequence[str]:
-        return [self.uuid_col_name, self.group_col_name, self.training_outcome_col_name]
+        return [self.uuid_col_name, self.group_col_name]
 
     def train(self) -> TrainingResult:
         training_data_preprocessed = self.preprocessing_pipeline.apply(
-            data=self.training_data.load()
-        )
-        training_data_preprocessed = self.training_preprocessing_pipeline.apply(
             data=self.training_data.load()
         )
 
@@ -51,6 +46,8 @@ class SelectiveOutcomeCrossValidatorTrainer(BaselineTrainer):
         self.logger.info(
             f"The model sees these predictors:\n\t{training_data_preprocessed.columns}"
         )
+
+        X[self.validation_outcome_col_name] = self.training_data.load().collect()[self.validation_outcome_col_name]
 
         training_y = training_data_preprocessed[self.training_outcome_col_name]
         self.logger.info(f"\tOutcome: {self.training_outcome_col_name}")
