@@ -20,6 +20,7 @@ class SelectiveOutcomeCrossValidatorTrainer(BaselineTrainer):
     group_col_name: str
     training_data: BaselineDataLoader
     preprocessing_pipeline: PreprocessingPipeline
+    validation_outcome_preprocessing_pipeline: PreprocessingPipeline
     training_outcome_col_name: str
     validation_outcome_col_name: str
     task: BaselineTask
@@ -42,14 +43,21 @@ class SelectiveOutcomeCrossValidatorTrainer(BaselineTrainer):
             data=self.training_data.load()
         )
 
+        validation_data_preprocessed = self.validation_outcome_preprocessing_pipeline.apply(
+            data=self.training_data.load()
+        )
+        
         X = training_data_preprocessed.drop(self.non_predictor_columns, axis=1)
         self.logger.info(
             f"The model sees these predictors:\n\t{training_data_preprocessed.columns}"
         )
 
-        X[self.validation_outcome_col_name] = self.training_data.load().collect()[self.validation_outcome_col_name]
+        X[self.validation_outcome_col_name] = validation_data_preprocessed[self.validation_outcome_col_name]
 
-        training_y = training_data_preprocessed[self.training_outcome_col_name]
+        training_y = pd.DataFrame(
+            training_data_preprocessed[self.training_outcome_col_name], columns=[self.training_outcome_col_name]
+        )
+
         self.logger.info(f"\tOutcome: {self.training_outcome_col_name}")
 
         folds = StratifiedGroupKFold(n_splits=self.n_splits).split(
@@ -61,9 +69,9 @@ class SelectiveOutcomeCrossValidatorTrainer(BaselineTrainer):
 
             validation_y = pd.Series(X_train[self.validation_outcome_col_name])
 
-            X_train = X_train.drop(self.validation_outcome_col_name)
-
-            X_train = X_train.drop(columns=self.group_col_name)
+            X_train = X_train.drop(self.validation_outcome_col_name, axis=1)
+            
+            self.task.train(X_train, y_train, y_col_name=self.training_outcome_col_name)
 
             y_hat_prob = self.task.predict_proba(X_train)
 
@@ -75,7 +83,7 @@ class SelectiveOutcomeCrossValidatorTrainer(BaselineTrainer):
             self.logger.log_metric(within_fold_metric)
 
             oof_y_hat_prob = self.task.predict_proba(
-                X.loc[val_idxs].drop(columns=self.group_col_name)
+                X.loc[val_idxs]
             )
 
             oof_metric = self.metric.calculate(
