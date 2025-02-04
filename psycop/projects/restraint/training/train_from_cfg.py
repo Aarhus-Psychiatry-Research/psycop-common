@@ -5,4 +5,4 @@ from psycop.common.model_training_v2.config.populate_registry import populate_ba
 
 if __name__ == "__main__":
     populate_baseline_registry()
-    train_baseline_model(Path(__file__).parent / "configs/restraint_structured_mechanical_crossval.cfg")
+    train_baseline_model(Path(__file__).parent / "configs" /"restraint_structured_split_outcome_crossval.cfg")

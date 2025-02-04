@@ -8,12 +8,12 @@ from psycop.projects.restraint.training.populate_restraint_registry import (
     populate_with_restraint_registry,
 )
 
-if __name__ == "__main__":
+if __name__ == "__main__": 
     populate_baseline_registry()
     populate_with_restraint_registry()
     OptunaHyperParameterOptimization().from_file(
-        (Path(__file__).parent / "configs/restraint_structured_mechanical_tuning.cfg"),
-        study_name="restraint_structured_mechanical_tuning",
+        (Path(__file__).parent / "configs" / "restraint_structured_mechanical_crossval.cfg.cfg"),
+        study_name="test",
         n_trials=250,
         n_jobs=15,
         direction="maximize",
