@@ -67,9 +67,10 @@ class SelectiveOutcomeCrossValidatorTrainer(BaselineTrainer):
         for i, (train_idxs, val_idxs) in enumerate(folds):
             X_train, y_train = (X.loc[train_idxs], training_y.loc[train_idxs])
 
-            validation_y = pd.Series(X_train[self.validation_outcome_col_name])
+            X_val, y_val = (X.loc[val_idxs],  pd.Series(X[self.validation_outcome_col_name][val_idxs]))
 
             X_train = X_train.drop(self.validation_outcome_col_name, axis=1)
+            X_val = X_val.drop(self.validation_outcome_col_name, axis=1)
             
             self.task.train(X_train, y_train, y_col_name=self.training_outcome_col_name)
 
@@ -82,19 +83,19 @@ class SelectiveOutcomeCrossValidatorTrainer(BaselineTrainer):
             )
             self.logger.log_metric(within_fold_metric)
 
-            oof_y_hat_prob = self.task.predict_proba(
-                X.loc[val_idxs]
-            )
+            oof_y_hat_prob = self.task.predict_proba(X_val)
 
             oof_metric = self.metric.calculate(
-                y=validation_y, y_hat_prob=oof_y_hat_prob, name_prefix=f"out_of_fold_{i}"
+                y=y_val, y_hat_prob=oof_y_hat_prob, name_prefix=f"out_of_fold_{i}"
             )
             self.logger.log_metric(oof_metric)
+
+            training_data_preprocessed.loc[val_idxs, "y_val"] = y_val
 
             training_data_preprocessed.loc[val_idxs, "oof_y_hat_prob"] = oof_y_hat_prob.to_list()  # type: ignore
 
         main_metric = self.metric.calculate(
-            y=validation_y,  # type: ignore
+            y=training_data_preprocessed["y_val"],  
             y_hat_prob=training_data_preprocessed["oof_y_hat_prob"],
             name_prefix="all_oof",
         )
@@ -103,7 +104,7 @@ class SelectiveOutcomeCrossValidatorTrainer(BaselineTrainer):
 
         eval_df = pl.DataFrame(
             {
-                "y": validation_y,  # type: ignore
+                "y": training_data_preprocessed["y_val"],  
                 "y_hat_prob": training_data_preprocessed["oof_y_hat_prob"],
                 "pred_time_uuid": training_data_preprocessed[self.uuid_col_name],
             }
