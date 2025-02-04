@@ -41,14 +41,13 @@ class SelectiveOutcomeCrossValidatorTrainer(BaselineTrainer):
         training_data_preprocessed = self.preprocessing_pipeline.apply(
             data=self.training_data.load()
         )
-        
+
         X = training_data_preprocessed.drop(self.non_predictor_columns, axis=1)
-        self.logger.info(
-            f"The model sees these predictors:\n\t{X.columns}"
-        )
+        self.logger.info(f"The model sees these predictors:\n\t{X.columns}")
 
         training_y = pd.DataFrame(
-            training_data_preprocessed[self.training_outcome_col_name], columns=[self.training_outcome_col_name]
+            training_data_preprocessed[self.training_outcome_col_name],
+            columns=[self.training_outcome_col_name],
         )
 
         self.logger.info(f"\tOutcome: {self.training_outcome_col_name}")
@@ -60,11 +59,18 @@ class SelectiveOutcomeCrossValidatorTrainer(BaselineTrainer):
         for i, (train_idxs, val_idxs) in enumerate(folds):
             X_train, y_train = (X.loc[train_idxs], training_y.loc[train_idxs])
 
-            X_val, y_val = (X.loc[val_idxs], pd.Series(X[self.validation_outcome_col_name][val_idxs]))
+            X_val, y_val = (
+                X.loc[val_idxs],
+                pd.Series(X[self.validation_outcome_col_name][val_idxs]),
+            )
 
-            X_train = X_train.drop([self.training_outcome_col_name, self.validation_outcome_col_name], axis=1)
-            X_val = X_val.drop([self.training_outcome_col_name, self.validation_outcome_col_name], axis=1)
-            
+            X_train = X_train.drop(
+                [self.training_outcome_col_name, self.validation_outcome_col_name], axis=1
+            )
+            X_val = X_val.drop(
+                [self.training_outcome_col_name, self.validation_outcome_col_name], axis=1
+            )
+
             self.task.train(X_train, y_train, y_col_name=self.training_outcome_col_name)
 
             y_hat_prob = self.task.predict_proba(X_train)
@@ -88,7 +94,7 @@ class SelectiveOutcomeCrossValidatorTrainer(BaselineTrainer):
             training_data_preprocessed.loc[val_idxs, "oof_y_hat_prob"] = oof_y_hat_prob.to_list()  # type: ignore
 
         main_metric = self.metric.calculate(
-            y=training_data_preprocessed["y_val"],  
+            y=training_data_preprocessed["y_val"],
             y_hat_prob=training_data_preprocessed["oof_y_hat_prob"],
             name_prefix="all_oof",
         )
@@ -97,7 +103,7 @@ class SelectiveOutcomeCrossValidatorTrainer(BaselineTrainer):
 
         eval_df = pl.DataFrame(
             {
-                "y": training_data_preprocessed["y_val"],  
+                "y": training_data_preprocessed["y_val"],
                 "y_hat_prob": training_data_preprocessed["oof_y_hat_prob"],
                 "pred_time_uuid": training_data_preprocessed[self.uuid_col_name],
             }

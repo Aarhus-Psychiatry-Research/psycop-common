@@ -8,7 +8,7 @@ from psycop.projects.restraint.training.populate_restraint_registry import (
     populate_with_restraint_registry,
 )
 
-if __name__ == "__main__": 
+if __name__ == "__main__":
     populate_baseline_registry()
     populate_with_restraint_registry()
     OptunaHyperParameterOptimization().from_file(

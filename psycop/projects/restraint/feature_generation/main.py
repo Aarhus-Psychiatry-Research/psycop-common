@@ -90,7 +90,9 @@ def main(
     else:
         flattened_df = create_flattened_dataset_tsflattener_v1(
             feature_specs=feature_specs,  # type: ignore
-            prediction_times_df=load_restraint_prediction_timestamps()[["dw_ek_borger", "timestamp"]],
+            prediction_times_df=load_restraint_prediction_timestamps()[
+                ["dw_ek_borger", "timestamp"]
+            ],
             drop_pred_times_with_insufficient_look_distance=False,
             project_info=project_info,
             add_birthdays=True,
