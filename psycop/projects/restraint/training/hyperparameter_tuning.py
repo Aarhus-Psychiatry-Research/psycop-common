@@ -12,8 +12,8 @@ if __name__ == "__main__":
     populate_baseline_registry()
     populate_with_restraint_registry()
     OptunaHyperParameterOptimization().from_file(
-        (Path(__file__).parent / "configs" / "restraint_structured_mechanical_crossval.cfg.cfg"),
-        study_name="test",
+        (Path(__file__).parent / "configs" / "restraint_structured_mechanical_tuning.cfg"),
+        study_name="restraint_structured_mechanical_tuning",
         n_trials=250,
         n_jobs=15,
         direction="maximize",
