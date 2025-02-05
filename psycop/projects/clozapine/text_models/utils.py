@@ -5,8 +5,8 @@ from typing import Union
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
-from psycop.common.feature_generation.text_models.text_model_paths import TEXT_MODEL_DIR
 from psycop.common.global_utils.pickle import read_pickle, write_to_pickle
+from psycop.projects.clozapine.text_models.clozapine_text_model_paths import TEXT_MODEL_DIR
 
 
 def save_text_model_to_shared_dir(model: Union[CountVectorizer, TfidfVectorizer], filename: str):
