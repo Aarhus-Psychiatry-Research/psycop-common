@@ -20,7 +20,7 @@ def populate_baseline_registry() -> None:
         miss_forest_imputation_step,
         ImputationSuggester,
     )
-    from ..trainer.task.estimator_steps.scalers import standard_scaler_step
+    from ..trainer.task.estimator_steps.scalers import standard_scaler_step, noop_scaler_step
     from ..trainer.task.estimator_steps.feature_selection import select_percentile
 
     # Preprocessing
