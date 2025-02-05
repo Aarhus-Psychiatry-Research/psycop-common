@@ -37,11 +37,19 @@ def get_confusion_matrix_cells_from_df(df: pd.DataFrame) -> ConfusionMatrix:
         df.groupby(["true", "pred"]).size().reset_index().rename(columns={0: "estimate"})
     )
 
-    true_positives = confusion_matrix_df.query("true == 1 and pred == 1")["estimate"].values[0]
-    true_negatives = confusion_matrix_df.query("true == 0 and pred == 0")["estimate"].values[0]
+    true_positives = confusion_matrix_df[
+        (confusion_matrix_df["true"] == 1) & (confusion_matrix_df["pred"] == 1)
+    ]["estimate"].values[0]
+    true_negatives = confusion_matrix_df[
+        (confusion_matrix_df["true"] == 0) & (confusion_matrix_df["pred"] == 0)
+    ]["estimate"].values[0]
 
-    false_positives = confusion_matrix_df.query("true == 0 and pred == 1")["estimate"].values[0]
-    false_negatives = confusion_matrix_df.query("true == 1 and pred == 0")["estimate"].values[0]
+    false_positives = confusion_matrix_df[
+        (confusion_matrix_df["true"] == 0) & (confusion_matrix_df["pred"] == 1)
+    ]["estimate"].values[0]
+    false_negatives = confusion_matrix_df[
+        (confusion_matrix_df["true"] == 1) & (confusion_matrix_df["pred"] == 0)
+    ]["estimate"].values[0]
 
     return ConfusionMatrix(
         true_positives=true_positives,

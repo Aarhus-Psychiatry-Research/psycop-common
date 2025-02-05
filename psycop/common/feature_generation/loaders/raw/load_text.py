@@ -11,7 +11,7 @@ import pandas as pd
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Iterable, Sequence
 
     from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 
@@ -136,7 +136,7 @@ def load_text_sfis(
 
 
 def load_text_split(
-    text_sfi_names: str | Iterable[str],
+    text_sfi_names: str | Iterable[str] | None,
     split_ids_presplit_step: PresplitStep,
     include_sfi_name: bool = False,
     n_rows: int | None = None,
@@ -152,8 +152,12 @@ def load_text_split(
     Returns:
         pd.DataFrame: Chosen sfis from chosen splits
     """
-    text_df = load_text_sfis(
-        text_sfi_names=text_sfi_names, include_sfi_name=include_sfi_name, n_rows=None
+    text_df = (
+        load_text_sfis(
+            text_sfi_names=text_sfi_names, include_sfi_name=include_sfi_name, n_rows=None
+        )
+        if text_sfi_names
+        else load_all_notes(n_rows=None, include_sfi_name=include_sfi_name)
     )
 
     text_split_df = (
@@ -210,8 +214,8 @@ def load_arbitrary_notes(
 
 
 def load_preprocessed_sfis(
-    text_sfi_names: set[str] | None = None,
-    corpus_name: str = "psycop.train_val_all_sfis_preprocessed",
+    text_sfi_names: Sequence[str] | None = None,
+    corpus_name: str = "psycop_train_val_all_sfis_preprocessed",
 ) -> pd.DataFrame:
     """Returns preprocessed sfis from preprocessed view/SQL table that includes the "overskrift" column.
     Preprocessed views are created using the function text_preprocessing_pipeline under text_models/preprocessing.
@@ -226,16 +230,14 @@ def load_preprocessed_sfis(
     """
 
     # load corpus
-    # if not text_sfi_names, include all sfis
-    if not text_sfi_names:
-        corpus = pd.read_parquet(
-            path=f"E:/shared_resources/preprocessed_text/{corpus_name}.parquet"
-        )
-    # if text_sfi_names, include only chosen sfis
-    else:
-        filter_list = [[("overskrift", "=", f"{sfi}")] for sfi in text_sfi_names]
-        corpus = pd.read_parquet(
-            path=f"E:/shared_resources/preprocessed_text/{corpus_name}.parquet", filters=filter_list
-        )
+    view = f"[{corpus_name}]"
+    sql = f"SELECT * FROM [fct].{view}"
+
+    if text_sfi_names:
+        sfis_to_keep = ", ".join("?" for _ in text_sfi_names)
+
+        sql += f" WHERE overskrift IN ({sfis_to_keep})"
+
+    corpus = sql_load(query=sql, server="BI-DPA-PROD", database="USR_PS_Forsk", n_rows=None)
 
     return corpus

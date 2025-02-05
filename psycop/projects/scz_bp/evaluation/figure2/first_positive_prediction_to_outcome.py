@@ -9,7 +9,7 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
-    scz_bp_get_eval_ds_from_best_run_in_experiment,
+    scz_bp_get_eval_ds_from_disk,
 )
 from psycop.projects.t2d.paper_outputs.config import T2D_PN_THEME
 
@@ -129,10 +129,10 @@ def plot_scz_bp_first_pred_to_event_stratified(
 
 
 if __name__ == "__main__":
-    best_experiment = "sczbp/test_dfm_encoder"
+    best_experiment = "sczbp/test_structured_text"
     best_pos_rate = 0.04
-    eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(
-        experiment_name=best_experiment, model_type="joint"
+    eval_ds = scz_bp_get_eval_ds_from_disk(
+        experiment_path="E:/shared_resources/scz_bp/testing", model_type="joint"
     )
 
     # p = scz_bp_first_pred_to_event(eval_ds=eval_ds, ppr=best_pos_rate) # noqa: ERA001
