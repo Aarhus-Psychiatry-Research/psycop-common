@@ -89,7 +89,7 @@ class SelectiveOutcomeCrossValidatorTrainer(BaselineTrainer):
             )
             self.logger.log_metric(oof_metric)
 
-            training_data_preprocessed.loc[val_idxs, "y_val"] = y_val
+            training_data_preprocessed.loc[val_idxs, "y_val"] = y_val  # type: ignore
 
             training_data_preprocessed.loc[val_idxs, "oof_y_hat_prob"] = oof_y_hat_prob.to_list()  # type: ignore
 
