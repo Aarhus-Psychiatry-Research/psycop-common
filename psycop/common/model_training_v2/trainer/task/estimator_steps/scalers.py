@@ -1,7 +1,7 @@
 import optuna
 import sklearn
-from sklearn.base import BaseEstimator, TransformerMixin
 import sklearn.preprocessing
+from sklearn.base import BaseEstimator, TransformerMixin
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_suggester import (
@@ -23,11 +23,12 @@ class IdentityTransformer(BaseEstimator, TransformerMixin):
 
     def transform(self, input_array, y=None):  # type: ignore # noqa
         return input_array
-    
+
 
 @BaselineRegistry.estimator_steps.register("noop_scaler")
 def noop_scaler_step() -> ModelStep:
     return ("scaler", IdentityTransformer())
+
 
 @BaselineRegistry.estimator_steps.register("standard_scaler")
 def standard_scaler_step() -> ModelStep:
@@ -36,10 +37,7 @@ def standard_scaler_step() -> ModelStep:
 
 IMPLEMENTED_STRATEGIES = ["standard", "noop"]
 
-STRATEGY2STEP = {
-    "standard": "standard_scaler",
-    "noop": "noop_scaler",
-}
+STRATEGY2STEP = {"standard": "standard_scaler", "noop": "noop_scaler"}
 
 
 @BaselineRegistry.estimator_steps_suggesters.register("scaler_suggester")
