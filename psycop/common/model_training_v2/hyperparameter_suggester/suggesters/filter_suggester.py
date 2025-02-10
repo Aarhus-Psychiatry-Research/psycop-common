@@ -33,7 +33,4 @@ class BlacklistFilterSuggester:
         regex_pattern = self.regex_pattern.suggest(trial, "regex_pattern")
         if regex_pattern == "noop":
             pass
-        return {
-            "@preprocessing": "regex_column_blacklist",
-            "*": [regex_pattern],
-        }
+        return {"@preprocessing": "regex_column_blacklist", "*": [regex_pattern]}
