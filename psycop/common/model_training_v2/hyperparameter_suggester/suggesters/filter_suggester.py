@@ -22,3 +22,18 @@ class SufficientWindowFilterSuggester:
             "n_days": n_days,
             "direction": self.direction,
         }
+
+
+@BaselineRegistry.suggesters.register("blacklist_filter_suggester")
+class BlacklistFilterSuggester:
+    def __init__(self, regex_pattern: CategoricalSpaceT):
+        self.regex_pattern = CategoricalSpace(choices=regex_pattern)
+
+    def suggest_hyperparameters(self, trial: Trial) -> dict[str, str | list[str]]:
+        regex_pattern = self.regex_pattern.suggest(trial, "regex_pattern")
+        if regex_pattern == "noop":
+            pass
+        return {
+            "@preprocessing": "regex_column_blacklist",
+            "*": [regex_pattern],
+        }
