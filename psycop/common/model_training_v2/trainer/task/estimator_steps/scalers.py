@@ -34,6 +34,7 @@ def noop_scaler_step() -> ModelStep:
 def standard_scaler_step() -> ModelStep:
     return ("scaler", sklearn.preprocessing.StandardScaler())
 
+
 @BaselineRegistry.estimator_steps.register("minmax_scaler")
 def minmax_scaler_step() -> ModelStep:
     return ("scaler", sklearn.preprocessing.MinMaxScaler())
