@@ -20,8 +20,15 @@ def populate_baseline_registry() -> None:
         miss_forest_imputation_step,
         ImputationSuggester,
     )
-    from ..trainer.task.estimator_steps.scalers import standard_scaler_step, noop_scaler_step, minmax_scaler_step
-    from ..trainer.task.estimator_steps.feature_selection import select_percentile, FeatureSelectionSuggester
+    from ..trainer.task.estimator_steps.scalers import (
+        standard_scaler_step,
+        noop_scaler_step,
+        minmax_scaler_step,
+    )
+    from ..trainer.task.estimator_steps.feature_selection import (
+        select_percentile,
+        FeatureSelectionSuggester,
+    )
 
     # Preprocessing
     from ..trainer.preprocessing.pipeline import BaselinePreprocessingPipeline
@@ -57,6 +64,7 @@ def populate_baseline_registry() -> None:
     from ..hyperparameter_suggester.suggesters.run_path_suggester import RunPathSuggester
     from ..hyperparameter_suggester.suggesters.filter_suggester import (
         SufficientWindowFilterSuggester,
+        LookbehindCombinationFilterSuggester,
         BlacklistFilterSuggester,
     )
 

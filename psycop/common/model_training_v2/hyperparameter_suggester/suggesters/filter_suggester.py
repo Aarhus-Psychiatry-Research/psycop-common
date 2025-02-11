@@ -1,5 +1,4 @@
 from optuna import Trial
-from sklearn.base import BaseEstimator, TransformerMixin
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.suggester_spaces import (
@@ -25,6 +24,21 @@ class SufficientWindowFilterSuggester:
         }
 
 
+@BaselineRegistry.suggesters.register("lookbehind_combination_filter_suggester")
+class LookbehindCombinationFilterSuggester:
+    def __init__(self, lookbehinds: CategoricalSpaceT, pred_col_prefix: str):
+        self.lookbehinds = CategoricalSpace(lookbehinds)
+        self.pred_col_prefix = pred_col_prefix
+
+    def suggest_hyperparameters(self, trial: Trial) -> dict[str, str]:
+        lookbehinds = self.lookbehinds.suggest(trial, "lookbehinds")
+        return {
+            "@preprocessing": "lookbehind_combination_col_filter",
+            "lookbehinds": lookbehinds,
+            "pred_col_prefix": self.pred_col_prefix,
+        }
+
+
 @BaselineRegistry.suggesters.register("blacklist_filter_suggester")
 class BlacklistFilterSuggester:
     def __init__(self, regex_pattern: CategoricalSpaceT):
@@ -35,8 +49,5 @@ class BlacklistFilterSuggester:
 
         if regex_pattern == "noop":
             regex_pattern = "matchnothing"
-        
-        return {
-            "@preprocessing": "regex_column_blacklist",
-            "*": [regex_pattern],
-        }
+
+        return {"@preprocessing": "regex_column_blacklist", "*": [regex_pattern]}
