@@ -1,4 +1,5 @@
 from optuna import Trial
+from sklearn.base import BaseEstimator, TransformerMixin
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.suggester_spaces import (
@@ -31,8 +32,10 @@ class BlacklistFilterSuggester:
 
     def suggest_hyperparameters(self, trial: Trial) -> dict[str, str | list[str]]:
         regex_pattern = self.regex_pattern.suggest(trial, "regex_pattern")
+
         if regex_pattern == "noop":
-            pass
+            regex_pattern = "matchnothing"
+        
         return {
             "@preprocessing": "regex_column_blacklist",
             "*": [regex_pattern],

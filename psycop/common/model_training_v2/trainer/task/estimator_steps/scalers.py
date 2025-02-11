@@ -34,10 +34,14 @@ def noop_scaler_step() -> ModelStep:
 def standard_scaler_step() -> ModelStep:
     return ("scaler", sklearn.preprocessing.StandardScaler())
 
+@BaselineRegistry.estimator_steps.register("minmax_scaler")
+def minmax_scaler_step() -> ModelStep:
+    return ("scaler", sklearn.preprocessing.MinMaxScaler())
+
 
 IMPLEMENTED_STRATEGIES = ["standard", "noop"]
 
-STRATEGY2STEP = {"standard": "standard_scaler", "noop": "noop_scaler"}
+STRATEGY2STEP = {"standard": "standard_scaler", "minmax": "minmax_scaler", "noop": "noop_scaler"}
 
 
 @BaselineRegistry.estimator_steps_suggesters.register("scaler_suggester")
