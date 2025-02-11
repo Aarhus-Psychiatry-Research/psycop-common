@@ -55,7 +55,8 @@ def test_lookbehind_combination_suggester():
         """
     ).lazy()
 
-    lookbehind_combinations = [{2, 3}, {3, 4}, {2, 4}]
+    lookbehind_combinations_sets = [{2, 3}, {3, 4}, {2, 4}]
+    lookbehind_combinations = ["{2, 3}", "{3, 4}", "{2, 4}"]
 
     suggestions = suggester_tester(
         LookbehindCombinationFilterSuggester(
@@ -64,4 +65,4 @@ def test_lookbehind_combination_suggester():
         )
     )
 
-    assert suggestions.resolved["test_key"].lookbehinds in lookbehind_combinations
+    assert suggestions.resolved["test_key"].lookbehinds in lookbehind_combinations_sets
