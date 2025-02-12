@@ -80,7 +80,12 @@ class RegexColumnBlacklist(PresplitStep):
 
     def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
         for blacklist in self.regex_blacklist:
-            input_df = input_df.select(pl.exclude(f"^{blacklist}$"))
+            if blacklist.endswith("-keep_cols"):
+                # Remove the '-keep_cols' suffix and use the remaining regex to keep the columns
+                keep_regex = blacklist[:-9]  # Remove last 9 characters (i.e., '-keep_cols')
+                input_df = input_df.select(pl.col(keep_regex))  # Keep matched columns
+            else:
+                input_df = input_df.select(pl.exclude(f"^{blacklist}$"))
 
         return input_df
 
