@@ -28,7 +28,7 @@ class SufficientWindowFilterSuggester:
 @BaselineRegistry.suggesters.register("lookbehind_combination_filter_suggester")
 class LookbehindCombinationFilterSuggester:
     def __init__(self, lookbehinds: CategoricalSpaceT, pred_col_prefix: str):
-        self.lookbehinds = CategoricalSpace(lookbehinds)
+        self.lookbehinds = CategoricalSpace(choices=lookbehinds)
         self.pred_col_prefix = pred_col_prefix
 
     def suggest_hyperparameters(self, trial: Trial) -> dict[str, str]:
