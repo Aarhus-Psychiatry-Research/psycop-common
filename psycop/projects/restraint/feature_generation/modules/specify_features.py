@@ -103,7 +103,9 @@ from psycop.common.feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
     physical_visits_to_somatic,
 )
-from psycop.projects.restraint.cohort.restraint_cohort_definer import RestraintCohortDefiner
+from psycop.projects.restraint.feature_generation.modules.loaders.load_restraint_outcome_timestamps import (
+    load_restraint_outcome_timestamps,
+)
 
 log = logging.getLogger(__name__)
 
@@ -536,20 +538,29 @@ class FeatureSpecifier:
         """Generate outcome specs."""
         log.info("-------- Generating outcome specs --------")
 
-        mechanical_restraint_spec = OutcomeSpec(
-            timeseries_df=RestraintCohortDefiner.get_outcome_timestamps()
-            .frame.to_pandas()
-            .assign(value=1)
-            .rename(columns={"first_mechanical_restraint": "timestamp"})  # type: ignore
-            .dropna(subset="timestamp"),
-            lookahead_days=2,
-            aggregation_fn=boolean,
-            fallback=0,
-            incident=False,
-            feature_base_name="mechanical_restraint",
-        )
+        outcome_specs = []
 
-        return [mechanical_restraint_spec]
+        for restraint_type in [
+            "mechanical_restraint",
+            "manual_restraint",
+            "chemical_restraint",
+            "all_restraint",
+        ]:
+            spec = OutcomeSpec(
+                timeseries_df=load_restraint_outcome_timestamps()[["dw_ek_borger", restraint_type]]
+                .assign(value=1)
+                .rename(columns={restraint_type: "timestamp"})  # type: ignore
+                .dropna(subset="timestamp"),
+                lookahead_days=2,
+                aggregation_fn=boolean,
+                fallback=0,
+                incident=False,
+                feature_base_name=f"outcome_{restraint_type}",
+            )
+
+            outcome_specs.append(spec)
+
+        return outcome_specs
 
     def _get_temporal_predictor_specs(self) -> list[PredictorSpec]:
         """Generate predictor spec list."""
@@ -633,7 +644,9 @@ class FeatureSpecifier:
         """Get a spec set."""
 
         if self.min_set_for_debug:
-            return self._get_outcome_specs()  # type: ignore
+            return self._get_outcome_specs() + self._get_weight_and_height_specs(
+                resolve_multiple=[latest], interval_days=[10.0]
+            )  # type: ignore
 
         return (
             self._get_static_predictor_specs()
