@@ -1,13 +1,27 @@
 import re
+from typing import Literal
 
 import polars as pl
 
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
+from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
     RegionalFilter,
 )
 from psycop.projects.t2d.paper_outputs.dataset_description.table_one.table_one_lib import (
     RowSpecification,
 )
+
+
+def log_cross_val_eval_df_from_best_run(experiment_name: str):
+    best_run_cfg = (
+        MlflowClientWrapper()
+        .get_best_run_from_experiment(experiment_name=experiment_name, metric="all_oof_BinaryAUROC")
+        .get_config()
+    )
+
+    train_baseline_model_from_cfg(best_run_cfg)
 
 
 def get_psychiatric_diagnosis_row_specs(col_names: list[str]) -> list[RowSpecification]:
