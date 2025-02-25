@@ -14,7 +14,7 @@ from psycop.projects.t2d.paper_outputs.dataset_description.table_one.table_one_l
 )
 
 
-def log_eval_df_from_best_run(experiment_name: str):
+def log_cross_val_eval_df_from_best_run(experiment_name: str):
     best_run_cfg = (
         MlflowClientWrapper()
         .get_best_run_from_experiment(experiment_name=experiment_name, metric="all_oof_BinaryAUROC")
