@@ -20,9 +20,11 @@ def retrain_best_model(
 ):
     test_run_experiment_name = f"{experiment_name}_best_run_{test_run_name}"
 
-    test_run_path = OVARTACI_SHARED_DIR / "restraint" / "eval_runs" / test_run_experiment_name
+    test_run_path = (
+        "E:/shared_resources/" + "/restraint" + "/eval_runs/" + test_run_experiment_name
+    )
 
-    if test_run_path.exists():
+    if Path(test_run_path).exists():
         while True:
             response = input(
                 f"This path '{test_run_path}' already exists. Do you want to potentially overwrite the contents of this folder with new feature sets? (yes/no): "
@@ -36,7 +38,7 @@ def retrain_best_model(
             if response.lower() in ["yes", "y"]:
                 print(f"Content of folder may be overwritten.")
                 break
-
+        
     best_run_cfg = (
         MlflowClientWrapper()
         .get_best_run_from_experiment(experiment_name=experiment_name, metric="all_oof_BinaryAUROC")
@@ -53,44 +55,49 @@ def retrain_best_model(
         validation_outcome_col_name = best_run_cfg.retrieve("trainer.outcome_col_name")
         training_outcome_col_name = best_run_cfg.retrieve("trainer.outcome_col_name")
 
-        best_run_cfg = (
-            best_run_cfg.mut("logger.*.mlflow.experiment_name", test_run_experiment_name)
-            .mut("trainer.@trainers", trainer)
-            .rem("trainer.outcome_col_name")
-            .rem("trainer.preprocessing_pipeline")
-            .rem("trainer.n_splits")
-        )
 
-        best_run_cfg = (
-            best_run_cfg.add("trainer.training_outcome_col_name", training_outcome_col_name)
-            .add("trainer.training_preprocessing_pipeline", preprocessing_pipeline)
-            .mut(
-                "trainer.training_preprocessing_pipeline.*.split_filter.@preprocessing",
-                data_split_filter,
-            )
-            .mut(
-                "trainer.training_preprocessing_pipeline.*.split_filter.splits_to_keep",
-                train_splits,
-            )
-        )
+    best_run_cfg = (
+        best_run_cfg.mut("logger.*.mlflow.experiment_name", test_run_experiment_name)
+        .mut("logger.*.disk_logger.run_path", test_run_path)
+        .mut("trainer.@trainers", trainer)
+        .rem("trainer.outcome_col_name")
+        .rem("trainer.preprocessing_pipeline")
+        .rem("trainer.n_splits")
+    )
 
-        best_run_cfg = (
-            best_run_cfg.add(  # Handle validation dataset
-                "trainer.validation_data", test_data_path
-            )
-            .add("trainer.validation_outcome_col_name", validation_outcome_col_name)
-            .add("trainer.validation_preprocessing_pipeline", preprocessing_pipeline)
-            .mut(
-                "trainer.validation_preprocessing_pipeline.*.split_filter.@preprocessing",
-                data_split_filter,
-            )
-            .mut(
-                "trainer.validation_preprocessing_pipeline.*.split_filter.splits_to_keep",
-                test_split,
-            )
+    best_run_cfg = (
+        best_run_cfg.add("trainer.training_outcome_col_name", training_outcome_col_name)
+        .add("trainer.training_preprocessing_pipeline", preprocessing_pipeline)
+        .mut(
+            "trainer.training_preprocessing_pipeline.*.split_filter.@preprocessing",
+            data_split_filter,
         )
+        .mut(
+            "trainer.training_preprocessing_pipeline.*.split_filter.splits_to_keep",
+            train_splits,
+        )
+    )
 
-        train_baseline_model_from_cfg(best_run_cfg)
+    best_run_cfg = (
+        best_run_cfg.add(  # Handle validation dataset
+            "trainer.validation_data", best_run_cfg.retrieve("trainer.training_data")
+        )
+        .add(
+            "trainer.validation_data.paths", test_data_path
+        )
+        .add("trainer.validation_outcome_col_name", validation_outcome_col_name)
+        .add("trainer.validation_preprocessing_pipeline", preprocessing_pipeline)
+        .mut(
+            "trainer.validation_preprocessing_pipeline.*.split_filter.@preprocessing",
+            data_split_filter,
+        )
+        .mut(
+            "trainer.validation_preprocessing_pipeline.*.split_filter.splits_to_keep",
+            test_split,
+        )
+    )
+    
+    train_baseline_model_from_cfg(best_run_cfg)
 
 
 if __name__ == "__main__":
