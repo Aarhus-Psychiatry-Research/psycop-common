@@ -8,7 +8,7 @@ import polars as pl
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.projects.cvd.model_evaluation.single_run.auroc_by.auroc_by_model import auroc_by_model
-from psycop.projects.restraint.evaluation.evaluation_utils import (
+from psycop.projects.restraint.evaluation.utils import (
     add_age,
     parse_dw_ek_borger_from_uuid,
     parse_timestamp_from_uuid,
