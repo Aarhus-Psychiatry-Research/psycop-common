@@ -7,7 +7,7 @@ from confection import Config
 from psycop.common.model_evaluation.utils import bin_continuous_data
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
-from psycop.projects.restraint.evaluation.evaluation_utils import (
+from psycop.projects.restraint.evaluation.utils import (
     add_split,
     get_psychiatric_diagnosis_row_specs,
 )
