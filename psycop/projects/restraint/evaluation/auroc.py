@@ -8,6 +8,7 @@ from sklearn.metrics import roc_auc_score
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_evaluation.binary.global_performance.roc_auc import bootstrap_roc
 from psycop.projects.cvd.model_evaluation.single_run.auroc.model import AUROC
+from psycop.projects.restraint.evaluation.utils import read_eval_df_from_disk
 
 
 def auroc_plot(data: AUROC, title: str = "AUROC") -> pn.ggplot:
@@ -88,11 +89,6 @@ if __name__ == "__main__":
     save_dir.mkdir(parents=True, exist_ok=True)
 
     best_experiment = "restraint_text_hyper"
-    eval_data = (
-        MlflowClientWrapper()
-        .get_best_run_from_experiment(experiment_name=best_experiment, metric="all_oof_BinaryAUROC")
-        .eval_frame()
-        .frame.to_pandas()
-    )
+    eval_data =  read_eval_df_from_disk("E:/shared_resources/restraint/eval_runs/restraint_all_tuning_best_run_evaluated_on_test").to_pandas()
 
     auroc_plot(auroc_model(eval_data)).save(save_dir / "auroc.png")

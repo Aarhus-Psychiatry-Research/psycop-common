@@ -12,6 +12,7 @@ from psycop.projects.restraint.evaluation.utils import (
     add_age,
     parse_dw_ek_borger_from_uuid,
     parse_timestamp_from_uuid,
+    read_eval_df_from_disk,
 )
 
 
@@ -87,12 +88,7 @@ if __name__ == "__main__":
 
     best_experiment = "restraint_text_hyper"
     best_pos_rate = 0.05
-    df = (
-        MlflowClientWrapper()
-        .get_best_run_from_experiment(experiment_name=best_experiment, metric="all_oof_BinaryAUROC")
-        .eval_frame()
-        .frame
-    )
+    df = read_eval_df_from_disk("E:/shared_resources/restraint/eval_runs/restraint_all_tuning_best_run_evaluated_on_test")
     birthdays = pl.from_pandas(birthdays())
 
     plotnine_auroc_by_age(

@@ -24,6 +24,10 @@ def log_cross_val_eval_df_from_best_run(experiment_name: str):
     train_baseline_model_from_cfg(best_run_cfg)
 
 
+def read_eval_df_from_disk(experiment_path: str) -> pl.DataFrame:
+    return pl.read_parquet(experiment_path + "/eval_df.parquet")
+
+
 def get_psychiatric_diagnosis_row_specs(col_names: list[str]) -> list[RowSpecification]:
     pattern = re.compile(r"pred_f\d_disorders")
     columns = sorted([c for c in col_names if pattern.search(c) and "730" in c])
@@ -94,7 +98,7 @@ def parse_timestamp_from_uuid(df: pl.DataFrame, output_col_name: str = "timestam
         .str.split("-")
         .list.slice(1)
         .list.join("-")
-        .str.strptime(pl.Datetime)
+        .str.strptime(pl.Datetime, format="%Y-%m-%d-%H-%M-%S")
         .alias(output_col_name)
     )
 
@@ -110,7 +114,7 @@ def parse_dw_ek_borger_from_uuid(
 def add_age(df: pl.DataFrame, birthdays: pl.DataFrame, age_col_name: str = "age") -> pl.DataFrame:
     df = df.join(birthdays, on="dw_ek_borger", how="left")
     df = df.with_columns(
-        ((pl.col("timestamp") - pl.col("date_of_birth")).dt.days()).alias(age_col_name)
+        ((pl.col("timestamp") - pl.col("date_of_birth")).dt.total_days()).alias(age_col_name)
     )
     df = df.with_columns((pl.col(age_col_name) / 365.25).alias(age_col_name))
 
