@@ -101,4 +101,4 @@ def retrain_best_model(
 
 
 if __name__ == "__main__":
-    retrain_best_model(experiment_name="restraint_all_tuning")
+    retrain_best_model(experiment_name="restraint_mechanical_tuning")

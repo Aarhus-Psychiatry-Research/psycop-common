@@ -12,6 +12,7 @@ from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
 )
 from psycop.common.test_utils.str_to_df import str_to_df
+from psycop.projects.restraint.evaluation.utils import read_eval_df_from_disk
 
 
 def plotnine_confusion_matrix(
@@ -90,12 +91,7 @@ if __name__ == "__main__":
 
     best_experiment = "restraint_text_hyper"
     best_pos_rate = 0.05
-    eval_df = (
-        MlflowClientWrapper()
-        .get_best_run_from_experiment(experiment_name=best_experiment, metric="all_oof_BinaryAUROC")
-        .eval_frame()
-        .frame.to_pandas()
-    )
+    eval_df =  read_eval_df_from_disk("E:/shared_resources/restraint/eval_runs/restraint_all_tuning_best_run_evaluated_on_test").to_pandas()
 
     plotnine_confusion_matrix(confusion_matrix_model(df=eval_df, positive_rate=best_pos_rate)).save(
         save_dir / "confusion_matrix.png"

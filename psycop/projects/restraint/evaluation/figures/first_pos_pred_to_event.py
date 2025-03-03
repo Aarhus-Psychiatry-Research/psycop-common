@@ -15,6 +15,7 @@ from psycop.common.model_training.training_output.dataclasses import (
 from psycop.projects.restraint.evaluation.utils import (
     parse_dw_ek_borger_from_uuid,
     parse_timestamp_from_uuid,
+    read_eval_df_from_disk,
 )
 
 
@@ -93,12 +94,8 @@ if __name__ == "__main__":
 
     best_experiment = "restraint_text_hyper"
     best_pos_rate = 0.05
-    eval_df = (
-        MlflowClientWrapper()
-        .get_best_run_from_experiment(experiment_name=best_experiment, metric="all_oof_BinaryAUROC")
-        .eval_frame()
-        .frame
-    )
+    eval_df =  read_eval_df_from_disk("E:/shared_resources/restraint/eval_runs/restraint_all_tuning_best_run_evaluated_on_test")
+    
     outcome_timestamps = pl.DataFrame(
         sql_load(
             "SELECT pred_times.dw_ek_borger, pred_time, first_mechanical_restraint as timestamp FROM fct.psycop_coercion_outcome_timestamps as pred_times LEFT JOIN fct.psycop_coercion_outcome_timestamps_2 as outc_times ON (pred_times.dw_ek_borger = outc_times.dw_ek_borger AND pred_times.datotid_start = outc_times.datotid_start)"

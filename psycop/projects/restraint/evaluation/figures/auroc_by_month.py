@@ -57,7 +57,7 @@ def plotnine_auroc_by_month(
     return p
 
 
-def auroc_by_month(df: pl.DataFrame) -> pd.DataFrame:
+def auroc_by_month_model(df: pl.DataFrame) -> pd.DataFrame:
     eval_df = parse_timestamp_from_uuid(df).to_pandas()
 
     df = pl.DataFrame(
@@ -80,4 +80,4 @@ if __name__ == "__main__":
     best_pos_rate = 0.05
     df = read_eval_df_from_disk("E:/shared_resources/restraint/eval_runs/restraint_all_tuning_best_run_evaluated_on_test")
 
-    plotnine_auroc_by_month(auroc_by_month(df=df)).save(save_dir / "auroc_by_month.png")
+    plotnine_auroc_by_month(auroc_by_month_model(df=df)).save(save_dir / "auroc_by_month.png")

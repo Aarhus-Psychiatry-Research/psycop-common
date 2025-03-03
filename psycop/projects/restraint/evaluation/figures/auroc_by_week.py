@@ -9,7 +9,7 @@ from psycop.common.model_evaluation.binary.time.periodic_data import roc_auc_by_
 from psycop.projects.restraint.evaluation.utils import parse_timestamp_from_uuid, read_eval_df_from_disk
 
 
-def plotnine_auroc_by_week(df: pd.DataFrame, title: str = "AUROC by Day of the Week") -> pn.ggplot:
+def plotnine_auroc_by_weekday(df: pd.DataFrame, title: str = "AUROC by Day of the Week") -> pn.ggplot:
     df["proportion_of_n"] = df["n_in_bin"] / df["n_in_bin"].sum()
 
     p = (
@@ -55,7 +55,7 @@ def plotnine_auroc_by_week(df: pd.DataFrame, title: str = "AUROC by Day of the W
     return p
 
 
-def auroc_by_week(df: pl.DataFrame) -> pd.DataFrame:
+def auroc_by_weekday_model(df: pl.DataFrame) -> pd.DataFrame:
     eval_df = parse_timestamp_from_uuid(df).to_pandas()
 
     df = pl.DataFrame(
@@ -78,4 +78,4 @@ if __name__ == "__main__":
     best_pos_rate = 0.05
     df =  read_eval_df_from_disk("E:/shared_resources/restraint/eval_runs/restraint_all_tuning_best_run_evaluated_on_test")
 
-    plotnine_auroc_by_week(auroc_by_week(df=df)).save(save_dir / "auroc_by_weekday.png")
+    plotnine_auroc_by_weekday(auroc_by_weekday_model(df=df)).save(save_dir / "auroc_by_weekday.png")
