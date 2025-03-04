@@ -22,8 +22,8 @@ def run_auroc_figures(df: pl.DataFrame, save_dir: Path, experiment: str):
 
     plotnine_auroc_by_weekday(auroc_by_weekday_model(df=df)).save(save_dir / f"{experiment}_auroc_by_weekday.png") # type: ignore
 
-def run_all_figures(df: pl.DataFrame, experiment: str, best_pos_rate: float):
-    save_dir = Path(__file__).parent / "figures"
+def run_all_figures(df: pl.DataFrame, experiment: str, best_pos_rate: float, eval_dir: str):
+    save_dir = Path(eval_dir)
     save_dir.mkdir(parents=True, exist_ok=True)
 
     run_auroc_figures(df=df, save_dir=save_dir, experiment=experiment)
@@ -39,9 +39,10 @@ def run_all_figures(df: pl.DataFrame, experiment: str, best_pos_rate: float):
 
 if __name__ == "__main__":
 
-    df =  read_eval_df_from_disk("E:/shared_resources/restraint/eval_runs/restraint_mechanical_tuning_best_run_evaluated_on_test")
-    experiment = "restraint_mechanical"
+    eval_dir = "E:/shared_resources/restraint/eval_runs/restraint_split_tuning_best_run_evaluated_on_test"
+    df =  read_eval_df_from_disk(eval_dir)
+    experiment = "restraint_split"
     best_pos_rate = 0.05
   
-    run_all_figures(df=df, experiment=experiment, best_pos_rate=best_pos_rate)
+    run_all_figures(df=df, experiment=experiment, best_pos_rate=best_pos_rate, eval_dir=eval_dir)
 
