@@ -128,6 +128,7 @@ def parse_outcome_timestamps(df: pl.DataFrame) -> pl.DataFrame:
         suffix="_outcome",
         how="left",
     )
+    
 
     return eval_dataset
 
@@ -142,12 +143,13 @@ def add_age(df: pl.DataFrame, birthdays: pl.DataFrame, age_col_name: str = "age"
     return df
 
 
-def expand_eval_df_with_extra_cols(eval_df: pl.DataFrame, birthdays: pl.DataFrame) -> pd.DataFrame:
-    birthdays = pl.from_pandas(birthdays())  # type: ignore
+def expand_eval_df_with_extra_cols(eval_df: pl.DataFrame) -> pd.DataFrame:
+    birthdates = pl.from_pandas(birthdays())
+
 
     eval_df = parse_timestamp_from_uuid(eval_df)
     eval_df = parse_dw_ek_borger_from_uuid(eval_df)
-    eval_df = add_age(eval_df, birthdays)
+    eval_df = add_age(eval_df, birthdates)
     eval_df = parse_outcome_timestamps(eval_df)
 
     return eval_df.to_pandas()
