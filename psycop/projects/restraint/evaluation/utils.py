@@ -1,8 +1,11 @@
 import re
 from typing import Literal
 
+import pandas as pd
 import polars as pl
 
+from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
+from psycop.common.feature_generation.loaders.raw import sql_load
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
@@ -111,6 +114,24 @@ def parse_dw_ek_borger_from_uuid(
     )
 
 
+def parse_outcome_timestamps(df: pl.DataFrame) -> pl.DataFrame:
+    outcome_timestamps = pl.DataFrame(
+        sql_load(
+            "SELECT pred_times.dw_ek_borger, pred_time, first_mechanical_restraint as timestamp FROM fct.psycop_coercion_outcome_timestamps as pred_times LEFT JOIN fct.psycop_coercion_outcome_timestamps_2 as outc_times ON (pred_times.dw_ek_borger = outc_times.dw_ek_borger AND pred_times.datotid_start = outc_times.datotid_start)"
+        ).drop_duplicates()
+    )
+
+    eval_dataset = df.with_columns(pl.col("timestamp").dt.cast_time_unit("ns")).join(
+        outcome_timestamps,
+        left_on=["dw_ek_borger", "timestamp"],
+        right_on=["dw_ek_borger", "pred_time"],
+        suffix="_outcome",
+        how="left",
+    )
+
+    return eval_dataset
+
+
 def add_age(df: pl.DataFrame, birthdays: pl.DataFrame, age_col_name: str = "age") -> pl.DataFrame:
     df = df.join(birthdays, on="dw_ek_borger", how="left")
     df = df.with_columns(
@@ -119,3 +140,14 @@ def add_age(df: pl.DataFrame, birthdays: pl.DataFrame, age_col_name: str = "age"
     df = df.with_columns((pl.col(age_col_name) / 365.25).alias(age_col_name))
 
     return df
+
+
+def expand_eval_df_with_extra_cols(eval_df: pl.DataFrame, birthdays: pl.DataFrame) -> pd.DataFrame:
+    birthdays = pl.from_pandas(birthdays())  # type: ignore
+
+    eval_df = parse_timestamp_from_uuid(eval_df)
+    eval_df = parse_dw_ek_borger_from_uuid(eval_df)
+    eval_df = add_age(eval_df, birthdays)
+    eval_df = parse_outcome_timestamps(eval_df)
+
+    return eval_df.to_pandas()
