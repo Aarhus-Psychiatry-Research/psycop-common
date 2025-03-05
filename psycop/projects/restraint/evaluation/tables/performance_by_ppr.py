@@ -10,7 +10,10 @@ from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
-from psycop.projects.restraint.evaluation.utils import expand_eval_df_with_extra_cols, read_eval_df_from_disk
+from psycop.projects.restraint.evaluation.utils import (
+    expand_eval_df_with_extra_cols,
+    read_eval_df_from_disk,
+)
 
 msg = Printer(timestamp=True)
 
@@ -28,7 +31,6 @@ def _df_to_eval_dataset(df: pd.DataFrame) -> EvalDataset:
     )
 
 
-
 def _get_num_of_unique_outcome_events(eval_dataset: EvalDataset) -> int:
     df = pd.DataFrame(
         {
@@ -43,7 +45,92 @@ def _get_num_of_unique_outcome_events(eval_dataset: EvalDataset) -> int:
 
     return num_unique
 
-    
+
+def _get_outcome_for_extended_lookahead(
+    eval_dataset: EvalDataset, alternative_lookahead_days: int, postive_rate: float
+) -> int:
+    """Get outcome labels if time from to outcome is within alternative_lookahead_days form prediction time."""
+
+    y_hat_int, _ = eval_dataset.get_predictions_for_positive_rate(
+        desired_positive_rate=postive_rate
+    )
+
+    df = pd.DataFrame(
+        {
+            "id": eval_dataset.ids,
+            "y": eval_dataset.y,
+            "pred_timestamps": eval_dataset.pred_timestamps,
+            "outcome_timestamps": eval_dataset.outcome_timestamps,
+            "pred": y_hat_int,
+        }
+    )
+
+    df["days_from_pred_to_outcome"] = (df["outcome_timestamps"] - df["pred_timestamps"]).dt.days
+
+    true_positive_given_alternative_lookahead = df[
+        (df["pred"] == 1) & (df["days_from_pred_to_outcome"] <= alternative_lookahead_days)
+    ]
+
+    return len(true_positive_given_alternative_lookahead)
+
+
+def _get_admission_level_model_behavior_with_extended_lookahead(
+    eval_dataset: EvalDataset, alternative_lookahead_days: int, postive_rate: float
+) -> int:
+    """If a positive prediction is issued within the alternative_lookahead_days, the admission level is considered to be predicted as true positive.
+    If an admission with an outcome does not have a single positive prediction within the alternative_lookahead_days, the admission level is considered to be predicted as false negative.
+    If an admission with an outcome does not have a single positive prediction within the entire admission, the admission level is considered to be predicted as a very false negative.
+    If an admission without an outcome has a positive prediction, the admission level is considered to be predicted as false positive."""
+
+    y_hat_int, _ = eval_dataset.get_predictions_for_positive_rate(
+        desired_positive_rate=postive_rate
+    )
+
+    df = pd.DataFrame(
+        {
+            "id": eval_dataset.ids,
+            "y": eval_dataset.y,
+            "pred_timestamps": eval_dataset.pred_timestamps,
+            "outcome_timestamps": eval_dataset.outcome_timestamps,
+            "pred": y_hat_int,
+        }
+    )
+
+    df["days_from_pred_to_outcome"] = (df["outcome_timestamps"] - df["pred_timestamps"]).dt.days
+
+    # Get admissions with outcomes
+    admissions_with_outcomes = df[df["y"] == 1][["id", "outcome_timestamps"]].drop_duplicates()
+
+    # Get admissions without outcomes
+    admissions_without_outcomes = df[df["y"] == 0][["id"]].drop_duplicates()
+
+    # Get admissions with positive predictions
+    admissions_with_positive_predictions = df[df["pred"] == 1][["id"]].drop_duplicates()
+
+    # Get admissions with positive predictions within the alternative_lookahead_days
+    admissions_with_positive_predictions_within_lookahead = df[
+        (df["pred"] == 1) & (df["days_from_pred_to_outcome"] <= alternative_lookahead_days)
+    ][["id"]].drop_duplicates()
+
+    # Get admissions with positive predictions within the entire admission
+    admissions_with_positive_predictions_within_admission = df[
+        (df["pred"] == 1) & (df["days_from_pred_to_outcome"] >= 0)
+    ][["id"]].drop_duplicates()
+
+    # Get admissions with no positive predictions
+    admissions_with_no_positive_predictions = df[df["pred"] == 0][["id"]].drop_duplicates()
+
+    # Get admissions with no positive predictions within the entire admission
+    admissions_with_no_positive_predictions_within_admission = df[
+        (df["pred"] == 0) & (df["days_from_pred_to_outcome"] >= 0)
+    ][["id"]].drop_duplicates()
+
+    # Get admissions with no positive predictions within the alternative_lookahead_days
+    admissions_with_no_positive_predictions_within_lookahead = df[
+        (df["pred"] == 0) & (df["days_from_pred_to_outcome"] <= alternative_lookahead_days)
+    ][["id"]].drop_duplicates()
+
+
 def _get_number_of_outcome_events_with_at_least_one_true_positve(
     eval_dataset: EvalDataset, positive_rate: float, min_alert_days: None | int = 30
 ) -> float:
@@ -146,10 +233,10 @@ def restraint_output_performance_by_ppr(
     save: bool = True,
     positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
     min_alert_days: None | int = None,
+    alternative_lookahead_days: int = 10,
 ) -> pd.DataFrame | None:
-    
     eval_dataset = _df_to_eval_dataset(eval_df)
-    
+
     df: pd.DataFrame = generate_performance_by_ppr_table(  # type: ignore
         eval_dataset=eval_dataset, positive_rates=positive_rates
     )
@@ -175,6 +262,11 @@ def restraint_output_performance_by_ppr(
         3,
     )
 
+    df["Number of true positives if lookahead is 30 days"] = [
+        _get_outcome_for_extended_lookahead(eval_dataset, alternative_lookahead_days, pos_rate)
+        for pos_rate in positive_rates
+    ]
+
     df = clean_up_performance_by_ppr(df)
 
     if save:
@@ -185,7 +277,10 @@ def restraint_output_performance_by_ppr(
 
 
 if __name__ == "__main__":
+    eval_dir = (
+        "E:/shared_resources/restraint/eval_runs/restraint_split_tuning_best_run_evaluated_on_test"
+    )
 
-    eval_dir = "E:/shared_resources/restraint/eval_runs/restraint_split_tuning_best_run_evaluated_on_test"
-
-    restraint_output_performance_by_ppr(expand_eval_df_with_extra_cols(read_eval_df_from_disk(eval_dir)), eval_dir)
+    restraint_output_performance_by_ppr(
+        expand_eval_df_with_extra_cols(read_eval_df_from_disk(eval_dir)), eval_dir
+    )
