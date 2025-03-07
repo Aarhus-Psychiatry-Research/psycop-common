@@ -41,7 +41,7 @@ def _get_num_of_unique_outcome_events(eval_dataset: EvalDataset) -> int:
         }
     )
 
-    num_unique = df[df["y"] == 1][["id", "c"]].drop_duplicates().shape[0]
+    num_unique = df[df["y"] == 1][["id", "outcome_timestamps"]].drop_duplicates().shape[0]
 
     return num_unique
 
@@ -249,7 +249,8 @@ def restraint_output_performance_by_ppr(
     df = clean_up_performance_by_ppr(df)
 
     if save:
-        df.to_excel(Path(eval_dir), index=False)
+        (Path(eval_dir) / "figure_and_tables").mkdir(parents=True, exist_ok=True)
+        df.to_excel(Path(eval_dir) / "figure_and_tables" / "performance_by_ppr.xlsx", index=False)
         return None
 
     return df
