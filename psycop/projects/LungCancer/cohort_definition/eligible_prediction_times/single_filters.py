@@ -5,9 +5,7 @@ from psycop.common.feature_generation.loaders.raw.load_moves import MoveIntoRMBa
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
     QuarantineFilter,
 )
-from psycop.projects.LungCancer.cohort_definition.eligible_prediction_times.add_age import (
-    add_age,
-)
+from psycop.projects.LungCancer.cohort_definition.eligible_prediction_times.add_age import add_age
 from psycop.projects.LungCancer.cohort_definition.eligible_prediction_times.lung_cancer_eligible_config import (
     AGE_COL_NAME,
     MIN_AGE,
