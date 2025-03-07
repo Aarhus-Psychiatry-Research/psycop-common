@@ -51,19 +51,28 @@ def retrain_best_model(
         validation_outcome_col_name = best_run_cfg.retrieve("trainer.validation_outcome_col_name")
         training_outcome_col_name = best_run_cfg.retrieve("trainer.training_outcome_col_name")
 
+        best_run_cfg = (
+            best_run_cfg.mut("logger.*.mlflow.experiment_name", test_run_experiment_name)
+            .mut("logger.*.disk_logger.run_path", test_run_path)
+            .mut("trainer.@trainers", trainer)
+            .rem("trainer.validation_outcome_col_name")
+            .rem("trainer.training_outcome_col_name")
+            .rem("trainer.preprocessing_pipeline")
+            .rem("trainer.n_splits")
+        )
+        
     else:
         validation_outcome_col_name = best_run_cfg.retrieve("trainer.outcome_col_name")
         training_outcome_col_name = best_run_cfg.retrieve("trainer.outcome_col_name")
 
-
-    best_run_cfg = (
-        best_run_cfg.mut("logger.*.mlflow.experiment_name", test_run_experiment_name)
-        .mut("logger.*.disk_logger.run_path", test_run_path)
-        .mut("trainer.@trainers", trainer)
-        .rem("trainer.outcome_col_name")
-        .rem("trainer.preprocessing_pipeline")
-        .rem("trainer.n_splits")
-    )
+        best_run_cfg = (
+            best_run_cfg.mut("logger.*.mlflow.experiment_name", test_run_experiment_name)
+            .mut("logger.*.disk_logger.run_path", test_run_path)
+            .mut("trainer.@trainers", trainer)
+            .rem("trainer.outcome_col_name")
+            .rem("trainer.preprocessing_pipeline")
+            .rem("trainer.n_splits")
+        )
 
     best_run_cfg = (
         best_run_cfg.add("trainer.training_outcome_col_name", training_outcome_col_name)
@@ -101,4 +110,4 @@ def retrain_best_model(
 
 
 if __name__ == "__main__":
-    retrain_best_model(experiment_name="restraint_mechanical_tuning")
+    retrain_best_model(experiment_name="restraint_split_tuning", split_outcome = True)
