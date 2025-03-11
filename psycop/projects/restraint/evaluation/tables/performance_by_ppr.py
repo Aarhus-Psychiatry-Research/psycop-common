@@ -215,7 +215,7 @@ def restraint_output_performance_by_ppr(
     eval_df: pd.DataFrame,
     eval_dir: str,
     save: bool = True,
-    positive_rates: Sequence[float] = [0.05, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
+    positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
     min_alert_days: None | int = None,
     alternative_lookahead_days: int = 10,
 ) -> pd.DataFrame | None:
@@ -258,9 +258,9 @@ def restraint_output_performance_by_ppr(
 
 if __name__ == "__main__":
 
-    experiment_name = "restraint_split_tuning"
+    experiment_name = "restraint_all"
     eval_dir = (
-        f"E:/shared_resources/restraint/eval_runs/{experiment_name}_best_run_evaluated_on_test"
+        f"E:/shared_resources/restraint/eval_runs/{experiment_name}_tuning_best_run_evaluated_on_test"
     )
 
     restraint_output_performance_by_ppr(

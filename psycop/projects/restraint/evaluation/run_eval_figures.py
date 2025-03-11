@@ -39,9 +39,10 @@ def run_all_figures(df: pl.DataFrame, experiment: str, best_pos_rate: float, eva
 
 if __name__ == "__main__":
 
-    eval_dir = "E:/shared_resources/restraint/eval_runs/restraint_split_tuning_best_run_evaluated_on_test"
+    experiment = "restraint_mechanical"
+    eval_dir = f"E:/shared_resources/restraint/eval_runs/{experiment}_tuning_best_run_evaluated_on_test"
     df =  read_eval_df_from_disk(eval_dir)
-    experiment = "restraint_split"
+    eval_dir = f"E:/shared_resources/restraint/eval_runs/{experiment}_tuning_best_run_evaluated_on_test/figure_and_tables"
     best_pos_rate = 0.05
   
     run_all_figures(df=df, experiment=experiment, best_pos_rate=best_pos_rate, eval_dir=eval_dir)
