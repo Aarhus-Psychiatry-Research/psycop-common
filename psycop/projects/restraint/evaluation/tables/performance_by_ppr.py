@@ -270,7 +270,9 @@ def restraint_output_performance_by_ppr(
     df = clean_up_performance_by_ppr(df)
 
     if save:
-        df.to_excel(Path(eval_dir), index=False)
+        # if path doesnt exist, create it
+        Path(eval_dir).mkdir(parents=True, exist_ok=True)
+        df.to_excel(Path(eval_dir) / "performance_by_ppr.xlsx", index=False)
         return None
 
     return df
