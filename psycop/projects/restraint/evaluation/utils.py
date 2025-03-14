@@ -10,8 +10,10 @@ from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClien
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
+    FilterByOutcomeStratifiedSplits,
     RegionalFilter,
 )
+from psycop.projects.restraint.feature_generation.modules.loaders.load_restraint_prediction_timestamps import load_restraint_prediction_timestamps
 from psycop.projects.t2d.paper_outputs.dataset_description.table_one.table_one_lib import (
     RowSpecification,
 )
@@ -81,7 +83,7 @@ def get_split_by_id(pred_times: pl.DataFrame) -> pl.DataFrame:
     return df
 
 
-def add_split(pred_times: pl.DataFrame) -> pl.DataFrame:
+def add_regional_split(pred_times: pl.DataFrame) -> pl.DataFrame:
     train_filter = RegionalFilter(splits_to_keep=["train", "val"])
     test_filter = RegionalFilter(splits_to_keep=["test"])
 
@@ -94,6 +96,24 @@ def add_split(pred_times: pl.DataFrame) -> pl.DataFrame:
 
     return pl.concat([train_data, test_data], how="vertical")
 
+
+def add_stratified_split(pred_times: pl.DataFrame) -> pl.DataFrame:
+    train_filter = FilterByOutcomeStratifiedSplits(splits_to_keep=["train", "val"])
+    test_filter = FilterByOutcomeStratifiedSplits(splits_to_keep=["test"])
+
+    train_data = (
+        train_filter.apply(pred_times.lazy()).with_columns(pl.lit("train").alias("split")).collect()
+    )
+    test_data = (
+        test_filter.apply(pred_times.lazy()).with_columns(pl.lit("test").alias("split")).collect()
+    )
+
+    return pl.concat([train_data, test_data], how="vertical")
+
+
+def add_admission_timestamps(pred_times: pl.DataFrame) -> pl.DataFrame:
+    admission_timestamps = pl.DataFrame(load_restraint_prediction_timestamps()).select(["dw_ek_borger", "timestamp", "timestamp_admission"])
+    return pred_times.join(admission_timestamps, on=["dw_ek_borger", "timestamp"], how="left")
 
 def parse_timestamp_from_uuid(df: pl.DataFrame, output_col_name: str = "timestamp") -> pl.DataFrame:
     return df.with_columns(

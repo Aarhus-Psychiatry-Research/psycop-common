@@ -88,6 +88,7 @@ def filter_prediction_times(
     prediction_times: pl.LazyFrame,
     filtering_steps: Iterable[PredictionTimeFilter],
     entity_id_col_name: str,
+    timestamp_col_name: str = "timestamp",
     get_counts: bool = True,
 ) -> FilteredPredictionTimeBundle:
     """Apply a series of filters to prediction times.
@@ -123,6 +124,6 @@ def filter_prediction_times(
         prediction_times = prediction_times.drop("date_of_birth")
 
     return FilteredPredictionTimeBundle(
-        prediction_times=PredictionTimeFrame(frame=prediction_times.collect()),
+        prediction_times=PredictionTimeFrame(frame=prediction_times.collect(), entity_id_col_name=entity_id_col_name, timestamp_col_name=timestamp_col_name),
         filter_steps=stepdeltas,
     )

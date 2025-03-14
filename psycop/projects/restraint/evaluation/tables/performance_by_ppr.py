@@ -98,37 +98,35 @@ def _get_admission_level_model_behavior_with_extended_lookahead(
 
     df["days_from_pred_to_outcome"] = (df["outcome_timestamps"] - df["pred_timestamps"]).dt.days
 
-    # Get admissions with outcomes
-    admissions_with_outcomes = df[df["y"] == 1][["id", "outcome_timestamps"]].drop_duplicates()
-
-    # Get admissions without outcomes
-    admissions_without_outcomes = df[df["y"] == 0][["id"]].drop_duplicates()
-
-    # Get admissions with positive predictions
-    admissions_with_positive_predictions = df[df["pred"] == 1][["id"]].drop_duplicates()
-
-    # Get admissions with positive predictions within the alternative_lookahead_days
-    admissions_with_positive_predictions_within_lookahead = df[
+    true_positive_given_alternative_lookahead = df[
         (df["pred"] == 1) & (df["days_from_pred_to_outcome"] <= alternative_lookahead_days)
-    ][["id"]].drop_duplicates()
+    ]
 
-    # Get admissions with positive predictions within the entire admission
-    admissions_with_positive_predictions_within_admission = df[
-        (df["pred"] == 1) & (df["days_from_pred_to_outcome"] >= 0)
-    ][["id"]].drop_duplicates()
+    all_positives_prior_to_outcome_within_alternative_lookahead = len(
+        true_positive_given_alternative_lookahead[
+            true_positive_given_alternative_lookahead.pred == 1
+        ]
+    )
+    unique_outcomes_with_positive_prior_to_otucome_within_alternative_lookahead = (
+        true_positive_given_alternative_lookahead.outcome_timestamps.nunique()
+    )
 
-    # Get admissions with no positive predictions
-    admissions_with_no_positive_predictions = df[df["pred"] == 0][["id"]].drop_duplicates()
+    all_predictions_prior_to_outcome = df[df["days_from_pred_to_outcome"] <= 100000]
+    all_positives_prior_to_outcome = len(
+        all_predictions_prior_to_outcome[all_predictions_prior_to_outcome.pred == 1]
+    )
+    unique_outcomes_with_positive_prior_to_otucome = (
+        all_predictions_prior_to_outcome.outcome_timestamps.nunique()
+    )
 
-    # Get admissions with no positive predictions within the entire admission
-    admissions_with_no_positive_predictions_within_admission = df[
-        (df["pred"] == 0) & (df["days_from_pred_to_outcome"] >= 0)
-    ][["id"]].drop_duplicates()
+    all_predictions_for_admissions_without_outcomes = df[df["days_from_pred_to_outcome"].isna()]
+    all_truly_false_negatives = len(
+        all_predictions_for_admissions_without_outcomes[
+            all_predictions_for_admissions_without_outcomes.pred == 1
+        ]
+    )
 
-    # Get admissions with no positive predictions within the alternative_lookahead_days
-    admissions_with_no_positive_predictions_within_lookahead = df[
-        (df["pred"] == 0) & (df["days_from_pred_to_outcome"] <= alternative_lookahead_days)
-    ][["id"]].drop_duplicates()
+    return all_positives_prior_to_outcome_within_alternative_lookahead
 
 
 def _get_number_of_outcome_events_with_at_least_one_true_positve(
@@ -262,26 +260,19 @@ def restraint_output_performance_by_ppr(
         3,
     )
 
-    df["Number of true positives if lookahead is 30 days"] = [
-        _get_outcome_for_extended_lookahead(eval_dataset, alternative_lookahead_days, pos_rate)
-        for pos_rate in positive_rates
-    ]
-
     df = clean_up_performance_by_ppr(df)
 
     if save:
-        # if path doesnt exist, create it
-        Path(eval_dir).mkdir(parents=True, exist_ok=True)
-        df.to_excel(Path(eval_dir) / "performance_by_ppr.xlsx", index=False)
+        (Path(eval_dir) / "figure_and_tables").mkdir(parents=True, exist_ok=True)
+        df.to_excel(Path(eval_dir) / "figure_and_tables" / "performance_by_ppr.xlsx", index=False)
         return None
 
     return df
 
 
 if __name__ == "__main__":
-    eval_dir = (
-        "E:/shared_resources/restraint/eval_runs/restraint_split_tuning_best_run_evaluated_on_test"
-    )
+    experiment_name = "restraint_all"
+    eval_dir = f"E:/shared_resources/restraint/eval_runs/{experiment_name}_tuning_best_run_evaluated_on_test"
 
     restraint_output_performance_by_ppr(
         expand_eval_df_with_extra_cols(read_eval_df_from_disk(eval_dir)), eval_dir
