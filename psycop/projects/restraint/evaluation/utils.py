@@ -1,19 +1,19 @@
 import re
-from typing import Literal
 
 import pandas as pd
 import polars as pl
 
-from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
 from psycop.common.feature_generation.loaders.raw import sql_load
+from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
     FilterByOutcomeStratifiedSplits,
     RegionalFilter,
 )
-from psycop.projects.restraint.feature_generation.modules.loaders.load_restraint_prediction_timestamps import load_restraint_prediction_timestamps
+from psycop.projects.restraint.feature_generation.modules.loaders.load_restraint_prediction_timestamps import (
+    load_restraint_prediction_timestamps,
+)
 from psycop.projects.t2d.paper_outputs.dataset_description.table_one.table_one_lib import (
     RowSpecification,
 )
@@ -112,8 +112,11 @@ def add_stratified_split(pred_times: pl.DataFrame) -> pl.DataFrame:
 
 
 def add_admission_timestamps(pred_times: pl.DataFrame) -> pl.DataFrame:
-    admission_timestamps = pl.DataFrame(load_restraint_prediction_timestamps()).select(["dw_ek_borger", "timestamp", "timestamp_admission"])
+    admission_timestamps = pl.DataFrame(load_restraint_prediction_timestamps()).select(
+        ["dw_ek_borger", "timestamp", "timestamp_admission"]
+    )
     return pred_times.join(admission_timestamps, on=["dw_ek_borger", "timestamp"], how="left")
+
 
 def parse_timestamp_from_uuid(df: pl.DataFrame, output_col_name: str = "timestamp") -> pl.DataFrame:
     return df.with_columns(
@@ -148,7 +151,6 @@ def parse_outcome_timestamps(df: pl.DataFrame) -> pl.DataFrame:
         suffix="_outcome",
         how="left",
     )
-    
 
     return eval_dataset
 
@@ -165,7 +167,6 @@ def add_age(df: pl.DataFrame, birthdays: pl.DataFrame, age_col_name: str = "age"
 
 def expand_eval_df_with_extra_cols(eval_df: pl.DataFrame) -> pd.DataFrame:
     birthdates = pl.from_pandas(birthdays())
-
 
     eval_df = parse_timestamp_from_uuid(eval_df)
     eval_df = parse_dw_ek_borger_from_uuid(eval_df)

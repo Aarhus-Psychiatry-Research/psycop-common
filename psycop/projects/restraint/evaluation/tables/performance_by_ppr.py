@@ -9,7 +9,6 @@ from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr
     get_true_positives,
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-
 from psycop.projects.restraint.evaluation.utils import (
     expand_eval_df_with_extra_cols,
     read_eval_df_from_disk,
@@ -231,7 +230,6 @@ def restraint_output_performance_by_ppr(
     save: bool = True,
     positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
     min_alert_days: None | int = None,
-    alternative_lookahead_days: int = 10,
 ) -> pd.DataFrame | None:
     eval_dataset = _df_to_eval_dataset(eval_df)
 

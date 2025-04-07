@@ -6,7 +6,6 @@ import plotnine as pn
 import polars as pl
 
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.projects.cvd.model_evaluation.single_run.auroc_by.auroc_by_model import auroc_by_model
 from psycop.projects.restraint.evaluation.utils import (
     add_age,
@@ -88,7 +87,9 @@ if __name__ == "__main__":
 
     best_experiment = "restraint_text_hyper"
     best_pos_rate = 0.05
-    df = read_eval_df_from_disk("E:/shared_resources/restraint/eval_runs/restraint_all_tuning_best_run_evaluated_on_test")
+    df = read_eval_df_from_disk(
+        "E:/shared_resources/restraint/eval_runs/restraint_all_tuning_best_run_evaluated_on_test"
+    )
     birthdays = pl.from_pandas(birthdays())
 
     plotnine_auroc_by_age(

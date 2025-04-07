@@ -4,9 +4,11 @@ import pandas as pd
 import plotnine as pn
 import polars as pl
 
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_evaluation.binary.time.periodic_data import roc_auc_by_periodic_time_df
-from psycop.projects.restraint.evaluation.utils import parse_timestamp_from_uuid, read_eval_df_from_disk
+from psycop.projects.restraint.evaluation.utils import (
+    parse_timestamp_from_uuid,
+    read_eval_df_from_disk,
+)
 
 
 def plotnine_auroc_by_month(
@@ -78,6 +80,8 @@ if __name__ == "__main__":
 
     best_experiment = "restraint_text_hyper"
     best_pos_rate = 0.05
-    df = read_eval_df_from_disk("E:/shared_resources/restraint/eval_runs/restraint_all_tuning_best_run_evaluated_on_test")
+    df = read_eval_df_from_disk(
+        "E:/shared_resources/restraint/eval_runs/restraint_all_tuning_best_run_evaluated_on_test"
+    )
 
     plotnine_auroc_by_month(auroc_by_month_model(df=df)).save(save_dir / "auroc_by_month.png")
