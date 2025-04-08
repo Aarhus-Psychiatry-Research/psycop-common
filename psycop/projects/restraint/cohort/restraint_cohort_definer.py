@@ -68,9 +68,11 @@ class RestraintCohortDefiner(CohortDefiner):
             pl.col(["dw_ek_borger", "datotid_start_sei", "typetekst_sei", "behandlingsomraade"])
         ).unique()
 
-        unfiltered_cohort = pl.LazyFrame(filtered_prediction_times.join(  # type: ignore
-            filtered_coercion_timestamps, how="left", on="dw_ek_borger"
-        ))
+        unfiltered_cohort = pl.LazyFrame(
+            filtered_prediction_times.join(  # type: ignore
+                filtered_coercion_timestamps, how="left", on="dw_ek_borger"
+            )
+        )
 
         excluded_cohort = filter_prediction_times(
             prediction_times=unfiltered_cohort,

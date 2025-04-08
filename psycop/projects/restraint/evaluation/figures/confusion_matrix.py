@@ -3,7 +3,6 @@ from pathlib import Path
 import pandas as pd
 import plotnine as pn
 
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
     ConfusionMatrix,
     get_confusion_matrix_cells_from_df,
@@ -91,7 +90,9 @@ if __name__ == "__main__":
 
     best_experiment = "restraint_text_hyper"
     best_pos_rate = 0.05
-    eval_df =  read_eval_df_from_disk("E:/shared_resources/restraint/eval_runs/restraint_all_tuning_best_run_evaluated_on_test").to_pandas()
+    eval_df = read_eval_df_from_disk(
+        "E:/shared_resources/restraint/eval_runs/restraint_all_tuning_best_run_evaluated_on_test"
+    ).to_pandas()
 
     plotnine_confusion_matrix(confusion_matrix_model(df=eval_df, positive_rate=best_pos_rate)).save(
         save_dir / "confusion_matrix.png"

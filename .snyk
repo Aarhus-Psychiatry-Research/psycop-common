@@ -2,6 +2,18 @@
 version: v1.25.1
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
+  SNYK-PYTHON-MLFLOW-9510841:
+    - '*':
+        reason: >-
+          Vulnerability in MLFlow service, which we do not provide. Exception
+          approved via Slack conversation on 2025-03-25.
+        created: 2025-04-02T015:02:00.000Z
+  SNYK-PYTHON-MLFLOW-9510934:
+    - '*':
+        reason: >-
+          Requires access to mlflow to exploit. Exception
+          approved via Slack conversation on 2025-03-25.
+        created: 2025-04-02T015:04:00.000Z
   SNYK-PYTHON-JUPYTERSERVER-6099119:
     - '*':
         reason: >-

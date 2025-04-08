@@ -5,7 +5,6 @@ import patchworklib as pw
 import polars as pl
 
 from psycop.common.feature_generation.loaders.raw import sql_load
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
 from psycop.projects.restraint.evaluation.figures.auroc import auroc_model, auroc_plot
 from psycop.projects.restraint.evaluation.figures.confusion_matrix import (
@@ -27,7 +26,10 @@ if TYPE_CHECKING:
 
 
 def plot_grid(
-    df: pl.DataFrame, outcome_timestamps: pl.DataFrame, first_letter_index: int, best_pos_rate: float
+    df: pl.DataFrame,
+    outcome_timestamps: pl.DataFrame,
+    first_letter_index: int,
+    best_pos_rate: float,
 ) -> pw.Bricks:
     plots = [
         auroc_plot(auroc_model(df.to_pandas())),
@@ -62,7 +64,9 @@ if __name__ == "__main__":
 
     best_experiment = "restraint_text_hyper"
     best_pos_rate = 0.05
-    df =  read_eval_df_from_disk("E:/shared_resources/restraint/eval_runs/restraint_all_tuning_best_run_evaluated_on_test")
+    df = read_eval_df_from_disk(
+        "E:/shared_resources/restraint/eval_runs/restraint_all_tuning_best_run_evaluated_on_test"
+    )
 
     outcome_timestamps = pl.DataFrame(
         sql_load(
@@ -70,6 +74,11 @@ if __name__ == "__main__":
         ).drop_duplicates()
     )
 
-    figure = plot_grid(df=df, outcome_timestamps=outcome_timestamps, first_letter_index=1, best_pos_rate=best_pos_rate)
+    figure = plot_grid(
+        df=df,
+        outcome_timestamps=outcome_timestamps,
+        first_letter_index=1,
+        best_pos_rate=best_pos_rate,
+    )
 
     figure.savefig(save_dir / "plot_grid.png")

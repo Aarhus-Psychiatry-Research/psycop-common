@@ -6,7 +6,6 @@ import plotnine as pn
 import polars as pl
 
 from psycop.common.feature_generation.loaders.raw import sql_load
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_sensitivity_by_timedelta_df,
 )
@@ -118,7 +117,9 @@ if __name__ == "__main__":
     save_dir.mkdir(parents=True, exist_ok=True)
 
     best_experiment = "restraint_text_hyper"
-    eval_df =  read_eval_df_from_disk("E:/shared_resources/restraint/eval_runs/restraint_all_tuning_best_run_evaluated_on_test")
+    eval_df = read_eval_df_from_disk(
+        "E:/shared_resources/restraint/eval_runs/restraint_all_tuning_best_run_evaluated_on_test"
+    )
 
     outcome_timestamps = pl.DataFrame(
         sql_load(
