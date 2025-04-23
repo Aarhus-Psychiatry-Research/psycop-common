@@ -5,9 +5,11 @@ import plotnine as pn
 import polars as pl
 
 from psycop.common.feature_generation.loaders.raw.load_demographic import sex_female
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.projects.cvd.model_evaluation.single_run.auroc_by.auroc_by_model import auroc_by_model
-from psycop.projects.restraint.evaluation.utils import parse_dw_ek_borger_from_uuid, read_eval_df_from_disk
+from psycop.projects.restraint.evaluation.utils import (
+    parse_dw_ek_borger_from_uuid,
+    read_eval_df_from_disk,
+)
 
 
 def plotnine_auroc_by_sex(df: pd.DataFrame, title: str = "AUROC by Sex") -> pn.ggplot:
@@ -68,7 +70,9 @@ if __name__ == "__main__":
 
     best_experiment = "restraint_text_hyper"
     best_pos_rate = 0.05
-    df =  read_eval_df_from_disk("E:/shared_resources/restraint/eval_runs/restraint_all_tuning_best_run_evaluated_on_test")
+    df = read_eval_df_from_disk(
+        "E:/shared_resources/restraint/eval_runs/restraint_all_tuning_best_run_evaluated_on_test"
+    )
     sex_df = pl.from_pandas(sex_female())
 
     plotnine_auroc_by_sex(auroc_by_sex_model(df=df, sex_df=sex_df)).save(

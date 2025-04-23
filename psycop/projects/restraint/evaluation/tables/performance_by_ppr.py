@@ -9,7 +9,6 @@ from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr
     get_true_positives,
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-
 from psycop.projects.restraint.evaluation.utils import (
     expand_eval_df_with_extra_cols,
     read_eval_df_from_disk,
@@ -102,18 +101,32 @@ def _get_admission_level_model_behavior_with_extended_lookahead(
         (df["pred"] == 1) & (df["days_from_pred_to_outcome"] <= alternative_lookahead_days)
     ]
 
-    all_positives_prior_to_outcome_within_alternative_lookahead = len(true_positive_given_alternative_lookahead[true_positive_given_alternative_lookahead.pred == 1])
-    unique_outcomes_with_positive_prior_to_otucome_within_alternative_lookahead = true_positive_given_alternative_lookahead.outcome_timestamps.nunique()
+    all_positives_prior_to_outcome_within_alternative_lookahead = len(
+        true_positive_given_alternative_lookahead[
+            true_positive_given_alternative_lookahead.pred == 1
+        ]
+    )
+    unique_outcomes_with_positive_prior_to_otucome_within_alternative_lookahead = (
+        true_positive_given_alternative_lookahead.outcome_timestamps.nunique()
+    )
 
     all_predictions_prior_to_outcome = df[df["days_from_pred_to_outcome"] <= 100000]
-    all_positives_prior_to_outcome = len(all_predictions_prior_to_outcome[all_predictions_prior_to_outcome.pred == 1])
-    unique_outcomes_with_positive_prior_to_otucome = all_predictions_prior_to_outcome.outcome_timestamps.nunique()
+    all_positives_prior_to_outcome = len(
+        all_predictions_prior_to_outcome[all_predictions_prior_to_outcome.pred == 1]
+    )
+    unique_outcomes_with_positive_prior_to_otucome = (
+        all_predictions_prior_to_outcome.outcome_timestamps.nunique()
+    )
 
-
-    all_predictions_for_admissions_without_outcomes = df[df['days_from_pred_to_outcome'].isna()]
-    all_truly_false_negatives = len(all_predictions_for_admissions_without_outcomes[all_predictions_for_admissions_without_outcomes.pred == 1])
+    all_predictions_for_admissions_without_outcomes = df[df["days_from_pred_to_outcome"].isna()]
+    all_truly_false_negatives = len(
+        all_predictions_for_admissions_without_outcomes[
+            all_predictions_for_admissions_without_outcomes.pred == 1
+        ]
+    )
 
     return all_positives_prior_to_outcome_within_alternative_lookahead
+
 
 def _get_number_of_outcome_events_with_at_least_one_true_positve(
     eval_dataset: EvalDataset, positive_rate: float, min_alert_days: None | int = 30
@@ -217,7 +230,6 @@ def restraint_output_performance_by_ppr(
     save: bool = True,
     positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
     min_alert_days: None | int = None,
-    alternative_lookahead_days: int = 10,
 ) -> pd.DataFrame | None:
     eval_dataset = _df_to_eval_dataset(eval_df)
 
@@ -257,11 +269,8 @@ def restraint_output_performance_by_ppr(
 
 
 if __name__ == "__main__":
-
     experiment_name = "restraint_all"
-    eval_dir = (
-        f"E:/shared_resources/restraint/eval_runs/{experiment_name}_tuning_best_run_evaluated_on_test"
-    )
+    eval_dir = f"E:/shared_resources/restraint/eval_runs/{experiment_name}_tuning_best_run_evaluated_on_test"
 
     restraint_output_performance_by_ppr(
         expand_eval_df_with_extra_cols(read_eval_df_from_disk(eval_dir)), eval_dir

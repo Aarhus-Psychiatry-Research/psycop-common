@@ -124,6 +124,10 @@ def filter_prediction_times(
         prediction_times = prediction_times.drop("date_of_birth")
 
     return FilteredPredictionTimeBundle(
-        prediction_times=PredictionTimeFrame(frame=prediction_times.collect(), entity_id_col_name=entity_id_col_name, timestamp_col_name=timestamp_col_name),
+        prediction_times=PredictionTimeFrame(
+            frame=prediction_times.collect(),
+            entity_id_col_name=entity_id_col_name,
+            timestamp_col_name=timestamp_col_name,
+        ),
         filter_steps=stepdeltas,
     )

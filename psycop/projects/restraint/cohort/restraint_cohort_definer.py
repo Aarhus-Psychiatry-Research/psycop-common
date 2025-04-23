@@ -66,11 +66,13 @@ class RestraintCohortDefiner(CohortDefiner):
             timestamp_col_name="datotid_start_sei",
         ).prediction_times.frame.select(  # type: ignore
             pl.col(["dw_ek_borger", "datotid_start_sei", "typetekst_sei", "behandlingsomraade"])
-        )
+        ).unique()
 
-        unfiltered_cohort = pl.LazyFrame(filtered_prediction_times.join(  # type: ignore
-            filtered_coercion_timestamps, how="left", on="dw_ek_borger"
-        ))
+        unfiltered_cohort = pl.LazyFrame(
+            filtered_prediction_times.join(  # type: ignore
+                filtered_coercion_timestamps, how="left", on="dw_ek_borger"
+            )
+        )
 
         excluded_cohort = filter_prediction_times(
             prediction_times=unfiltered_cohort,
@@ -113,7 +115,7 @@ class RestraintCohortDefiner(CohortDefiner):
             prediction_times=unfiltered_coercion_timestamps,
             filtering_steps=[RestraintForcedAdmissionFilter()],
             entity_id_col_name="dw_ek_borger",
-            timestamp_col_name="datotid_start",
+            timestamp_col_name="datotid_start_sei",
         ).prediction_times.frame.select(  # type: ignore
             ["dw_ek_borger", "datotid_start_sei", "typetekst_sei", "behandlingsomraade"]
         )
@@ -132,18 +134,18 @@ class RestraintCohortDefiner(CohortDefiner):
             how="left",
             left_on=["dw_ek_borger", "dato_start"],
             right_on=["dw_ek_borger", "datotid_start_sei"],
-        )
+        ).unique()
 
         filtered_forced_admissions_cohort = filter_prediction_times(
-            prediction_times=forced_admissions_cohort,
+            prediction_times=pl.LazyFrame(forced_admissions_cohort),
             filtering_steps=[RestraintDoubleAdmissionFilter()],
             entity_id_col_name="dw_ek_borger",
             timestamp_col_name="datotid_start",
-        ).prediction_times.select(  # type: ignore
+        ).prediction_times.frame.select(  # type: ignore
             ["dw_ek_borger", "datotid_start", "datotid_slut", "datotid_start_sei"]
         )
 
-        exploded_cohort = explode_admissions(filtered_forced_admissions_cohort)
+        exploded_cohort = explode_admissions(pl.LazyFrame(filtered_forced_admissions_cohort))
 
         filtered_exploded_cohort = filter_prediction_times(
             prediction_times=exploded_cohort,

@@ -1,5 +1,4 @@
 from optuna import Trial
-from sklearn.base import BaseEstimator
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.suggester_spaces import (
