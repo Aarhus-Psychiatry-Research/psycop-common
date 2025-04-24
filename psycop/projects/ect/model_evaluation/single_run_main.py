@@ -1,7 +1,9 @@
+from pathlib import Path
 import logging
 from typing import TYPE_CHECKING
 
 import patchworklib as pw
+import polars as pl
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame, MlflowClientWrapper
 from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
@@ -28,6 +30,7 @@ from psycop.projects.ect.model_evaluation.sensitivity_by_time_to_event.view impo
     SensitivityByTTEPlot,
 )
 from psycop.projects.ect.model_evaluation.single_run_artifact import SingleRunPlot
+from psycop.projects.restraint.evaluation.utils import read_eval_df_from_disk
 from psycop.projects.scz_bp.evaluation.configs import COLORS
 
 if TYPE_CHECKING:
@@ -39,15 +42,14 @@ log = logging.getLogger(__name__)
 
 
 def single_run_main(
-    main_eval_frame: EvalFrame,
+    eval_df: pl.DataFrame,
     group_auroc_experiments: ExperimentWithNames,
     desired_positive_rate: float,
     outcome_label: str,
     first_letter_index: int,
 ) -> pw.Bricks:
-    eval_df = main_eval_frame.frame
     eval_df_with_correct_time_to_outcome = add_first_ect_time_after_prediction_time(
-        main_eval_frame.frame
+        eval_df
     )
 
     plots: Sequence[SingleRunPlot] = [
@@ -94,40 +96,26 @@ if __name__ == "__main__":
     )
     MAIN_METRIC = "all_oof_BinaryAUROC"
 
-    main_eval_frame = (
-        MlflowClientWrapper()
-        .get_best_run_from_experiment(
-            experiment_name="ECT hparam, structured_text, xgboost, no lookbehind filter",
-            metric=MAIN_METRIC,
-        )
-        .eval_frame()
-    )
+    experiment = "ECT hparam, structured_only, xgboost, no lookbehind filter"
+
+    experiment_path = f"E:/shared_resources/ect/eval_runs/{experiment}_best_run_evaluated_on_test"
+    save_dir =  Path(experiment_path + "/figures") 
+    save_dir.mkdir(parents=True, exist_ok=True)
+
+
+    best_pos_rate = 0.05
+    structured_only_df = read_eval_df_from_disk(experiment_path)
+
     feature_sets = {
-        "Text only": (
-            MlflowClientWrapper()
-            .get_best_run_from_experiment(
-                experiment_name="ECT hparam, text_only, xgboost, no lookbehind filter",
-                metric=MAIN_METRIC,
-            )
-            .eval_frame()
-        ),
-        "Structured only": (
-            MlflowClientWrapper()
-            .get_best_run_from_experiment(
-                experiment_name="ECT hparam, structured_only, xgboost, no lookbehind filter",
-                metric=MAIN_METRIC,
-            )
-            .eval_frame()
-        ),
-        "Structured + text": main_eval_frame,
+        "Structured_only": structured_only_df,
     }
 
     figure = single_run_main(
-        main_eval_frame=main_eval_frame,
+        eval_df=structured_only_df,
         group_auroc_experiments=ExperimentWithNames(feature_sets),
         desired_positive_rate=0.05,
         outcome_label="ECT",
         first_letter_index=0,
     )
 
-    figure.savefig("test_ect_main.png")
+    figure.savefig(save_dir / "ect_main.png")
