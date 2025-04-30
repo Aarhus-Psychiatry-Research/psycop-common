@@ -1,4 +1,6 @@
 from joblib import Parallel, delayed
+from pathlib import Path
+from typing import Optional
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
@@ -10,20 +12,45 @@ def eval_stratified_split(
     cfg: PsycopConfig,
     training_end_date: str,
     evaluation_interval: tuple[str, str],
-    feature_set: str,
-) -> float:
+    experiment_name: str,
+
+    test_data_path: Optional[list[str]] = None,
+):
+    if test_data_path is None:
+
+        test_data_path = [
+            "E:/shared_resources/ect/feature_set/flattened_datasets/ect_feature_set/ect_feature_set.parquet"
+        ]
+    test_run_experiment_name = f"{experiment_name}_best_run_temporal_eval"
+
+    test_run_path = "E:/shared_resources/" + "/ect" + "/eval_runs/" + test_run_experiment_name
+
+    if Path(test_run_path).exists():
+        while True:
+            response = input(
+                f"This path '{test_run_path}' already exists. Do you want to potentially overwrite the contents of this folder with new feature sets? (yes/no): "
+            )
+
+            if response.lower() not in ["yes", "y", "no", "n"]:
+                print("Invalid response. Please enter 'yes/y' or 'no/n'.")
+            if response.lower() in ["no", "n"]:
+                print("Process stopped.")
+                return
+            if response.lower() in ["yes", "y"]:
+                print("Content of folder may be overwritten.")
+                break
+
+
+    
     outcome_col_name: str = cfg.retrieve("trainer.outcome_col_name")
 
-    # Python dicts are ordered, but we currently remove the timestamp column before generating predictions.
-    # Since we cannot insert at a given position in the ordering, we need to remove the timestamp filter,
-    # and then re-add it later.
     preprocessing_pipeline = cfg.rem(
         "trainer.preprocessing_pipeline.*.temporal_col_filter"
     ).retrieve("trainer.preprocessing_pipeline")
 
     # Setup for experiment
     cfg = (
-        cfg.mut("logger.*.mlflow.experiment_name", f"ECT, {feature_set} temporal validation")
+        cfg.mut("logger.*.mlflow.experiment_name", test_run_experiment_name)
         .add(
             "logger.*.mlflow.run_name",
             f"{training_end_date}_{evaluation_interval[0]}_{evaluation_interval[1]}",
@@ -97,20 +124,25 @@ def eval_stratified_split(
     return train_baseline_model_from_cfg(cfg)
 
 
+
 def evaluate_feature_set_and_year(
-    feature_set: str, train_end_year: int
-) -> tuple[int, dict[int, float]]:
+    feature_set: str, 
+    train_end_year: int,     
+) -> tuple[int, dict[int, float | None]]:
+
+
+    experiment_name = f"ECT-hparam-{feature_set}-xgboost-no-lookbehind-filter"
+
     evaluation_years = range(train_end_year, 22)
     year_aurocs = {
         y: eval_stratified_split(
             MlflowClientWrapper()
             .get_best_run_from_experiment(
-                experiment_name=f"ECT hparam, {feature_set}, xgboost, no lookbehind filter",
-                larger_is_better=True,
+                experiment_name=experiment_name, 
                 metric="all_oof_BinaryAUROC",
             )
             .get_config(),
-            feature_set=feature_set,
+            experiment_name=experiment_name,
             training_end_date=f"20{train_end_year}-01-01",
             evaluation_interval=(f"20{y}-01-01", f"20{y}-12-31"),
         )
@@ -119,23 +151,22 @@ def evaluate_feature_set_and_year(
     return train_end_year, year_aurocs
 
 
+
 if __name__ == "__main__":
     populate_baseline_registry()
+    feature_sets = ["structured_only", "text_only", "structured_text"]
+    train_end_years = range(16, 21)
 
+    # Create a list of all combinations of feature_set and train_end_year
+    combinations = [
+        (feature_set, train_end_year)
+        for feature_set in feature_sets
+        for train_end_year in train_end_years
+    ]
 
-feature_sets = ["structured_only", "text_only", "structured_text"]
-train_end_years = range(16, 21)
-
-# Create a list of all combinations of feature_set and train_end_year
-combinations = [
-    (feature_set, train_end_year)
-    for feature_set in feature_sets
-    for train_end_year in train_end_years
-]
-
-# compute in parallel across train end year and feature sets (15 workers)
-# can be flattened to be done across evaluation years as well but, meh
-results = Parallel(n_jobs=len(combinations))(
-    delayed(evaluate_feature_set_and_year)(feature_set=feature_set, train_end_year=train_end_year)
-    for feature_set, train_end_year in combinations
-)
+    # compute in parallel across train end year and feature sets (15 workers)
+    # can be flattened to be done across evaluation years as well but, meh
+    results = Parallel(n_jobs=len(combinations))(
+        delayed(evaluate_feature_set_and_year)(feature_set=feature_set, train_end_year=train_end_year)
+        for feature_set, train_end_year in combinations
+    )
