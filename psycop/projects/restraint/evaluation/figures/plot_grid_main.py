@@ -59,7 +59,7 @@ def plot_grid(
 
 
 if __name__ == "__main__":
-    save_dir = Path(__file__).parent / "figures"
+    save_dir = Path(__file__).parent 
     save_dir.mkdir(parents=True, exist_ok=True)
 
     best_experiment = "restraint_text_hyper"
@@ -81,4 +81,4 @@ if __name__ == "__main__":
         best_pos_rate=best_pos_rate,
     )
 
-    figure.savefig(save_dir / "plot_grid.png")
+    figure.savefig(save_dir / "restraint_plot_grid.png")

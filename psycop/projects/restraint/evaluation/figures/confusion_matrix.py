@@ -85,7 +85,7 @@ def confusion_matrix_model(df: pd.DataFrame, positive_rate: float) -> ConfusionM
 
 
 if __name__ == "__main__":
-    save_dir = Path(__file__).parent / "figures"
+    save_dir = Path(__file__).parent 
     save_dir.mkdir(parents=True, exist_ok=True)
 
     best_experiment = "restraint_text_hyper"
@@ -95,5 +95,5 @@ if __name__ == "__main__":
     ).to_pandas()
 
     plotnine_confusion_matrix(confusion_matrix_model(df=eval_df, positive_rate=best_pos_rate)).save(
-        save_dir / "confusion_matrix.png"
+        save_dir / "restraint_confusion_matrix.png"
     )

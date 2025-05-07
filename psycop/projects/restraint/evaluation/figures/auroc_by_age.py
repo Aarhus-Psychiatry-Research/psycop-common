@@ -82,7 +82,7 @@ def auroc_by_age_model(
 
 
 if __name__ == "__main__":
-    save_dir = Path(__file__).parent / "figures"
+    save_dir = Path(__file__).parent 
     save_dir.mkdir(parents=True, exist_ok=True)
 
     best_experiment = "restraint_text_hyper"
@@ -94,4 +94,4 @@ if __name__ == "__main__":
 
     plotnine_auroc_by_age(
         auroc_by_age_model(df=df, birthdays=birthdays, bins=[18, *range(20, 70, 10)])
-    ).save(save_dir / "auroc_by_age.png")
+    ).save(save_dir / "restraint_auroc_by_age.png")

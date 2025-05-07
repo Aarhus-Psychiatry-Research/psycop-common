@@ -65,7 +65,7 @@ def auroc_by_sex_model(df: pl.DataFrame, sex_df: pl.DataFrame) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    save_dir = Path(__file__).parent / "figures"
+    save_dir = Path(__file__).parent 
     save_dir.mkdir(parents=True, exist_ok=True)
 
     best_experiment = "restraint_text_hyper"
@@ -76,5 +76,5 @@ if __name__ == "__main__":
     sex_df = pl.from_pandas(sex_female())
 
     plotnine_auroc_by_sex(auroc_by_sex_model(df=df, sex_df=sex_df)).save(
-        save_dir / "auroc_by_sex.png"
+        save_dir / "restraint_auroc_by_sex.png"
     )

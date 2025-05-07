@@ -84,7 +84,7 @@ def auroc_model(df: pd.DataFrame, n_bootstraps: int = 5) -> AUROC:
 
 
 if __name__ == "__main__":
-    save_dir = Path(__file__).parent / "figures"
+    save_dir = Path(__file__).parent 
     save_dir.mkdir(parents=True, exist_ok=True)
 
     best_experiment = "restraint_text_hyper"
@@ -92,4 +92,4 @@ if __name__ == "__main__":
         "E:/shared_resources/restraint/eval_runs/restraint_all_tuning_best_run_evaluated_on_test"
     ).to_pandas()
 
-    auroc_plot(auroc_model(eval_data)).save(save_dir / "auroc.png")
+    auroc_plot(auroc_model(eval_data)).save(save_dir / "restraint_auroc.png")
