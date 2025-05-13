@@ -41,6 +41,11 @@ def hyperparameter_search(cfg: PsycopConfig):
             f"ECT-hparam-{feature_set}-xgboost-no-lookbehind-filter",
         )
 
+        cfg.mut(
+            "logger.*.disk_logger.run_path",
+            f"E:/shared_resources/ect/training/ECT-hparam-{feature_set}-xgboost-no-lookbehind-filter"
+        )
+        
         layer_regex = "|".join(features)
 
         cfg.mut(
