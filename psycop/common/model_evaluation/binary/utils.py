@@ -33,8 +33,8 @@ def _auroc_within_group(
             input_1=df["y"],
             input_2=df["y_hat_probs"],
         )
-        auroc_by_group["ci_lower"] = ci[0][0]
-        auroc_by_group["ci_upper"] = ci[0][1]
+        auroc_by_group["ci_lower"] = max(0.0, ci[0][0])
+        auroc_by_group["ci_upper"] = min(1.0, ci[0][1])
 
     return pd.DataFrame(auroc_by_group, index=[0])
 
@@ -74,9 +74,9 @@ def _sensitivity_within_group(
             input_1=df["y"],
             input_2=df["y_hat"],
         )
-        sensitivity_by_group["ci_lower"] = ci[0][0]
-        sensitivity_by_group["ci_upper"] = ci[0][1]
-
+        sensitivity_by_group["ci_lower"] = max(0.0, ci[0][0])
+        sensitivity_by_group["ci_upper"] = min(1.0, ci[0][1])
+        
     return pd.DataFrame(sensitivity_by_group, index=[0])
 
 
