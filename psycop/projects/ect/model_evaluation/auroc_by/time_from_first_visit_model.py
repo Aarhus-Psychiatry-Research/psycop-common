@@ -13,7 +13,6 @@ from psycop.projects.ect.model_evaluation.uuid_parsers import (
 TimeFromFirstVisitDF = NewType("TimeFromFirstVisitDF", pl.DataFrame)
 
 
-@shared_cache().cache()
 def auroc_by_time_from_first_visit_model(
     eval_frame: EvalFrame, all_visits_df: pl.DataFrame
 ) -> TimeFromFirstVisitDF:
@@ -41,3 +40,22 @@ def auroc_by_time_from_first_visit_model(
     )
 
     return TimeFromFirstVisitDF(pl.from_pandas(result_df))
+
+if __name__ == "__main__":
+
+
+    import polars as pl
+
+    from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits_to_psychiatry
+    from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
+        EvalFrame,
+    )
+    from psycop.projects.restraint.evaluation.utils import read_eval_df_from_disk
+
+    experiment = f"ECT-hparam-structured_only-xgboost-no-lookbehind-filter"
+    experiment_path = f"E:/shared_resources/ect/eval_runs/{experiment}_best_run_evaluated_on_test"
+    experiment_df = read_eval_df_from_disk(experiment_path)
+    eval_frame = EvalFrame(frame=experiment_df, allow_extra_columns=True)
+    all_visits_df=pl.from_pandas(physical_visits_to_psychiatry())
+
+    auroc_by_time_from_first_visit_model(eval_frame, all_visits_df)

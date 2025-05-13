@@ -2,6 +2,7 @@ from joblib import Parallel, delayed
 from pathlib import Path
 from typing import Optional
 
+
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
 from psycop.common.model_training_v2.config.config_utils import PsycopConfig

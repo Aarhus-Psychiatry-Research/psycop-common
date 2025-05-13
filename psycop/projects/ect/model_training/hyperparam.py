@@ -10,7 +10,7 @@ FEATURE_SETS = {
     "structured_only": [
         "basic",
         "contacts",
-        "ham-broeset",
+        "ham-broset",
         "diagnoses",
         "medication",
         "leave-suicide",
@@ -19,7 +19,7 @@ FEATURE_SETS = {
     "structured_text": [
         "basic",
         "contacts",
-        "ham-broeset",
+        "ham-broset",
         "diagnoses",
         "medication",
         "leave-suicide",
@@ -38,7 +38,7 @@ def hyperparameter_search(cfg: PsycopConfig):
     for feature_set, features in FEATURE_SETS.items():
         cfg.mut(
             "logger.*.mlflow.experiment_name",
-            f"ECT hparam, {feature_set}, xgboost, no lookbehind filter",
+            f"ECT-hparam-{feature_set}-xgboost-no-lookbehind-filter",
         )
 
         layer_regex = "|".join(features)

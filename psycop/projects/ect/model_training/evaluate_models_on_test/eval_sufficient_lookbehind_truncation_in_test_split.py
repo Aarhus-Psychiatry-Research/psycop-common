@@ -23,7 +23,7 @@ def eval_random_split_test_set(
         test_split = ["val"]
     if train_splits is None:
         train_splits = ["train"]
-    test_run_experiment_name = f"{experiment_name}_best_run_{test_run_name}"
+    test_run_experiment_name = f"insufficient_lookbheind_filter_{experiment_name}_best_run_{test_run_name}"
 
     test_run_path = "E:/shared_resources/" + "/ect" + "/eval_runs/" + test_run_experiment_name
 
@@ -84,6 +84,12 @@ def eval_random_split_test_set(
             "outcomestratified_split_filter",
         )
         .mut("trainer.validation_preprocessing_pipeline.*.split_filter.splits_to_keep", test_split)
+        .rem("trainer.validation_preprocessing_pipeline.*.temporal_col_filter")
+        .add("trainer.validation_preprocessing_pipeline.*.sufficient_lookbehind_filter.@preprocessing","window_filter",)
+        .add("trainer.validation_preprocessing_pipeline.*.sufficient_lookbehind_filter.timestamp_col_name","timestamp")
+        .add("trainer.validation_preprocessing_pipeline.*.sufficient_lookbehind_filter.n_days",730)
+        .add("trainer.validation_preprocessing_pipeline.*.sufficient_lookbehind_filter.direction","behind")
+        .add("trainer.validation_preprocessing_pipeline.*.temporal_col_filter.@preprocessing", "temporal_col_filter")
     )
 
     train_baseline_model_from_cfg(best_run_cfg)
@@ -92,8 +98,7 @@ def eval_random_split_test_set(
 if __name__ == "__main__":
     populate_baseline_registry()
 
-    feature_sets = ["structured_only", "text_only", "structured_text"]
+    feature_sets = ["structured_only"]
 
     for feature_set in feature_sets:
-        eval_random_split_test_set(experiment_name=f"ECT-hparam-{feature_set}-xgboost-no-lookbehind-filter",
-        train_splits = ["train", "val"], test_split=['test'])
+        eval_random_split_test_set(experiment_name=f"ECT-hparam-{feature_set}-xgboost-no-lookbehind-filter", train_splits = ["train", "val"],test_split=['test'])

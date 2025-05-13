@@ -5,8 +5,10 @@ from typing import TYPE_CHECKING
 import patchworklib as pw
 import polars as pl
 
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame, MlflowClientWrapper
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame
+
 from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
+from psycop.common.types.validated_frame import ValidatedFrame
 from psycop.projects.ect.feature_generation.cohort_definition.outcome_specification.combined import (
     add_first_ect_time_after_prediction_time,
 )
@@ -47,7 +49,11 @@ def single_run_main(
     desired_positive_rate: float,
     outcome_label: str,
     first_letter_index: int,
-) -> pw.Bricks:
+) -> pw.Bricks: 
+    
+    main_eval_df = EvalFrame(frame=eval_df, allow_extra_columns=True)
+    eval_df = main_eval_df.frame
+
     eval_df_with_correct_time_to_outcome = add_first_ect_time_after_prediction_time(
         eval_df
     )
@@ -58,11 +64,6 @@ def single_run_main(
             confusion_matrix_model(eval_df=eval_df, desired_positive_rate=desired_positive_rate),
             outcome_label=outcome_label,
         ),
-        SensitivityByTTEPlot(
-            outcome_label=outcome_label,
-            data=sensitivity_by_time_to_event_model(eval_df=eval_df_with_correct_time_to_outcome),
-            colors=COLORS,
-        ),
         FirstPosPredToEventPlot(
             data=first_positive_prediction_to_event_model(
                 eval_df=eval_df_with_correct_time_to_outcome,
@@ -70,6 +71,12 @@ def single_run_main(
             ),
             outcome_label=outcome_label,
         ),
+        SensitivityByTTEPlot(
+            outcome_label=outcome_label,
+            data=sensitivity_by_time_to_event_model(eval_df=eval_df_with_correct_time_to_outcome),
+            colors=COLORS,
+        ),
+
     ]
 
     ggplots: list[pn.ggplot] = []
@@ -96,18 +103,28 @@ if __name__ == "__main__":
     )
     MAIN_METRIC = "all_oof_BinaryAUROC"
 
-    experiment = "ECT hparam, structured_only, xgboost, no lookbehind filter"
+    experiment = "ECT-hparam-structured_only-xgboost-no-lookbehind-filter"
 
     experiment_path = f"E:/shared_resources/ect/eval_runs/{experiment}_best_run_evaluated_on_test"
     save_dir =  Path(experiment_path + "/figures") 
     save_dir.mkdir(parents=True, exist_ok=True)
 
-
     best_pos_rate = 0.05
-    structured_only_df = read_eval_df_from_disk(experiment_path)
+    structured_text_df = read_eval_df_from_disk(experiment_path)
+
+    #read other dfs
+    structured_only_experiment = "ECT-hparam-structured_only-xgboost-no-lookbehind-filter"
+    structured_only_experiment_path = f"E:/shared_resources/ect/eval_runs/{structured_only_experiment}_best_run_evaluated_on_test"
+    structured_only_df = read_eval_df_from_disk(structured_only_experiment_path)
+
+    text_only_experiment = "ECT-hparam-text_only-xgboost-no-lookbehind-filter"
+    text_only_experiment_path = f"E:/shared_resources/ect/eval_runs/{text_only_experiment}_best_run_evaluated_on_test"
+    text_only_df = read_eval_df_from_disk(text_only_experiment_path)
 
     feature_sets = {
-        "Structured_only": structured_only_df,
+        "Structured only": structured_only_df,
+        "Text only": text_only_df,
+        "Structured + text": structured_text_df,
     }
 
     figure = single_run_main(
@@ -118,4 +135,4 @@ if __name__ == "__main__":
         first_letter_index=0,
     )
 
-    figure.savefig(save_dir / "ect_main.png")
+    figure.savefig(save_dir / "ect_main_plot.png")

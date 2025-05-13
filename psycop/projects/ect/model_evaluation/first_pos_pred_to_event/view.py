@@ -25,7 +25,7 @@ class FirstPosPredToEventPlot(SingleRunPlot):
     outcome_label: str
     desired_positive_rate: float = 0.05
     fill_color: str = Colors.primary
-    max_days: int = 365
+    max_days: int = 100
 
     def __call__(self) -> pn.ggplot:
         plot_df = self.data.to_pandas()

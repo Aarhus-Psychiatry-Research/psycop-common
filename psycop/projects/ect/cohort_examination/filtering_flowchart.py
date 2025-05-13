@@ -1,8 +1,10 @@
-import pathlib
+from pathlib import Path
 from collections.abc import Sequence
+from tempfile import mkdtemp
 
 import polars as pl
 
+from confection import Config
 from psycop.common.cohort_definition import FilteredPredictionTimeBundle, StepDelta
 from psycop.common.global_utils.cache import shared_cache
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
@@ -10,6 +12,7 @@ from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
     PsycopMlflowRun,
     filled_cfg_from_run,
 )
+from psycop.common.model_training_v2.config.config_utils import PsycopConfig, resolve_and_fill_config
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 from psycop.common.model_training_v2.loggers.terminal_logger import TerminalLogger
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
@@ -19,6 +22,7 @@ from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
 from psycop.projects.ect.feature_generation.cohort_definition.ect_cohort_definition import (
     ect_pred_filtering,
 )
+from psycop.projects.restraint.evaluation.utils import read_eval_df_from_disk
 
 
 @shared_cache().cache
@@ -57,12 +61,13 @@ def _apply_preprocessing_pipeline(
 
 def filtering_flowchart_facade(
     prediction_time_bundle: FilteredPredictionTimeBundle,
-    run: PsycopMlflowRun,
-    output_dir: pathlib.Path,
+    cfg: PsycopConfig,
+    output_dir: Path,
 ):
-    cfg = run.get_config()
 
-    filled = filled_cfg_from_run(run, populate_registry_fns=[populate_baseline_registry])
+    tmp_cfg = Path(mkdtemp()) / "tmp.cfg"
+    cfg.to_disk(tmp_cfg)
+    filled = resolve_and_fill_config(tmp_cfg, fill_cfg_with_defaults=True)
 
     pipeline: BaselinePreprocessingPipeline = filled["trainer"].training_preprocessing_pipeline
     pipeline._logger = TerminalLogger()  # type: ignore
@@ -86,16 +91,22 @@ def filtering_flowchart_facade(
     lines.append(
         f"Without outcome: {len(flattened_data.filter(outcome_matcher.not_()).collect()):,}"
     )
-
+    
     # Output to a file
     (output_dir / "filtering_flowchart.csv").write_text("\n".join(lines))
 
 
-if __name__ == "__main__":
-    filtering_flowchart_facade(
-        prediction_time_bundle=ect_pred_filtering(),
-        run=MlflowClientWrapper().get_run(
-            "ECT hparam, structured_only, xgboost", "handsome-smelt-991"
-        ),
-        output_dir=pathlib.Path(__file__).parent,
-    )
+
+if __name__ == "__main_n":
+        experiment="ECT-hparam-structured_only-xgboost-no-lookbehind-filter"
+        experiment_path = f"E:/shared_resources/ect/eval_runs/{experiment}_best_run_evaluated_on_test"
+        experiment_df = read_eval_df_from_disk(experiment_path)
+        experiment_cfg = PsycopConfig(Config().from_disk
+                                      (path=Path(experiment_path) / 'config.cfg'))
+        
+        save_dir = Path(experiment_path + "/figures") 
+        save_dir.mkdir(parents=True, exist_ok=True)
+
+        filtering_flowchart_facade(
+            prediction_time_bundle=ect_pred_filtering(), cfg=experiment_cfg, output_dir=save_dir
+        )
