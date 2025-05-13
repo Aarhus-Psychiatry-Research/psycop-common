@@ -50,12 +50,12 @@ class EvalFrame(ValidatedFrame[pl.DataFrame]):
 
     y_col_rules: Sequence[ValidatorRule] = (
         ColumnExistsRule(),
-        ColumnTypeRule(expected_type=pl.Int64),
+        ColumnTypeRule(expected_type=[pl.Int64, pl.Int32]),
     )
 
     y_hat_prob_col_rules: Sequence[ValidatorRule] = (
         ColumnExistsRule(),
-        ColumnTypeRule(expected_type=pl.Float64),
+        ColumnTypeRule(expected_type=[pl.Float64, pl.Float32]),
     )
 
 
