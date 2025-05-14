@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 import patchworklib as pw
 import polars as pl
@@ -61,11 +61,11 @@ def plot_grid(
 if __name__ == "__main__":
     save_dir = Path(__file__).parent 
     save_dir.mkdir(parents=True, exist_ok=True)
-
-    best_experiment = "restraint_text_hyper"
+    #     restraint_type: Literal["mechanical", "split", "all"]
+    restraint_type = "mechanical"
     best_pos_rate = 0.05
     df = read_eval_df_from_disk(
-        "E:/shared_resources/restraint/eval_runs/restraint_all_tuning_best_run_evaluated_on_test"
+        f"E:/shared_resources/restraint/eval_runs/restraint_{restraint_type}_tuning_30_days_best_run_30_days_x2"
     )
 
     outcome_timestamps = pl.DataFrame(
@@ -81,4 +81,4 @@ if __name__ == "__main__":
         best_pos_rate=best_pos_rate,
     )
 
-    figure.savefig(save_dir / "restraint_plot_grid.png")
+    figure.savefig(save_dir / f"restraint_{restraint_type}_plot_grid_30_days_x2.png")
