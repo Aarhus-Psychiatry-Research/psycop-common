@@ -1,10 +1,10 @@
 sentence-transformers==3.1.0
 #torch==1.13.1
-torch==2.2.0
-lightning==2.1.0
+torch==2.6.0
+lightning==2.5.1.post
 # to install CUDA enabled torch on overtaci, use the following line
 # conda install pytorch=2.2.0 pytorch-cuda=12.1 -c https://exrhel0371.it.rm.dk/api/repo/pytorch -c https://exrhel0371.it.rm.dk/api/repo/nvidia -c https://exrhel0371.it.rm.dk/api/repo/anaconda --override-channels --insecure
-transformers==4.48.0
+transformers==4.50.0
 torchmetrics==1.1.2
 # synthcity==0.2.9 # currently forces a downgrade torch to 1.3.1..
 
