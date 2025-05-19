@@ -21,7 +21,8 @@ if TYPE_CHECKING:
 
 @BaselineRegistry.metrics.register("binary_ppv")
 class BinaryPPV(BinaryMetric):
-    def __init__(self) -> None:
+    def __init__(self, positive_rate: float) -> None:
+        self.positive_rate = positive_rate
         pass
 
     def calculate(
@@ -29,10 +30,9 @@ class BinaryPPV(BinaryMetric):
         y: pd.Series,  # type: ignore
         y_hat_prob: PredProbaSeries,
         name_prefix: str | None = None,
-        positive_rate: float | None = None,
     ) -> CalculatedMetric:
         y_hat = get_predictions_for_positive_rate(
-            desired_positive_rate=positive_rate,  # type: ignore
+            desired_positive_rate=self.positive_rate,  # type: ignore
             y_hat_probs=y_hat_prob,  # type: ignore
         )[0]
 
