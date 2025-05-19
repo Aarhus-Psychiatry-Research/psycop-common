@@ -23,7 +23,6 @@ if TYPE_CHECKING:
 class BinaryPPV(BinaryMetric):
     def __init__(self, positive_rate: float) -> None:
         self.positive_rate = positive_rate
-        pass
 
     def calculate(
         self,
