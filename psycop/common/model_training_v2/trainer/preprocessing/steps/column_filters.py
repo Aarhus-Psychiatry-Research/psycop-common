@@ -11,9 +11,11 @@ from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitS
 @BaselineRegistry.preprocessing.register("lookbehind_combination_col_filter")
 class LookbehindCombinationColFilter(PresplitStep):
     def __init__(self, lookbehinds: str, pred_col_prefix: str):
-        self.lookbehinds = ast.literal_eval(lookbehinds)
+        self.lookbehinds = {
+            f"within_{lookbehind}_days" for lookbehind in ast.literal_eval(lookbehinds)
+        }
         self.pred_col_prefix = pred_col_prefix
-        self.lookbehind_pattern = r"within_(\d+)_days"
+        self.lookbehind_pattern = r"(within_\d+_days)"
 
     def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
         pred_cols_with_lookbehind = [
@@ -23,7 +25,7 @@ class LookbehindCombinationColFilter(PresplitStep):
         ]
 
         lookbehinds_in_dataset = {
-            int(re.findall(pattern=self.lookbehind_pattern, string=col)[0])
+            re.findall(pattern=self.lookbehind_pattern, string=col)[0]
             for col in pred_cols_with_lookbehind
         }
 
@@ -52,7 +54,7 @@ class LookbehindCombinationColFilter(PresplitStep):
         return input_df.drop(cols_to_drop)
 
     def _cols_with_lookbehind_not_in_lookbehinds(
-        self, pred_cols_with_lookbehind: list[str], lookbehinds_to_keep: set[int]
+        self, pred_cols_with_lookbehind: list[str], lookbehinds_to_keep: set[str]
     ) -> list[str]:
         """Identify columns that have a lookbehind that is not in lookbehinds_to_keep."""
         return [
