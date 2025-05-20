@@ -31,6 +31,6 @@ def test_binary_auroc(y: pd.Series[int], y_hat_prob: PredProbaSeries, expected: 
 
 @pytest.mark.parametrize(("y", "y_hat_prob", "expected"), pred_series)
 def test_binary_ppv(y: pd.Series[int], y_hat_prob: PredProbaSeries, expected: float):
-    ppv = BinaryPPV()
-    calculated_metric = ppv.calculate(y=y, y_hat_prob=y_hat_prob, positive_rate=0.5)
+    ppv = BinaryPPV(positive_rate=0.5)
+    calculated_metric = ppv.calculate(y=y, y_hat_prob=y_hat_prob)
     assert calculated_metric.value == expected
