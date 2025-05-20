@@ -132,7 +132,7 @@ def test_v2_additional_metrics_pipeline(tmp_path: Path):
                 )
             ),
             metric=BinaryAUROC(),
-            additional_metrics=[BinaryPPV(positive_rate=0.5)],
+            additional_metrics=BinaryPPV(positive_rate=0.5),
             n_splits=2,
         ),
     )

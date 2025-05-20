@@ -25,7 +25,7 @@ class SplitTrainerSeparatePreprocessing(BaselineTrainer):
     validation_preprocessing_pipeline: PreprocessingPipeline
     task: BaselineTask
     metric: BaselineMetric
-    additional_metrics: list[BaselineMetric] | None = None
+    additional_metrics: BaselineMetric | None = None
 
     # When using sklearn pipelines, the outcome column must retain its name
     # throughout the pipeline.
@@ -66,12 +66,11 @@ class SplitTrainerSeparatePreprocessing(BaselineTrainer):
         self._log_sklearn_pipe()
 
         if self.additional_metrics:
-            for metric in self.additional_metrics:
-                additional_metric = metric.calculate(
-                    y=validation_data_preprocessed[self.validation_outcome_col_name],
-                    y_hat_prob=y_hat_prob,
-                )
-                self.logger.log_metric(additional_metric)
+            additional_metric = self.additional_metrics.calculate(
+                y=validation_data_preprocessed[self.validation_outcome_col_name],
+                y_hat_prob=y_hat_prob,
+            )
+            self.logger.log_metric(additional_metric)
 
         eval_df = pl.DataFrame(
             {
@@ -97,7 +96,7 @@ class SplitTrainer(BaselineTrainer):
     preprocessing_pipeline: PreprocessingPipeline
     task: BaselineTask
     metric: BaselineMetric
-    additional_metrics: list[BaselineMetric] | None = None
+    additional_metrics: BaselineMetric | None = None
 
     # When using sklearn pipelines, the outcome column must retain its name
     # throughout the pipeline.
