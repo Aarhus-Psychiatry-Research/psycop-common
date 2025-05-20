@@ -11,7 +11,9 @@ from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitS
 @BaselineRegistry.preprocessing.register("lookbehind_combination_col_filter")
 class LookbehindCombinationColFilter(PresplitStep):
     def __init__(self, lookbehinds: str, pred_col_prefix: str):
-        self.lookbehinds = {f"within_{lookbehind}_days" for lookbehind in ast.literal_eval(lookbehinds)}
+        self.lookbehinds = {
+            f"within_{lookbehind}_days" for lookbehind in ast.literal_eval(lookbehinds)
+        }
         self.pred_col_prefix = pred_col_prefix
         self.lookbehind_pattern = r"(within_\d+_days)"
 
