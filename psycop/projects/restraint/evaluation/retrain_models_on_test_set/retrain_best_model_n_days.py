@@ -87,7 +87,7 @@ def retrain_best_model(
             data_split_filter,
         )
         .mut("trainer.training_preprocessing_pipeline.*.split_filter.splits_to_keep", train_splits)
-        .add("trainer.metric", "binary_ppv")
+        .mut("trainer.metric", {"@metrics": "binary_auroc", "@metrics": "binary_ppv", "positive_rate": 0.5})
     )
 
     best_run_cfg = (
