@@ -75,7 +75,7 @@ if __name__ == "__main__":
     )
     from psycop.projects.restraint.evaluation.utils import read_eval_df_from_disk
 
-    experiment = f"ECT-hparam-structured_only-xgboost-no-lookbehind-filter"
+    experiment = f"ECT-trunc-and-hp-structured_only-xgboost-no-lookbehind-filter"
     experiment_path = f"E:/shared_resources/ect/eval_runs/{experiment}_best_run_evaluated_on_test"
     experiment_df = read_eval_df_from_disk(experiment_path)
     eval_frame = EvalFrame(frame=experiment_df, allow_extra_columns=True)

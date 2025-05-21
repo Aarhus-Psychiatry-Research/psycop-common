@@ -8,7 +8,7 @@ from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 
 
-def eval_random_split_test_set(
+def eval_geographic_split_test_set(
     experiment_name: str,
     train_splits: Optional[list[str]] = None,
     test_split: Optional[list[str]] = None,
@@ -117,4 +117,4 @@ if __name__ == "__main__":
     feature_sets = ["structured_only", "text_only", "structured_text"]
 
     for feature_set in feature_sets:
-        eval_random_split_test_set(experiment_name=f"ECT-hparam-{feature_set}-xgboost-no-lookbehind-filter",)
+        eval_geographic_split_test_set(experiment_name=f"ECT-trunc-and-hp-{feature_set}-xgboost-no-lookbehind-filter",)

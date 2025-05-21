@@ -101,4 +101,4 @@ if __name__ == "__main__":
     feature_sets = ["structured_only"]
 
     for feature_set in feature_sets:
-        eval_random_split_test_set(experiment_name=f"ECT-hparam-{feature_set}-xgboost-no-lookbehind-filter", train_splits = ["train", "val"],test_split=['test'])
+        eval_random_split_test_set(experiment_name=f"ECT-trunc-and-hp-{feature_set}-xgboost-no-lookbehind-filter", train_splits = ["train", "val"],test_split=['test'])

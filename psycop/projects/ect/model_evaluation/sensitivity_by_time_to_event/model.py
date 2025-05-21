@@ -15,7 +15,6 @@ from psycop.common.model_training.training_output.dataclasses import (
 SensitivityByTTEDF = NewType("SensitivityByTTEDF", pl.DataFrame)
 
 
-@shared_cache().cache()
 def sensitivity_by_time_to_event_model(
     eval_df: pl.DataFrame, pprs: Sequence[float] = (0.01, 0.02, 0.03)
 ) -> SensitivityByTTEDF:

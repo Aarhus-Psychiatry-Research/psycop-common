@@ -131,7 +131,7 @@ def single_run_facade(
     output_path: Path, main_run_eval_df: pl.DataFrame, main_run_cfg: PsycopConfig, main_run_pipeline: Pipeline, group_auroc_experiments: ExperimentWithNames
 ) -> None:
     cfg = main_run_cfg
-    eval_df= main_run_eval_df
+    eval_df = main_run_eval_df
 
     lookahead_days_str = re.findall(
         r".+_to_(\d+)_days.+", cfg["trainer"]["training_outcome_col_name"]
@@ -197,16 +197,16 @@ if __name__ == "__main__":
         datefmt="%Y/%m/%d %H:%M:%S",
     )
 
-    structured_text_experiment = "ECT-hparam-structured_text-xgboost-no-lookbehind-filter"
+    structured_text_experiment = "ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter"
     structured_text_experiment_path = f"E:/shared_resources/ect/eval_runs/{structured_text_experiment}_best_run_evaluated_on_test"
     structured_text_df = read_eval_df_from_disk(structured_text_experiment_path)
 
     #read other dfs
-    structured_only_experiment = "ECT-hparam-structured_only-xgboost-no-lookbehind-filter"
+    structured_only_experiment = "ECT-trunc-and-hp-structured_only-xgboost-no-lookbehind-filter"
     structured_only_experiment_path = f"E:/shared_resources/ect/eval_runs/{structured_only_experiment}_best_run_evaluated_on_test"
     structured_only_df = read_eval_df_from_disk(structured_only_experiment_path)
 
-    text_only_experiment = "ECT-hparam-text_only-xgboost-no-lookbehind-filter"
+    text_only_experiment = "ECT-trunc-and-hp-text_only-xgboost-no-lookbehind-filter"
     text_only_experiment_path = f"E:/shared_resources/ect/eval_runs/{text_only_experiment}_best_run_evaluated_on_test"
     text_only_df = read_eval_df_from_disk(text_only_experiment_path)
 
@@ -219,7 +219,7 @@ if __name__ == "__main__":
 
     for feature_set_name in feature_sets:
 
-        experiment = f"ECT-hparam-{feature_set_name}-xgboost-no-lookbehind-filter"
+        experiment = f"ECT-trunc-and-hp-{feature_set_name}-xgboost-no-lookbehind-filter"
         experiment_path = f"E:/shared_resources/ect/eval_runs/{experiment}_best_run_evaluated_on_test"
         experiment_df = read_eval_df_from_disk(experiment_path)
         experiment_cfg = PsycopConfig(Config().from_disk(path=Path(experiment_path) / 'config.cfg'))

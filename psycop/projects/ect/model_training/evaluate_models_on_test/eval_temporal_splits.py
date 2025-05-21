@@ -132,7 +132,7 @@ def evaluate_feature_set_and_year(
 ) -> tuple[int, dict[int, float | None]]:
 
 
-    experiment_name = f"ECT-hparam-{feature_set}-xgboost-no-lookbehind-filter"
+    experiment_name = f"ECT-trunc-and-hp-{feature_set}-xgboost-no-lookbehind-filter"
 
     evaluation_years = range(train_end_year, 22)
     year_aurocs = {
