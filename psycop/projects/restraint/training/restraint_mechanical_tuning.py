@@ -14,7 +14,7 @@ if __name__ == "__main__":
     OptunaHyperParameterOptimization().from_file(
         (Path(__file__).parent / "configs" / "tuning" / "restraint_mechanical_tuning.cfg"),
         study_name="restraint_mechanical_tuning_v3",
-        n_trials=250,
+        n_trials=200,
         n_jobs=10,
         direction="maximize",
         catch=(),  # type: ignore

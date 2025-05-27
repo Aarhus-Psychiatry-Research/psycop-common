@@ -66,6 +66,7 @@ def populate_baseline_registry() -> None:
         SufficientWindowFilterSuggester,
         LookbehindCombinationFilterSuggester,
         BlacklistFilterSuggester,
+        ValueFilterSuggester,
     )
 
     # Tasks

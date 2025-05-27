@@ -4,11 +4,12 @@ from typing import Optional
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
+from psycop.common.model_training_v2.hyperparameter_suggester.optuna_hyperparameter_search import OptunaHyperParameterOptimization
 
 
 def retrain_best_model(
     experiment_name: str,
-    n_days: int,
+    threshold_value: float,
     split_outcome: bool = False,
     train_splits: Optional[list[str]] = None,
     test_split: Optional[list[str]] = None,
@@ -28,21 +29,6 @@ def retrain_best_model(
     test_run_experiment_name = f"{experiment_name}_best_run_{test_run_name}"
 
     test_run_path = "E:/shared_resources/" + "/restraint" + "/eval_runs/" + test_run_experiment_name
-
-    if Path(test_run_path).exists():
-        while True:
-            response = input(
-                f"This path '{test_run_path}' already exists. Do you want to potentially overwrite the contents of this folder with new feature sets? (yes/no): "
-            )
-
-            if response.lower() not in ["yes", "y", "no", "n"]:
-                print("Invalid response. Please enter 'yes/y' or 'no/n'.")
-            if response.lower() in ["no", "n"]:
-                print("Process stopped.")
-                return
-            if response.lower() in ["yes", "y"]:
-                print("Content of folder may be overwritten.")
-                break
 
     best_run_cfg = (
         MlflowClientWrapper()
@@ -87,7 +73,6 @@ def retrain_best_model(
             data_split_filter,
         )
         .mut("trainer.training_preprocessing_pipeline.*.split_filter.splits_to_keep", train_splits)
-        .mut("trainer.metric", {"@metrics": "binary_auroc", "@metrics": "binary_ppv", "positive_rate": 0.5})
     )
 
     best_run_cfg = (
@@ -102,25 +87,20 @@ def retrain_best_model(
             data_split_filter,
         )
         .mut("trainer.validation_preprocessing_pipeline.*.split_filter.splits_to_keep", test_split)
-        .add("trainer.validation_preprocessing_pipeline.*.30_day_filter", {
+        .add("trainer.validation_preprocessing_pipeline.*.n_days_filter", {
             "@preprocessing": "value_filter", 
             "column_name": "pred_adm_day_count", 
-            "threshold_value": n_days+2,
+            "threshold_value": threshold_value,
             "direction": "before"})
-        .add("trainer.validation_preprocessing_pipeline.*.remove_pred_adm_day_count", {
-            "@preprocessing": "regex_column_blacklist", 
-            "*": ["pred_adm_day_count"]})
+        # .add("trainer.validation_preprocessing_pipeline.*.remove_pred_adm_day_count", {
+        #     "@preprocessing": "regex_column_blacklist", 
+        #     "*": ["pred_adm_day_count"]})
     )
 
-    metrics = train_baseline_model_from_cfg(best_run_cfg)
-
-    with open("E:/shared_resources/restraint/eval_runs/logfile.txt", "w") as logfile:
-        logfile.write(f"{experiment_name}, {n_days}, {metrics}")
+    train_baseline_model_from_cfg(best_run_cfg)
 
 if __name__ == "__main__":
-    
-    n_days=30
 
-    retrain_best_model(experiment_name="restraint_all_tuning", n_days=n_days, test_run_name=f"{n_days}_days", test_data_path=["E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"])
-    retrain_best_model(experiment_name="restraint_mechanical_tuning", n_days=n_days, test_run_name=f"{n_days}_days", test_data_path=["E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"])
-    retrain_best_model(experiment_name="restraint_split_tuning", n_days=n_days, split_outcome=True, test_run_name=f"{n_days}_days", test_data_path=["E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"])
+    retrain_best_model(experiment_name="restraint_all_tuning_v2", train_splits=["train", "val"], test_split=["test"], threshold_value=20, test_run_name="n_days", test_data_path=["E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"])
+    # retrain_best_model(experiment_name="restraint_mechanical_tuning_30_days", threshold_value=14, test_run_name="restraint_mechanical_n_days_exp", test_data_path=["E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"])
+    # retrain_best_model(experiment_name="restraint_split_tuning_v2",  low=3, high=30, test_run_name="n_days", split_outcome=True, test_data_path=["E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"])

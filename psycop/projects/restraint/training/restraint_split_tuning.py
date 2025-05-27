@@ -12,10 +12,10 @@ if __name__ == "__main__":
     populate_baseline_registry()
     populate_with_restraint_registry()
     OptunaHyperParameterOptimization().from_file(
-        (Path(__file__).parent / "configs" / "tuning" / "restraint_split_tuning_cont.cfg"),
-        study_name="restraint_split_tuning_v2",
-        n_trials=200,
-        n_jobs=10,
+        (Path(__file__).parent / "configs" / "tuning" / "restraint_split_tuning.cfg"),
+        study_name="restraint_split_tuning_v5",
+        n_trials=5,
+        n_jobs=5,
         direction="maximize",
         catch=(),  # type: ignore
     )
