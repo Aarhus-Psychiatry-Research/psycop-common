@@ -14,7 +14,6 @@ def populate_baseline_registry() -> None:
     # Estimator steps
     from ..trainer.task.estimator_steps.logistic_regression import logistic_regression_step
     from ..trainer.task.estimator_steps.xgboost import xgboost_classifier_step
-    from ..trainer.task.estimator_steps.lightgbm import lightgbm_classifier_step
     from ..trainer.task.estimator_steps.imputers import (
         noop_imputation_step,
         simple_imputation_step,
@@ -66,6 +65,7 @@ def populate_baseline_registry() -> None:
         BinaryClassificationPipeline,
     )
     from ..trainer.task.binary_classification.binary_metrics.binary_auroc import BinaryAUROC
+    from ..trainer.task.binary_classification.binary_metrics.binary_ppv import BinaryPPV
 
     # Trainers
     from ..trainer.cross_validator_trainer import CrossValidatorTrainer

@@ -23,4 +23,4 @@ def create_encoder_layer(
 
 @SequenceRegistry.layers.register("transformer_encoder")
 def create_transformers_encoder(num_layers: int, encoder_layer: nn.Module) -> nn.Module:
-    return nn.TransformerEncoder(encoder_layer, num_layers=num_layers)
+    return nn.TransformerEncoder(encoder_layer, num_layers=num_layers)  # type: ignore

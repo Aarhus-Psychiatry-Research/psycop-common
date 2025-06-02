@@ -14,7 +14,7 @@ if __name__ == "__main__":
     populate_baseline_registry()
     populate_with_cvd_registry()
 
-    cfg = PsycopConfig().from_disk(Path(__file__).parent / "cvd_baseline.cfg")
+    cfg = PsycopConfig().from_disk(Path(__file__).parent / "ect_baseline.cfg")
 
     train_with_score2(cfg=copy.deepcopy(cfg))
     train_cvd_layers(cfg=copy.deepcopy(cfg))

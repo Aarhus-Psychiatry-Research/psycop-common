@@ -4,12 +4,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import pandas as pd
-
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+
+    import pandas as pd
 
     from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 
@@ -98,11 +98,11 @@ def load_text_sfis(
 
     df = df.rename({"datotid_senest_aendret_i_sfien": "timestamp", "fritekst": "value"}, axis=1)
 
-    return sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
+    return df
 
 
 def load_text_split(
-    text_sfi_names: str | Iterable[str],
+    text_sfi_names: str | Iterable[str] | None,
     split_ids_presplit_step: PresplitStep,
     include_sfi_name: bool = False,
     n_rows: int | None = None,
@@ -118,7 +118,18 @@ def load_text_split(
     Returns:
         pd.DataFrame: Chosen sfis from chosen splits
     """
-    text_df = load_text_sfis(text_sfi_names=text_sfi_names, include_sfi_name=include_sfi_name)
+
+    text_df = (
+        load_text_sfis(
+            text_sfi_names=text_sfi_names, include_sfi_name=include_sfi_name, n_rows=None
+        )
+        if text_sfi_names
+        else load_all_notes(n_rows=None, include_sfi_name=include_sfi_name)
+    )
+
+    text_df = text_df.rename(
+        {"datotid_senest_aendret_i_sfien": "timestamp", "fritekst": "value"}, axis=1
+    )
 
     text_split_df = (
         split_ids_presplit_step.apply(pl.from_pandas(text_df).lazy()).collect().to_pandas()
@@ -147,14 +158,14 @@ def load_all_notes(n_rows: int | None = None, include_sfi_name: bool = False) ->
 
 def load_preprocessed_sfis(
     text_sfi_names: set[str] | None = None,
-    corpus_name: str = "clozapine_train_val_all_sfis_preprocessed",
+    corpus_name: str = "psycop_clozapine_train_val_all_sfis_preprocessed",
 ) -> pd.DataFrame:
     """Returns preprocessed sfis from preprocessed view/SQL table that includes the "overskrift" column.
     Preprocessed views are created using the function text_preprocessing_pipeline under text_models/preprocessing.
 
     Args:
         text_sfi_names (str | list[str] | set[str] | None): Sfis to include.  Defaults to None, which includes all sfis.
-        corpus_name (str, optional): Name of parquet with preprocessed sfis. Defaults to "psycop.train_val_all_sfis_preprocessed".
+        corpus_name (str, optional): Name of parquet with preprocessed sfis. Defaults to "psycop_clozapine_train_val_all_sfis_preprocessed".
         n_rows (int | None, optional): Number of rows to include. Defaults to None, which includes all rows.
 
     Returns:
@@ -162,17 +173,15 @@ def load_preprocessed_sfis(
     """
 
     # load corpus
-    # if not text_sfi_names, include all sfis
-    if not text_sfi_names:
-        corpus = pd.read_parquet(
-            path=f"E:/shared_resources/clozapine/preprocessed_text/{corpus_name}.parquet"
-        )
-    # if text_sfi_names, include only chosen sfis
-    else:
-        filter_list = [[("overskrift", "=", f"{sfi}")] for sfi in text_sfi_names]
-        corpus = pd.read_parquet(
-            path=f"E:/shared_resources/clozapine/preprocessed_text/{corpus_name}.parquet",
-            filters=filter_list,
-        )
+    # load corpus
+    view = f"[{corpus_name}]"
+    sql = f"SELECT * FROM [fct].{view}"
+
+    if text_sfi_names:
+        sfis_to_keep = ", ".join("?" for _ in text_sfi_names)
+
+        sql += f" WHERE overskrift IN ({sfis_to_keep})"
+
+    corpus = sql_load(query=sql, server="BI-DPA-PROD", database="USR_PS_Forsk", n_rows=None)
 
     return corpus
