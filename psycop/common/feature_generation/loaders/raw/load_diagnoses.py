@@ -1303,6 +1303,9 @@ def f9_disorders(
     shak_sql_operator: str | None = None,
     timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
+    log.warning(
+        "This is a deprecated loader which also loads F99* disorders. Consider replacing with the 'f9_disorders_without_f99()' loader."
+    )
     return from_contacts(
         icd_code="f9",
         wildcard_icd_code=True,
