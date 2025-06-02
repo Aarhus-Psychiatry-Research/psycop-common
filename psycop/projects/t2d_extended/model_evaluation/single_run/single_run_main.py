@@ -112,7 +112,7 @@ if __name__ == "__main__":
         desired_positive_rate=0.05,
         outcome_label="t2d",
         outcome_timestamps=outcome_timestamps,
-        first_letter_index=1,
+        first_letter_index=0,
     )
 
     figure.savefig(f"t2d-extended_{run_name}_main.png")

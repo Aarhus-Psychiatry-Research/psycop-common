@@ -23,6 +23,10 @@ class SensitivityByTTEPlot(SingleRunPlot):
             ordered=True,  # type: ignore
         )
 
+        # Filter to include only the first four categories
+        first_four_categories = categories[:4]
+        df = df[df["unit_from_event_binned"].isin(first_four_categories)]
+
         p = (
             pn.ggplot(
                 df,
