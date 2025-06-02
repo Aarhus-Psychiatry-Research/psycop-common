@@ -157,7 +157,7 @@ def load_from_codes(
     output_col_name: str | None = None,
     match_with_wildcard: bool = True,
     n_rows: int | None = None,
-    exclude_codes: list[str] | None = None,
+    exclude_atc_codes: list[str] | None = None,
     administration_route: str | None = None,
     administration_method: str | None = None,
     fixed_doses: tuple[int, ...] | None = None,
@@ -185,7 +185,7 @@ def load_from_codes(
         match_with_wildcard (bool, optional): Whether to match on icd_code* / atc_code*.
             Defaults to true.
         n_rows: Number of rows to return. Defaults to None.
-        exclude_codes (list[str], optional): Drop rows if their code is in this list. Defaults to None.
+        exclude_atc_codes (list[str], optional): Drop rows if their code is in this list. Defaults to None. NB: Should only be used for medications!
         administration_route (str, optional): Whether to subset by a specific administration route, e.g. 'OR', 'IM' or 'IV'. Defaults to None.
         administration_method (str, optional): Whether to subset by method of administration, e.g. 'PN' or 'Fast'. Defaults to None.
         fixed_doses ( tuple(int), optional): Whether to subset by specific doses. Doses are set as micrograms (e.g., 100 mg = 100000). Defaults to None which return all doses. Find standard dosage for medications on pro.medicin.dk.
@@ -335,9 +335,9 @@ def load_from_codes(
 
     df = sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
 
-    if exclude_codes:
-        # Drop all rows whose code_col_name is in exclude_codes
-        df = df[~df[code_col_name].isin(exclude_codes)]
+    if exclude_atc_codes:
+        # Drop all rows whose code_col_name is in exclude_atc_codes
+        df = df[~df[code_col_name].isin(exclude_atc_codes)]
 
     if output_col_name is None:
         if isinstance(codes_to_match, list):
