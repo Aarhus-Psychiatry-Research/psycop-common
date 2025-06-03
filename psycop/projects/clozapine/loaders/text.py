@@ -49,6 +49,7 @@ def get_valid_text_sfi_names() -> set[str]:
         "Misbrugsoplysninger",
         "Alkohol og rusmidler",
         "Skadelig brug/afhængighed af rusmidler",
+        "Psykiatrikonference",
     }
 
 
@@ -158,7 +159,7 @@ def load_all_notes(n_rows: int | None = None, include_sfi_name: bool = False) ->
 
 def load_preprocessed_sfis(
     text_sfi_names: set[str] | None = None,
-    corpus_name: str = "psycop_clozapine_train_val_all_sfis_preprocessed",
+    corpus_name: str = "psycop_clozapine_train_val_all_sfis_preprocessed_v3",
 ) -> pd.DataFrame:
     """Returns preprocessed sfis from preprocessed view/SQL table that includes the "overskrift" column.
     Preprocessed views are created using the function text_preprocessing_pipeline under text_models/preprocessing.
