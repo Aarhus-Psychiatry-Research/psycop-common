@@ -214,9 +214,6 @@ def f9_disorders_without_f99(
         icd_code=["f90", "f91", "f92", "f93", "f94", "f95", "f96", "f97", "f98"],
         wildcard_icd_code=True,
         n_rows=n_rows,
-        shak_location_col=shak_location_col,
-        shak_code=shak_code,
-        shak_sql_operator=shak_sql_operator,
         timestamp_purpose=timestamp_purpose,
     )
 
@@ -232,8 +229,5 @@ def f99_disorders(
         icd_code="f99",
         wildcard_icd_code=True,
         n_rows=n_rows,
-        shak_location_col=shak_location_col,
-        shak_code=shak_code,
-        shak_sql_operator=shak_sql_operator,
         timestamp_purpose=timestamp_purpose,
     )
