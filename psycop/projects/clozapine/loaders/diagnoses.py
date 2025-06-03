@@ -205,9 +205,6 @@ def f8_disorders(
 
 def f9_disorders_without_f99(
     n_rows: int | None = None,
-    shak_location_col: str | None = None,
-    shak_code: int | None = None,
-    shak_sql_operator: str | None = None,
     timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
@@ -220,14 +217,8 @@ def f9_disorders_without_f99(
 
 def f99_disorders(
     n_rows: int | None = None,
-    shak_location_col: str | None = None,
-    shak_code: int | None = None,
-    shak_sql_operator: str | None = None,
     timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
-        icd_code="f99",
-        wildcard_icd_code=True,
-        n_rows=n_rows,
-        timestamp_purpose=timestamp_purpose,
+        icd_code="f99", wildcard_icd_code=True, n_rows=n_rows, timestamp_purpose=timestamp_purpose
     )
