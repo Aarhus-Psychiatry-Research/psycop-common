@@ -2,6 +2,32 @@
 version: v1.25.1
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
+  SNYK-PYTHON-TORCH-9726944:
+    - '*':
+        reason: >-
+          Denial of service vulnerability in torch function we do not use.
+          Exception approved via Slack conversation in programming channel on
+          2025-04-30.
+        created: 2025-04-30T13:32:25.000Z 
+  SNYK-PYTHON-TORCH-9634167:
+  - '*':
+      reason: >-
+        Vulnerability in torch function we do not use..
+        Exception approved via Slack conversation in programming channel on
+        2025-04-7.
+      created: 2025-04-7T14:39:00.000Z
+  SNYK-PYTHON-MLFLOW-9510841:
+    - '*':
+        reason: >-
+          Vulnerability in MLFlow service, which we do not provide. Exception
+          approved via Slack conversation on 2025-03-25.
+        created: 2025-04-02T015:02:00.000Z
+  SNYK-PYTHON-MLFLOW-9510934:
+    - '*':
+        reason: >-
+          Requires access to mlflow to exploit. Exception
+          approved via Slack conversation on 2025-03-25.
+        created: 2025-04-02T015:04:00.000Z
   SNYK-PYTHON-JUPYTERSERVER-6099119:
     - '*':
         reason: >-

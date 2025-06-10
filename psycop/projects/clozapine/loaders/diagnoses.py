@@ -203,10 +203,22 @@ def f8_disorders(
     )
 
 
-def f9_disorders(
+def f9_disorders_without_f99(
     n_rows: int | None = None,
     timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
-        icd_code="f9", wildcard_icd_code=True, n_rows=n_rows, timestamp_purpose=timestamp_purpose
+        icd_code=["f90", "f91", "f92", "f93", "f94", "f95", "f96", "f97", "f98"],
+        wildcard_icd_code=True,
+        n_rows=n_rows,
+        timestamp_purpose=timestamp_purpose,
+    )
+
+
+def f99_disorders(
+    n_rows: int | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    return from_contacts(
+        icd_code="f99", wildcard_icd_code=True, n_rows=n_rows, timestamp_purpose=timestamp_purpose
     )
