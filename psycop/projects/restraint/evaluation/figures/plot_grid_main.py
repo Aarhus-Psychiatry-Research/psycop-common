@@ -5,16 +5,13 @@ import patchworklib as pw
 import polars as pl
 
 from psycop.common.feature_generation.loaders.raw import sql_load
-from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
+from psycop.common.model_evaluation.patchwork.patchwork_grid import print_a4_ratio
 from psycop.projects.restraint.evaluation.figures.auroc import auroc_model, auroc_plot
 from psycop.projects.restraint.evaluation.figures.confusion_matrix import (
     confusion_matrix_model,
     plotnine_confusion_matrix,
 )
-from psycop.projects.restraint.evaluation.figures.first_pos_pred_to_event import (
-    first_pos_pred_to_model,
-    plotnine_first_pos_pred_to_event,
-)
+
 from psycop.projects.restraint.evaluation.figures.sensitivity_by_tte import (
     plotnine_sensitivity_by_tte,
     sensitivity_by_tte_model,
@@ -30,6 +27,8 @@ def plot_grid(
     outcome_timestamps: pl.DataFrame,
     first_letter_index: int,
     best_pos_rate: float,
+    single_plot_dimensions: tuple[float, float] = (5.0, 4.5),
+    add_subpanels_letters: bool = True,
 ) -> pw.Bricks:
     plots = [
         auroc_plot(auroc_model(df.to_pandas())),
@@ -39,33 +38,42 @@ def plot_grid(
         plotnine_sensitivity_by_tte(
             sensitivity_by_tte_model(df=df, outcome_timestamps=outcome_timestamps)
         ),
-        plotnine_first_pos_pred_to_event(
-            first_pos_pred_to_model(df=df, outcome_timestamps=outcome_timestamps)
-        ),
     ]
 
-    ggplots: list[pn.ggplot] = []
-    for plot in plots:
-        ggplots.append(plot)
+    print_a4_ratio(plots, single_plot_dimensions, 3)
 
-    figure = create_patchwork_grid(
-        plots=ggplots,
-        single_plot_dimensions=(5, 4.5),
-        n_in_row=2,
-        first_letter_index=first_letter_index,
-        panel_letter_size="xx-large",
-    )
-    return figure
+    bricks = []
+
+    for plot in plots:
+        # Iterate here to catch errors while only a single plot is in scope
+        # Makes debugging much easier
+        bricks.append(pw.load_ggplot(plot, figsize=single_plot_dimensions))
+
+    alphabet = "abcdefghijklmnopqrstuvwxyz"
+    rows = []
+
+    for i in range(len(bricks)):
+        # Add the letter
+        if add_subpanels_letters:
+            bricks[i].set_index(alphabet[first_letter_index:][i].upper(), size="xx-large")
+
+        # Add it to the row
+        rows.append(bricks[i])
+
+    # Combine the rows
+    patchwork = pw.stack(rows, operator="|")
+
+    return patchwork
 
 
 if __name__ == "__main__":
-    save_dir = Path(__file__).parent 
-    save_dir.mkdir(parents=True, exist_ok=True)
-    #     restraint_type: Literal["mechanical", "split", "all"]
-    restraint_type = "mechanical"
+
+    restraint_type = "all"
+    data_path = f"E:/shared_resources/restraint/eval_runs/restraint_{restraint_type}_tuning_v2_best_run_n_days"
+
     best_pos_rate = 0.05
     df = read_eval_df_from_disk(
-        f"E:/shared_resources/restraint/eval_runs/restraint_{restraint_type}_tuning_30_days_best_run_30_days_x2"
+        data_path
     )
 
     outcome_timestamps = pl.DataFrame(
@@ -81,4 +89,4 @@ if __name__ == "__main__":
         best_pos_rate=best_pos_rate,
     )
 
-    figure.savefig(save_dir / f"restraint_{restraint_type}_plot_grid_30_days_x2.png")
+    figure.savefig(data_path + f"/restraint_{restraint_type}_ppr{best_pos_rate}_plot_grid.png")

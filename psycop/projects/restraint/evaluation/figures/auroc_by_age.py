@@ -24,14 +24,14 @@ def plotnine_auroc_by_age(df: pd.DataFrame, title: str = "AUROC by Age") -> pn.g
             pn.aes(x="age_binned", y="proportion_of_n", fill="age_binned"), stat="identity"
         )
         + pn.geom_path(group=1, size=1)
-        + pn.labs(x="Age", y="AUROC", title=title)
+        + pn.labs(x="Age in years", y="AUROC", title=title)
         + pn.ylim(0, 1)
         + pn.theme_minimal()
         + pn.theme(
             axis_text_x=pn.element_text(size=15),
             axis_text_y=pn.element_text(size=15),
             panel_grid_minor=pn.element_blank(),
-            text=(pn.element_text(family="Times New Roman")),
+            # text=(pn.element_text(family="Times New Roman")),
             legend_position="none",
             axis_title=pn.element_text(size=22),
             plot_title=pn.element_text(size=30, ha="center"),
@@ -41,15 +41,20 @@ def plotnine_auroc_by_age(df: pd.DataFrame, title: str = "AUROC by Age") -> pn.g
         + pn.scale_fill_manual(
             values=[
                 "#669BBC",
-                "#A8C686",
                 "#669BBC",
-                "#A8C686",
                 "#669BBC",
-                "#A8C686",
                 "#669BBC",
-                "#A8C686",
                 "#669BBC",
-                "#A8C686",
+                "#669BBC"
+                # "#A8C686",
+                # "#669BBC",
+                # "#A8C686",
+                # "#669BBC",
+                # "#A8C686",
+                # "#669BBC",
+                # "#A8C686",
+                # "#669BBC",
+                # "#A8C686",
             ]
         )
     )

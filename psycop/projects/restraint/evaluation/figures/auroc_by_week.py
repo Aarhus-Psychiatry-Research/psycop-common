@@ -20,34 +20,35 @@ def plotnine_auroc_by_weekday(
         pn.ggplot(df, pn.aes(x="time_bin", y="auroc"))
         + pn.geom_bar(pn.aes(x="time_bin", y="proportion_of_n", fill="time_bin"), stat="identity")
         + pn.geom_path(group=1, size=1)
-        + pn.labs(x="Day", y="AUROC", title=title)
+        + pn.labs(x="Day of the week", y="AUROC", title=title)
         + pn.ylim(0, 1)
         + pn.theme_minimal()
         + pn.theme(
             axis_text_x=pn.element_text(size=15, rotation=45),
             axis_text_y=pn.element_text(size=15),
             panel_grid_minor=pn.element_blank(),
-            text=(pn.element_text(family="Times New Roman")),
+            # text=(pn.element_text(family="Times New Roman")),
             legend_position="none",
             axis_title=pn.element_text(size=22),
             plot_title=pn.element_text(size=30, ha="center"),
             dpi=300,
+            figure_size=(7, 5)
         )
         + pn.scale_x_discrete()
         + pn.scale_fill_manual(
             values=[
                 "#669BBC",
-                "#A8C686",
                 "#669BBC",
-                "#A8C686",
                 "#669BBC",
-                "#A8C686",
                 "#669BBC",
-                "#A8C686",
                 "#669BBC",
-                "#A8C686",
                 "#669BBC",
-                "#A8C686",
+                "#669BBC",
+                # "#A8C686",
+                # "#669BBC",
+                # "#A8C686",
+                # "#669BBC",
+                # "#A8C686",
             ]
         )
     )

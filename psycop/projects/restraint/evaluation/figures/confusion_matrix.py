@@ -37,13 +37,13 @@ def plotnine_confusion_matrix(
     p = (
         pn.ggplot(df, pn.aes(x="true", y="pred", fill="fill"))
         + pn.geom_tile(pn.aes(width=0.95, height=0.95))
-        + pn.geom_text(pn.aes(label="metric"), size=20, color="white", family="Times New Roman")
+        + pn.geom_text(pn.aes(label="metric"), size=20, color="white") #, family="Times New Roman")
         + pn.geom_text(
             pn.aes(label="estimate"),
             size=25,
             color="white",
             fontweight="bold",
-            family="Times New Roman",
+            # family="Times New Roman",
         )
         + pn.theme(
             axis_line=pn.element_blank(),
@@ -52,7 +52,7 @@ def plotnine_confusion_matrix(
             panel_grid_minor=pn.element_blank(),
             panel_background=pn.element_blank(),
             legend_position="none",
-            text=(pn.element_text(family="Times New Roman")),
+            # text=(pn.element_text(family="Times New Roman")),
             axis_text_x=pn.element_text(size=20, weight="bold"),
             axis_text_y=pn.element_text(size=20, weight="bold"),
             axis_title=pn.element_text(size=22),

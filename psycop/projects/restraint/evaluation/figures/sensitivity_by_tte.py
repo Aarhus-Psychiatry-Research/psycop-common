@@ -20,7 +20,7 @@ from psycop.projects.restraint.evaluation.utils import (
 
 
 def plotnine_sensitivity_by_tte(
-    df: pd.DataFrame, title: str = "Sensitivity by Time to Event"
+    df: pd.DataFrame, title: str = "Temporal Sensitivity"
 ) -> pn.ggplot:
     categories = df["unit_from_event_binned"].dtype.categories[::-1]  # type: ignore
     df["unit_from_event_binned"] = df["unit_from_event_binned"].cat.set_categories(
@@ -42,7 +42,7 @@ def plotnine_sensitivity_by_tte(
                 shape="actual_positive_rate",
             ),
         )
-        + pn.scale_x_discrete(reverse=True)
+        # + pn.scale_x_discrete(reverse=True)
         + pn.geom_point(size=2.5)
         + pn.geom_errorbar(width=0.05)
         + pn.labs(
@@ -60,7 +60,7 @@ def plotnine_sensitivity_by_tte(
             legend_title_align="center",
             axis_ticks=pn.element_blank(),
             panel_grid_minor=pn.element_blank(),
-            text=(pn.element_text(family="Times New Roman")),
+            # text=(pn.element_text(family="Times New Roman")),
             axis_title=pn.element_text(size=22),
             plot_title=pn.element_text(size=30, ha="center"),
             dpi=300,

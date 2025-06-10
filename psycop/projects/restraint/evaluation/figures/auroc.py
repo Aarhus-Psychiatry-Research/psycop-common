@@ -19,7 +19,7 @@ def auroc_plot(data: AUROC, title: str = "AUROC") -> pn.ggplot:
         ha="right",
         va="bottom",
         size=20,
-        family="Times New Roman",
+        # family="Times New Roman",
     )
 
     p = (
@@ -35,7 +35,7 @@ def auroc_plot(data: AUROC, title: str = "AUROC") -> pn.ggplot:
         + pn.theme(
             axis_ticks=pn.element_blank(),
             panel_grid_minor=pn.element_blank(),
-            text=(pn.element_text(family="Times New Roman")),
+            # text=(pn.element_text(family="Times New Roman")),
             axis_text_x=pn.element_text(size=15),
             axis_text_y=pn.element_text(size=15),
             axis_title=pn.element_text(size=22),

@@ -24,14 +24,14 @@ def plotnine_sensitivity_by_outcome(df: pd.DataFrame, title: str = "Sensitivity 
     p = (
         pn.ggplot(df, pn.aes(x="type", y="sensitivity"))
         + pn.geom_bar(pn.aes(fill="type"), stat="identity")
-        + pn.labs(x="Restraint Type", y="Sensitivity", title=title)
+        + pn.labs(x="Restraint type", y="Sensitivity", title=title)
         + pn.ylim(0, 0.8)
         + pn.theme_minimal()
         + pn.theme(
             axis_text_x=pn.element_text(size=15),
             axis_text_y=pn.element_text(size=15),
             panel_grid_minor=pn.element_blank(),
-            text=(pn.element_text(family="Times New Roman")),
+            # text=(pn.element_text(family="Times New Roman")),
             legend_position="none",
             axis_title=pn.element_text(size=22),
             plot_title=pn.element_text(size=30, ha="center"),
@@ -54,19 +54,19 @@ def plotnine_sensitivity_by_first_outcome(df: pd.DataFrame, title: str = "Sensit
     p = (
         pn.ggplot(df, pn.aes(x="outcome", y="sensitivity"))
         + pn.geom_bar(pn.aes(fill="outcome"), stat="identity")
-        + pn.labs(x="Restraint Type", y="Sensitivity", title=title)
+        + pn.labs(x="Restraint type", y="Sensitivity", title=title)
         + pn.ylim(0, 0.8)
         + pn.theme_minimal()
         + pn.theme(
             axis_text_x=pn.element_text(size=15),
             axis_text_y=pn.element_text(size=15),
             panel_grid_minor=pn.element_blank(),
-            text=(pn.element_text(family="Times New Roman")),
+            # text=(pn.element_text(family="Times New Roman")),
             legend_position="none",
             axis_title=pn.element_text(size=22),
             plot_title=pn.element_text(size=30, ha="center"),
             dpi=300,
-            # figure_size=(4, 5),
+            figure_size=(7, 5),
         )
         + pn.scale_x_discrete()
         + pn.scale_fill_manual(values=["#669BBC", "#A8C686", "#F3A712"])
@@ -79,13 +79,13 @@ def plotnine_sensitivity_by_first_outcome(df: pd.DataFrame, title: str = "Sensit
     return p
 
 def sensitivity_by_restraint_type(df: pd.DataFrame) -> pd.DataFrame:
-    mechanical = sensitivity_by_group(df, groupby_col_name="mechanical_restraint").iloc[1, 2:]
+    mechanical = sensitivity_by_group(df, groupby_col_name="mechanical_restraint").iloc[0, 2:]
     mechanical.name = "Mechanical"
 
-    chemical = sensitivity_by_group(df, groupby_col_name="chemical_restraint").iloc[1, 2:]
+    chemical = sensitivity_by_group(df, groupby_col_name="chemical_restraint").iloc[0, 2:]
     chemical.name = "Chemical"
 
-    manual = sensitivity_by_group(df, groupby_col_name="manual_restraint").iloc[1, 2:]
+    manual = sensitivity_by_group(df, groupby_col_name="manual_restraint").iloc[0, 2:]
     manual.name = "Manual"
     
     all = pd.concat([mechanical, chemical, manual], axis=1).T

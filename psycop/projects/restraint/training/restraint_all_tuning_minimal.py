@@ -13,9 +13,9 @@ if __name__ == "__main__":
     populate_with_restraint_registry()
     OptunaHyperParameterOptimization().from_file(
         (Path(__file__).parent / "configs" / "tuning" / "restraint_all_tuning_minimal.cfg"),
-        study_name="restraint_all_tuning_minimal_adm_day_count",
-        n_trials=200,
-        n_jobs=15,
+        study_name="restraint_all_tuning_minimal_v2",
+        n_trials=250,
+        n_jobs=50,
         direction="maximize",
         catch=(),  # type: ignore
     )
