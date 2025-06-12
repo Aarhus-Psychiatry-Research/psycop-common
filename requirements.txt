@@ -21,7 +21,7 @@ pyarrow==14.0.1
 pydantic==2.5.3
 pyodbc==4.0.39
 Random-Word==1.0.11
-requests>=2.32.0 # Due to Snyk vuln SNYK-PYTHON-REQUESTS-6928867
+requests>=2.32.4 # Due to Snyk vuln SNYK-PYTHON-REQUESTS-10305723
 setuptools==78.1.1 # Due to Snyk vuln fSNYK-PYTHON-SETUPTOOLS-7448482
 scikit-learn==1.5.0
 scipy==1.10.0
