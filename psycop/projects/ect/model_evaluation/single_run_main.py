@@ -103,23 +103,25 @@ if __name__ == "__main__":
     )
     MAIN_METRIC = "all_oof_BinaryAUROC"
 
-    experiment = "ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter"
-    experiment_path = f"E:/shared_resources/ect/eval_runs/{experiment}_best_run_evaluated_on_geographic_test"
-    structured_text_df = read_eval_df_from_disk(experiment_path)
+
+    structured_text_experiment = "ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter"
+    structured_text_experiment_path = f"E:/shared_resources/ect/eval_runs/{structured_text_experiment}_best_run_evaluated_on_test"
+    structured_text_df = read_eval_df_from_disk(structured_text_experiment_path)
 
     #read other dfs
     structured_only_experiment = "ECT-trunc-and-hp-structured_only-xgboost-no-lookbehind-filter"
-    structured_only_experiment_path = f"E:/shared_resources/ect/eval_runs/{structured_only_experiment}_best_run_evaluated_on_geographic_test"
+    structured_only_experiment_path = f"E:/shared_resources/ect/eval_runs/{structured_only_experiment}_best_run_evaluated_on_test"
     structured_only_df = read_eval_df_from_disk(structured_only_experiment_path)
 
     text_only_experiment = "ECT-trunc-and-hp-text_only-xgboost-no-lookbehind-filter"
-    text_only_experiment_path = f"E:/shared_resources/ect/eval_runs/{text_only_experiment}_best_run_evaluated_on_geographic_test"
+    text_only_experiment_path = f"E:/shared_resources/ect/eval_runs/{text_only_experiment}_best_run_evaluated_on_test"
     text_only_df = read_eval_df_from_disk(text_only_experiment_path)
 
-    feature_sets = {
+    feature_set_eval_dfs = {
         "Structured only": structured_only_df,
         "Text only": text_only_df,
         "Structured + text": structured_text_df,
+        
     }
     
     save_dir =  Path(text_only_experiment_path + "/figures") 
@@ -127,10 +129,11 @@ if __name__ == "__main__":
         
     figure = single_run_main(
         eval_df=text_only_df,
-        group_auroc_experiments=ExperimentWithNames(feature_sets),
+        group_auroc_experiments=ExperimentWithNames(feature_set_eval_dfs),
         desired_positive_rate=0.02,
         outcome_label="ECT",
         first_letter_index=0,
     )
 
     figure.savefig(save_dir / "ect_main_plot.png")
+ 
