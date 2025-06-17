@@ -16,7 +16,7 @@ patchworklib==0.6.2
 plotly==5.22.0
 plotnine==0.12.2
 polars==0.20.10
-protobuf==3.20.3
+protobuf==4.25.8 # Due to Snyk vuln SNYK-PYTHON-PROTOBUF-10364902
 pyarrow==14.0.1
 pydantic==2.5.3
 pyodbc==4.0.39
