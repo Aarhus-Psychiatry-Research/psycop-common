@@ -2,6 +2,34 @@
 version: v1.25.1
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
+  SNYK-PYTHON-TORCH-10337825:
+    - '*':
+        reason: >-
+          Mismatched Memory Management Routines vulnerability in torch function we do not use.
+          Exception approved via Slack conversation in programming channel on
+          2025-06-16.
+        created: 2025-06-17T10:39:00.000Z
+  SNYK-PYTHON-TORCH-10337826:
+    - '*':
+        reason: >-
+          Out-of-bounds Write vulnerability that requires local access to system to be exploitable.
+          Exception approved via Slack conversation in programming channel on
+          2025-06-16.
+        created: 2025-06-17T10:40:00.000Z
+  SNYK-PYTHON-TORCH-10337828:
+    - '*':
+        reason: >-
+          Out-of-bounds Write vulnerability that requires local access to system to be exploitable.
+          Exception approved via Slack conversation in programming channel on
+          2025-06-16.
+        created: 2025-06-17T10:41:00.000Z
+  SNYK-PYTHON-TORCH-10337834:
+    - '*':
+        reason: >-
+          Out-of-bounds Write vulnerability in a function we do not use.
+          Exception approved via Slack conversation in programming channel on
+          2025-06-16.
+        created: 2025-06-17T10:42:00.000Z
   SNYK-PYTHON-TORCH-10332645:
     - '*':
         reason: >-
