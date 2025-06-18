@@ -5,6 +5,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
+from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
+    FilterByOutcomeStratifiedSplits,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -104,7 +107,7 @@ def load_text_sfis(
 
 def load_text_split(
     text_sfi_names: str | Iterable[str] | None,
-    split_ids_presplit_step: PresplitStep,
+    splits_to_keep: PresplitStep | None = None,
     include_sfi_name: bool = False,
     n_rows: int | None = None,
 ) -> pd.DataFrame:
@@ -112,7 +115,7 @@ def load_text_split(
 
     Args:
         text_sfi_names: Which sfi types to load. See `get_all_valid_text_sfi_names()` for valid sfi types.
-        split_ids_presplit_step: PresplitStep that filters rows by split ids (e.g. RegionalFilter or FilterByOutcomeStratifiedSplits)
+        splits_to_keep (PresplitStep | None = None): which splits to keep (train, val, test).
         include_sfi_name: Whether to include column with sfi name ("overskrift"). Defaults to False.
         n_rows: Number of rows to load. Defaults to None.
 
@@ -131,6 +134,8 @@ def load_text_split(
     text_df = text_df.rename(
         {"datotid_senest_aendret_i_sfien": "timestamp", "fritekst": "value"}, axis=1
     )
+
+    split_ids_presplit_step = FilterByOutcomeStratifiedSplits(splits_to_keep=splits_to_keep)
 
     text_split_df = (
         split_ids_presplit_step.apply(pl.from_pandas(text_df).lazy()).collect().to_pandas()
@@ -159,13 +164,15 @@ def load_all_notes(n_rows: int | None = None, include_sfi_name: bool = False) ->
 
 def load_preprocessed_sfis(
     text_sfi_names: set[str] | None = None,
-    corpus_name: str = "psycop_clozapine_train_val_all_sfis_preprocessed_v3",
+    splits_to_keep: PresplitStep | None = None,
+    corpus_name: str = "psycop_clozapine_train_val_test_all_sfis_preprocessed_added_psyk_konf",
 ) -> pd.DataFrame:
     """Returns preprocessed sfis from preprocessed view/SQL table that includes the "overskrift" column.
     Preprocessed views are created using the function text_preprocessing_pipeline under text_models/preprocessing.
 
     Args:
         text_sfi_names (str | list[str] | set[str] | None): Sfis to include.  Defaults to None, which includes all sfis.
+        splits_to_keep (PresplitStep | None = None): which splits to keep (train, val, test).
         corpus_name (str, optional): Name of parquet with preprocessed sfis. Defaults to "psycop_clozapine_train_val_all_sfis_preprocessed".
         n_rows (int | None, optional): Number of rows to include. Defaults to None, which includes all rows.
 
@@ -184,5 +191,9 @@ def load_preprocessed_sfis(
         sql += f" WHERE overskrift IN ({sfis_to_keep})"
 
     corpus = sql_load(query=sql, server="BI-DPA-PROD", database="USR_PS_Forsk", n_rows=None)
+
+    split_ids_presplit_step = FilterByOutcomeStratifiedSplits(splits_to_keep=splits_to_keep)
+
+    corpus = split_ids_presplit_step.apply(pl.from_pandas(corpus).lazy()).collect().to_pandas()
 
     return corpus

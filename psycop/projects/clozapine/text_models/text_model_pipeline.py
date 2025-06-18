@@ -21,8 +21,8 @@ log.setLevel(logging.INFO)
 
 def create_model_filename(
     model: Literal["bow", "tfidf"],
-    corpus_name: str,
     ngram_range: tuple[int, int],
+    splits: str,
     max_df: float,
     min_df: int,
     max_features: Optional[int],
@@ -32,8 +32,8 @@ def create_model_filename(
 
     Args:
         model (Literal[str]): Which model to use. Takes either "bow" or "tfidf".
-        corpus_name (str): name of parquet with text data to fit model on.
         ngram_range (tuple): The lower and upper boundary of the range of n-values for different word n-grams or char n-grams to be extracted.
+        splits (str): Which splits to keep (train, val, test).
         max_df (float): The proportion of documents the words should appear in to be included.
         min_df (int): Remove words occuring in less than min_df documents.
         max_features (int, optional): If not None, build a vocabulary that only consider the top max_features ordered by term frequency across the corpus. Otherwise, all features are used.
@@ -43,13 +43,13 @@ def create_model_filename(
     ngram_range_str = "".join(c for c in str(ngram_range) if c.isdigit())
     sfi_type_str = "all_sfis" if not sfi_type else "".join(sfi_type).replace(" ", "")
 
-    return f"{model}_{corpus_name}_sfi_type_{sfi_type_str}_ngram_range_{ngram_range_str}_max_df_{max_df_str}_min_df_{min_df}_max_features_{max_features}.pkl"
+    return f"{model}_psycop_clozapine_preprocessed_added_psyk_konf_{splits}_sfi_type_{sfi_type_str}_ngram_range_{ngram_range_str}_max_df_{max_df_str}_min_df_{min_df}_max_features_{max_features}.pkl"
 
 
 def text_model_pipeline(
     model: Literal["bow", "tfidf"],
     split_ids_presplit_step: PresplitStep | None = None,
-    corpus_name: str = "psycop_clozapine_train_val_all_sfis_preprocessed",
+    corpus_name: str = "psycop_clozapine_train_val_test_all_sfis_preprocessed_added_psyk_konf",
     corpus_preprocessed: bool = False,
     sfi_type: Optional[Sequence[str] | str] = None,
     ngram_range: tuple[int, int] = (1, 1),
@@ -85,7 +85,7 @@ def text_model_pipeline(
     # create model filename from params
     filename = create_model_filename(
         model=model,
-        corpus_name=corpus_name,
+        splits=split_ids_presplit_step,
         sfi_type=sfi_type,
         ngram_range=ngram_range,
         max_df=max_df,
@@ -100,7 +100,9 @@ def text_model_pipeline(
         return model_path
 
     if corpus_preprocessed:
-        corpus = load_preprocessed_sfis(corpus_name=corpus_name)
+        corpus = load_preprocessed_sfis(
+            corpus_name=corpus_name, splits_to_keep=split_ids_presplit_step
+        )
 
     else:
         corpus = load_text_split(
