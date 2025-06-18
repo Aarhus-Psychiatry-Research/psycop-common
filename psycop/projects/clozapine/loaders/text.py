@@ -2,15 +2,12 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
-from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
-    FilterByOutcomeStratifiedSplits,
-)
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
+    from collections.abc import Iterable
 
     import pandas as pd
 
@@ -107,7 +104,7 @@ def load_text_sfis(
 
 def load_text_split(
     text_sfi_names: str | Iterable[str] | None,
-    splits_to_keep: Sequence[Literal["train", "val", "test"]],
+    split_ids_presplit_step: PresplitStep,
     include_sfi_name: bool = False,
     n_rows: int | None = None,
 ) -> pd.DataFrame:
@@ -115,7 +112,7 @@ def load_text_split(
 
     Args:
         text_sfi_names: Which sfi types to load. See `get_all_valid_text_sfi_names()` for valid sfi types.
-        splits_to_keep (Sequence[Literal['train', 'val', 'test']]): which splits to keep (train, val, test).
+        split_ids_presplit_step: PresplitStep that filters rows by split ids (e.g. RegionalFilter or FilterByOutcomeStratifiedSplits)
         include_sfi_name: Whether to include column with sfi name ("overskrift"). Defaults to False.
         n_rows: Number of rows to load. Defaults to None.
 
@@ -135,9 +132,9 @@ def load_text_split(
         {"datotid_senest_aendret_i_sfien": "timestamp", "fritekst": "value"}, axis=1
     )
 
-    splits_to_keep = FilterByOutcomeStratifiedSplits(splits_to_keep=splits_to_keep)
-
-    text_split_df = splits_to_keep.apply(pl.from_pandas(text_df).lazy()).collect().to_pandas()
+    text_split_df = (
+        split_ids_presplit_step.apply(pl.from_pandas(text_df).lazy()).collect().to_pandas()
+    )
     # randomly sample instead of taking the first n_rows
     if n_rows is not None:
         text_split_df = text_split_df.sample(n=n_rows, replace=False)
@@ -161,8 +158,8 @@ def load_all_notes(n_rows: int | None = None, include_sfi_name: bool = False) ->
 
 
 def load_preprocessed_sfis(
+    split_ids_presplit_step: PresplitStep,
     text_sfi_names: set[str] | None = None,
-    splits_to_keep: PresplitStep | None = None,
     corpus_name: str = "psycop_clozapine_train_val_test_all_sfis_preprocessed_added_psyk_konf",
 ) -> pd.DataFrame:
     """Returns preprocessed sfis from preprocessed view/SQL table that includes the "overskrift" column.
@@ -170,7 +167,7 @@ def load_preprocessed_sfis(
 
     Args:
         text_sfi_names (str | list[str] | set[str] | None): Sfis to include.  Defaults to None, which includes all sfis.
-        splits_to_keep (PresplitStep | None = None): which splits to keep (train, val, test).
+        split_ids_presplit_step: PresplitStep that filters rows by split ids (e.g. RegionalFilter or FilterByOutcomeStratifiedSplits)
         corpus_name (str, optional): Name of parquet with preprocessed sfis. Defaults to "psycop_clozapine_train_val_all_sfis_preprocessed".
         n_rows (int | None, optional): Number of rows to include. Defaults to None, which includes all rows.
 
@@ -190,8 +187,8 @@ def load_preprocessed_sfis(
 
     corpus = sql_load(query=sql, server="BI-DPA-PROD", database="USR_PS_Forsk", n_rows=None)
 
-    splits_to_keep = FilterByOutcomeStratifiedSplits(splits_to_keep=splits_to_keep)
+    corpus_split = (
+        split_ids_presplit_step.apply(pl.from_pandas(corpus).lazy()).collect().to_pandas()
+    )
 
-    corpus = splits_to_keep.apply(pl.from_pandas(corpus).lazy()).collect().to_pandas()
-
-    return corpus
+    return corpus_split
