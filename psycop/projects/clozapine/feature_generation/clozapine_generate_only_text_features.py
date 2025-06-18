@@ -210,7 +210,7 @@ if __name__ == "__main__":
                 ),
                 lookbehind_distances=[datetime.timedelta(days=180)],
                 aggregators=[MeanAggregator()],
-                fallback=[np.nan],
+                fallback=np.nan,
                 column_prefix=f"pred_layer_text__{df.columns[-1]}",
             )
             for df in df_tfidf_split
