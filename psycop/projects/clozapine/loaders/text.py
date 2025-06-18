@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
@@ -10,7 +10,7 @@ from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_spli
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Iterable, Sequence
 
     import pandas as pd
 
@@ -107,7 +107,7 @@ def load_text_sfis(
 
 def load_text_split(
     text_sfi_names: str | Iterable[str] | None,
-    splits_to_keep: PresplitStep | None = None,
+    splits_to_keep: Sequence[Literal["train", "val", "test"]],
     include_sfi_name: bool = False,
     n_rows: int | None = None,
 ) -> pd.DataFrame:
@@ -115,7 +115,7 @@ def load_text_split(
 
     Args:
         text_sfi_names: Which sfi types to load. See `get_all_valid_text_sfi_names()` for valid sfi types.
-        splits_to_keep (PresplitStep | None = None): which splits to keep (train, val, test).
+        splits_to_keep (Sequence[Literal['train', 'val', 'test']]): which splits to keep (train, val, test).
         include_sfi_name: Whether to include column with sfi name ("overskrift"). Defaults to False.
         n_rows: Number of rows to load. Defaults to None.
 
@@ -135,11 +135,9 @@ def load_text_split(
         {"datotid_senest_aendret_i_sfien": "timestamp", "fritekst": "value"}, axis=1
     )
 
-    split_ids_presplit_step = FilterByOutcomeStratifiedSplits(splits_to_keep=splits_to_keep)
+    splits_to_keep = FilterByOutcomeStratifiedSplits(splits_to_keep=splits_to_keep)
 
-    text_split_df = (
-        split_ids_presplit_step.apply(pl.from_pandas(text_df).lazy()).collect().to_pandas()
-    )
+    text_split_df = splits_to_keep.apply(pl.from_pandas(text_df).lazy()).collect().to_pandas()
     # randomly sample instead of taking the first n_rows
     if n_rows is not None:
         text_split_df = text_split_df.sample(n=n_rows, replace=False)
@@ -192,8 +190,8 @@ def load_preprocessed_sfis(
 
     corpus = sql_load(query=sql, server="BI-DPA-PROD", database="USR_PS_Forsk", n_rows=None)
 
-    split_ids_presplit_step = FilterByOutcomeStratifiedSplits(splits_to_keep=splits_to_keep)
+    splits_to_keep = FilterByOutcomeStratifiedSplits(splits_to_keep=splits_to_keep)
 
-    corpus = split_ids_presplit_step.apply(pl.from_pandas(corpus).lazy()).collect().to_pandas()
+    corpus = splits_to_keep.apply(pl.from_pandas(corpus).lazy()).collect().to_pandas()
 
     return corpus

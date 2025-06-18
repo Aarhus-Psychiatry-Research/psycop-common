@@ -67,7 +67,7 @@ def split_df_to_list(  # noqa: D417
 def _init_clozapine_predictor(
     df_loader: Callable[[], pd.DataFrame],
     layer: str,
-    fallback: float | int,
+    fallback: float | int | None,
     aggregation_fns: Sequence[ts.aggregators.Aggregator],
     lookbehind_distances: Sequence[datetime.timedelta] = [
         datetime.timedelta(days=i) for i in [30, 180, 365]

@@ -5,7 +5,6 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Literal, Optional
 
-from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
     FilterByOutcomeStratifiedSplits,
 )
@@ -48,7 +47,7 @@ def create_model_filename(
 
 def text_model_pipeline(
     model: Literal["bow", "tfidf"],
-    split_ids_presplit_step: PresplitStep | None = None,
+    splits_to_keep: Sequence[Literal["train", "val", "test"]],
     corpus_name: str = "psycop_clozapine_train_val_test_all_sfis_preprocessed_added_psyk_konf",
     corpus_preprocessed: bool = False,
     sfi_type: Optional[Sequence[str] | str] = None,
@@ -62,6 +61,7 @@ def text_model_pipeline(
 
     Args:
         model (Literal[str]): Which model to use. Takes either "bow" or "tfidf".
+        splits_to_keep (Sequence[Literal["train", "val","test"]]): Which splits to keep (train, val, test)
         corpus_name (str, optional): SQL table with text data (preprocessed or not) to fit model on. Defaults to "psycop_train_val_all_sfis_preprocessed".
         corpus_preprocessed (bool, optional): Whether the corpus is already preprocessed. Defaults to False.
         sfi_type (Sequence[str], optional): Which sfi types to include. Defaults to None.
@@ -76,16 +76,16 @@ def text_model_pipeline(
         str: Log info on the path and filename of the fitted text model.
     """
 
-    split_ids_presplit_step = (
-        split_ids_presplit_step
-        if split_ids_presplit_step
+    splits_to_keep = (
+        splits_to_keep
+        if splits_to_keep
         else FilterByOutcomeStratifiedSplits(splits_to_keep=["train", "val"])
     )
 
     # create model filename from params
     filename = create_model_filename(
         model=model,
-        splits=split_ids_presplit_step,
+        splits=splits_to_keep,
         sfi_type=sfi_type,
         ngram_range=ngram_range,
         max_df=max_df,
@@ -100,16 +100,11 @@ def text_model_pipeline(
         return model_path
 
     if corpus_preprocessed:
-        corpus = load_preprocessed_sfis(
-            corpus_name=corpus_name, splits_to_keep=split_ids_presplit_step
-        )
+        corpus = load_preprocessed_sfis(corpus_name=corpus_name, splits_to_keep=splits_to_keep)
 
     else:
         corpus = load_text_split(
-            text_sfi_names=None,
-            split_ids_presplit_step=split_ids_presplit_step,
-            include_sfi_name=True,
-            n_rows=n_rows,
+            text_sfi_names=None, splits_to_keep=splits_to_keep, include_sfi_name=True, n_rows=n_rows
         )
         corpus = text_preprocessing(corpus)
 

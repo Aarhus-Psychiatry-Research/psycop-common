@@ -7,7 +7,6 @@ import pandas as pd
 
 from psycop.common.feature_generation.text_models.utils import stop_words
 from psycop.common.global_utils.sql.writer import write_df_to_sql
-from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
     FilterByOutcomeStratifiedSplits,
     RegionalFilter,
@@ -51,14 +50,14 @@ def text_preprocessing(df: pd.DataFrame, text_column_name: str = "value") -> pd.
 
 
 def text_preprocessing_pipeline(
-    split_ids_presplit_step: PresplitStep | None = None,
+    splits_to_keep: Sequence[Literal["train", "val", "test"]],
     n_rows: Optional[int] = None,
     sfi_type: Optional[Sequence[str] | str] = None,
 ) -> str:
     """Pipeline for preprocessing all sfis from given splits. Filtering of which sfis to include in features happens in the loader.
 
     Args:
-        split_ids_presplit_step: A PresplitStep (e.g. RegionalFilter or FilterByOutcomeStratifiedSplits) that filters rows by split ids
+        splits_to_keep:: Which splits to keep (train, val, test)
         n_rows (Optional[int], optional): How many rows to load. Defaults to None, which loads all rows.
         sfi_type (Optional[Sequence[str] | str], optional): Which sfi types to include. Defaults to None, which includes all sfis.
 
@@ -66,16 +65,16 @@ def text_preprocessing_pipeline(
         str: Text describing where preprocessed text has been saved.
     """
 
-    split_ids_presplit_step = (
-        split_ids_presplit_step
-        if split_ids_presplit_step
+    splits_to_keep = (
+        splits_to_keep
+        if splits_to_keep
         else FilterByOutcomeStratifiedSplits(splits_to_keep=["train", "val"])
     )
 
     # Load text from splits
     df = load_text_split(
         text_sfi_names=sfi_type if sfi_type else get_valid_text_sfi_names(),
-        split_ids_presplit_step=split_ids_presplit_step,
+        splits_to_keep=splits_to_keep,
         include_sfi_name=True,
         n_rows=n_rows,
     )
@@ -84,7 +83,7 @@ def text_preprocessing_pipeline(
     df = text_preprocessing(df)
 
     # save to parquet
-    split_names = "_".join(split_ids_presplit_step.splits_to_keep)  # type: ignore
+    split_names = "_".join(splits_to_keep)  # type: ignore
 
     sfis = "_".join(sfi_type) if sfi_type else "all_sfis"
 
