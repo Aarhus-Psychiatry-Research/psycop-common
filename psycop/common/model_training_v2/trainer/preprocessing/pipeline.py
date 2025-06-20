@@ -3,7 +3,7 @@ from collections.abc import Sequence
 
 import pandas as pd
 import polars as pl
-# import rich.pretty as pretty
+import rich.pretty as pretty
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 
@@ -25,7 +25,7 @@ class BaselinePreprocessingPipeline(PreprocessingPipeline):
 
     def _get_column_stats_string(self, data: pl.LazyFrame) -> str:
         return f"""
-    Columns: {sorted(data.columns)}
+    Columns: {pretty.pretty_repr(sorted(data.columns), max_width=100)}
     n_cols: {len(data.columns)}"""
 
     def apply(self, data: pl.LazyFrame) -> pd.DataFrame:

@@ -3,7 +3,7 @@ from pathlib import Path
 import wasabi
 from confection import Config
 from polars import DataFrame
-#from rich.pretty import pprint
+from rich.pretty import pprint
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
@@ -32,7 +32,7 @@ class TerminalLogger(BaselineLogger):
 
     def log_config(self, config: Config) -> None:
         self._l.divider("Logging config")
-        print(config)
+        pprint(config)
 
     def log_artifact(self, local_path: Path) -> None:
         self.good(
