@@ -44,7 +44,7 @@ from psycop.projects.clozapine.loaders.diagnoses import (
     f6_disorders,
     f7_disorders,
     f8_disorders,
-    f9_disorders,
+    f9_disorders_without_f99,
     manic_and_bipolar,
 )
 from psycop.projects.clozapine.loaders.ect import ect_all
@@ -323,7 +323,7 @@ if __name__ == "__main__":
             BooleanSpec(cluster_b),
             BooleanSpec(f7_disorders),
             BooleanSpec(f8_disorders),
-            BooleanSpec(f9_disorders),
+            BooleanSpec(f9_disorders_without_f99),
         ],
         "medication": [
             BooleanSpec(first_gen_antipsychotics),
