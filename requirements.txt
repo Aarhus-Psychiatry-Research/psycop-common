@@ -26,7 +26,7 @@ setuptools==78.1.1 # Due to Snyk vuln fSNYK-PYTHON-SETUPTOOLS-7448482
 scikit-learn==1.5.0
 scipy==1.10.0
 shap==0.41.0
-sqlalchemy==1.4.39
+sqlalchemy==2.0.27
 tableone==0.8.0
 tabulate==0.8.10
 timeseriesflattener==2.5.2
