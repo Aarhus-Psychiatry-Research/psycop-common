@@ -35,4 +35,4 @@ wasabi==0.9.1
 xgboost==1.7.3
 imbalanced-learn==0.12.3
 rapidfuzz==3.6.1
-fairlearn==0.10.0
+fairlearn==0.12.0
