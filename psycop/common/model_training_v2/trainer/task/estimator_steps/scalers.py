@@ -1,7 +1,6 @@
 import optuna
 import sklearn
 import sklearn.preprocessing
-from sklearn.base import BaseEstimator, TransformerMixin
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_suggester import (
@@ -11,8 +10,8 @@ from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.suggest
     CategoricalSpace,
     CategoricalSpaceT,
 )
-from psycop.common.model_training_v2.trainer.task.model_step import ModelStep
 from psycop.common.model_training_v2.trainer.task.estimator_steps.utils import IdentityTransformer
+from psycop.common.model_training_v2.trainer.task.model_step import ModelStep
 
 
 @BaselineRegistry.estimator_steps.register("noop_scaler")
