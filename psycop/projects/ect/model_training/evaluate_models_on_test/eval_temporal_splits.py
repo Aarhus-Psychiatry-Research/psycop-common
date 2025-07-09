@@ -15,7 +15,7 @@ def eval_stratified_split(
     evaluation_interval: tuple[str, str],
     experiment_name: str,
     test_data_path: Optional[list[str]] = None,
-) -> tuple[int, dict[int, float | None]]:
+) -> float | None:
     if test_data_path is None:
         test_data_path = [
             "E:/shared_resources/ect/feature_set/flattened_datasets/ect_feature_set/ect_feature_set.parquet"
