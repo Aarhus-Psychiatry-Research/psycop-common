@@ -1,10 +1,8 @@
-from joblib import Parallel, delayed
 from pathlib import Path
 from typing import Optional
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
-from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 
 
@@ -47,7 +45,7 @@ def eval_random_split_test_set(
         .get_best_run_from_experiment(experiment_name=experiment_name, metric="all_oof_BinaryAUROC")
         .get_config()
     )
-    
+
     preprocessing_pipeline = best_run_cfg.retrieve("trainer.preprocessing_pipeline")
 
     validation_outcome_col_name = best_run_cfg.retrieve("trainer.outcome_col_name")
@@ -95,5 +93,8 @@ if __name__ == "__main__":
     feature_sets = ["structured_only", "text_only", "structured_text"]
 
     for feature_set in feature_sets:
-        eval_random_split_test_set(experiment_name=f"ECT-trunc-and-hp-{feature_set}-xgboost-no-lookbehind-filter",
-        train_splits = ["train", "val"], test_split=['test'])
+        eval_random_split_test_set(
+            experiment_name=f"ECT-trunc-and-hp-{feature_set}-xgboost-no-lookbehind-filter",
+            train_splits=["train", "val"],
+            test_split=["test"],
+        )

@@ -4,7 +4,6 @@ import polars as pl
 from sklearn.metrics import roc_auc_score, roc_curve
 
 from psycop.common.global_utils.cache import shared_cache
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame
 
 ROCByGroupDF = NewType("ROCByGroupDF", pl.DataFrame)
 ExperimentWithNames = NewType("ExperimentWithNames", dict[str, pl.DataFrame])

@@ -1,7 +1,7 @@
-from joblib import Parallel, delayed
 from pathlib import Path
 from typing import Optional
 
+from joblib import Parallel, delayed
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
@@ -14,11 +14,9 @@ def eval_stratified_split(
     training_end_date: str,
     evaluation_interval: tuple[str, str],
     experiment_name: str,
-
     test_data_path: Optional[list[str]] = None,
-):
+) -> tuple[int, dict[int, float | None]]:
     if test_data_path is None:
-
         test_data_path = [
             "E:/shared_resources/ect/feature_set/flattened_datasets/ect_feature_set/ect_feature_set.parquet"
         ]
@@ -36,13 +34,11 @@ def eval_stratified_split(
                 print("Invalid response. Please enter 'yes/y' or 'no/n'.")
             if response.lower() in ["no", "n"]:
                 print("Process stopped.")
-                return
+                return None
             if response.lower() in ["yes", "y"]:
                 print("Content of folder may be overwritten.")
                 break
 
-
-    
     outcome_col_name: str = cfg.retrieve("trainer.outcome_col_name")
 
     preprocessing_pipeline = cfg.rem(
@@ -125,13 +121,9 @@ def eval_stratified_split(
     return train_baseline_model_from_cfg(cfg)
 
 
-
 def evaluate_feature_set_and_year(
-    feature_set: str, 
-    train_end_year: int,     
+    feature_set: str, train_end_year: int
 ) -> tuple[int, dict[int, float | None]]:
-
-
     experiment_name = f"ECT-trunc-and-hp-{feature_set}-xgboost-no-lookbehind-filter"
 
     evaluation_years = range(train_end_year, 22)
@@ -139,8 +131,7 @@ def evaluate_feature_set_and_year(
         y: eval_stratified_split(
             MlflowClientWrapper()
             .get_best_run_from_experiment(
-                experiment_name=experiment_name, 
-                metric="all_oof_BinaryAUROC",
+                experiment_name=experiment_name, metric="all_oof_BinaryAUROC"
             )
             .get_config(),
             experiment_name=experiment_name,
@@ -150,7 +141,6 @@ def evaluate_feature_set_and_year(
         for y in evaluation_years
     }
     return train_end_year, year_aurocs
-
 
 
 if __name__ == "__main__":
@@ -168,6 +158,8 @@ if __name__ == "__main__":
     # compute in parallel across train end year and feature sets (15 workers)
     # can be flattened to be done across evaluation years as well but, meh
     results = Parallel(n_jobs=len(combinations))(
-        delayed(evaluate_feature_set_and_year)(feature_set=feature_set, train_end_year=train_end_year)
+        delayed(evaluate_feature_set_and_year)(
+            feature_set=feature_set, train_end_year=train_end_year
+        )
         for feature_set, train_end_year in combinations
     )

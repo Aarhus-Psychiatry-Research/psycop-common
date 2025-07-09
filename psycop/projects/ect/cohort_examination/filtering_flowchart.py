@@ -1,19 +1,16 @@
-from pathlib import Path
 from collections.abc import Sequence
+from pathlib import Path
 from tempfile import mkdtemp
 
 import polars as pl
-
 from confection import Config
+
 from psycop.common.cohort_definition import FilteredPredictionTimeBundle, StepDelta
 from psycop.common.global_utils.cache import shared_cache
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
-    MlflowClientWrapper,
-    PsycopMlflowRun,
-    filled_cfg_from_run,
+from psycop.common.model_training_v2.config.config_utils import (
+    PsycopConfig,
+    resolve_and_fill_config,
 )
-from psycop.common.model_training_v2.config.config_utils import PsycopConfig, resolve_and_fill_config
-from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 from psycop.common.model_training_v2.loggers.terminal_logger import TerminalLogger
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     BaselinePreprocessingPipeline,
@@ -60,11 +57,8 @@ def _apply_preprocessing_pipeline(
 
 
 def filtering_flowchart_facade(
-    prediction_time_bundle: FilteredPredictionTimeBundle,
-    cfg: PsycopConfig,
-    output_dir: Path,
+    prediction_time_bundle: FilteredPredictionTimeBundle, cfg: PsycopConfig, output_dir: Path
 ):
-
     tmp_cfg = Path(mkdtemp()) / "tmp.cfg"
     cfg.to_disk(tmp_cfg)
     filled = resolve_and_fill_config(tmp_cfg, fill_cfg_with_defaults=True)
@@ -91,22 +85,20 @@ def filtering_flowchart_facade(
     lines.append(
         f"Without outcome: {len(flattened_data.filter(outcome_matcher.not_()).collect()):,}"
     )
-    
+
     # Output to a file
     (output_dir / "filtering_flowchart.csv").write_text("\n".join(lines))
 
 
-
 if __name__ == "__main_n":
-        experiment="ECT-hparam-structured_only-xgboost-no-lookbehind-filter"
-        experiment_path = f"E:/shared_resources/ect/eval_runs/{experiment}_best_run_evaluated_on_test"
-        experiment_df = read_eval_df_from_disk(experiment_path)
-        experiment_cfg = PsycopConfig(Config().from_disk
-                                      (path=Path(experiment_path) / 'config.cfg'))
-        
-        save_dir = Path(experiment_path + "/figures") 
-        save_dir.mkdir(parents=True, exist_ok=True)
+    experiment = "ECT-hparam-structured_only-xgboost-no-lookbehind-filter"
+    experiment_path = f"E:/shared_resources/ect/eval_runs/{experiment}_best_run_evaluated_on_test"
+    experiment_df = read_eval_df_from_disk(experiment_path)
+    experiment_cfg = PsycopConfig(Config().from_disk(path=Path(experiment_path) / "config.cfg"))
 
-        filtering_flowchart_facade(
-            prediction_time_bundle=ect_pred_filtering(), cfg=experiment_cfg, output_dir=save_dir
-        )
+    save_dir = Path(experiment_path + "/figures")
+    save_dir.mkdir(parents=True, exist_ok=True)
+
+    filtering_flowchart_facade(
+        prediction_time_bundle=ect_pred_filtering(), cfg=experiment_cfg, output_dir=save_dir
+    )

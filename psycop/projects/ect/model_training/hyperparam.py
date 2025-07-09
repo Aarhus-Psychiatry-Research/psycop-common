@@ -43,9 +43,9 @@ def hyperparameter_search(cfg: PsycopConfig):
 
         cfg.mut(
             "logger.*.disk_logger.run_path",
-            f"E:/shared_resources/ect/training/ECT-trunc-and-hp-{feature_set}-xgboost-no-lookbehind-filter"
+            f"E:/shared_resources/ect/training/ECT-trunc-and-hp-{feature_set}-xgboost-no-lookbehind-filter",
         )
-        
+
         layer_regex = "|".join(features)
 
         cfg.mut(

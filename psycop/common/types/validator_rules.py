@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Protocol, Tuple, Union
+from typing import Protocol, Union
 
 import polars as pl
 from iterpy import Iter
@@ -59,7 +59,9 @@ class ColumnTypeError(FrameValidationError):
     expected_type: Union[pl.PolarsDataType, Sequence[pl.PolarsDataType]]
 
     def get_error_string(self) -> str:
-        if isinstance(self.expected_type, Sequence) and not isinstance(self.expected_type, (str, bytes)):
+        if isinstance(self.expected_type, Sequence) and not isinstance(
+            self.expected_type, (str, bytes)
+        ):
             expected_str = ", ".join(str(t) for t in self.expected_type)
         else:
             expected_str = str(self.expected_type)
@@ -70,7 +72,7 @@ class ColumnTypeError(FrameValidationError):
 @dataclass(frozen=True)
 class ColumnTypeRule(ValidatorRule):
     expected_type: Union[pl.PolarsDataType, Sequence[pl.PolarsDataType]]
-    
+
     def __call__(self, column_info: ColumnInfo, frame: PolarsFrame) -> Sequence[ColumnTypeError]:
         try:
             column_type = frame.schema[column_info.name]
@@ -78,7 +80,9 @@ class ColumnTypeRule(ValidatorRule):
             return []
 
         # Normalize to tuple for easy comparison
-        if isinstance(self.expected_type, Sequence) and not isinstance(self.expected_type, (str, bytes)):
+        if isinstance(self.expected_type, Sequence) and not isinstance(
+            self.expected_type, (str, bytes)
+        ):
             expected_types = tuple(self.expected_type)
         else:
             expected_types = (self.expected_type,)
@@ -90,8 +94,6 @@ class ColumnTypeRule(ValidatorRule):
 
         return [
             ColumnTypeError(
-                column=column_info,
-                actual_type=column_type,
-                expected_type=self.expected_type
+                column=column_info, actual_type=column_type, expected_type=self.expected_type
             )
         ]

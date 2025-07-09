@@ -38,14 +38,7 @@ class TemporalStabilityPlot(SingleRunPlot):
 
         plot = (
             pn.ggplot(
-                df,
-                pn.aes(
-                    x=x_variable,
-                    y="performance",
-                    ymin=0.5,
-                    ymax=1,
-                    color="train_end_year",
-                ),
+                df, pn.aes(x=x_variable, y="performance", ymin=0.5, ymax=1, color="train_end_year")
             )
             + pn.scale_color_ordinal()
             + pn.geom_line()
@@ -76,9 +69,8 @@ if __name__ == "__main__":
         for is_relative_time in [True, False]:
             relative_time_str = "relative" if is_relative_time else "absolute"
             plot = TemporalStabilityPlot(performances, relative_time=is_relative_time)()
-            save_dir = Path("E:/shared_resources/ect/eval_runs/figures") 
+            save_dir = Path("E:/shared_resources/ect/eval_runs/figures")
             save_dir.mkdir(parents=True, exist_ok=True)
             plot.save(
-                save_dir / f"temporal_stability_{feature_set}_{relative_time_str}.png",
-                dpi=300,
+                save_dir / f"temporal_stability_{feature_set}_{relative_time_str}.png", dpi=300
             )
