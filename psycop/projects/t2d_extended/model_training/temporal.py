@@ -93,7 +93,7 @@ if __name__ == "__main__":
             training_end_date="2018-01-01",
             evaluation_interval=(f"20{y}-01-01", f"20{y}-12-31"),
         )
-        for y in range(18, 23)
+        for y in range(18, 24)
     }
 
     print(aurocs)

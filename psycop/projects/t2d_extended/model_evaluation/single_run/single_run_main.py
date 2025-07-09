@@ -1,3 +1,4 @@
+from pathlib import Path
 import logging
 from typing import TYPE_CHECKING
 
@@ -31,6 +32,8 @@ from psycop.projects.t2d_extended.model_evaluation.single_run.sensitivity_by_tim
     SensitivityByTTEPlot,
 )
 from psycop.projects.t2d_extended.model_evaluation.single_run.single_run_artifact import SingleRunPlot
+from psycop.projects.t2d_extended.model_evaluation.utils.read_eval_df_from_disk import read_eval_df_from_disk
+
 from psycop.projects.scz_bp.evaluation.configs import COLORS
 
 if TYPE_CHECKING:
@@ -88,22 +91,18 @@ def single_run_main(
 if __name__ == "__main__":
     import coloredlogs
 
-    run_name = "2018-01-01_2022-01-01_2022-12-31"
-
     coloredlogs.install(  # type: ignore
         level="INFO",
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
         datefmt="%Y/%m/%d %H:%M:%S",
     )
 
-    eval_frame = (
-        MlflowClientWrapper()
-        .get_run(
-            experiment_name="T2D-extended, temporal validation",
-            run_name=run_name,
-        )
-        .eval_frame()
-    )
+    run_name = "2018-01-01_2022-01-01_2018-12-31"
+    experiment_name = "T2D-extended, temporal validation"
+    experiment_path = f"E:/shared_resources/t2d_extended/training/T2D-extended-2025"
+
+    eval_frame = read_eval_df_from_disk(experiment_path)
+
     pred_timestamps = t2d_pred_times()
     outcome_timestamps = t2d_outcome_timestamps()
 
@@ -115,4 +114,7 @@ if __name__ == "__main__":
         first_letter_index=0,
     )
 
-    figure.savefig(f"t2d-extended_{run_name}_main.png")
+    save_dir =  Path("E:/shared_resources/t2d_extended/eval_runs/figures")
+    save_dir.mkdir(parents=True, exist_ok=True)
+
+    figure.savefig(save_dir / f"t2d-extended_{run_name}_main.png")

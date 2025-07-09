@@ -7,8 +7,8 @@ from psycop.common.cohort_definition import (
     OutcomeTimestampFrame,
     filter_prediction_times,
 )
-from psycop.common.feature_generation.loaders_2024.demographics import birthdays
-from psycop.common.feature_generation.loaders_2024.visits import physical_visits_to_psychiatry_2024
+from psycop.common.feature_generation.loaders_2025.demographics import birthdays
+from psycop.common.feature_generation.loaders_2025.visits import physical_visits_to_psychiatry_2025
 from psycop.common.global_utils.cache import shared_cache
 from psycop.common.sequence_models.registry import SequenceRegistry
 from psycop.projects.t2d_extended.feature_generation.cohort_definition.eligible_prediction_times.single_filters import (
@@ -26,21 +26,21 @@ msg = Printer(timestamp=True)
 
 @shared_cache().cache()
 def t2d_pred_times() -> FilteredPredictionTimeBundle:
-    return T2DCohortDefiner2024.get_filtered_prediction_times_bundle()
+    return T2DCohortDefiner2025.get_filtered_prediction_times_bundle()
 
 
 @shared_cache().cache()
 def t2d_outcome_timestamps() -> OutcomeTimestampFrame:
-    return T2DCohortDefiner2024.get_outcome_timestamps()
+    return T2DCohortDefiner2025.get_outcome_timestamps()
 
 
 @SequenceRegistry.cohorts.register("t2d_extended")
-class T2DCohortDefiner2024(CohortDefiner):
+class T2DCohortDefiner2025(CohortDefiner):
     @staticmethod
     def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle:
         msg.info("Getting unfiltered prediction times")
         unfiltered_prediction_times = pl.from_pandas(
-            physical_visits_to_psychiatry_2024(timestamps_only=True, timestamp_for_output="start")
+            physical_visits_to_psychiatry_2025(timestamps_only=True, timestamp_for_output="start")
         ).lazy()
 
         msg.info("Filtering prediction times")
@@ -64,7 +64,7 @@ class T2DCohortDefiner2024(CohortDefiner):
 
 
 if __name__ == "__main__":
-    bundle = T2DCohortDefiner2024.get_filtered_prediction_times_bundle()
+    bundle = T2DCohortDefiner2025.get_filtered_prediction_times_bundle()
 
     if isinstance(bundle.prediction_times, pl.LazyFrame):
         msg.info("Collecting")

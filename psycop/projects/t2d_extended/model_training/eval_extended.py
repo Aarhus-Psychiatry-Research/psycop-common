@@ -2,7 +2,7 @@ from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClien
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
 from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
-from psycop.projects.cvd.model_training.populate_cvd_registry import populate_with_cvd_registry
+from psycop.projects.t2d_extended.model_training.populate_t2d_registry import populate_with_t2d_registry
 
 
 def eval_geographic_test_set(cfg: PsycopConfig):
@@ -11,7 +11,7 @@ def eval_geographic_test_set(cfg: PsycopConfig):
 
     # Setup for test set
     cfg = (
-        cfg.mut("logger.*.mlflow.experiment_name", "CVD, test-set")
+        cfg.mut("logger.*.mlflow.experiment_name", "T2D-extended, temporal validation")
         .mut("trainer.@trainers", "split_trainer_separate_preprocessing")
         .rem("trainer.outcome_col_name")
         .rem("trainer.preprocessing_pipeline")
@@ -43,8 +43,8 @@ def eval_geographic_test_set(cfg: PsycopConfig):
 
 if __name__ == "__main__":
     populate_baseline_registry()
-    populate_with_cvd_registry()
+    populate_with_t2d_registry()
 
-    eval_geographic_test_set(
-        MlflowClientWrapper().get_run("CVD, h, l-2, XGB", "classy-wren-652").get_config() # TODO fh:
-    )
+    # eval_geographic_test_set(
+    #     MlflowClientWrapper().get_run("CVD, h, l-2, XGB", "classy-wren-652").get_config() # TODO fh:
+    # )

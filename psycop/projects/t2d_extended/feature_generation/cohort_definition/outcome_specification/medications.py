@@ -1,10 +1,10 @@
 import pandas as pd
 
-from psycop.common.feature_generation.loaders_2024.medications import antidiabetics_2024
+from psycop.common.feature_generation.loaders_2025.medications import antidiabetics_2025
 
 
 def get_first_antidiabetic_medication() -> pd.DataFrame:
-    df = antidiabetics_2024()
+    df = antidiabetics_2025()
 
     # Group by person id and sort by timestamp, then get the first row for each person
     df_first_antidiabetic_medication = (

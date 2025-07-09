@@ -17,8 +17,8 @@ from psycop.common.feature_generation.application_modules.generate_feature_set i
     generate_feature_set,
 )
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
-from psycop.common.feature_generation.loaders_2024.demographics import birthdays, sex_female
-from psycop.common.feature_generation.loaders_2024.lab import hba1c
+from psycop.common.feature_generation.loaders_2025.demographics import birthdays, sex_female
+from psycop.common.feature_generation.loaders_2025.lab import hba1c
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.projects.t2d_extended.feature_generation.cohort_definition.t2d_cohort_definer import (
     t2d_outcome_timestamps,
@@ -153,7 +153,7 @@ if __name__ == "__main__":
         ),
         eligible_prediction_times_frame=t2d_pred_times().prediction_times,
         feature_specs=specs,
-        feature_set_name="t2d_extended_feature_set",
+        feature_set_name="t2d_extended_feature_set_2025",
         n_workers=10,
         step_size=datetime.timedelta(days=365),
         do_dataset_description=False,
