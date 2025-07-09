@@ -20,13 +20,14 @@ def bootstrap_roc(
     tprs_bootstrapped = []
     aucs_bootstrapped = []
 
+    np_random_state = np.random.RandomState(random_state)
     # Instead, we specify a base fpr array, and interpolate the tpr values onto it.
     base_fpr = np.linspace(0, 1, 101)
 
     # Bootstrap TPRs
     logging.info("Starting bootstrapping")
     for _ in range(n_bootstraps):
-        y_resampled, y_hat_probs_resampled = resample(y, y_hat_probs, random_state=random_state)  # type: ignore
+        y_resampled, y_hat_probs_resampled = resample(y, y_hat_probs, random_state=np_random_state.randint(0, n_bootstraps))  # type: ignore
         fpr_resampled, tpr_resampled, _ = roc_curve(y_resampled, y_hat_probs_resampled)
 
         tpr_bootstrapped = np.interp(base_fpr, fpr_resampled, tpr_resampled)

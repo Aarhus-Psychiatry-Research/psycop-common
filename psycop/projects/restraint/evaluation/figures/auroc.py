@@ -13,7 +13,7 @@ from psycop.projects.restraint.evaluation.utils import read_eval_df_from_disk
 def auroc_plot(data: AUROC, title: str = "AUROC") -> pn.ggplot:
     auroc_label = pn.annotate(
         "text",
-        label=f"AUROC (95% CI): {data.mean:.2f} ({data.ci[0]:.2f}-{data.ci[1]:.2f})",
+        label=f"AUROC (95% CI): {data.mean:.4f} ({data.ci[0]:.4f}-{data.ci[1]:.4f})",
         x=1,
         y=0,
         ha="right",
@@ -24,7 +24,8 @@ def auroc_plot(data: AUROC, title: str = "AUROC") -> pn.ggplot:
 
     p = (
         pn.ggplot(data.to_dataframe(), pn.aes(x="fpr", y="tpr"))
-        + pn.geom_ribbon(pn.aes(x="fpr", ymin="tpr_lower", ymax="tpr_upper"), fill="#B7C8B5")
+        + pn.geom_line(pn.aes(y="tpr_upper"), linetype="dashed", color="grey")
+        + pn.geom_line(pn.aes(y="tpr_lower"), linetype="dashed", color="grey")
         + pn.geom_line(pn.aes(x="fpr", y="tpr"), size=0.5, color="black")
         + pn.labs(title=title, x="1 - Specificity", y="Sensitivity")
         + pn.xlim(0, 1)
@@ -47,7 +48,7 @@ def auroc_plot(data: AUROC, title: str = "AUROC") -> pn.ggplot:
     return p
 
 
-def auroc_model(df: pd.DataFrame, n_bootstraps: int = 5) -> AUROC:
+def auroc_model(df: pd.DataFrame, n_bootstraps: int = 100) -> AUROC:
     y = df["y"]
     y_hat_probs = df["y_hat_prob"]
 
