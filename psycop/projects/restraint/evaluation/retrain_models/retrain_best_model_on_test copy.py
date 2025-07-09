@@ -1,5 +1,4 @@
 # Script for re-training best models on spceified splits / congifgs
-from pathlib import Path
 from typing import Optional
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
@@ -51,7 +50,9 @@ def retrain_best_model(
         )
 
     else:
-        validation_outcome_col_name = "outc_outcome_mechanical_restraint_within_2_days_boolean_fallback_0_dichotomous"
+        validation_outcome_col_name = (
+            "outc_outcome_mechanical_restraint_within_2_days_boolean_fallback_0_dichotomous"
+        )
         training_outcome_col_name = best_run_cfg.retrieve("trainer.outcome_col_name")
 
         best_run_cfg = (
@@ -71,8 +72,21 @@ def retrain_best_model(
             data_split_filter,
         )
         .mut("trainer.training_preprocessing_pipeline.*.split_filter.splits_to_keep", train_splits)
-        .mut("trainer.training_preprocessing_pipeline.*.outcome_selector", {"@preprocessing": "filter_columns_within_subset", "subset_rule": "outc_.+", "keep_matching": ".+(mechanical|all_restraint).+"})
-        .mut("trainer.training_preprocessing_pipeline.*.column_prefix_count_expectation", {"@preprocessing": "column_prefix_count_expectation", "column_expectations": [["outc_", 2], ["prediction_timestamp", 0]]})
+        .mut(
+            "trainer.training_preprocessing_pipeline.*.outcome_selector",
+            {
+                "@preprocessing": "filter_columns_within_subset",
+                "subset_rule": "outc_.+",
+                "keep_matching": ".+(mechanical|all_restraint).+",
+            },
+        )
+        .mut(
+            "trainer.training_preprocessing_pipeline.*.column_prefix_count_expectation",
+            {
+                "@preprocessing": "column_prefix_count_expectation",
+                "column_expectations": [["outc_", 2], ["prediction_timestamp", 0]],
+            },
+        )
     )
 
     best_run_cfg = (
@@ -87,14 +101,34 @@ def retrain_best_model(
             data_split_filter,
         )
         .mut("trainer.validation_preprocessing_pipeline.*.split_filter.splits_to_keep", test_split)
-        .mut("trainer.validation_preprocessing_pipeline.*.outcome_selector", {"@preprocessing": "filter_columns_within_subset", "subset_rule": "outc_.+", "keep_matching": ".+(mechanical|all_restraint).+"})
-        .mut("trainer.validation_preprocessing_pipeline.*.column_prefix_count_expectation", {"@preprocessing": "column_prefix_count_expectation", "column_expectations": [["outc_", 2], ["prediction_timestamp", 0]]})
+        .mut(
+            "trainer.validation_preprocessing_pipeline.*.outcome_selector",
+            {
+                "@preprocessing": "filter_columns_within_subset",
+                "subset_rule": "outc_.+",
+                "keep_matching": ".+(mechanical|all_restraint).+",
+            },
+        )
+        .mut(
+            "trainer.validation_preprocessing_pipeline.*.column_prefix_count_expectation",
+            {
+                "@preprocessing": "column_prefix_count_expectation",
+                "column_expectations": [["outc_", 2], ["prediction_timestamp", 0]],
+            },
+        )
     )
 
     train_baseline_model_from_cfg(best_run_cfg)
 
 
 if __name__ == "__main__":
-    retrain_best_model(experiment_name="restraint_all_tuning_v2", train_splits=["train", "val"], test_split=["test"], test_data_path=["E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"])
-    #retrain_best_model(experiment_name="restraint_mechanical_tuning_v2", train_splits=["train", "val"], test_split=["test"], test_data_path=["E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"])
-    #retrain_best_model(experiment_name="restraint_split_tuning_v2", train_splits=["train", "val"], test_split=["test"], split_outcome=True, test_data_path=["E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"])
+    retrain_best_model(
+        experiment_name="restraint_all_tuning_v2",
+        train_splits=["train", "val"],
+        test_split=["test"],
+        test_data_path=[
+            "E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"
+        ],
+    )
+    # retrain_best_model(experiment_name="restraint_mechanical_tuning_v2", train_splits=["train", "val"], test_split=["test"], test_data_path=["E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"])
+    # retrain_best_model(experiment_name="restraint_split_tuning_v2", train_splits=["train", "val"], test_split=["test"], split_outcome=True, test_data_path=["E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"])

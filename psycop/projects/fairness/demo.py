@@ -1,17 +1,15 @@
-import numpy as np
-import pandas as pd
-from fairlearn.datasets import fetch_diabetes_hospital
 from fairlearn.metrics import (
     MetricFrame,
     count,
     false_negative_rate,
     false_positive_rate,
     selection_rate,
-    demographic_parity_ratio,
 )
-from sklearn.metrics import accuracy_score, precision_score, roc_auc_score
+from sklearn.metrics import precision_score, roc_auc_score
 
-from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import scz_bp_get_eval_ds_from_disk
+from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
+    scz_bp_get_eval_ds_from_disk,
+)
 
 if __name__ == "__main__":
     eval_ds = scz_bp_get_eval_ds_from_disk(
@@ -28,13 +26,20 @@ if __name__ == "__main__":
         "Count": count,
     }
     metric_frame = MetricFrame(
-        metrics=metrics, y_true=eval_ds.y, y_pred=y_hat, sensitive_features=eval_ds.is_female.replace({True: "Female", False: "Male"})
+        metrics=metrics,
+        y_true=eval_ds.y,
+        y_pred=y_hat,
+        sensitive_features=eval_ds.is_female.replace({True: "Female", False: "Male"}),
     )
 
     bar_plot = metric_frame.by_group.plot.bar(
-        subplots=True, layout=[3, 2], legend=False, figsize=[12, 8], title="Prediction of schizophrenia and bipolar disorder", colormap="Dark2", xlabel="Sex"
+        subplots=True,
+        layout=[3, 2],
+        legend=False,
+        figsize=[12, 8],
+        title="Prediction of schizophrenia and bipolar disorder",
+        colormap="Dark2",
+        xlabel="Sex",
     )
 
     bar_plot[0][0].figure.savefig("bar_plot.png")
-
-    pass

@@ -1,6 +1,3 @@
-from pathlib import Path
-from typing import TYPE_CHECKING, Literal
-
 import patchworklib as pw
 import polars as pl
 
@@ -11,15 +8,11 @@ from psycop.projects.restraint.evaluation.figures.confusion_matrix import (
     confusion_matrix_model,
     plotnine_confusion_matrix,
 )
-
 from psycop.projects.restraint.evaluation.figures.sensitivity_by_tte import (
     plotnine_sensitivity_by_tte,
     sensitivity_by_tte_model,
 )
 from psycop.projects.restraint.evaluation.utils import read_eval_df_from_disk
-
-if TYPE_CHECKING:
-    import plotnine as pn
 
 
 def plot_grid(
@@ -67,14 +60,11 @@ def plot_grid(
 
 
 if __name__ == "__main__":
-
     restraint_type = "all"
     data_path = f"E:/shared_resources/restraint/eval_runs/restraint_{restraint_type}_tuning_v2_best_run_n_days"
 
     best_pos_rate = 0.05
-    df = read_eval_df_from_disk(
-        data_path
-    )
+    df = read_eval_df_from_disk(data_path)
 
     outcome_timestamps = pl.DataFrame(
         sql_load(

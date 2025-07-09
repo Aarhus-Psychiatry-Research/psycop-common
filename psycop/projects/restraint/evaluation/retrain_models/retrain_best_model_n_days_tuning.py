@@ -1,10 +1,10 @@
 # Script for re-training best models on spceified splits / congifgs
-from pathlib import Path
 from typing import Optional
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
-from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
-from psycop.common.model_training_v2.hyperparameter_suggester.optuna_hyperparameter_search import OptunaHyperParameterOptimization
+from psycop.common.model_training_v2.hyperparameter_suggester.optuna_hyperparameter_search import (
+    OptunaHyperParameterOptimization,
+)
 
 
 def retrain_best_model(
@@ -88,18 +88,23 @@ def retrain_best_model(
             data_split_filter,
         )
         .mut("trainer.validation_preprocessing_pipeline.*.split_filter.splits_to_keep", test_split)
-        .add("trainer.validation_preprocessing_pipeline.*.n_days_suggester", {
-            "@suggesters": "value_filter_suggester", 
-            "column_name": "pred_adm_day_count", 
-            "low": low+2,
-            "high": high+2,
-            "direction": "before"})
+        .add(
+            "trainer.validation_preprocessing_pipeline.*.n_days_suggester",
+            {
+                "@suggesters": "value_filter_suggester",
+                "column_name": "pred_adm_day_count",
+                "low": low + 2,
+                "high": high + 2,
+                "direction": "before",
+            },
+        )
         # .add("trainer.validation_preprocessing_pipeline.*.remove_pred_adm_day_count", {
-        #     "@preprocessing": "regex_column_blacklist", 
+        #     "@preprocessing": "regex_column_blacklist",
         #     "*": ["pred_adm_day_count"]})
     )
 
-    OptunaHyperParameterOptimization().from_cfg(best_run_cfg,
+    OptunaHyperParameterOptimization().from_cfg(
+        best_run_cfg,
         study_name=test_run_experiment_name,
         n_trials=68,
         n_jobs=10,
@@ -108,8 +113,18 @@ def retrain_best_model(
         catch=(),  # type: ignore
     )
 
-if __name__ == "__main__":
 
-    retrain_best_model(experiment_name="restraint_all_tuning_v2", low=3, high=30, train_splits=["train", "val"], test_split=["test"], test_run_name="n_days", test_data_path=["E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"])
-    #retrain_best_model(experiment_name="restraint_mechanical_tuning_v2", low=3, high=30, train_splits=["train", "val"], test_split=["test"], test_run_name="n_days", test_data_path=["E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"])
-   # retrain_best_model(experiment_name="restraint_split_tuning_v2",  low=3, high=30, train_splits=["train", "val"], test_split=["test"], test_run_name="n_days", split_outcome=True, test_data_path=["E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"])
+if __name__ == "__main__":
+    retrain_best_model(
+        experiment_name="restraint_all_tuning_v2",
+        low=3,
+        high=30,
+        train_splits=["train", "val"],
+        test_split=["test"],
+        test_run_name="n_days",
+        test_data_path=[
+            "E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"
+        ],
+    )
+    # retrain_best_model(experiment_name="restraint_mechanical_tuning_v2", low=3, high=30, train_splits=["train", "val"], test_split=["test"], test_run_name="n_days", test_data_path=["E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"])
+# retrain_best_model(experiment_name="restraint_split_tuning_v2",  low=3, high=30, train_splits=["train", "val"], test_split=["test"], test_run_name="n_days", split_outcome=True, test_data_path=["E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"])

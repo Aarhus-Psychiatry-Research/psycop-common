@@ -84,4 +84,6 @@ if __name__ == "__main__":
         "E:/shared_resources/restraint/eval_runs/restraint_all_tuning_best_run_evaluated_on_test"
     )
 
-    plotnine_auroc_by_month(auroc_by_month_model(df=df)).save(save_dir / "restraint_auroc_by_month.png")
+    plotnine_auroc_by_month(auroc_by_month_model(df=df)).save(
+        save_dir / "restraint_auroc_by_month.png"
+    )

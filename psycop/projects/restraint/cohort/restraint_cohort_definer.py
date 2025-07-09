@@ -59,14 +59,18 @@ class RestraintCohortDefiner(CohortDefiner):
 
         unfiltered_coercion_timestamps = pl.LazyFrame(pl.from_pandas(load_coercion_timestamps()))
 
-        filtered_coercion_timestamps = filter_prediction_times(
-            prediction_times=unfiltered_coercion_timestamps,
-            filtering_steps=[RestraintCoercionTypeFilter()],
-            entity_id_col_name="dw_ek_borger",
-            timestamp_col_name="datotid_start_sei",
-        ).prediction_times.frame.select(  # type: ignore
-            pl.col(["dw_ek_borger", "datotid_start_sei", "typetekst_sei", "behandlingsomraade"])
-        ).unique()
+        filtered_coercion_timestamps = (
+            filter_prediction_times(
+                prediction_times=unfiltered_coercion_timestamps,
+                filtering_steps=[RestraintCoercionTypeFilter()],
+                entity_id_col_name="dw_ek_borger",
+                timestamp_col_name="datotid_start_sei",
+            )
+            .prediction_times.frame.select(  # type: ignore
+                pl.col(["dw_ek_borger", "datotid_start_sei", "typetekst_sei", "behandlingsomraade"])
+            )
+            .unique()
+        )
 
         unfiltered_cohort = pl.LazyFrame(
             filtered_prediction_times.join(  # type: ignore

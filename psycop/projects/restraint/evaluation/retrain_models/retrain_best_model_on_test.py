@@ -1,5 +1,4 @@
 # Script for re-training best models on spceified splits / congifgs
-from pathlib import Path
 from typing import Optional
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
@@ -91,6 +90,13 @@ def retrain_best_model(
 
 
 if __name__ == "__main__":
-    retrain_best_model(experiment_name="restraint_all_tuning_v2", train_splits=["train", "val"], test_split=["test"], test_data_path=["E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"])
-    #retrain_best_model(experiment_name="restraint_mechanical_tuning_v2", train_splits=["train", "val"], test_split=["test"], test_data_path=["E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"])
-    #retrain_best_model(experiment_name="restraint_split_tuning_v2", train_splits=["train", "val"], test_split=["test"], split_outcome=True, test_data_path=["E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"])
+    retrain_best_model(
+        experiment_name="restraint_all_tuning_v2",
+        train_splits=["train", "val"],
+        test_split=["test"],
+        test_data_path=[
+            "E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"
+        ],
+    )
+    # retrain_best_model(experiment_name="restraint_mechanical_tuning_v2", train_splits=["train", "val"], test_split=["test"], test_data_path=["E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"])
+    # retrain_best_model(experiment_name="restraint_split_tuning_v2", train_splits=["train", "val"], test_split=["test"], split_outcome=True, test_data_path=["E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"])

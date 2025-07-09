@@ -4,10 +4,10 @@ from fairlearn.datasets import fetch_diabetes_hospital
 from fairlearn.metrics import (
     MetricFrame,
     count,
+    demographic_parity_ratio,
     false_negative_rate,
     false_positive_rate,
     selection_rate,
-    demographic_parity_ratio,
 )
 from sklearn.metrics import accuracy_score, precision_score, roc_auc_score
 from sklearn.model_selection import train_test_split

@@ -88,7 +88,7 @@ def first_pos_pred_to_model(
 
 
 if __name__ == "__main__":
-    save_dir = Path(__file__).parent 
+    save_dir = Path(__file__).parent
     save_dir.mkdir(parents=True, exist_ok=True)
 
     best_experiment = "restraint_text_hyper"

@@ -32,7 +32,7 @@ def plotnine_auroc_by_weekday(
             axis_title=pn.element_text(size=22),
             plot_title=pn.element_text(size=30, ha="center"),
             dpi=300,
-            figure_size=(7, 5)
+            figure_size=(7, 5),
         )
         + pn.scale_x_discrete()
         + pn.scale_fill_manual(
@@ -85,4 +85,6 @@ if __name__ == "__main__":
         "E:/shared_resources/restraint/eval_runs/restraint_all_tuning_best_run_evaluated_on_test"
     )
 
-    plotnine_auroc_by_weekday(auroc_by_weekday_model(df=df)).save(save_dir / "restraint_auroc_by_weekday.png")
+    plotnine_auroc_by_weekday(auroc_by_weekday_model(df=df)).save(
+        save_dir / "restraint_auroc_by_weekday.png"
+    )

@@ -19,9 +19,7 @@ from psycop.projects.restraint.evaluation.utils import (
 )
 
 
-def plotnine_sensitivity_by_tte(
-    df: pd.DataFrame, title: str = "Temporal Sensitivity"
-) -> pn.ggplot:
+def plotnine_sensitivity_by_tte(df: pd.DataFrame, title: str = "Temporal Sensitivity") -> pn.ggplot:
     categories = df["unit_from_event_binned"].dtype.categories[::-1]  # type: ignore
     df["unit_from_event_binned"] = df["unit_from_event_binned"].cat.set_categories(
         new_categories=categories,

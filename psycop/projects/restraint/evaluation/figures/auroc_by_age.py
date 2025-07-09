@@ -45,7 +45,7 @@ def plotnine_auroc_by_age(df: pd.DataFrame, title: str = "AUROC by Age") -> pn.g
                 "#669BBC",
                 "#669BBC",
                 "#669BBC",
-                "#669BBC"
+                "#669BBC",
                 # "#A8C686",
                 # "#669BBC",
                 # "#A8C686",
@@ -87,7 +87,7 @@ def auroc_by_age_model(
 
 
 if __name__ == "__main__":
-    save_dir = Path(__file__).parent 
+    save_dir = Path(__file__).parent
     save_dir.mkdir(parents=True, exist_ok=True)
 
     best_experiment = "restraint_text_hyper"

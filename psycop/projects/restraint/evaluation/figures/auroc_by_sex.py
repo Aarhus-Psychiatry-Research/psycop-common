@@ -65,7 +65,7 @@ def auroc_by_sex_model(df: pl.DataFrame, sex_df: pl.DataFrame) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    save_dir = Path(__file__).parent 
+    save_dir = Path(__file__).parent
     save_dir.mkdir(parents=True, exist_ok=True)
 
     best_experiment = "restraint_text_hyper"

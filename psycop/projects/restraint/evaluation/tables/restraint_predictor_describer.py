@@ -40,17 +40,16 @@ def parse_predictor_column_name(
     time_interval_start_regex: str = r"_within_([0-9]+)",
     resolve_multiple_strategy_regex: str = r"([a-z]+)_fallback",
 ) -> ParsedPredictorColumn:
-
     if is_static(col_name):
         return ParsedPredictorColumn(
             col_name=col_name,
-            feature_name=re.search(r"[a-zA-Z]+_(.+)", col_name).group(1), # type: ignore
+            feature_name=re.search(r"[a-zA-Z]+_(.+)", col_name).group(1),  # type: ignore
             fallback="0",
             time_interval_start="N/A",
             resolve_multiple_strategy="N/A",
             is_static=True,
         )
-    
+
     feature_name = _get_match_group(feature_name_regex, col_name)
     fallback = _get_match_group(fallback_regex, col_name)
     time_interval_start = _get_match_group(time_interval_start_regex, col_name)
@@ -88,17 +87,22 @@ def generate_feature_description_df(
         n_unique = df[parsed_col.col_name].n_unique()
         mean = round(df[parsed_col.col_name].drop_nans().mean(), 3)  # type: ignore
         if parsed_col.fallback == "nan":
-            proportion_using_fallback = round(df[parsed_col.col_name].null_count()/len(df), 3)
+            proportion_using_fallback = round(df[parsed_col.col_name].null_count() / len(df), 3)
         else:
             proportion_using_fallback = round(
-            df[parsed_col.col_name].cast(pl.Float32).eq(float(parsed_col.fallback)).mean(),  # type: ignore
-            3,
-        )
-            
-        if "tfidf" in parsed_col.feature_name:
-            vocab = pl.read_parquet(OVARTACI_SHARED_DIR / "text_models" / "vocabulary_lists" / "vocab_tfidf_psycop_train_all_sfis_preprocessed_sfi_type_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750.parquet")
+                df[parsed_col.col_name].cast(pl.Float32).eq(float(parsed_col.fallback)).mean(),  # type: ignore
+                3,
+            )
 
-            tfidf_idx = re.search(r"(\d+)", parsed_col.feature_name).group(0) # type: ignore
+        if "tfidf" in parsed_col.feature_name:
+            vocab = pl.read_parquet(
+                OVARTACI_SHARED_DIR
+                / "text_models"
+                / "vocabulary_lists"
+                / "vocab_tfidf_psycop_train_all_sfis_preprocessed_sfi_type_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750.parquet"
+            )
+
+            tfidf_idx = re.search(r"(\d+)", parsed_col.feature_name).group(0)  # type: ignore
             tfidf_word = vocab.filter(pl.col("Index") == int(tfidf_idx))["Word"][0]
             parsed_col.feature_name = re.sub(tfidf_idx, tfidf_word, parsed_col.feature_name)
 

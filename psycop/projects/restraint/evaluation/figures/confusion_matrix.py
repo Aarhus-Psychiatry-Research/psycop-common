@@ -37,7 +37,9 @@ def plotnine_confusion_matrix(
     p = (
         pn.ggplot(df, pn.aes(x="true", y="pred", fill="fill"))
         + pn.geom_tile(pn.aes(width=0.95, height=0.95))
-        + pn.geom_text(pn.aes(label="metric"), size=20, color="white") #, family="Times New Roman")
+        + pn.geom_text(
+            pn.aes(label="metric"), size=20, color="white"
+        )  # , family="Times New Roman")
         + pn.geom_text(
             pn.aes(label="estimate"),
             size=25,
@@ -85,7 +87,7 @@ def confusion_matrix_model(df: pd.DataFrame, positive_rate: float) -> ConfusionM
 
 
 if __name__ == "__main__":
-    save_dir = Path(__file__).parent 
+    save_dir = Path(__file__).parent
     save_dir.mkdir(parents=True, exist_ok=True)
 
     best_experiment = "restraint_text_hyper"

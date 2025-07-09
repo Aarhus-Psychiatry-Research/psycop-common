@@ -26,7 +26,13 @@ def sufficient_window_filter_validation(
         train_splits = ["train"]
     test_run_experiment_name = f"{experiment_name}_best_run_{test_run_name}"
 
-    test_run_path = "E:/shared_resources/" + "/restraint" + "/eval_runs" + "/sufficient_window_filter_validation/" + test_run_experiment_name
+    test_run_path = (
+        "E:/shared_resources/"
+        + "/restraint"
+        + "/eval_runs"
+        + "/sufficient_window_filter_validation/"
+        + test_run_experiment_name
+    )
 
     if Path(test_run_path).exists():
         while True:
@@ -96,12 +102,15 @@ def sufficient_window_filter_validation(
         .add("trainer.validation_outcome_col_name", validation_outcome_col_name)
         .add("trainer.validation_preprocessing_pipeline", preprocessing_pipeline)
         .rem("trainer.validation_preprocessing_pipeline.*.temporal_col_filter")
-        .add("trainer.validation_preprocessing_pipeline.*.sufficient_look_filter", {
-            "@preprocessing": "window_filter",
-            "timestamp_col_name": "timestamp",
-            "n_days": 730,
-            "direction": "behind", 
-        })
+        .add(
+            "trainer.validation_preprocessing_pipeline.*.sufficient_look_filter",
+            {
+                "@preprocessing": "window_filter",
+                "timestamp_col_name": "timestamp",
+                "n_days": 730,
+                "direction": "behind",
+            },
+        )
         .add(
             "trainer.validation_preprocessing_pipeline.*.temporal_col_filter",
             {"@preprocessing": "temporal_col_filter"},
@@ -119,4 +128,6 @@ def sufficient_window_filter_validation(
 if __name__ == "__main__":
     sufficient_window_filter_validation(experiment_name="restraint_all_tuning")
     sufficient_window_filter_validation(experiment_name="restraint_mechanical_tuning")
-    sufficient_window_filter_validation(experiment_name="restraint_split_tuning", split_outcome=True)
+    sufficient_window_filter_validation(
+        experiment_name="restraint_split_tuning", split_outcome=True
+    )

@@ -5,7 +5,6 @@ from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.suggest
     CategoricalSpace,
     CategoricalSpaceT,
     IntegerSpace,
-    IntegerspaceT,
 )
 
 
@@ -54,16 +53,23 @@ class BlacklistFilterSuggester:
             regex_pattern = "matchnothing"
 
         return {"@preprocessing": "regex_column_blacklist", "*": [regex_pattern]}
-    
+
 
 @BaselineRegistry.suggesters.register("value_filter_suggester")
 class ValueFilterSuggester:
-    def __init__(self, column_name: str, direction: str, low: int, high: int, logarithmic: bool = False):
+    def __init__(
+        self, column_name: str, direction: str, low: int, high: int, logarithmic: bool = False
+    ):
         self.column_name = column_name
         self.direction = direction
-        self.threshold_value =IntegerSpace(low=low, high=high, logarithmic=logarithmic)
+        self.threshold_value = IntegerSpace(low=low, high=high, logarithmic=logarithmic)
 
     def suggest_hyperparameters(self, trial: Trial) -> dict[str, str | float]:
         threshold_value = self.threshold_value.suggest(trial, "threshold_value")
 
-        return {"@preprocessing": "value_filter", "column_name": self.column_name, "direction": self.direction, "threshold_value": threshold_value}
+        return {
+            "@preprocessing": "value_filter",
+            "column_name": self.column_name,
+            "direction": self.direction,
+            "threshold_value": threshold_value,
+        }

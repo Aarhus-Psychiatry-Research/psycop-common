@@ -8,7 +8,6 @@ import pandas as pd
 import polars as pl
 
 from psycop.common.global_utils.cache import shared_cache
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame, MlflowClientWrapper
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
     get_confusion_matrix_cells_from_df,
 )
@@ -24,8 +23,8 @@ from psycop.projects.ect.model_evaluation.performance_by_ppr.days_from_first_pos
 from psycop.projects.restraint.evaluation.utils import (
     parse_dw_ek_borger_from_uuid,
     parse_timestamp_from_uuid,
+    read_eval_df_from_disk,
 )
-from psycop.projects.restraint.evaluation.utils import read_eval_df_from_disk
 
 
 def _performance_by_ppr_row(eval_df: pl.DataFrame, positive_rate: float) -> pl.DataFrame:
@@ -188,7 +187,6 @@ def performance_by_ppr_model(
     return PerformanceByPPRModel(df)
 
 
-
 def performance_by_ppr_view(model: PerformanceByPPRModel, outcome_label: str) -> pl.DataFrame:
     model2pretty = {
         "positive_rate": "Predicted positive rate",
@@ -240,11 +238,15 @@ def performance_by_ppr_view(model: PerformanceByPPRModel, outcome_label: str) ->
 if __name__ == "__main__":
     MAIN_METRIC = "all_oof_BinaryAUROC"
 
-
     eval_df_path = "E:/shared_resources/restraint/eval_runs/restraint_all_tuning_v2_best_run_n_days"
     eval_df = read_eval_df_from_disk(eval_df_path)
 
-    pprs = pl.concat([_performance_by_ppr_row(eval_df=eval_df, positive_rate=rate) for rate in [0.001, 0.005, 0.01, 0.02, 0.03, 0.04, 0.05]])
+    pprs = pl.concat(
+        [
+            _performance_by_ppr_row(eval_df=eval_df, positive_rate=rate)
+            for rate in [0.001, 0.005, 0.01, 0.02, 0.03, 0.04, 0.05]
+        ]
+    )
 
     pprs.write_csv(eval_df_path + "/pprs.csv")
 
@@ -252,9 +254,6 @@ if __name__ == "__main__":
     print(pprs)
     pers = performance_by_ppr_model(eval_df, [0.001, 0.005, 0.01, 0.02, 0.03, 0.04, 0.05])
     # add correct outcome timestamp
-
-
-
 
     import coloredlogs
 

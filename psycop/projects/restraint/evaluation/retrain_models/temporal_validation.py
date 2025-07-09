@@ -7,18 +7,15 @@ from psycop.common.model_training_v2.config.populate_registry import populate_ba
 
 
 def eval_stratified_split(
-    cfg: PsycopConfig,
-    training_end_date: str,
-    evaluation_interval: tuple[str, str],
+    cfg: PsycopConfig, training_end_date: str, evaluation_interval: tuple[str, str]
 ) -> float:
-
-
     # Setup for experiment
     cfg = (
-        cfg.rem(
-            "trainer.training_preprocessing_pipeline.*.temporal_col_filter"
+        cfg.rem("trainer.training_preprocessing_pipeline.*.temporal_col_filter")
+        .mut(
+            "logger.*.disk_logger.run_path",
+            f"E:/shared_resources//restraint/eval_runs/temporal_validation/{cfg.retrieve('logger.*.mlflow.experiment_name')}_{training_end_date}_{evaluation_interval[0]}_{evaluation_interval[1]}",
         )
-        .mut("logger.*.disk_logger.run_path", f"E:/shared_resources//restraint/eval_runs/temporal_validation/{cfg.retrieve('logger.*.mlflow.experiment_name')}_{training_end_date}_{evaluation_interval[0]}_{evaluation_interval[1]}")
         .mut("logger.*.mlflow.experiment_name", "restraint_temporal_validation")
         .add(
             "logger.*.mlflow.run_name",
@@ -50,9 +47,7 @@ def eval_stratified_split(
 
     # Handle validation set setup
     cfg = (
-        cfg.rem(
-            "trainer.validation_preprocessing_pipeline.*.temporal_col_filter"
-        )   
+        cfg.rem("trainer.validation_preprocessing_pipeline.*.temporal_col_filter")
         .mut(  # Handle validation dataset
             "trainer.validation_data", cfg.retrieve("trainer.training_data")
         )
@@ -88,9 +83,7 @@ def eval_stratified_split(
     return train_baseline_model_from_cfg(cfg)
 
 
-def evaluate_year(
-    train_end_year: int
-) -> tuple[int, dict[int, float]]:
+def evaluate_year(train_end_year: int) -> tuple[int, dict[int, float]]:
     evaluation_years = range(train_end_year, 22)
     year_aurocs = {
         y: eval_stratified_split(
@@ -116,10 +109,8 @@ if __name__ == "__main__":
 train_end_years = range(16, 21)
 
 
-
 # compute in parallel across train end year (15 workers)
 # can be flattened to be done across evaluation years as well but, meh
 results = Parallel(n_jobs=len(train_end_years))(
-    delayed(evaluate_year)(train_end_year=train_end_year)
-    for train_end_year in train_end_years
+    delayed(evaluate_year)(train_end_year=train_end_year) for train_end_year in train_end_years
 )

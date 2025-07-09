@@ -1,27 +1,22 @@
-from pathlib import Path
-
-import pandas as pd
-import plotnine as pn
-import polars as pl
-
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
-from psycop.projects.restraint.evaluation.utils import (
-    read_eval_df_from_disk,
-)
-
 import datetime
 from collections.abc import Sequence
 from dataclasses import dataclass
+from pathlib import Path
 
 import numpy as np
+import plotnine as pn
+import polars as pl
 
 from psycop.common.global_utils.cache import shared_cache
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import PsycopMlflowRun
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
+    MlflowClientWrapper,
+    PsycopMlflowRun,
+)
 from psycop.common.model_evaluation.binary.global_performance.roc_auc import bootstrap_roc
+from psycop.projects.restraint.evaluation.utils import read_eval_df_from_disk
 
 
 def plotnine_temporal_validation(df: pl.DataFrame, title: str = "Temporal Stability") -> pn.ggplot:
-
     df = df.with_columns(
         pl.col("train_end_date").dt.year().cast(pl.Utf8).alias("train_end_year"),
         (pl.col("start_date") - (pl.col("train_end_date"))).alias("since_train_end"),
@@ -37,14 +32,11 @@ def plotnine_temporal_validation(df: pl.DataFrame, title: str = "Temporal Stabil
         pl.Series(name="year", values=format_datetime(df["end_date"])),  # type: ignore
         pl.Series(name="train_interval", values=format_datetime_v2(df["train_end_date"])),  # type: ignore
     )
-      
+
     p = (
-        pn.ggplot(df, pn.aes(
-                    x="year",
-                    y="performance",
-                    color="train_interval",
-                    group="train_interval",
-                ))
+        pn.ggplot(
+            df, pn.aes(x="year", y="performance", color="train_interval", group="train_interval")
+        )
         + pn.scale_color_ordinal()
         + pn.geom_line()
         + pn.geom_point(size=2)
@@ -61,11 +53,12 @@ def plotnine_temporal_validation(df: pl.DataFrame, title: str = "Temporal Stabil
             plot_title=pn.element_text(size=30, ha="center"),
             dpi=300,
         )
-        #+ pn.scale_x_discrete()
-        #+ pn.scale_fill_manual(values=["#669BBC", "#A8C686", "#F3A712"])
+        # + pn.scale_x_discrete()
+        # + pn.scale_fill_manual(values=["#669BBC", "#A8C686", "#F3A712"])
     )
 
     return p
+
 
 @dataclass
 class TemporalRunPerformance:
@@ -101,7 +94,7 @@ class TemporalRunPerformance:
 def run_perf_from_disk(run: PsycopMlflowRun, n_bootstraps: int) -> TemporalRunPerformance:
     config = run.get_config()
 
-    eval_frame =  read_eval_df_from_disk(config.retrieve("logger.*.disk_logger.run_path"))
+    eval_frame = read_eval_df_from_disk(config.retrieve("logger.*.disk_logger.run_path"))
 
     y = eval_frame.to_pandas()["y"]
     y_hat_probs = eval_frame.to_pandas()["y_hat_prob"]
@@ -146,7 +139,6 @@ def temporal_stability(
     return [run_perf_from_disk(run, n_bootstraps=n_bootstraps) for run in runs]
 
 
-
 if __name__ == "__main__":
     save_dir = Path(__file__).parent
     save_dir.mkdir(parents=True, exist_ok=True)
@@ -157,6 +149,4 @@ if __name__ == "__main__":
 
     df = pl.concat(run.to_dataframe() for run in xg_performances)
 
-    plotnine_temporal_validation(df).save(
-        save_dir / "restraint_temporal_validation.png"
-    )
+    plotnine_temporal_validation(df).save(save_dir / "restraint_temporal_validation.png")

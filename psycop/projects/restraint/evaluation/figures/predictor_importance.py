@@ -7,12 +7,9 @@ import pandas as pd
 import polars as pl
 from sklearn.pipeline import Pipeline
 
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
-    MlflowClientWrapper,
-    PsycopMlflowRun,
-)
-
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
+
 
 def restraint_parse_static_feature(full_string: str) -> str:
     """Takes a static feature name and returns a human readable version of it."""
@@ -40,9 +37,14 @@ def restraint_parse_temporal_feature(full_string: str) -> str:
     resolve_multiple = re.findall(r"days_(.*)?_fallback", full_string)[0]
 
     if "Tfidf" in feature_name:
-        vocab = pl.read_parquet(OVARTACI_SHARED_DIR / "text_models" / "vocabulary_lists" / "vocab_tfidf_psycop_train_all_sfis_preprocessed_sfi_type_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750.parquet")
+        vocab = pl.read_parquet(
+            OVARTACI_SHARED_DIR
+            / "text_models"
+            / "vocabulary_lists"
+            / "vocab_tfidf_psycop_train_all_sfis_preprocessed_sfi_type_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750.parquet"
+        )
 
-        tfidf_idx = re.search(r"(\d+)", feature_name).group(0) # type: ignore
+        tfidf_idx = re.search(r"(\d+)", feature_name).group(0)  # type: ignore
         tfidf_word = vocab.filter(pl.col("Index") == int(tfidf_idx))["Word"][0]
         feature_name = re.sub(tfidf_idx, tfidf_word, feature_name)
 
@@ -65,7 +67,7 @@ def restraint_generate_feature_importance_table(
     feature_importances = pipeline.named_steps[clf_model_name].feature_importances_
 
     feature_names_ = pipeline.feature_names_in_
-    feature_names = feature_names_[pipeline.named_steps['feature_selection'].get_support()]
+    feature_names = feature_names_[pipeline.named_steps["feature_selection"].get_support()]
 
     # Create a DataFrame to store the feature names and their corresponding gain
     feature_table = pl.DataFrame(
@@ -97,7 +99,9 @@ def restraint_feature_importance_table_facade(pipeline: Pipeline, output_dir: Pa
 
 
 if __name__ == "__main__":
-    run = MlflowClientWrapper().get_run("restraint_split_tuning_v2_best_run_evaluated_on_test", "magnificent-bird-866")
+    run = MlflowClientWrapper().get_run(
+        "restraint_split_tuning_v2_best_run_evaluated_on_test", "magnificent-bird-866"
+    )
 
     feat_imp = restraint_generate_feature_importance_table(
         pipeline=run.sklearn_pipeline(), clf_model_name="classifier"
@@ -105,4 +109,3 @@ if __name__ == "__main__":
     pl.Config.set_tbl_rows(100)
 
     pathlib.Path("restraint_feature_importances.html").write_text(feat_imp.to_html())
-
