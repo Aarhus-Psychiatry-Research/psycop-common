@@ -1,4 +1,5 @@
 from optuna import Trial
+from typing import Literal
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.suggester_spaces import (
@@ -10,7 +11,12 @@ from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.suggest
 
 @BaselineRegistry.suggesters.register("sufficient_window_filter_suggester")
 class SufficientWindowFilterSuggester:
-    def __init__(self, timestamp_col_name: str, n_days: CategoricalSpaceT, direction: str):
+    def __init__(
+        self,
+        timestamp_col_name: str,
+        n_days: CategoricalSpaceT,
+        direction: Literal["ahead", "behind"],
+    ):
         self.timestamp_col_name = timestamp_col_name
         self.n_days = CategoricalSpace(choices=n_days)
         self.direction = direction
@@ -58,7 +64,12 @@ class BlacklistFilterSuggester:
 @BaselineRegistry.suggesters.register("value_filter_suggester")
 class ValueFilterSuggester:
     def __init__(
-        self, column_name: str, direction: str, low: int, high: int, logarithmic: bool = False
+        self,
+        column_name: str,
+        direction: Literal["before", "after-inclusive"],
+        low: int,
+        high: int,
+        logarithmic: bool = False,
     ):
         self.column_name = column_name
         self.direction = direction

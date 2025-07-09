@@ -12,17 +12,7 @@ from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.suggest
     CategoricalSpaceT,
 )
 from psycop.common.model_training_v2.trainer.task.model_step import ModelStep
-
-
-class IdentityTransformer(BaseEstimator, TransformerMixin):
-    def __init__(self):
-        pass
-
-    def fit(self, input_array, y=None):  # type: ignore # noqa
-        return self
-
-    def transform(self, input_array, y=None):  # type: ignore # noqa
-        return input_array
+from psycop.common.model_training_v2.trainer.task.estimator_steps.utils import IdentityTransformer
 
 
 @BaselineRegistry.estimator_steps.register("noop_scaler")
