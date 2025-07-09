@@ -28,7 +28,7 @@ def physical_visits_2025(
     ),
     return_shak_location: bool = False,
 ) -> pd.DataFrame:
-    """Load pshysical visits to both somatic and psychiatry.
+    """Load physical visits to both somatic and psychiatry.
 
     Args:
         timestamp_for_output (Literal["start", "end"], optional): Whether to use the start or end timestamp for the output. Defaults to "end".
