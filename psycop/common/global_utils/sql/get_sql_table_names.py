@@ -39,3 +39,7 @@ def get_sql_table_names(
 
     # return list of table names
     return [item[0] for item in table_names]
+
+if __name__ == "__main__":
+    table_names = get_sql_table_names()
+    pass

@@ -215,7 +215,7 @@ def load_arbitrary_notes(
 
 def load_preprocessed_sfis(
     text_sfi_names: Sequence[str] | None = None,
-    corpus_name: str = "psycop_train_val_all_sfis_preprocessed",
+    corpus_name: str = "psycop_train_val_test_all_sfis_preprocessed_added_konklusion",
 ) -> pd.DataFrame:
     """Returns preprocessed sfis from preprocessed view/SQL table that includes the "overskrift" column.
     Preprocessed views are created using the function text_preprocessing_pipeline under text_models/preprocessing.
