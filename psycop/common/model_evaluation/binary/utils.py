@@ -10,9 +10,12 @@ log = logging.getLogger(__file__)
 
 
 def _auroc_within_group(
-    df: pd.DataFrame, confidence_interval: bool = True, n_bootstraps: int = 100
+    df: pd.DataFrame,
+    confidence_interval: bool = True,
+    n_bootstraps: int = 100,
+    stratified: bool = False,
 ) -> pd.DataFrame:
-    """Get the auroc within a dataframe."""
+    """Get the AUROC within a dataframe."""
     if df.empty or df["y"].nunique() == 1 or len(df) < 5:
         # Many of our models probably try to predict the majority class.
         # I'm not sure how exactly we want to handle this, but thousands of msg.info is not ideal.
@@ -32,9 +35,10 @@ def _auroc_within_group(
             ci_width=0.95,
             input_1=df["y"],
             input_2=df["y_hat_probs"],
+            stratified=stratified,
         )
-        auroc_by_group["ci_lower"] = ci[0][0]
-        auroc_by_group["ci_upper"] = ci[0][1]
+        auroc_by_group["ci_lower"] = max(0.0, ci[0][0])
+        auroc_by_group["ci_upper"] = min(1.0, ci[0][1])
 
     return pd.DataFrame(auroc_by_group, index=[0])
 
@@ -44,11 +48,17 @@ def auroc_by_group(
     groupby_col_name: str,
     confidence_interval: bool = True,
     n_bootstraps: int = 100,
+    stratified: bool = False,
 ) -> pd.DataFrame:
-    """Get the auroc by group within a dataframe."""
+    """Get the AUROC by group within a dataframe.  If class imbalance is high, the stratified
+    argument may be set to true to ensure that each class is represented in each bootstrap sample.
+    If not, the scitkit learn statistic functions may silently return NA CIs."""
     df = (
         df.groupby(groupby_col_name).apply(
-            _auroc_within_group, confidence_interval=confidence_interval, n_bootstraps=n_bootstraps
+            _auroc_within_group,
+            confidence_interval=confidence_interval,
+            n_bootstraps=n_bootstraps,
+            stratified=stratified,
         )
     ).reset_index(drop=False)
 
@@ -56,7 +66,10 @@ def auroc_by_group(
 
 
 def _sensitivity_within_group(
-    df: pd.DataFrame, confidence_interval: bool = True, n_bootstraps: int = 100
+    df: pd.DataFrame,
+    confidence_interval: bool = True,
+    n_bootstraps: int = 100,
+    stratified: bool = False,
 ) -> pd.DataFrame:
     """Get the sensitivity within a dataframe."""
     if df.empty or len(df) < 5:
@@ -73,9 +86,10 @@ def _sensitivity_within_group(
             ci_width=0.95,
             input_1=df["y"],
             input_2=df["y_hat"],
+            stratified=stratified,
         )
-        sensitivity_by_group["ci_lower"] = ci[0][0]
-        sensitivity_by_group["ci_upper"] = ci[0][1]
+        sensitivity_by_group["ci_lower"] = max(0.0, ci[0][0])
+        sensitivity_by_group["ci_upper"] = min(1.0, ci[0][1])
 
     return pd.DataFrame(sensitivity_by_group, index=[0])
 
@@ -85,14 +99,18 @@ def sensitivity_by_group(
     groupby_col_name: str,
     confidence_interval: bool = True,
     n_bootstraps: int = 100,
+    stratified: bool = False,
 ) -> pd.DataFrame:
-    """Get the sensitivity by group within a dataframe."""
+    """Get the sensitivity by group within a dataframe. If class imbalance is high, the stratified
+    argument may be set to true to ensure that each class is represented in each bootstrap sample.
+    If not, the scitkit learn statistic functions may silently return NA CIs"""
     df = (
         df.groupby(groupby_col_name)
         .apply(
             func=_sensitivity_within_group,
             confidence_interval=confidence_interval,
             n_bootstraps=n_bootstraps,
+            stratified=stratified,
         )
         .reset_index(drop=False)
     )

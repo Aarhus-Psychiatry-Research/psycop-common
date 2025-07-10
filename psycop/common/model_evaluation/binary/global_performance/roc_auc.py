@@ -86,7 +86,7 @@ def plot_auc_roc(
     # Calculate confidence interval for AUC
     auc_mean = np.mean(aucs_bootstrapped)
     auc_se = np.std(aucs_bootstrapped) / np.sqrt(n_bootstraps)
-    auc_ci = [auc_mean - 1.96 * auc_se, auc_mean + 1.96 * auc_se]
+    auc_ci = np.percentile(aucs_bootstrapped, [2.5, 97.5])
 
     df = pd.DataFrame(
         {"fpr": base_fpr, "tpr": mean_tprs, "tpr_lower": tprs_lower, "tpr_upper": tprs_upper}
