@@ -16,20 +16,20 @@ patchworklib==0.6.2
 plotly==5.22.0
 plotnine==0.12.2
 polars==0.20.10
-protobuf==3.20.3
+protobuf==4.25.8 # Due to Snyk vuln SNYK-PYTHON-PROTOBUF-10364902
 pyarrow==14.0.1
 pydantic==2.5.3
 pyodbc==4.0.39
 Random-Word==1.0.11
-requests>=2.32.0 # Due to Snyk vuln SNYK-PYTHON-REQUESTS-6928867
-setuptools==72.1.0 # Due to Snyk vuln fSNYK-PYTHON-SETUPTOOLS-7448482
+requests>=2.32.4 # Due to Snyk vuln SNYK-PYTHON-REQUESTS-10305723
+setuptools==78.1.1 # Due to Snyk vuln fSNYK-PYTHON-SETUPTOOLS-7448482
 scikit-learn==1.5.0
 scipy==1.10.0
 shap==0.41.0
 sqlalchemy==1.4.39
 tableone==0.8.0
 tabulate==0.8.10
-timeseriesflattener==2.5.1
+timeseriesflattener==2.5.2
 wandb==0.15.12
 wasabi==0.9.1
 xgboost==1.7.3

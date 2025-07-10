@@ -1,7 +1,6 @@
 from typing import Literal
 
 import optuna
-from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.feature_selection import SelectPercentile, chi2, f_classif, mutual_info_classif
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
@@ -12,7 +11,10 @@ from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.suggest
     CategoricalSpace,
     CategoricalSpaceT,
 )
+from psycop.common.model_training_v2.trainer.task.estimator_steps.utils import IdentityTransformer
 from psycop.common.model_training_v2.trainer.task.model_step import ModelStep
+
+IMPLEMENTED_FUNCTIONS = Literal["f_classif", "chi2", "mutual_info_classif", "noop"]
 
 
 class IdentityTransformer(BaseEstimator, TransformerMixin):

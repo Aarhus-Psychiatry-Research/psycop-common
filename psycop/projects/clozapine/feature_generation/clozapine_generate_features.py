@@ -44,7 +44,7 @@ from psycop.projects.clozapine.loaders.diagnoses import (
     f6_disorders,
     f7_disorders,
     f8_disorders,
-    f9_disorders,
+    f9_disorders_without_f99,
     manic_and_bipolar,
 )
 from psycop.projects.clozapine.loaders.ect import ect_all
@@ -95,8 +95,9 @@ from psycop.projects.clozapine.loaders.visits import (
     physical_visits_to_psychiatry_clozapine_2024,
     physical_visits_to_somatic_clozapine_2024,
 )
+from psycop.projects.clozapine.text_models.clozapine_text_model_paths import TEXT_EMBEDDINGS_DIR
 
-TEXT_FILE_NAME = "not_labelled_yet_clozapine_text.parquet"
+TEXT_FILE_NAME = "clozapine_text_tfidf_train_val_test_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750_added_psyk_konf.parquet.parquet"
 
 
 def make_timedeltas_from_zero(look_days: list[float]) -> list[datetime.timedelta]:
@@ -105,6 +106,33 @@ def make_timedeltas_from_zero(look_days: list[float]) -> list[datetime.timedelta
 
 def get_clozapine_project_info() -> ProjectInfo:
     return ProjectInfo(project_name="clozapine", project_path=OVARTACI_SHARED_DIR / "clozapine")
+
+
+def split_df_to_list(  # noqa: D417
+    df: pl.DataFrame, entity_id_col_name: str = "entity_id", timestamp_col_name: str = "timestamp"
+) -> list[pl.DataFrame]:
+    """
+    Splits a Polars DataFrame into multiple DataFrames, each containing the entity and
+    timestamp columns along with one value column.
+
+    Parameters:
+        df (pl.DataFrame): The input Polars DataFrame to be split.
+        entity_id_col_name (str): The name of the column containing entity IDs.
+        timestamp_col_name (str): The name of the column containing timestamps.
+
+    Returns:
+        list[pl.DataFrame]: A list of Polars DataFrames, each with the entity ID column, timestamp column, and a single additional value column.
+    """
+    mandatory_cols = [entity_id_col_name, timestamp_col_name]
+
+    # Validate required columns
+    for col in mandatory_cols:
+        if col not in df.columns:
+            raise ValueError(f"Missing mandatory column: '{col}'")
+
+    value_cols = [col for col in df.columns if col not in mandatory_cols]
+
+    return [df.select([*mandatory_cols, col]) for col in value_cols]
 
 
 def _init_clozapine_predictor(
@@ -207,6 +235,12 @@ if __name__ == "__main__":
         stream=sys.stdout,
     )
     pred_times = clozapine_pred_times()
+
+    df_tfidf_split = split_df_to_list(
+        df=pl.read_parquet(TEXT_EMBEDDINGS_DIR / TEXT_FILE_NAME).drop("overskrift"),
+        entity_id_col_name="dw_ek_borger",
+        timestamp_col_name="timestamp",
+    )
 
     feature_layers = {
         "demographic": [
@@ -323,7 +357,7 @@ if __name__ == "__main__":
             BooleanSpec(cluster_b),
             BooleanSpec(f7_disorders),
             BooleanSpec(f8_disorders),
-            BooleanSpec(f9_disorders),
+            BooleanSpec(f9_disorders_without_f99),
         ],
         "medication": [
             BooleanSpec(first_gen_antipsychotics),
@@ -379,6 +413,20 @@ if __name__ == "__main__":
             ContinuousSpec(skema_3, aggregation_fns=[MeanAggregator()], fallback=0),
         ],
         "ect": [BooleanSpec(ect_all)],
+        "layer_text": [
+            ts.PredictorSpec(
+                value_frame=ts.ValueFrame(
+                    init_df=df,
+                    entity_id_col_name="dw_ek_borger",
+                    value_timestamp_col_name="timestamp",
+                ),
+                lookbehind_distances=[datetime.timedelta(days=180)],
+                aggregators=[MeanAggregator()],
+                fallback=np.nan,
+                column_prefix=f"pred_layer_text__{df.columns[-1]}",
+            )
+            for df in df_tfidf_split
+        ],
     }
 
     layer_spec_pairs = [
@@ -395,7 +443,7 @@ if __name__ == "__main__":
         project_info=get_clozapine_project_info(),
         eligible_prediction_times_frame=clozapine_pred_times(),
         feature_specs=specs,
-        feature_set_name="clozapine_full_feature_set_without_text",
+        feature_set_name="clozapine_full_feature_set_with_tfidf",
         n_workers=None,
         step_size=datetime.timedelta(days=365),
         do_dataset_description=False,

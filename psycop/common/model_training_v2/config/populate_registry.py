@@ -66,6 +66,7 @@ def populate_baseline_registry() -> None:
         SufficientWindowFilterSuggester,
         LookbehindCombinationFilterSuggester,
         BlacklistFilterSuggester,
+        ValueFilterSuggester,
     )
 
     # Tasks
@@ -77,6 +78,7 @@ def populate_baseline_registry() -> None:
         BinaryClassificationPipeline,
     )
     from ..trainer.task.binary_classification.binary_metrics.binary_auroc import BinaryAUROC
+    from ..trainer.task.binary_classification.binary_metrics.binary_ppv import BinaryPPV
 
     # Trainers
     from ..trainer.cross_validator_trainer import CrossValidatorTrainer
