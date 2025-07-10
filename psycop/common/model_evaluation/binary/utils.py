@@ -10,7 +10,10 @@ log = logging.getLogger(__file__)
 
 
 def _auroc_within_group(
-    df: pd.DataFrame, confidence_interval: bool = True, n_bootstraps: int = 100, stratified: bool = False,
+    df: pd.DataFrame,
+    confidence_interval: bool = True,
+    n_bootstraps: int = 100,
+    stratified: bool = False,
 ) -> pd.DataFrame:
     """Get the AUROC within a dataframe."""
     if df.empty or df["y"].nunique() == 1 or len(df) < 5:
@@ -52,7 +55,10 @@ def auroc_by_group(
     If not, the scitkit learn statistic functions may silently return NA CIs."""
     df = (
         df.groupby(groupby_col_name).apply(
-            _auroc_within_group, confidence_interval=confidence_interval, n_bootstraps=n_bootstraps, stratified=stratified
+            _auroc_within_group,
+            confidence_interval=confidence_interval,
+            n_bootstraps=n_bootstraps,
+            stratified=stratified,
         )
     ).reset_index(drop=False)
 
@@ -60,7 +66,10 @@ def auroc_by_group(
 
 
 def _sensitivity_within_group(
-    df: pd.DataFrame, confidence_interval: bool = True, n_bootstraps: int = 100, stratified: bool = False
+    df: pd.DataFrame,
+    confidence_interval: bool = True,
+    n_bootstraps: int = 100,
+    stratified: bool = False,
 ) -> pd.DataFrame:
     """Get the sensitivity within a dataframe."""
     if df.empty or len(df) < 5:
@@ -81,7 +90,7 @@ def _sensitivity_within_group(
         )
         sensitivity_by_group["ci_lower"] = max(0.0, ci[0][0])
         sensitivity_by_group["ci_upper"] = min(1.0, ci[0][1])
-        
+
     return pd.DataFrame(sensitivity_by_group, index=[0])
 
 
@@ -101,7 +110,7 @@ def sensitivity_by_group(
             func=_sensitivity_within_group,
             confidence_interval=confidence_interval,
             n_bootstraps=n_bootstraps,
-            stratified=stratified
+            stratified=stratified,
         )
         .reset_index(drop=False)
     )
