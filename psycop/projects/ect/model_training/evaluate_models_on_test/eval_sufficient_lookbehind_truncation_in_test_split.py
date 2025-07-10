@@ -1,10 +1,8 @@
-from joblib import Parallel, delayed
 from pathlib import Path
 from typing import Optional
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
-from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 
 
@@ -23,7 +21,9 @@ def eval_random_split_test_set(
         test_split = ["val"]
     if train_splits is None:
         train_splits = ["train"]
-    test_run_experiment_name = f"insufficient_lookbheind_filter_{experiment_name}_best_run_{test_run_name}"
+    test_run_experiment_name = (
+        f"insufficient_lookbheind_filter_{experiment_name}_best_run_{test_run_name}"
+    )
 
     test_run_path = "E:/shared_resources/" + "/ect" + "/eval_runs/" + test_run_experiment_name
 
@@ -47,7 +47,7 @@ def eval_random_split_test_set(
         .get_best_run_from_experiment(experiment_name=experiment_name, metric="all_oof_BinaryAUROC")
         .get_config()
     )
-    
+
     preprocessing_pipeline = best_run_cfg.retrieve("trainer.preprocessing_pipeline")
 
     validation_outcome_col_name = best_run_cfg.retrieve("trainer.outcome_col_name")
@@ -85,11 +85,23 @@ def eval_random_split_test_set(
         )
         .mut("trainer.validation_preprocessing_pipeline.*.split_filter.splits_to_keep", test_split)
         .rem("trainer.validation_preprocessing_pipeline.*.temporal_col_filter")
-        .add("trainer.validation_preprocessing_pipeline.*.sufficient_lookbehind_filter.@preprocessing","window_filter",)
-        .add("trainer.validation_preprocessing_pipeline.*.sufficient_lookbehind_filter.timestamp_col_name","timestamp")
-        .add("trainer.validation_preprocessing_pipeline.*.sufficient_lookbehind_filter.n_days",730)
-        .add("trainer.validation_preprocessing_pipeline.*.sufficient_lookbehind_filter.direction","behind")
-        .add("trainer.validation_preprocessing_pipeline.*.temporal_col_filter.@preprocessing", "temporal_col_filter")
+        .add(
+            "trainer.validation_preprocessing_pipeline.*.sufficient_lookbehind_filter.@preprocessing",
+            "window_filter",
+        )
+        .add(
+            "trainer.validation_preprocessing_pipeline.*.sufficient_lookbehind_filter.timestamp_col_name",
+            "timestamp",
+        )
+        .add("trainer.validation_preprocessing_pipeline.*.sufficient_lookbehind_filter.n_days", 730)
+        .add(
+            "trainer.validation_preprocessing_pipeline.*.sufficient_lookbehind_filter.direction",
+            "behind",
+        )
+        .add(
+            "trainer.validation_preprocessing_pipeline.*.temporal_col_filter.@preprocessing",
+            "temporal_col_filter",
+        )
     )
 
     train_baseline_model_from_cfg(best_run_cfg)
@@ -101,4 +113,8 @@ if __name__ == "__main__":
     feature_sets = ["structured_only"]
 
     for feature_set in feature_sets:
-        eval_random_split_test_set(experiment_name=f"ECT-trunc-and-hp-{feature_set}-xgboost-no-lookbehind-filter", train_splits = ["train", "val"],test_split=['test'])
+        eval_random_split_test_set(
+            experiment_name=f"ECT-trunc-and-hp-{feature_set}-xgboost-no-lookbehind-filter",
+            train_splits=["train", "val"],
+            test_split=["test"],
+        )

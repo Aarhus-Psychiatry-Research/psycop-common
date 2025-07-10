@@ -4,7 +4,6 @@ from typing import NewType
 import pandas as pd
 import polars as pl
 
-from psycop.common.global_utils.cache import shared_cache
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_sensitivity_by_timedelta_df,
 )

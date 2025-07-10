@@ -2,12 +2,10 @@ import datetime
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-import numpy as np
 import polars as pl
 
 from psycop.common.global_utils.cache import shared_cache
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import PsycopMlflowRun
-from psycop.common.model_evaluation.binary.global_performance.roc_auc import bootstrap_roc
 
 
 @dataclass
@@ -36,11 +34,10 @@ class TemporalRunPerformance:
 
 @shared_cache().cache
 def run_perf_from_run(run: PsycopMlflowRun) -> TemporalRunPerformance | None:
-    
     try:
-        auc = run._data.metrics['BinaryAUROC']  # type: ignore
+        auc = run._data.metrics["BinaryAUROC"]  # type: ignore
     except KeyError:
-        return None  
+        return None
 
     # Get dates
     config = run.get_config()
@@ -68,8 +65,6 @@ def run_perf_from_run(run: PsycopMlflowRun) -> TemporalRunPerformance | None:
     )
 
 
-def temporal_stability(
-    runs: Sequence[PsycopMlflowRun]
-) -> Sequence[TemporalRunPerformance]:
+def temporal_stability(runs: Sequence[PsycopMlflowRun]) -> Sequence[TemporalRunPerformance]:
     """Temporal stability model for T2D Extended."""
-    return [auc for run in runs if (auc := run_perf_from_run(run)) is not None] 
+    return [auc for run in runs if (auc := run_perf_from_run(run)) is not None]

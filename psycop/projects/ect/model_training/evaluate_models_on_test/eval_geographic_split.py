@@ -1,10 +1,8 @@
-from joblib import Parallel, delayed
 from pathlib import Path
 from typing import Optional
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
-from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 
 
@@ -47,7 +45,6 @@ def eval_geographic_split_test_set(
         .get_best_run_from_experiment(experiment_name=experiment_name, metric="all_oof_BinaryAUROC")
         .get_config()
     )
-    
 
     outcome_col_name = cfg.retrieve("trainer.outcome_col_name")
     preprocessing_pipeline = cfg.retrieve("trainer.preprocessing_pipeline")
@@ -69,10 +66,7 @@ def eval_geographic_split_test_set(
             "trainer.training_preprocessing_pipeline.*.split_filter.@preprocessing",
             "regional_data_filter",
         )
-        .mut(
-            "trainer.training_preprocessing_pipeline.*.split_filter.splits_to_keep",
-            train_splits,
-        )
+        .mut("trainer.training_preprocessing_pipeline.*.split_filter.splits_to_keep", train_splits)
         .add("trainer.training_preprocessing_pipeline.*.split_filter.regional_move_df", None)
         .add(
             "trainer.training_preprocessing_pipeline.*.split_filter.timestamp_col_name", "timestamp"
@@ -117,4 +111,6 @@ if __name__ == "__main__":
     feature_sets = ["structured_only", "text_only", "structured_text"]
 
     for feature_set in feature_sets:
-        eval_geographic_split_test_set(experiment_name=f"ECT-trunc-and-hp-{feature_set}-xgboost-no-lookbehind-filter",)
+        eval_geographic_split_test_set(
+            experiment_name=f"ECT-trunc-and-hp-{feature_set}-xgboost-no-lookbehind-filter"
+        )

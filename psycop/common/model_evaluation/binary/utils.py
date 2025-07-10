@@ -76,7 +76,7 @@ def _sensitivity_within_group(
         )
         sensitivity_by_group["ci_lower"] = max(0.0, ci[0][0])
         sensitivity_by_group["ci_upper"] = min(1.0, ci[0][1])
-        
+
     return pd.DataFrame(sensitivity_by_group, index=[0])
 
 

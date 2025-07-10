@@ -7,10 +7,7 @@ import pandas as pd
 import polars as pl
 from sklearn.pipeline import Pipeline
 
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
-    MlflowClientWrapper,
-    PsycopMlflowRun,
-)
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 
 
 def ect_parse_static_feature(full_string: str) -> str:
@@ -82,9 +79,7 @@ def ect_generate_feature_importance_table(
 
 
 def ect_feature_importance_table_facade(pipeline: Pipeline, output_dir: Path) -> None:
-    feat_imp = ect_generate_feature_importance_table(
-        pipeline=pipeline, clf_model_name="classifier"
-    )
+    feat_imp = ect_generate_feature_importance_table(pipeline=pipeline, clf_model_name="classifier")
     pl.Config.set_tbl_rows(100)
     (output_dir / "feature_importance.html").write_text(feat_imp.to_html())
 

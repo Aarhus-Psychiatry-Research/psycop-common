@@ -5,8 +5,10 @@ from tempfile import mkdtemp
 import polars as pl
 
 from psycop.common.global_utils.cache import shared_cache
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import PsycopMlflowRun
-from psycop.common.model_training_v2.config.config_utils import PsycopConfig, resolve_and_fill_config
+from psycop.common.model_training_v2.config.config_utils import (
+    PsycopConfig,
+    resolve_and_fill_config,
+)
 from psycop.common.model_training_v2.loggers.terminal_logger import TerminalLogger
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     BaselinePreprocessingPipeline,
@@ -64,7 +66,6 @@ def _first_outcome_data(data: pl.DataFrame) -> pl.DataFrame:
 
 @shared_cache().cache
 def table_one_model(cfg: PsycopConfig, sex_col_name: str) -> TableOneModel:
-
     tmp_cfg = pathlib.Path(mkdtemp()) / "tmp.cfg"
     cfg.to_disk(tmp_cfg)
 
