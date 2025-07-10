@@ -63,12 +63,12 @@ def bootstrap_estimates(
 
 
 def stratified_bootstrap(
-    y_true: np.ndarray,
-    y_pred: np.ndarray,
-    metric: Callable[[np.ndarray, np.ndarray], float],
-    random_state: np.Generator,
-    n_resamples: int = 200,
-    ci_width: float = 0.95,
+    y_true: pd.Series,
+    y_pred: pd.Series,
+    metric: Callable[[pd.Series, pd.Series], float],
+    random_state: Any,
+    n_resamples: Any = 200,
+    ci_width: Any = 0.95,
     **metric_kwargs: Any,
 ) -> tuple[float, float]:
     """
