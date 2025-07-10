@@ -32,8 +32,8 @@ class ChunkedFeatureGenerator:
         )
 
         print(f"Generating features in chunks of {chunksize}")
-        for i in range(2030, len(feature_specs), chunksize):
-            print(f"Generating features for chunk {i} to {i+chunksize}")
+        for i in range(0, len(feature_specs), chunksize):
+            print(f"Generating features for chunk {i} to {i + chunksize}")
             flattened_df_chunk = create_flattened_dataset_tsflattener_v1(
                 feature_specs=feature_specs[i : i + chunksize],
                 prediction_times_df=eligible_prediction_times,

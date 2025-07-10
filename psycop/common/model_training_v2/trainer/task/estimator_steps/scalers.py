@@ -1,7 +1,6 @@
 import optuna
 import sklearn
 import sklearn.preprocessing
-from sklearn.base import BaseEstimator, TransformerMixin
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_suggester import (
