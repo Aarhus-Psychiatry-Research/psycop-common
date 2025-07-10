@@ -33,7 +33,7 @@ def from_contacts(
     timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     """Load diagnoses from all hospital contacts. If icd_code is a list, will
-    aggregate as one column (e.g. ["E780", "E785"] into a ypercholesterolemia
+    aggregate as one column (e.g. ["E780", "E785"] into a hypercholesterolemia
     column).
 
     Args:
