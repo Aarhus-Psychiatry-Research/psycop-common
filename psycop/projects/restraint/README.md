@@ -1,5 +1,5 @@
-# Restraint...........
-Project-specific code for .........
+# Restraint prediction
+Project-specific code for predicting mechanical restraint and related coercive measures. 
 
 ## Running the pipeline
 
@@ -12,7 +12,7 @@ restraint/
 │   │   └── restraint_cohort_definer.py # defining the cohort
 ```
 
-OBS: The cohort was (and can be) generated using the file above. However, because this process takes very long for this specific project, a version of the cohort has also been saved and can be loaded through an SQL path. <br />
+OBS: The cohort was (and can be) generated using the file above. However, because this process takes a very long time for this specific project, a version of the cohort has also been saved and can be loaded through an SQL path. <br />
 
 
 #### PREDICTION TIMESTAMPS
@@ -78,6 +78,28 @@ E:/shared_resources/
 ### 3. Model training
 Third, the model training procedure is performed based on experiment configurations.
 
+```bash
+restraint/ 
+├── training/
+│   └── restraint_mechanical_tuning.py # hyperparameter tuning for model with mechanical restraint as outcome - *MAIN GUYS* (experiment_name="restraint_mechanical_tuning_v2")
+│   └── restraint_all_tuning.py # hyperparameter tuning for model with any restraint as outcome - MAIN GUYS
+│   └── restraint_mechanical_tuning_minimal.py # hyperparameter tuning for parsimonious model (i.e., minimal feature set) - APPENDIX
+│   └── restraint_all_tuning_minimal.py # hyperparameter tuning for parsimonious model (i.e., minimal feature set) - APPENDIX
+│   └── restraint_split_tuning.py # hyperparameter tuning for model trained on any restraint, validated on mechanical restraint in oof - APPENDIX
+```
+
+*alll are accompanied by a .cfg file (called within the script)*  <br />
+*(experiment_name="restraint_mechanical_tuning_v2") for alle scripts ovenfor er exp name navnet på filen og så v2. tilføj den information til dem alle)*
+
+
 
 ### 4. Model evaluation
 Fourth, model evaluation is performed.
+```bash
+restraint/ 
+├── evaluation/
+│   └── retrain_models/
+│   │   └── retrain_best_model_on_test.py # takes best run from both *MAIN GUYS* and trains model on train+val and evaluates on test set
+│   │   └── retrain_best_model_on_test_minimal.py # takes best run from both parsimonious models and trains model on train+val and evaluates on test set
+│   └── main.py # main driver for generating all figures and tables for paper and appendix
+```
