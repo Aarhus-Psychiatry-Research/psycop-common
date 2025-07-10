@@ -13,18 +13,18 @@ from psycop.projects.restraint.evaluation.utils import read_eval_df_from_disk
 def auroc_plot(data: AUROC, title: str = "AUROC") -> pn.ggplot:
     auroc_label = pn.annotate(
         "text",
-        label=f"AUROC (95% CI): {data.mean:.2f} ({data.ci[0]:.2f}-{data.ci[1]:.2f})",
+        label=f"AUROC (95% CI): {data.mean:.4f} ({data.ci[0]:.4f}-{data.ci[1]:.4f})",
         x=1,
         y=0,
         ha="right",
         va="bottom",
-        size=20,
-        family="Times New Roman",
+        size=20,  # family="Times New Roman",
     )
 
     p = (
         pn.ggplot(data.to_dataframe(), pn.aes(x="fpr", y="tpr"))
-        + pn.geom_ribbon(pn.aes(x="fpr", ymin="tpr_lower", ymax="tpr_upper"), fill="#B7C8B5")
+        + pn.geom_line(pn.aes(y="tpr_upper"), linetype="dashed", color="grey")
+        + pn.geom_line(pn.aes(y="tpr_lower"), linetype="dashed", color="grey")
         + pn.geom_line(pn.aes(x="fpr", y="tpr"), size=0.5, color="black")
         + pn.labs(title=title, x="1 - Specificity", y="Sensitivity")
         + pn.xlim(0, 1)
@@ -34,8 +34,7 @@ def auroc_plot(data: AUROC, title: str = "AUROC") -> pn.ggplot:
         + pn.theme_minimal()
         + pn.theme(
             axis_ticks=pn.element_blank(),
-            panel_grid_minor=pn.element_blank(),
-            text=(pn.element_text(family="Times New Roman")),
+            panel_grid_minor=pn.element_blank(),  # text=(pn.element_text(family="Times New Roman")),
             axis_text_x=pn.element_text(size=15),
             axis_text_y=pn.element_text(size=15),
             axis_title=pn.element_text(size=22),
@@ -47,7 +46,7 @@ def auroc_plot(data: AUROC, title: str = "AUROC") -> pn.ggplot:
     return p
 
 
-def auroc_model(df: pd.DataFrame, n_bootstraps: int = 5) -> AUROC:
+def auroc_model(df: pd.DataFrame, n_bootstraps: int = 100) -> AUROC:
     y = df["y"]
     y_hat_probs = df["y_hat_prob"]
 
@@ -84,7 +83,7 @@ def auroc_model(df: pd.DataFrame, n_bootstraps: int = 5) -> AUROC:
 
 
 if __name__ == "__main__":
-    save_dir = Path(__file__).parent / "figures"
+    save_dir = Path(__file__).parent
     save_dir.mkdir(parents=True, exist_ok=True)
 
     best_experiment = "restraint_text_hyper"
@@ -92,4 +91,4 @@ if __name__ == "__main__":
         "E:/shared_resources/restraint/eval_runs/restraint_all_tuning_best_run_evaluated_on_test"
     ).to_pandas()
 
-    auroc_plot(auroc_model(eval_data)).save(save_dir / "auroc.png")
+    auroc_plot(auroc_model(eval_data)).save(save_dir / "restraint_auroc.png")

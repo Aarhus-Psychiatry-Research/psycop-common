@@ -1,5 +1,4 @@
 # Script for re-training best models on spceified splits / congifgs
-from pathlib import Path
 from typing import Optional
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
@@ -27,21 +26,6 @@ def retrain_best_model(
     test_run_experiment_name = f"{experiment_name}_best_run_{test_run_name}"
 
     test_run_path = "E:/shared_resources/" + "/restraint" + "/eval_runs/" + test_run_experiment_name
-
-    if Path(test_run_path).exists():
-        while True:
-            response = input(
-                f"This path '{test_run_path}' already exists. Do you want to potentially overwrite the contents of this folder with new feature sets? (yes/no): "
-            )
-
-            if response.lower() not in ["yes", "y", "no", "n"]:
-                print("Invalid response. Please enter 'yes/y' or 'no/n'.")
-            if response.lower() in ["no", "n"]:
-                print("Process stopped.")
-                return
-            if response.lower() in ["yes", "y"]:
-                print("Content of folder may be overwritten.")
-                break
 
     best_run_cfg = (
         MlflowClientWrapper()
@@ -106,4 +90,28 @@ def retrain_best_model(
 
 
 if __name__ == "__main__":
-    retrain_best_model(experiment_name="restraint_split_tuning", split_outcome=True)
+    retrain_best_model(
+        experiment_name="restraint_all_tuning_minimal_v2",
+        train_splits=["train", "val"],
+        test_split=["test"],
+        test_data_path=[
+            "E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"
+        ],
+    )
+    retrain_best_model(
+        experiment_name="restraint_mechanical_tuning_minimal_v2",
+        train_splits=["train", "val"],
+        test_split=["test"],
+        test_data_path=[
+            "E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"
+        ],
+    )
+    retrain_best_model(
+        experiment_name="restraint_split_tuning_minimal_v2",
+        train_splits=["train", "val"],
+        test_split=["test"],
+        split_outcome=True,
+        test_data_path=[
+            "E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"
+        ],
+    )

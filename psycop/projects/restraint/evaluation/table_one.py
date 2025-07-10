@@ -168,7 +168,8 @@ class RestraintTableOne:
         )
 
         binned_age = bin_continuous_data(
-            pd.Series(pd_pred_times["pred_age_in_years"]), bins=age_bins
+            pd.Series(pd_pred_times["pred_age_in_years"]),  # type: ignore
+            bins=age_bins,  # type: ignore
         )[0].astype(str)  # type: ignore
         pd_pred_times = pl.concat(
             [pd_pred_times, pl.DataFrame({"age_grouped": binned_age})], how="horizontal"

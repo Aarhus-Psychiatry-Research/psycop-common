@@ -24,14 +24,13 @@ def plotnine_auroc_by_age(df: pd.DataFrame, title: str = "AUROC by Age") -> pn.g
             pn.aes(x="age_binned", y="proportion_of_n", fill="age_binned"), stat="identity"
         )
         + pn.geom_path(group=1, size=1)
-        + pn.labs(x="Age", y="AUROC", title=title)
+        + pn.labs(x="Age in years", y="AUROC", title=title)
         + pn.ylim(0, 1)
         + pn.theme_minimal()
         + pn.theme(
             axis_text_x=pn.element_text(size=15),
             axis_text_y=pn.element_text(size=15),
-            panel_grid_minor=pn.element_blank(),
-            text=(pn.element_text(family="Times New Roman")),
+            panel_grid_minor=pn.element_blank(),  # text=(pn.element_text(family="Times New Roman")),
             legend_position="none",
             axis_title=pn.element_text(size=22),
             plot_title=pn.element_text(size=30, ha="center"),
@@ -41,15 +40,20 @@ def plotnine_auroc_by_age(df: pd.DataFrame, title: str = "AUROC by Age") -> pn.g
         + pn.scale_fill_manual(
             values=[
                 "#669BBC",
-                "#A8C686",
                 "#669BBC",
-                "#A8C686",
                 "#669BBC",
-                "#A8C686",
                 "#669BBC",
-                "#A8C686",
                 "#669BBC",
-                "#A8C686",
+                "#669BBC",
+                # "#A8C686",
+                # "#669BBC",
+                # "#A8C686",
+                # "#669BBC",
+                # "#A8C686",
+                # "#669BBC",
+                # "#A8C686",
+                # "#669BBC",
+                # "#A8C686",
             ]
         )
     )
@@ -82,7 +86,7 @@ def auroc_by_age_model(
 
 
 if __name__ == "__main__":
-    save_dir = Path(__file__).parent / "figures"
+    save_dir = Path(__file__).parent
     save_dir.mkdir(parents=True, exist_ok=True)
 
     best_experiment = "restraint_text_hyper"
@@ -94,4 +98,4 @@ if __name__ == "__main__":
 
     plotnine_auroc_by_age(
         auroc_by_age_model(df=df, birthdays=birthdays, bins=[18, *range(20, 70, 10)])
-    ).save(save_dir / "auroc_by_age.png")
+    ).save(save_dir / "restraint_auroc_by_age.png")

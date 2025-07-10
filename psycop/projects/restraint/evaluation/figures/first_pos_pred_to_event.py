@@ -88,7 +88,7 @@ def first_pos_pred_to_model(
 
 
 if __name__ == "__main__":
-    save_dir = Path(__file__).parent / "figures"
+    save_dir = Path(__file__).parent
     save_dir.mkdir(parents=True, exist_ok=True)
 
     best_experiment = "restraint_text_hyper"
@@ -105,4 +105,4 @@ if __name__ == "__main__":
 
     plotnine_first_pos_pred_to_event(
         first_pos_pred_to_model(df=eval_df, outcome_timestamps=outcome_timestamps)
-    ).save(save_dir / "first_pos_pred_to_event.png")
+    ).save(save_dir / "restraint_first_pos_pred_to_event.png")

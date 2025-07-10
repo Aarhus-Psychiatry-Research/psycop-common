@@ -25,16 +25,15 @@ def plotnine_auroc_by_sex(df: pd.DataFrame, title: str = "AUROC by Sex") -> pn.g
         + pn.theme(
             axis_text_x=pn.element_text(size=15),
             axis_text_y=pn.element_text(size=15),
-            panel_grid_minor=pn.element_blank(),
-            text=(pn.element_text(family="Times New Roman")),
+            panel_grid_minor=pn.element_blank(),  # text=(pn.element_text(family="Times New Roman")),
             legend_position="none",
             axis_title=pn.element_text(size=22),
             plot_title=pn.element_text(size=30, ha="center"),
             dpi=300,
-            figure_size=(4, 5),
+            figure_size=(5, 5),
         )
         + pn.scale_x_discrete()
-        + pn.scale_fill_manual(values=["#669BBC", "#A8C686", "#F3A712"])
+        + pn.scale_fill_manual(values=["#669BBC", "#669BBC"])
     )
 
     if "ci_lower" in df.columns:
@@ -65,7 +64,7 @@ def auroc_by_sex_model(df: pl.DataFrame, sex_df: pl.DataFrame) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    save_dir = Path(__file__).parent / "figures"
+    save_dir = Path(__file__).parent
     save_dir.mkdir(parents=True, exist_ok=True)
 
     best_experiment = "restraint_text_hyper"
@@ -76,5 +75,5 @@ if __name__ == "__main__":
     sex_df = pl.from_pandas(sex_female())
 
     plotnine_auroc_by_sex(auroc_by_sex_model(df=df, sex_df=sex_df)).save(
-        save_dir / "auroc_by_sex.png"
+        save_dir / "restraint_auroc_by_sex.png"
     )

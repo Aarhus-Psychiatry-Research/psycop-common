@@ -45,7 +45,7 @@ def _get_num_of_unique_outcome_events(eval_dataset: EvalDataset) -> int:
     return num_unique
 
 
-def _get_outcome_for_extended_lookahead(
+def _get_outcome_for_extended_lookahead(  # type: ignore
     eval_dataset: EvalDataset, alternative_lookahead_days: int, postive_rate: float
 ) -> int:
     """Get outcome labels if time from to outcome is within alternative_lookahead_days form prediction time."""
@@ -73,7 +73,7 @@ def _get_outcome_for_extended_lookahead(
     return len(true_positive_given_alternative_lookahead)
 
 
-def _get_admission_level_model_behavior_with_extended_lookahead(
+def _get_admission_level_model_behavior_with_extended_lookahead(  # type: ignore
     eval_dataset: EvalDataset, alternative_lookahead_days: int, postive_rate: float
 ) -> int:
     """If a positive prediction is issued within the alternative_lookahead_days, the admission level is considered to be predicted as true positive.
