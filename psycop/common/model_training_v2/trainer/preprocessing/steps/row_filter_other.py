@@ -144,13 +144,8 @@ class DateFilter(PresplitStep):
 
 @BaselineRegistry.preprocessing.register("value_filter")
 @dataclass
-<<<<<<< HEAD
-class GroupFilter(PresplitStep):
-    """Filter rows within groups."""
-=======
 class ValueFilter(PresplitStep):
     """Filter rows based on a column and a date."""
->>>>>>> main
 
     column_name: str
     threshold_value: float
