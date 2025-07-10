@@ -197,7 +197,9 @@ def get_sensitivity_by_timedelta_df(
     ).rename(columns={"output": "y_hat"})
 
     return sensitivity_by_group(
-        df=df, groupby_col_name="unit_from_event_binned", confidence_interval=confidence_interval,
+        df=df,
+        groupby_col_name="unit_from_event_binned",
+        confidence_interval=confidence_interval,
         stratified=stratified,
     )
 

@@ -103,18 +103,21 @@ if __name__ == "__main__":
 
     # read other dfs
     structured_only_experiment = "ECT-trunc-and-hp-structured_only-xgboost-no-lookbehind-filter"
-    structured_only_experiment_path = f"E:/shared_resources/ect/eval_runs/{structured_only_experiment}_best_run_evaluated_on_test"
+    structured_only_experiment_path = (
+        f"E:/shared_resources/ect/eval_runs/{structured_only_experiment}_best_run_evaluated_on_test"
+    )
     structured_only_df = read_eval_df_from_disk(structured_only_experiment_path)
 
     text_only_experiment = "ECT-trunc-and-hp-text_only-xgboost-no-lookbehind-filter"
-    text_only_experiment_path = f"E:/shared_resources/ect/eval_runs/{text_only_experiment}_best_run_evaluated_on_test"
+    text_only_experiment_path = (
+        f"E:/shared_resources/ect/eval_runs/{text_only_experiment}_best_run_evaluated_on_test"
+    )
     text_only_df = read_eval_df_from_disk(text_only_experiment_path)
 
     feature_set_eval_dfs = {
         "Structured only": structured_only_df,
         "Text only": text_only_df,
         "Structured + text": structured_text_df,
-        
     }
 
     feature_sets = ["structured_only", "text_only", "structured_text"]

@@ -1,9 +1,8 @@
-from typing import Callable, Tuple, Any
+from typing import Any, Callable
 
 import numpy as np
 import pandas as pd
 from scipy.stats import bootstrap  # type: ignore
-from sklearn.metrics import roc_auc_score
 from sklearn.utils import resample
 
 np.random.seed(42)
@@ -34,18 +33,14 @@ def bootstrap_estimates(
         except ValueError as e:
             print(repr(e))
             return np.nan
-    
+
     if stratified:
         boot = stratified_bootstrap(
-            y_true=input_1, 
-            y_pred=input_2, 
-            metric=metric_wrapper,
-            ci_width=ci_width,
-            **_kwargs,
-            )
+            y_true=input_1, y_pred=input_2, metric=metric_wrapper, ci_width=ci_width, **_kwargs
+        )
 
         low, high = boot[0], boot[1]
-    
+
     else:
         boot = bootstrap(
             data=(input_1, input_2),
@@ -57,8 +52,8 @@ def bootstrap_estimates(
 
         low, high = boot.confidence_interval.low, boot.confidence_interval.high
 
-
     return pd.Series({"ci": (low, high)})
+
 
 def stratified_bootstrap(
     y_true: np.ndarray,
@@ -66,10 +61,9 @@ def stratified_bootstrap(
     metric: Callable[[np.ndarray, np.ndarray], float],
     n_resamples: int = 200,
     ci_width: float = 0.95,
-    random_state: int
-     = 42,
-    **metric_kwargs: Any
-) -> Tuple[float, float]:
+    random_state: int = 42,
+    **metric_kwargs: Any,
+) -> tuple[float, float]:
     """
     Compute a stratified bootstrap confidence interval for a given metric.
 
@@ -102,7 +96,7 @@ def stratified_bootstrap(
                 cls_indices,
                 replace=True,
                 n_samples=len(cls_indices),
-                random_state=rng.integers(0, 1_000_000)
+                random_state=rng.integers(0, 1_000_000),
             )
             resampled_indices.append(resampled_cls_indices)
 
@@ -112,5 +106,5 @@ def stratified_bootstrap(
 
     lower = (1 - ci_width) / 2 * 100
     upper = (1 + ci_width) / 2 * 100
-    
+
     return tuple(np.percentile(scores, [lower, upper]))
