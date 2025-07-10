@@ -24,6 +24,9 @@ from psycop.common.model_training_v2.trainer.task.binary_classification.binary_c
 from psycop.common.model_training_v2.trainer.task.binary_classification.binary_metrics import (
     BinaryAUROC,
 )
+from psycop.common.model_training_v2.trainer.task.binary_classification.binary_metrics.binary_ppv import (
+    BinaryPPV,
+)
 from psycop.common.model_training_v2.trainer.task.estimator_steps.calibrated_estimator import (
     estimator_calibrator,
 )
@@ -111,3 +114,27 @@ def test_v2_calibrated_crossval_model_pipeline(tmp_path: Path):
 
     assert train_baseline_model_from_schema(schema) == 1.0
     assert len(list(tmp_path.glob("*.pkl"))) == 1  # Check that pipeline is being logged
+
+
+def test_v2_additional_metrics_pipeline(tmp_path: Path):
+    schema = BaselineSchema(
+        logger=MultiLogger(TerminalLogger(), DiskLogger(tmp_path.__str__())),
+        trainer=CrossValidatorTrainer(
+            uuid_col_name="pred_time_uuid",
+            training_data=MinimalTestData(n=20),
+            outcome_col_name="outcome",
+            preprocessing_pipeline=BaselinePreprocessingPipeline(
+                AgeFilter(min_age=0, max_age=99, age_col_name="pred_age")
+            ),
+            task=BinaryClassificationTask(
+                task_pipe=BinaryClassificationPipeline(
+                    sklearn_pipe=Pipeline([estimator_calibrator(logistic_regression_step())])
+                )
+            ),
+            metric=BinaryAUROC(),
+            additional_metrics=BinaryPPV(positive_rate=0.5),
+            n_splits=2,
+        ),
+    )
+
+    assert train_baseline_model_from_schema(schema) == 1.0

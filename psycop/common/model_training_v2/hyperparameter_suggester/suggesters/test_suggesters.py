@@ -55,7 +55,15 @@ def test_lookbehind_combination_suggester():
         """
     ).lazy()
 
+<<<<<<< HEAD
     lookbehind_combinations_sets = [{2, 3}, {3, 4}, {2, 4}]
+=======
+    lookbehind_combinations_sets = [
+        {"within_2_days", "within_3_days"},
+        {"within_3_days", "within_4_days"},
+        {"within_2_days", "within_4_days"},
+    ]
+>>>>>>> main
     lookbehind_combinations = ["{2, 3}", "{3, 4}", "{2, 4}"]
 
     suggestions = suggester_tester(

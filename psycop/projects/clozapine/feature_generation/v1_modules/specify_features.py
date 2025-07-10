@@ -50,7 +50,7 @@ from psycop.projects.clozapine.loaders.diagnoses import (
     f6_disorders,
     f7_disorders,
     f8_disorders,
-    f9_disorders,
+    f9_disorders_without_f99,
     manic_and_bipolar,
 )
 from psycop.projects.clozapine.loaders.lab_results import (
@@ -291,7 +291,7 @@ class FeatureSpecifier:
                 NamedDataframe(df=cluster_b(), name="cluster_b"),
                 NamedDataframe(df=f7_disorders(), name="f7_disorders"),
                 NamedDataframe(df=f8_disorders(), name="f8_disorders"),
-                NamedDataframe(df=f9_disorders(), name="f9_disorders"),
+                NamedDataframe(df=f9_disorders_without_f99(), name="f9_disorders"),
             ),
             aggregation_fns=resolve_multiple,
             lookbehind_days=interval_days,

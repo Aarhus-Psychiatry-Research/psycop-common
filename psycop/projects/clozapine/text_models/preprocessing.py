@@ -51,14 +51,14 @@ def text_preprocessing(df: pd.DataFrame, text_column_name: str = "value") -> pd.
 
 
 def text_preprocessing_pipeline(
-    split_ids_presplit_step: PresplitStep | None = None,
+    split_ids_presplit_step: PresplitStep,
     n_rows: Optional[int] = None,
     sfi_type: Optional[Sequence[str] | str] = None,
 ) -> str:
     """Pipeline for preprocessing all sfis from given splits. Filtering of which sfis to include in features happens in the loader.
 
     Args:
-        split_ids_presplit_step: A PresplitStep (e.g. RegionalFilter or FilterByOutcomeStratifiedSplits) that filters rows by split ids
+        split_ids_presplit_step: PresplitStep that filters rows by split ids (e.g. RegionalFilter or FilterByOutcomeStratifiedSplits)
         n_rows (Optional[int], optional): How many rows to load. Defaults to None, which loads all rows.
         sfi_type (Optional[Sequence[str] | str], optional): Which sfi types to include. Defaults to None, which includes all sfis.
 
@@ -66,7 +66,7 @@ def text_preprocessing_pipeline(
         str: Text describing where preprocessed text has been saved.
     """
 
-    split_ids_presplit_step = (
+    splits_to_keep = (
         split_ids_presplit_step
         if split_ids_presplit_step
         else FilterByOutcomeStratifiedSplits(splits_to_keep=["train", "val"])
@@ -84,7 +84,7 @@ def text_preprocessing_pipeline(
     df = text_preprocessing(df)
 
     # save to parquet
-    split_names = "_".join(split_ids_presplit_step.splits_to_keep)  # type: ignore
+    split_names = "_".join(splits_to_keep)  # type: ignore
 
     sfis = "_".join(sfi_type) if sfi_type else "all_sfis"
 
