@@ -5,8 +5,6 @@ import pandas as pd
 from scipy.stats import bootstrap  # type: ignore
 from sklearn.utils import resample
 
-np.random.seed(42)
-
 
 def bootstrap_estimates(
     metric: Callable,  # type: ignore
@@ -76,7 +74,7 @@ def stratified_bootstrap(
     """
     Compute a stratified bootstrap confidence interval for a given metric.
 
-    Parameters:
+    Args:
         y_true (np.ndarray): Ground truth binary labels.
         y_pred (np.ndarray): Predicted values (scores or labels, depending on metric).
         metric (Callable): Scoring function taking (y_true, y_pred, **kwargs).
