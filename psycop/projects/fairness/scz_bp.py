@@ -34,26 +34,7 @@ if __name__ == "__main__":
     )
 
     frame = pd.DataFrame(metric_frame.ratio()).T
-    demographic_parity_difference(
-        y_true=eval_ds.y,
-        y_pred=y_hat,
-        sensitive_features=eval_ds.is_female.replace({True: "Female", False: "Male"}),
-    )
-    frame["Demographic parity"] = demographic_parity_ratio(
-        y_true=eval_ds.y,
-        y_pred=y_hat,
-        sensitive_features=eval_ds.is_female.replace({True: "Female", False: "Male"}),
-    )
-    equalized_odds_difference(
-        y_true=eval_ds.y,
-        y_pred=y_hat,
-        sensitive_features=eval_ds.is_female.replace({True: "Female", False: "Male"}),
-    )
-    frame["Equalised odds"] = equalized_odds_ratio(
-        y_true=eval_ds.y,
-        y_pred=y_hat,
-        sensitive_features=eval_ds.is_female.replace({True: "Female", False: "Male"}),
-    )
+
     frame["model"] = "Schizophrenia/bipolar disorder"
 
     bar_plot = metric_frame.by_group.plot.bar(

@@ -39,8 +39,7 @@ def plotnine_sensitivity_by_tte(df: pd.DataFrame, title: str = "Temporal Sensiti
                 color="actual_positive_rate",
                 shape="actual_positive_rate",
             ),
-        )
-        # + pn.scale_x_discrete(reverse=True)
+        )  # + pn.scale_x_discrete(reverse=True)
         + pn.geom_point(size=2.5)
         + pn.geom_errorbar(width=0.05)
         + pn.labs(
@@ -57,8 +56,7 @@ def plotnine_sensitivity_by_tte(df: pd.DataFrame, title: str = "Temporal Sensiti
             legend_position=(0.35, 0.9),
             legend_title_align="center",
             axis_ticks=pn.element_blank(),
-            panel_grid_minor=pn.element_blank(),
-            # text=(pn.element_text(family="Times New Roman")),
+            panel_grid_minor=pn.element_blank(),  # text=(pn.element_text(family="Times New Roman")),
             axis_title=pn.element_text(size=22),
             plot_title=pn.element_text(size=30, ha="center"),
             dpi=300,

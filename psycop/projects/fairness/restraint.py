@@ -74,13 +74,6 @@ if __name__ == "__main__":
         sensitive_features=joint_df.sex_female.replace({True: "Female", False: "Male"}),
     )
 
-    # frame = pd.DataFrame(metric_frame.ratio()).T
-    # demographic_parity_difference(method="to_overall", y_true=joint_df.y, y_pred=y_hat, sensitive_features=joint_df.sex_female.replace({True: "Female", False: "Male"}))
-    # frame["Demographic parity"] = demographic_parity_ratio(y_true=joint_df.y, y_pred=y_hat, sensitive_features=joint_df.sex_female.replace({True: "Female", False: "Male"}))
-    # equalized_odds_difference(y_true=joint_df.y, y_pred=y_hat, sensitive_features=joint_df.sex_female.replace({True: "Female", False: "Male"}))
-    # frame["Equalised odds"] = equalized_odds_ratio(y_true=joint_df.y, y_pred=y_hat, sensitive_features=joint_df.sex_female.replace({True: "Female", False: "Male"}))
-    # frame["model"] = "Composite restraint"
-
     bar_plot = metric_frame.by_group.plot.bar(
         subplots=True,
         layout=[3, 2],

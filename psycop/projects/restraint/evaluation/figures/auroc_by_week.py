@@ -26,8 +26,7 @@ def plotnine_auroc_by_weekday(
         + pn.theme(
             axis_text_x=pn.element_text(size=15, rotation=45),
             axis_text_y=pn.element_text(size=15),
-            panel_grid_minor=pn.element_blank(),
-            # text=(pn.element_text(family="Times New Roman")),
+            panel_grid_minor=pn.element_blank(),  # text=(pn.element_text(family="Times New Roman")),
             legend_position="none",
             axis_title=pn.element_text(size=22),
             plot_title=pn.element_text(size=30, ha="center"),

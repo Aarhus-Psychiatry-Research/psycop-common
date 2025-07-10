@@ -36,7 +36,6 @@ if __name__ == "__main__":
         metrics=accuracy_score, y_true=y_test, y_pred=y_pred, sensitive_features=A_test
     )
     mf.overall.item()
-    mf.by_group
     mf.difference(method="to_overall")
     mf.ratio(method="to_overall")
 

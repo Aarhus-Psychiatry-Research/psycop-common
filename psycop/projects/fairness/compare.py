@@ -4,6 +4,7 @@ import plotnine as pn
 import polars as pl
 from fairlearn.metrics import (
     MetricFrame,
+    count,
     false_negative_rate,
     false_positive_rate,
     selection_rate,
@@ -62,7 +63,11 @@ def scz_bp_metrics(metrics: dict) -> tuple[MetricFrame, np.float16, np.float16]:
         eval_df[eval_df["is_female"] is True]["y"],
         eval_df[eval_df["is_female"] is True]["y_hat_probs"],
     )
-    # boot_male = bootstrap_roc(y=eval_df[eval_df["is_female"] == False]["y"], y_hat_probs=eval_df[eval_df["is_female"] == False]["y_hat_probs"], n_bootstraps=100)
+    boot_male = bootstrap_roc(
+        y=eval_df[eval_df["is_female"] is False]["y"],
+        y_hat_probs=eval_df[eval_df["is_female"] is False]["y_hat_probs"],
+        n_bootstraps=100,
+    )
     boot = bootstrap_roc(y=eval_df["y"], y_hat_probs=eval_df["y_hat_probs"], n_bootstraps=100)
 
     return metric_frame, auroc_male, auroc_female
@@ -109,16 +114,16 @@ if __name__ == "__main__":
         "False positive rate": false_positive_rate,
         "False negative rate": false_negative_rate,
         "Selection rate": selection_rate,
-        # "Count": count,
+        "Count": count,
     }
 
     scz_bp_frame = scz_bp_metrics(metrics)
     scz_bp_df = scz_bp_frame[0].by_group
-    # scz_bp_df["Percentage"] = scz_bp_df["Count"] / scz_bp_df["Count"].sum()
+    scz_bp_df["Percentage"] = scz_bp_df["Count"] / scz_bp_df["Count"].sum()
 
     restraint_frame = restraint_metrics(metrics)
     restraint_df = restraint_frame[0].by_group
-    # restraint_df["Percentage"] = restraint_df["Count"] / restraint_df["Count"].sum()
+    restraint_df["Percentage"] = restraint_df["Count"] / restraint_df["Count"].sum()
 
     scz_bp_df["Model"] = "Schizophrenia/bipolar disorder"
     restraint_df["Model"] = "Composite restraint"
@@ -253,22 +258,21 @@ if __name__ == "__main__":
         + pn.geom_bar(
             stat="identity", position="dodge"
         )  # pn.aes(x="sex", y="proportion_of_n", fill="sex"),
-        # + pn.geom_path(group=1, size=1)
-        # + pn.labs(x="Sex", y="AUROC", title=title)
-        # + pn.ylim(0, 1)
-        # + pn.theme_minimal()
-        # + pn.theme(
-        #     axis_text_x=pn.element_text(size=15),
-        #     axis_text_y=pn.element_text(size=15),
-        #     panel_grid_minor=pn.element_blank(),
-        #     # text=(pn.element_text(family="Times New Roman")),
-        #     legend_position="none",
-        #     axis_title=pn.element_text(size=22),
-        #     plot_title=pn.element_text(size=30, ha="center"),
-        #     dpi=300,
-        #     figure_size=(5, 5),
-        # )
-        # + pn.scale_x_discrete()
+        + pn.geom_path(group=1, size=1)
+        + pn.labs(x="Sex", y="AUROC", title="Comparison of AUROC and other metrics")
+        + pn.ylim(0, 1)
+        + pn.theme_minimal()
+        + pn.theme(
+            axis_text_x=pn.element_text(size=15),
+            axis_text_y=pn.element_text(size=15),
+            panel_grid_minor=pn.element_blank(),
+            legend_position="none",
+            axis_title=pn.element_text(size=22),
+            plot_title=pn.element_text(size=30, ha="center"),
+            dpi=300,
+            figure_size=(5, 5),
+        )
+        + pn.scale_x_discrete()
         # + pn.scale_fill_manual(values=["#669BBC", "#669BBC"])
     )
 

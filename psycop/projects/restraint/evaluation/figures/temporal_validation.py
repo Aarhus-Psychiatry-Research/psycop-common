@@ -52,9 +52,7 @@ def plotnine_temporal_validation(df: pl.DataFrame, title: str = "Temporal Stabil
             axis_title=pn.element_text(size=22),
             plot_title=pn.element_text(size=30, ha="center"),
             dpi=300,
-        )
-        # + pn.scale_x_discrete()
-        # + pn.scale_fill_manual(values=["#669BBC", "#A8C686", "#F3A712"])
+        )  # + pn.scale_x_discrete() # + pn.scale_fill_manual(values=["#669BBC", "#A8C686", "#F3A712"])
     )
 
     return p

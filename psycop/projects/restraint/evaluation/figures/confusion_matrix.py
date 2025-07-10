@@ -44,8 +44,7 @@ def plotnine_confusion_matrix(
             pn.aes(label="estimate"),
             size=25,
             color="white",
-            fontweight="bold",
-            # family="Times New Roman",
+            fontweight="bold",  # family="Times New Roman",
         )
         + pn.theme(
             axis_line=pn.element_blank(),
@@ -53,8 +52,7 @@ def plotnine_confusion_matrix(
             panel_grid_major=pn.element_blank(),
             panel_grid_minor=pn.element_blank(),
             panel_background=pn.element_blank(),
-            legend_position="none",
-            # text=(pn.element_text(family="Times New Roman")),
+            legend_position="none",  # text=(pn.element_text(family="Times New Roman")),
             axis_text_x=pn.element_text(size=20, weight="bold"),
             axis_text_y=pn.element_text(size=20, weight="bold"),
             axis_title=pn.element_text(size=22),

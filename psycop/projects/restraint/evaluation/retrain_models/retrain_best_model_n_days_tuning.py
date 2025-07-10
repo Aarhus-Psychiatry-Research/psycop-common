@@ -126,5 +126,26 @@ if __name__ == "__main__":
             "E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"
         ],
     )
-    # retrain_best_model(experiment_name="restraint_mechanical_tuning_v2", low=3, high=30, train_splits=["train", "val"], test_split=["test"], test_run_name="n_days", test_data_path=["E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"])
-# retrain_best_model(experiment_name="restraint_split_tuning_v2",  low=3, high=30, train_splits=["train", "val"], test_split=["test"], test_run_name="n_days", split_outcome=True, test_data_path=["E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"])
+    retrain_best_model(
+        experiment_name="restraint_mechanical_tuning_v2",
+        low=3,
+        high=30,
+        train_splits=["train", "val"],
+        test_split=["test"],
+        test_run_name="n_days",
+        test_data_path=[
+            "E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"
+        ],
+    )
+    retrain_best_model(
+        experiment_name="restraint_split_tuning_v2",
+        low=3,
+        high=30,
+        train_splits=["train", "val"],
+        test_split=["test"],
+        test_run_name="n_days",
+        split_outcome=True,
+        test_data_path=[
+            "E:/shared_resources/restraint/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"
+        ],
+    )

@@ -32,13 +32,11 @@ def plotnine_sensitivity_by_outcome(
         + pn.theme(
             axis_text_x=pn.element_text(size=15),
             axis_text_y=pn.element_text(size=15),
-            panel_grid_minor=pn.element_blank(),
-            # text=(pn.element_text(family="Times New Roman")),
+            panel_grid_minor=pn.element_blank(),  # text=(pn.element_text(family="Times New Roman")),
             legend_position="none",
             axis_title=pn.element_text(size=22),
             plot_title=pn.element_text(size=30, ha="center"),
-            dpi=300,
-            # figure_size=(4, 5),
+            dpi=300,  # figure_size=(4, 5),
         )
         + pn.scale_x_discrete()
         + pn.scale_fill_manual(values=["#669BBC", "#A8C686", "#F3A712"])
@@ -65,8 +63,7 @@ def plotnine_sensitivity_by_first_outcome(
         + pn.theme(
             axis_text_x=pn.element_text(size=15),
             axis_text_y=pn.element_text(size=15),
-            panel_grid_minor=pn.element_blank(),
-            # text=(pn.element_text(family="Times New Roman")),
+            panel_grid_minor=pn.element_blank(),  # text=(pn.element_text(family="Times New Roman")),
             legend_position="none",
             axis_title=pn.element_text(size=22),
             plot_title=pn.element_text(size=30, ha="center"),
@@ -94,11 +91,11 @@ def sensitivity_by_restraint_type(df: pd.DataFrame) -> pd.DataFrame:
     manual = sensitivity_by_group(df, groupby_col_name="manual_restraint").iloc[0, 2:]
     manual.name = "Manual"
 
-    all = pd.concat([mechanical, chemical, manual], axis=1).T
+    all_restraint = pd.concat([mechanical, chemical, manual], axis=1).T
 
-    all["type"] = all.index
+    all_restraint["type"] = all_restraint.index
 
-    return all
+    return all_restraint
 
 
 def sensitivity_by_outcome_model(df: pl.DataFrame, outcome_df: pl.DataFrame) -> pd.DataFrame:

@@ -32,8 +32,9 @@ def plotnine_auroc_by_region(df: pd.DataFrame, title: str = "AUROC by Region") -
         pn.ggplot(df, pn.aes(x="region_en", y="auroc"))
         + pn.geom_bar(pn.aes(x="region_en", y="proportion_of_n", fill="region_en"), stat="identity")
         + pn.geom_path(group=1, size=1)
-        + pn.labs(x="Region", y="AUROC", title=title)
-        # + pn.geom_text(position=pn.position_stack(vjust=1))
+        + pn.labs(
+            x="Region", y="AUROC", title=title
+        )  # + pn.geom_text(position=pn.position_stack(vjust=1))
         + pn.geom_text(
             pn.aes(x="region_en", y="proportion_of_n", fill="region_en", label="percentage_of_n"),
             va="bottom",
@@ -50,8 +51,7 @@ def plotnine_auroc_by_region(df: pd.DataFrame, title: str = "AUROC by Region") -
         + pn.theme(
             axis_text_x=pn.element_text(size=15),
             axis_text_y=pn.element_text(size=15),
-            panel_grid_minor=pn.element_blank(),
-            # text=(pn.element_text(family="Times New Roman")),
+            panel_grid_minor=pn.element_blank(),  # text=(pn.element_text(family="Times New Roman")),
             legend_position="none",
             axis_title=pn.element_text(size=22),
             plot_title=pn.element_text(size=30, ha="center"),
