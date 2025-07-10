@@ -13,6 +13,7 @@ def bootstrap_estimates(
     input_1: pd.Series,  # type: ignore
     input_2: pd.Series,  # type: ignore
     n_bootstraps: int = 100,
+    random_state: int = 42,
     ci_width: float = 0.95,
     stratified: bool = False,
     **kwargs: Any,
@@ -34,9 +35,16 @@ def bootstrap_estimates(
             print(repr(e))
             return np.nan
 
+    rng = np.random.default_rng(random_state)
+
     if stratified:
         boot = stratified_bootstrap(
-            y_true=input_1, y_pred=input_2, metric=metric_wrapper, ci_width=ci_width, **_kwargs
+            y_true=input_1,
+            y_pred=input_2,
+            metric=metric_wrapper,
+            ci_width=ci_width,
+            random_state=rng,
+            **_kwargs,
         )
 
         low, high = boot[0], boot[1]
@@ -47,6 +55,7 @@ def bootstrap_estimates(
             statistic=metric_wrapper,
             confidence_level=ci_width,
             paired=True,
+            random_state=rng,
             **_kwargs,  # type: ignore
         )
 
@@ -56,18 +65,18 @@ def bootstrap_estimates(
 
 
 def stratified_bootstrap(
-    y_true: pd.Series,
-    y_pred: pd.Series,
-    metric: Callable[[pd.Series, pd.Series], float],
-    n_resamples: Any | None = 200,
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    metric: Callable[[np.ndarray, np.ndarray], float],
+    random_state: np.Generator,
+    n_resamples: int = 200,
     ci_width: float = 0.95,
-    random_state: Any | None = 42,
     **metric_kwargs: Any,
 ) -> tuple[float, float]:
     """
     Compute a stratified bootstrap confidence interval for a given metric.
 
-    Args:
+    Parameters:
         y_true (np.ndarray): Ground truth binary labels.
         y_pred (np.ndarray): Predicted values (scores or labels, depending on metric).
         metric (Callable): Scoring function taking (y_true, y_pred, **kwargs).
@@ -79,7 +88,6 @@ def stratified_bootstrap(
     Returns:
         Tuple[float, float]: Lower and upper bounds of the confidence interval.
     """
-    rng = np.random.default_rng(random_state)
     y_true = np.asarray(y_true)
     y_pred = np.asarray(y_pred)
 
@@ -96,7 +104,7 @@ def stratified_bootstrap(
                 cls_indices,
                 replace=True,
                 n_samples=len(cls_indices),
-                random_state=rng.integers(0, 1_000_000),
+                random_state=random_state.integers(0, 1_000_000),
             )
             resampled_indices.append(resampled_cls_indices)
 
