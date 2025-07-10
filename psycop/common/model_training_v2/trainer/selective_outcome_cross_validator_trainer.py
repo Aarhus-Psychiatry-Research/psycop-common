@@ -29,11 +29,6 @@ class SelectiveOutcomeCrossValidatorTrainer(BaselineTrainer):
 
     """A cross-validator trainer that trains on a specific outcome column and evaluates on another outcome column."""
 
-    # When using sklearn pipelines, the outcome column must retain its name
-    # throughout the pipeline.
-    # To accomplish this, we rename the two outcomes to a shared name.
-    _shared_outcome_col_name = "outcome"
-
     @property
     def non_predictor_columns(self) -> Sequence[str]:
         return [self.uuid_col_name, self.group_col_name]
@@ -62,7 +57,7 @@ class SelectiveOutcomeCrossValidatorTrainer(BaselineTrainer):
 
             X_val, y_val = (
                 X.loc[val_idxs],
-                pd.Series(X[self.validation_outcome_col_name][val_idxs]),
+                pd.Series(X[self.validation_outcome_col_name][val_idxs], index=val_idxs),
             )
 
             X_train = X_train.drop(
