@@ -17,20 +17,6 @@ from psycop.common.model_training_v2.trainer.task.model_step import ModelStep
 IMPLEMENTED_FUNCTIONS = Literal["f_classif", "chi2", "mutual_info_classif", "noop"]
 
 
-class IdentityTransformer(BaseEstimator, TransformerMixin):
-    def __init__(self):
-        pass
-
-    def fit(self, input_array, y=None):  # type: ignore # noqa
-        return self
-
-    def transform(self, input_array, y=None):  # type: ignore # noqa
-        return input_array
-
-
-IMPLEMENTED_FUNCTIONS = Literal["f_classif", "chi2", "mutual_info_classif", "noop"]
-
-
 @BaselineRegistry.estimator_steps.register("select_percentile")
 def select_percentile(score_function_name: IMPLEMENTED_FUNCTIONS, percentile: int) -> ModelStep:
     match score_function_name:
