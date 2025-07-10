@@ -98,6 +98,7 @@ def get_auroc_by_timedelta_df(
     confidence_interval: bool = True,
     bin_continuous_input: bool = True,
     drop_na_events: bool = True,
+    stratified: bool = False,
     min_n_in_bin: int = 5,
     n_bootstraps: int = 100,
 ) -> pd.DataFrame:
@@ -142,6 +143,7 @@ def get_auroc_by_timedelta_df(
         groupby_col_name="unit_from_event_binned",
         confidence_interval=confidence_interval,
         n_bootstraps=n_bootstraps,
+        stratified=stratified,
     )
 
     return grouped_df
@@ -158,6 +160,7 @@ def get_sensitivity_by_timedelta_df(
     confidence_interval: bool = True,
     bin_continuous_input: bool = True,
     drop_na_events: bool = True,
+    stratified: bool = False,
     min_n_in_bin: int = 5,
 ) -> pd.DataFrame:
     """Create dataframe for plotting performance metric from time to or from
@@ -194,7 +197,8 @@ def get_sensitivity_by_timedelta_df(
     ).rename(columns={"output": "y_hat"})
 
     return sensitivity_by_group(
-        df=df, groupby_col_name="unit_from_event_binned", confidence_interval=confidence_interval
+        df=df, groupby_col_name="unit_from_event_binned", confidence_interval=confidence_interval,
+        stratified=stratified,
     )
 
 
