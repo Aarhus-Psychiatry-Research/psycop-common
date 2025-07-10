@@ -118,6 +118,7 @@ def get_auroc_by_timedelta_df(
         bin_unit: Unit of time to use for bins.
         bin_continuous_input: Whether to bin input. Defaults to True.
         drop_na_events: Whether to drop rows where the event is NA. Defaults to True.
+        stratified: Whether to use stratified bootstrapping for confidence intervals.
         min_n_in_bin: Minimum number of rows in a bin to include in output. Defaults to 10.
         n_bootstraps: number of samples for bootstrap resampling
     Returns:
@@ -179,6 +180,7 @@ def get_sensitivity_by_timedelta_df(
         bin_unit: Unit of time to use for bins.
         bin_continuous_input: Whether to bin input. Defaults to True.
         drop_na_events: Whether to drop rows where the event is NA. Defaults to True.
+        stratified: Whether to use stratified bootstrapping for confidence intervals.
         min_n_in_bin: Minimum number of rows in a bin to include in output. Defaults to 10.
     Returns:
         pd.DataFrame: Dataframe ready for plotting where each row represents a bin.
