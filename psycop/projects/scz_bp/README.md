@@ -13,7 +13,7 @@ scz_bp/
 ```
 
 ### 2. Feature generation
-Secondly, generate features based on the cohort definition. Please note that the feature generation pipeline is dependent on access to the Central Denmark Region (CDR)'s SQL server. As such, it cannot be run outside the CDR network without approriate access.
+Secondly, generate features based on the cohort definition. Please note that the feature generation pipeline is dependent on access to the Central Denmark Region (CDR)'s SQL server. As such, it cannot be run outside the CDR network without appropriate access.
 ```bash
 scz_bp/  
 ├── feature_generation/
