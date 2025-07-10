@@ -123,7 +123,7 @@ def sensitivity_by_outcome_model(df: pl.DataFrame, outcome_df: pl.DataFrame) -> 
     eval_df = (positives.join(outcome_df, on="dw_ek_borger", how="left")).to_pandas()
 
     eval_df = eval_df[
-        ((eval_df["timestamp"].dt.date + pd.DateOffset(2)) >= eval_df["datotid_start"].dt.date)
+        ((eval_df["timestamp"].dt.date + pd.DateOffset(2)) >= eval_df["datotid_start"].dt.date)  # type: ignore
         & (eval_df["timestamp"].dt.date <= eval_df["datotid_slut"].dt.date)
     ]  # type: ignore
 
@@ -138,7 +138,7 @@ def sensitivity_by_first_outcome_model(df: pl.DataFrame, outcome_df: pl.DataFram
     eval_df = (positives.join(outcome_df, on="dw_ek_borger", how="left")).to_pandas()
 
     eval_df = eval_df[
-        ((eval_df["timestamp"].dt.date + pd.DateOffset(2)) >= eval_df["datotid_start"].dt.date)
+        ((eval_df["timestamp"].dt.date + pd.DateOffset(2)) >= eval_df["datotid_start"].dt.date)  # type: ignore
         & (eval_df["timestamp"].dt.date <= eval_df["datotid_slut"].dt.date)
     ]  # type: ignore
 

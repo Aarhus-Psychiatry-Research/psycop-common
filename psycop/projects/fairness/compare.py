@@ -31,7 +31,7 @@ def parse_dw_ek_borger_from_uuid(
     )
 
 
-def scz_bp_metrics(metrics: dict) -> tuple[MetricFrame, np.float16, np.float16]:
+def scz_bp_metrics(metrics: dict[str]) -> tuple[MetricFrame, np.float16, np.float16]:  # type: ignore
     eval_ds = scz_bp_get_eval_ds_from_disk(
         experiment_path="E:/shared_resources/scz_bp/testing", model_type="joint"
     )
@@ -42,7 +42,7 @@ def scz_bp_metrics(metrics: dict) -> tuple[MetricFrame, np.float16, np.float16]:
         metrics=metrics,
         y_true=eval_ds.y,
         y_pred=y_hat,
-        sensitive_features=eval_ds.is_female.replace({True: "Female", False: "Male"}),
+        sensitive_features=eval_ds.is_female.replace({True: "Female", False: "Male"}),  # type: ignore
         n_boot=100,
         ci_quantiles=[0.025, 0.975],
     )
@@ -51,7 +51,7 @@ def scz_bp_metrics(metrics: dict) -> tuple[MetricFrame, np.float16, np.float16]:
         {
             "y": list(eval_ds.y),
             "y_hat_probs": list(eval_ds.y_hat_probs["y_hat_probs"]),
-            "is_female": list(eval_ds.is_female),
+            "is_female": list(eval_ds.is_female),  # type: ignore
         }
     )
 
@@ -70,10 +70,10 @@ def scz_bp_metrics(metrics: dict) -> tuple[MetricFrame, np.float16, np.float16]:
     )
     boot = bootstrap_roc(y=eval_df["y"], y_hat_probs=eval_df["y_hat_probs"], n_bootstraps=100)
 
-    return metric_frame, auroc_male, auroc_female
+    return metric_frame, auroc_male, auroc_female  # type: ignore
 
 
-def restraint_metrics(metrics: dict) -> tuple[MetricFrame, np.float16, np.float16]:
+def restraint_metrics(metrics: dict) -> tuple[any]:  # type: ignore
     eval_df = pl.read_parquet(
         "E:/shared_resources/restraint/eval_runs/restraint_all_tuning_v2_best_run_evaluated_on_test/eval_df.parquet"
     )
@@ -103,7 +103,7 @@ def restraint_metrics(metrics: dict) -> tuple[MetricFrame, np.float16, np.float1
         joint_df[joint_df["sex_female"] is True]["y_hat_prob"],
     )
 
-    return metric_frame, auroc_male, auroc_female
+    return metric_frame, auroc_male, auroc_female  # type: ignore
 
 
 if __name__ == "__main__":
@@ -128,8 +128,8 @@ if __name__ == "__main__":
     scz_bp_df["Model"] = "Schizophrenia/bipolar disorder"
     restraint_df["Model"] = "Composite restraint"
 
-    df = pd.concat(
-        [scz_bp_df, restraint_df]
+    df = pd.concat(  # type: ignore
+        [scz_bp_df, restraint_df]  # type: ignore
     )  # pd.concat([scz_bp_df.drop(columns="Count"), restraint_df.drop(columns="Count")])
     df["Sex"] = df.index
 
@@ -157,13 +157,13 @@ if __name__ == "__main__":
     restraint_upper = restraint_frame[0].by_group_ci[1]
     restraint_upper["Model"] = "Composite restraint"
 
-    lower = pd.concat([scz_bp_lower, restraint_lower])
+    lower = pd.concat([scz_bp_lower, restraint_lower])  # type: ignore
     lower["Sex"] = lower.index
 
-    upper = pd.concat([scz_bp_upper, restraint_upper])
+    upper = pd.concat([scz_bp_upper, restraint_upper])  # type: ignore
     upper["Sex"] = upper.index
 
-    df = pd.concat(
+    df = pd.concat(  # type: ignore
         [
             df,
             pd.DataFrame(
@@ -177,7 +177,7 @@ if __name__ == "__main__":
             ),
         ]
     )
-    df = pd.concat(
+    df = pd.concat(  # type: ignore
         [
             df,
             pd.DataFrame(
@@ -192,7 +192,7 @@ if __name__ == "__main__":
         ]
     )
 
-    df = pd.concat(
+    df = pd.concat(  # type: ignore
         [
             df,
             pd.DataFrame(
@@ -200,13 +200,13 @@ if __name__ == "__main__":
                     "Model": "Composite restraint",
                     "Sex": "Female",
                     "variable": "AUROC",
-                    "value": [restraint_frame[2]],
+                    "value": [restraint_frame[2]],  # type: ignore
                 },
                 index=[26],
             ),
         ]
     )
-    df = pd.concat(
+    df = pd.concat(  # type: ignore
         [
             df,
             pd.DataFrame(
@@ -214,7 +214,7 @@ if __name__ == "__main__":
                     "Model": "Composite restraint",
                     "Sex": "Male",
                     "variable": "AUROC",
-                    "value": [restraint_frame[1]],
+                    "value": [restraint_frame[1]],  # type: ignore
                 },
                 index=[27],
             ),

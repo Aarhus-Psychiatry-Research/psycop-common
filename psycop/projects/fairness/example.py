@@ -15,10 +15,10 @@ from sklearn.tree import DecisionTreeClassifier
 
 if __name__ == "__main__":
     data = fetch_diabetes_hospital(as_frame=True)
-    X = data.data.copy()
-    X = X.drop(columns=["readmitted", "readmit_binary"])
-    y = data.target
-    X_ohe = pd.get_dummies(X)
+    X = data.data.copy()  # type: ignore
+    X = X.drop(columns=["readmitted", "readmit_binary"])  # type: ignore
+    y = data.target  # type: ignore
+    X_ohe = pd.get_dummies(X)  # type: ignore
     race = X["race"]
     race.value_counts()
 
@@ -28,21 +28,21 @@ if __name__ == "__main__":
     )
     classifier = DecisionTreeClassifier(min_samples_leaf=10, max_depth=4)
     classifier.fit(X_train, y_train)
-    y_pred = classifier.predict_proba(X_test)[:, 1] >= 0.1
+    y_pred = classifier.predict_proba(X_test)[:, 1] >= 0.1  # type: ignore
 
     result = accuracy_score(y_test, y_pred)
 
     mf = MetricFrame(
         metrics=accuracy_score, y_true=y_test, y_pred=y_pred, sensitive_features=A_test
     )
-    mf.overall.item()
+    mf.overall.item()  # type: ignore
     mf.difference(method="to_overall")
     mf.ratio(method="to_overall")
 
     mf = MetricFrame(
         metrics=false_negative_rate, y_true=y_test, y_pred=y_pred, sensitive_features=A_test
     )
-    mf.overall.item()
+    mf.overall.item()  # type: ignore
 
     demographic_parity_ratio(y_test, y_pred, sensitive_features=A_test)
 

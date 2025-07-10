@@ -30,7 +30,7 @@ if __name__ == "__main__":
         metrics=metrics,
         y_true=eval_ds.y,
         y_pred=y_hat,
-        sensitive_features=eval_ds.is_female.replace({True: "Female", False: "Male"}),
+        sensitive_features=eval_ds.is_female.replace({True: "Female", False: "Male"}),  # type: ignore
     )
 
     frame = pd.DataFrame(metric_frame.ratio()).T
