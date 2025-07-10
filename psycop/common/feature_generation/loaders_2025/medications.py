@@ -6,7 +6,7 @@ import logging
 
 import pandas as pd
 
-from psycop.common.feature_generation.loaders_2024.diagnoses import load_from_codes
+from psycop.common.feature_generation.loaders_2025.diagnoses import load_from_codes
 
 log = logging.getLogger(__name__)
 
@@ -69,11 +69,11 @@ def load(
             codes_to_match=atc_code,
             code_col_name="atc",
             source_timestamp_col_name="datotid_ordinationstart",
-            view="CVD_T2D_Medicin_ordineret",
+            view="CVD_T2D_Medicin_ordineret_marts_2025",
             output_col_name=output_col_name,
             match_with_wildcard=wildcard_code,
             n_rows=n_rows,
-            exclude_atc_codes=exclude_atc_codes,
+            exclude_codes=exclude_atc_codes,
             load_diagnoses=False,
             administration_route=administration_route,
             administration_method=administration_method,
@@ -87,11 +87,11 @@ def load(
             codes_to_match=atc_code,
             code_col_name="atc",
             source_timestamp_col_name="datotid_administration_start",
-            view="CVD_T2D_Medicin_administreret",
+            view="CVD_T2D_Medicin_administreret_marts_2025",
             output_col_name=output_col_name,
             match_with_wildcard=wildcard_code,
             n_rows=n_rows,
-            exclude_atc_codes=exclude_atc_codes,
+            exclude_codes=exclude_atc_codes,
             load_diagnoses=False,
             administration_route=administration_route,
             administration_method=administration_method,
@@ -135,7 +135,7 @@ def concat_medications(
     )
 
 
-def antidiabetics_2024(
+def antidiabetics_2025(
     n_rows: int | None = None,
     load_prescribed: bool = False,
     load_administered: bool = True,

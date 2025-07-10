@@ -11,18 +11,8 @@ from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.suggest
     CategoricalSpace,
     CategoricalSpaceT,
 )
+from psycop.common.model_training_v2.trainer.task.estimator_steps.utils import IdentityTransformer
 from psycop.common.model_training_v2.trainer.task.model_step import ModelStep
-
-
-class IdentityTransformer(BaseEstimator, TransformerMixin):
-    def __init__(self):
-        pass
-
-    def fit(self, input_array, y=None):  # type: ignore # noqa
-        return self
-
-    def transform(self, input_array, y=None):  # type: ignore # noqa
-        return input_array
 
 
 @BaselineRegistry.estimator_steps.register("noop_scaler")
@@ -40,7 +30,7 @@ def minmax_scaler_step() -> ModelStep:
     return ("scaler", sklearn.preprocessing.MinMaxScaler())
 
 
-IMPLEMENTED_STRATEGIES = ["standard", "noop"]
+IMPLEMENTED_STRATEGIES = ["standard", "noop", "minmax"]
 
 STRATEGY2STEP = {"standard": "standard_scaler", "minmax": "minmax_scaler", "noop": "noop_scaler"}
 

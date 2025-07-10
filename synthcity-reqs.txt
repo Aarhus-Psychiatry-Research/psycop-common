@@ -3,7 +3,7 @@
 
 ###### requirements.txt
 numpy==1.26.0
-torch==1.13.1
+torch==2.6.0
 # to install CUDA enabled torch on overtaci, use the following line
 # conda install pytorch==1.13.1 torchvision torchaudio pytorch-cuda=11.7 -c https://exrhel0371.it.rm.dk/api/repo/pytorch -c https://exrhel0371.it.rm.dk/api/repo/nvidia -c https://exrhel0371.it.rm.dk/api/repo/anaconda --override-channels --insecure
 # conda install pytorch=2.1.0 pytorch-cuda=12.1 -c https://exrhel0371.it.rm.dk/api/repo/pytorch -c https://exrhel0371.it.rm.dk/api/repo/nvidia -c https://exrhel0371.it.rm.dk/api/repo/anaconda --override-channels --insecure
