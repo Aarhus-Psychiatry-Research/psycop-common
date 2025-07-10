@@ -39,7 +39,7 @@ def bootstrap_estimates(
         boot = stratified_bootstrap(
             y_true=input_1,
             y_pred=input_2,
-            metric=metric_wrapper,
+            metric=metric_wrapper,  # type: ignore
             ci_width=ci_width,
             random_state=rng,
             **_kwargs,
@@ -63,9 +63,9 @@ def bootstrap_estimates(
 
 
 def stratified_bootstrap(
-    y_true: pd.Series,
-    y_pred: pd.Series,
-    metric: Callable[[pd.Series, pd.Series], float],
+    y_true: pd.Series[float],
+    y_pred: pd.Series[float],
+    metric: Callable[[pd.Series[float], pd.Series[float]], float],
     random_state: Any,
     n_resamples: Any = 200,
     ci_width: Any = 0.95,
@@ -86,8 +86,8 @@ def stratified_bootstrap(
     Returns:
         Tuple[float, float]: Lower and upper bounds of the confidence interval.
     """
-    y_true = np.asarray(y_true)
-    y_pred = np.asarray(y_pred)
+    y_true = np.asarray(y_true)  # type: ignore
+    y_pred = np.asarray(y_pred)  # type: ignore
 
     classes = np.unique(y_true)
     indices_by_class = {cls: np.where(y_true == cls)[0] for cls in classes}
