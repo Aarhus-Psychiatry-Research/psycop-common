@@ -63,9 +63,9 @@ def bootstrap_estimates(
 
 
 def stratified_bootstrap(
-    y_true: pd.Series[float],
-    y_pred: pd.Series[float],
-    metric: Callable[[pd.Series[float], pd.Series[float]], float],
+    y_true: pd.Series,  # type: ignore
+    y_pred: pd.Series,  # type: ignore
+    metric: Callable[[pd.Series, pd.Series], float],  # type: ignore
     random_state: Any,
     n_resamples: Any = 200,
     ci_width: Any = 0.95,
