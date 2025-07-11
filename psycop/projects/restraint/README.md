@@ -76,30 +76,33 @@ E:/shared_resources/
 
 
 ### 3. Model training
-Third, the model training procedure is performed based on experiment configurations.
+Third, the model training procedure is performed based on experiment configurations. The following files handle model training for all models in the paper; the first two train models used in the main paper and the last three train models mentioned in the appendices. Each file is accompanied by a .cfg file (called within the script). 
 
 ```bash
 restraint/ 
 ├── training/
-│   └── restraint_mechanical_tuning.py # hyperparameter tuning for model with mechanical restraint as outcome - *MAIN GUYS* (experiment_name="restraint_mechanical_tuning_v2")
-│   └── restraint_all_tuning.py # hyperparameter tuning for model with any restraint as outcome - MAIN GUYS
-│   └── restraint_mechanical_tuning_minimal.py # hyperparameter tuning for parsimonious model (i.e., minimal feature set) - APPENDIX
-│   └── restraint_all_tuning_minimal.py # hyperparameter tuning for parsimonious model (i.e., minimal feature set) - APPENDIX
-│   └── restraint_split_tuning.py # hyperparameter tuning for model trained on any restraint, validated on mechanical restraint in oof - APPENDIX
+│   └── restraint_mechanical_tuning.py # hyperparameter tuning for model with mechanical restraint as outcome - MAIN PAPER (experiment_name="restraint_mechanical_tuning_v2")
+│   └── restraint_all_tuning.py # hyperparameter tuning for model with any restraint as outcome - MAIN PAPER (experiment_name="restraint_all_tuning_v2")
+│   └── restraint_mechanical_tuning_minimal.py # hyperparameter tuning for parsimonious model (i.e., minimal feature set) - APPENDIX (experiment_name="restraint_mechanical_tuning_minimal_v2")
+│   └── restraint_all_tuning_minimal.py # hyperparameter tuning for parsimonious model (i.e., minimal feature set) - APPENDIX (experiment_name="restraint_all_tuning_minimal_v2")
+│   └── restraint_split_tuning.py # hyperparameter tuning for model trained on any restraint, validated on mechanical restraint in oof - APPENDIX (experiment_name="restraint_split_tuning_v2")
 ```
-
-*alll are accompanied by a .cfg file (called within the script)*  <br />
-*(experiment_name="restraint_mechanical_tuning_v2") for alle scripts ovenfor er exp name navnet på filen og så v2. tilføj den information til dem alle)*
-
 
 
 ### 4. Model evaluation
 Fourth, model evaluation is performed.
 ```bash
-restraint/ 
+restraint/
 ├── evaluation/
 │   └── retrain_models/
-│   │   └── retrain_best_model_on_test.py # takes best run from both *MAIN GUYS* and trains model on train+val and evaluates on test set
+│   │   └── retrain_best_model_on_test.py # takes best run from both main models and trains model on train+val and evaluates on test set
 │   │   └── retrain_best_model_on_test_minimal.py # takes best run from both parsimonious models and trains model on train+val and evaluates on test set
-│   └── main.py # main driver for generating all figures and tables for paper and appendix
+│   └── main.py # main driver for generating all figures and tables for the paper and appendix
 ```
+
+#### EVAL_DF
+The resulting evaluation dataframe is saved at XXXXXXXXXXXXXXXXXXXXXX and has the following format:
+| pred_time_uuid        | y | y_hat_probs |
+|-----------------------|---|-------------|
+| yyyy-mm-dd-00:00:00-1 | 0 | 0.001       |
+
