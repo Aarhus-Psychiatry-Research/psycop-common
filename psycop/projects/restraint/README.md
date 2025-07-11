@@ -76,7 +76,7 @@ E:/shared_resources/
 
 
 ### 3. Model training
-Third, the model training procedure is performed based on experiment configurations. The following files handle model training for all models in the paper; the first two train models used in the main paper and the last three train models mentioned in the appendices. Each file is accompanied by a .cfg file (called within the script). 
+Third, the model training procedure is performed based on experiment configurations. The following files handle model training for all models in the paper; the first two train models used in the main paper, and the last three train models mentioned in the appendices. Each file is accompanied by a .cfg file (called within the script). 
 
 ```bash
 restraint/ 
@@ -95,14 +95,29 @@ Fourth, model evaluation is performed.
 restraint/
 ├── evaluation/
 │   └── retrain_models/
-│   │   └── retrain_best_model_on_test.py # takes best run from both main models and trains model on train+val and evaluates on test set
+│   │   └── retrain_best_model_on_test.py # takes best run from both main models and trains model on train+val and evaluates on test set, and also retrains a model on any restraint and evaluates on mechanical restraint
 │   │   └── retrain_best_model_on_test_minimal.py # takes best run from both parsimonious models and trains model on train+val and evaluates on test set
 │   └── main.py # main driver for generating all figures and tables for the paper and appendix
 ```
 
 #### EVAL_DF
-The resulting evaluation dataframe is saved at XXXXXXXXXXXXXXXXXXXXXX and has the following format:
-| pred_time_uuid        | y | y_hat_probs |
-|-----------------------|---|-------------|
-| yyyy-mm-dd-00:00:00-1 | 0 | 0.001       |
+The resulting evaluation dataframe is a `polars.DataFrame` and has the following format:
+| pred_time_uuid        | y | y_hat_prob |
+|-----------------------|---|------------|
+| 1-yyyy-mm-dd-00:00:00 | 0 | 0.001      |
 
+
+```bash
+E:/shared_resources/restraint/
+├── eval_runs/
+│   └── restraint_mechanical_tuning_v2_best_run_evaluate_on_test/
+│   │   └── eval_df.parquet
+│   │   └── paper_outputs/ # contains all figures and tables
+│   └── restraint_all_tuning_v2_best_run_evaluate_on_test/
+│   │   └── eval_df.parquet
+│   │   └── paper_outputs/ # contains all figures and tables
+│   └── restraint_all_tuning_v2_best_run_evaluate_on_test_mechanical/
+│   │   └── eval_df.parquet
+│   │   └── paper_outputs/ # contains all figures and tables
+│   └── * # plus outputs from parsimonious models (same format as above)
+```
