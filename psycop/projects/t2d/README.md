@@ -6,8 +6,6 @@ All requirements are specified in the `pyproject.toml`. To install the project, 
 
 `pip install -r dev-requirements`
 
-## Running the pipeline
-
 
 ## Running the pipeline
 
