@@ -10,7 +10,7 @@ FEATURE_SETS = {
     "structured_only": [
         "basic",
         "contacts",
-        "ham-broeset",
+        "ham-broset",
         "diagnoses",
         "medication",
         "leave-suicide",
@@ -19,7 +19,7 @@ FEATURE_SETS = {
     "structured_text": [
         "basic",
         "contacts",
-        "ham-broeset",
+        "ham-broset",
         "diagnoses",
         "medication",
         "leave-suicide",
@@ -38,7 +38,12 @@ def hyperparameter_search(cfg: PsycopConfig):
     for feature_set, features in FEATURE_SETS.items():
         cfg.mut(
             "logger.*.mlflow.experiment_name",
-            f"ECT hparam, {feature_set}, xgboost, no lookbehind filter",
+            f"ECT-trunc-and-hp-{feature_set}-xgboost-no-lookbehind-filter",
+        )
+
+        cfg.mut(
+            "logger.*.disk_logger.run_path",
+            f"E:/shared_resources/ect/training/ECT-trunc-and-hp-{feature_set}-xgboost-no-lookbehind-filter",
         )
 
         layer_regex = "|".join(features)
@@ -51,7 +56,7 @@ def hyperparameter_search(cfg: PsycopConfig):
         OptunaHyperParameterOptimization().from_cfg(
             cfg,
             study_name=cfg.retrieve("logger.*.mlflow.experiment_name"),
-            n_trials=150,
+            n_trials=200,
             n_jobs=10,
             direction="maximize",
             catch=(Exception,),
