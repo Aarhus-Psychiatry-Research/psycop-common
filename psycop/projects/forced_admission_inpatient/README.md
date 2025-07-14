@@ -86,7 +86,7 @@ forced_admission_inpatient/
 ├── model_training/
 │   └── train_models_in_parallel.py # main driver for model training
 │   └── config/ 
-│   │   └── * # contains subfolder with configuration files for model training
+│   │   └── * # contains subfolders with configuration files for model training
 ```
 
 The models are saved here:
