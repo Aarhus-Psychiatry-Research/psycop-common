@@ -156,14 +156,14 @@ E:/shared_resources/forced_admission_inpatient/
 │   └── full_model_with_text_features_train_val/ # structured and text features
 │   │   └── chuddahs-caterwauls-eval-on-test/ 
 │   │   │   └── abrasiometerintergradient-eval-on-test # best XGBoost
-│   │   │   │   └── config.json
-│   │   │   │   └── config.pkl
+│   │   │   │   └── cfg.json
+│   │   │   │   └── cfg.pkl
 │   │   │   │   └── evaluation_dataset.parquet # here it is (eval_df)!!
 │   │   │   │   └── pipe_metadata.pkl
 │   │   │   │   └── pipe.pkl
 │   │   │   └── belgiumigdyr-eval-on-test # best logistic regression
-│   │   │   │   └── config.json
-│   │   │   │   └── config.pkl
+│   │   │   │   └── cfg.json
+│   │   │   │   └── cfg.pkl
 │   │   │   │   └── evaluation_dataset.parquet # here it is (eval_df)!!
 │   │   │   │   └── pipe_metadata.pkl
 │   │   │   │   └── pipe.pkl
