@@ -88,6 +88,17 @@ t2d/
 │   │   └── supplementary_full_eval.py # runs full evaluation for the supplementary materials (XGBoost)
 ```
 
+
+forced_admission_inpatient/ 
+├── model_training/
+│   └── inpatient_v2.cfg # model_training_v2-adapted config which can replicate the best XGBoost model from main model´
+│   └── replace_sklearn_pipe.py # function for adapting the abovementioned config to the best logistic regression model
+│   └── temporal.py # run temporal cross validation (logs models on mlflow - expriment name: "FA Inpatient - temporal cv") OBS - Mlflow logs are deleted and logging this way is outdated
+
+
+
+
+
 #### EVAL_DF
 The resulting evaluation dataframe has the following format:
 | ids | pred_time_uuids       | pred_timestamps     | outcome_timestamps  | y | age  | is_female | y_hat_prob | eval_hba1c_within_9999_days_count_fallback_nan |
