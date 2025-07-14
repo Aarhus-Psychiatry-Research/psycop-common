@@ -86,7 +86,7 @@ forced_admission_inpatient/
 ├── model_training/
 │   └── train_models_in_parallel.py # main driver for model training
 │   └── config/ 
-│   |   └── * # contains subfolder with configuration files for model training
+│   │   └── * # contains subfolder with configuration files for model training
 ```
 
 The models are saved here:
@@ -94,10 +94,10 @@ The models are saved here:
 E:/shared_resources/forced_admission_inpatient/ 
 ├── models/
 │   └── full_model_with_text_features_train_val/ # structured and text features
-│   |   └── chuddahs-caterwauls/ # all runs from hyperparameter tuning (both logistic regression and XGBoost)
-│   |   └── chuddahs-caterwauls-eval-on-test/ # best models (one logistic regression, one XGBoost) retrained on test set
-│   |   |   └── abrasiometerintergradient-eval-on-test # best XGBoost
-│   |   |   └── belgiumigdyr-eval-on-test # best logistic regression
+│   │   └── chuddahs-caterwauls/ # all runs from hyperparameter tuning (both logistic regression and XGBoost)
+│   │   └── chuddahs-caterwauls-eval-on-test/ # best models (one logistic regression, one XGBoost) retrained on test set
+│   │   |   └── abrasiometerintergradient-eval-on-test # best XGBoost
+│   │   |   └── belgiumigdyr-eval-on-test # best logistic regression
 │   └── full_model_without_text_features/ # only structured features
 │   └── only_tfidf_model_train_val/ # only tfidf features
 │   └── * # all other subsets and secondary analyses
@@ -111,7 +111,7 @@ forced_admission_inpatient/
 │   └── selected_runs.py # script for retraining model and evaluating on test
 │   └── config.py # configuring which hyperparameter tuning experiment to run on
 │   └── aggregate_eval/
-│   |   └── single_pipeline_full_eval.py # produces all* figures and tables for selected run, as determined by the config, (*except table one, calibration curve, and decision-curve-analysis)
+│   │   └── single_pipeline_full_eval.py # produces all* figures and tables for selected run, as determined by the config, (*except table one, calibration curve, and decision-curve-analysis)
 ```
 
 #### CROSS-VALIDATION TABLE
@@ -119,8 +119,8 @@ forced_admission_inpatient/
 forced_admission_inpatient/ 
 ├── model_eval/
 │   └── model_description/
-│   |   └── performance/
-│   |   |   └── cross_validation_performance_table.py # generates table with cv performances for all models (different feature sets and secondary analyses)
+│   │   └── performance/
+│   │   │   └── cross_validation_performance_table.py # generates table with cv performances for all models (different feature sets and secondary analyses)
 ```
 
 #### TEMPORAL EVALUATION
@@ -130,7 +130,7 @@ forced_admission_inpatient/
 ├── model_training/
 │   └── inpatient_v2.cfg # model_training_v2-adapted config which can replicate the best XGBoost model from main model´
 │   └── replace_sklearn_pipe.py # function for adapting the abovementioned config to the best logistic regression model
-|   └── temporal.py # run temporal cross validation (logs models on mlflow - expriment name: "FA Inpatient - temporal cv") OBS - Mlflow logs are deleted and logging this way is outdated
+│   └── temporal.py # run temporal cross validation (logs models on mlflow - expriment name: "FA Inpatient - temporal cv") OBS - Mlflow logs are deleted and logging this way is outdated
 ```
 
 To generate temporal stability plots:
@@ -138,7 +138,7 @@ To generate temporal stability plots:
 forced_admission_inpatient/ 
 ├── model_eval/
 │   └── model_permutation/
-│   |   └── temporal_view.py
+│   │   └── temporal_view.py
 ```
 
 #### EVAL_DF
@@ -154,19 +154,19 @@ Eval dataframes can be found as .parquet files in the model folders. Example of 
 E:/shared_resources/forced_admission_inpatient/ 
 ├── models/
 │   └── full_model_with_text_features_train_val/ # structured and text features
-│   |   └── chuddahs-caterwauls-eval-on-test/ 
-│   |   |   └── abrasiometerintergradient-eval-on-test # best XGBoost
-│   |   |   |   └── config.json
-│   |   |   |   └── config.pkl
-│   |   |   |   └── evaluation_dataset.parquet # here it is (eval_df)!!
-│   |   |   |   └── pipe_metadata.pkl
-│   |   |   |   └── pipe.pkl
-│   |   |   └── belgiumigdyr-eval-on-test # best logistic regression
-│   |   |   |   └── config.json
-│   |   |   |   └── config.pkl
-│   |   |   |   └── evaluation_dataset.parquet # here it is (eval_df)!!
-│   |   |   |   └── pipe_metadata.pkl
-│   |   |   |   └── pipe.pkl
+│   │   └── chuddahs-caterwauls-eval-on-test/ 
+│   │   │   └── abrasiometerintergradient-eval-on-test # best XGBoost
+│   │   │   │   └── config.json
+│   │   │   │   └── config.pkl
+│   │   │   │   └── evaluation_dataset.parquet # here it is (eval_df)!!
+│   │   │   │   └── pipe_metadata.pkl
+│   │   │   │   └── pipe.pkl
+│   │   │   └── belgiumigdyr-eval-on-test # best logistic regression
+│   │   │   │   └── config.json
+│   │   │   │   └── config.pkl
+│   │   │   │   └── evaluation_dataset.parquet # here it is (eval_df)!!
+│   │   │   │   └── pipe_metadata.pkl
+│   │   │   │   └── pipe.pkl
 ```
 
 In the code, the evaluation_dataset.parquet files are read in and converted to the class `EvalDataset` which is used for the plots and figures.  
