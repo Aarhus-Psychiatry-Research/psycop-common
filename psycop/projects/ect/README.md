@@ -6,27 +6,29 @@ Project-specific code for predicting mechanical restraint and related coercive m
 ### 1. Cohort definition
 First, the cohort is defined. 
 ```bash
-restraint/  
+ect/  
 ├── feature_generation/ 
-│   └── cohort/
-│   │   └── restraint_cohort_definer.py # defining the cohort
+│   └── cohort_definition/
+│   │   └── ect_cohort_definition.py # defining the cohort
 ```
 
-OBS: The cohort was (and can be) generated using the file above. However, because this process takes a very long time for this specific project, a version of the cohort has also been saved and can be loaded through an SQL path. <br />
+<br />
 
 
 #### PREDICTION TIMESTAMPS
-The SQL table with prediction timestamps is called `"fct.psycop_coercion_outcome_timestamps"` and has the following format:
-| dw_ek_borger | timestamp_admission | timestamp_discharge | pred_adm_day_count | timestamp           |
-|--------------|---------------------|---------------------|--------------------|---------------------|
-| 1            | yyyy-mm-dd 00:00:00 | yyyy-mm-dd 00:00:00 | 2                  | yyyy-mm-dd 00:00:00 |
+Prediction timestamp df is derived from ECTCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.frame and has the following format:
+
+| dw_ek_borger | timestamp           |
+|--------------|---------------------|
+| 1            | yyyy-mm-dd 00:00:00 |
 
 
 #### OUTCOME TIMESTAMPS
-The SQL table with outcome timestamps is called `"fct.psycop_coercion_outcome_timestamps_2"` and has the following format:
-| dw_ek_borger | datotid_start       | datotid_slut        | all_restraint       | mechanical_restraint | chemical_restraint  | manual_restraint    |
-|--------------|---------------------|---------------------|---------------------|----------------------|---------------------|---------------------|
-| 1            | yyyy-mm-dd 00:00:00 | yyyy-mm-dd 00:00:00 | yyyy-mm-dd 00:00:00 | yyyy-mm-dd 00:00:00  | yyyy-mm-dd 00:00:00 | yyyy-mm-dd 00:00:00 |
+Outcome timestamps are derived from ECTCohortDefiner.get_outcome_timestamps() and the resulting df has the following format:
+
+| dw_ek_borger | timestamp       | value        |
+|--------------|---------------------|---------------------|
+| 1            | yyyy-mm-dd 00:00:00 | 1|
 
 
 ### 2. Feature generation
@@ -36,88 +38,85 @@ Relevant files in the psycop-common repository:
 ```bash
 restraint/  
 ├── feature_generation/ 
-│   └── modules/
-│   │   └── loaders/
-│   │   │   └── load_restraint_outcome_timestamps.py # load outcome timestamps (without generating features)
-│   │   │   └── load_restraint_prediction_timestamps.py # load prediction timestamps (without generating features)
-│   └── main.py # main driver for generating feature set
+│   └── main.py # main driver for generating feature set - different feature layers are defined in the script
 ```
 
 The resulting feature set can be found here (on Ovartaci): 
 ```bash
-E:/shared_resources/restraint/  
+E:/shared_resources/ect/  
 ├── flattened_datasets/ 
 │   └── full_feature_set_structured_tfidf_750_all_outcomes/
 │   │   └── full_with_pred_adm_day_count.parquet
 ```
 
 #### TEXT
-The text features in the feature set are derived from previously generated embedded text files. Information on the location of the relevant files are described here. 
-The preprocessed text can be found via the SQL name `"fct.psycop_train_val_test_all_sfis_preprocessed"`. The model is located at:
-```bash
-E:/shared_resources/
-├── text_models/ 
-│   └── tfidf_psycop_train_all_sfis_preprocessed_sfi_type_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750.pkl
-```
-and the vocabulary at:
-```bash
-E:/shared_resources/
-├── text_models/ 
-│   └── vocabulary/
-│   │   └── vocab_tfidf_psycop_train_all_sfis_preprocessed_sfi_type_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750.parquet
-```
+The tfidf features in the feature set are derived from previously generated embedded text files.
 
-The resulting embedded text file can be found at:
+The embedded text file can be found at:
 ```bash
 E:/shared_resources/
 ├── text_embeddings/ 
-│   └── text_train_val_test_tfidf_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750.parquet
+│   └── text_embeddings_all_relevant_tfidf-1000.parquet
 ```
-
 
 ### 3. Model training
-Third, the model training procedure is performed based on experiment configurations. The following files handle model training for all models in the paper; the first two train models used in the main paper, and the last three train models mentioned in the appendices. Each file is accompanied by a .cfg file (called within the script). 
+Third, the model training procedure (hyperparameter tuning using cross-validation) is performed.
 
 ```bash
-restraint/ 
-├── training/
-│   └── restraint_mechanical_tuning.py # hyperparameter tuning for model with mechanical restraint as outcome - MAIN PAPER (experiment_name="restraint_mechanical_tuning_v2")
-│   └── restraint_all_tuning.py # hyperparameter tuning for model with any restraint as outcome - MAIN PAPER (experiment_name="restraint_all_tuning_v2")
-│   └── restraint_mechanical_tuning_minimal.py # hyperparameter tuning for parsimonious model (i.e., minimal feature set) - APPENDIX (experiment_name="restraint_mechanical_tuning_minimal_v2")
-│   └── restraint_all_tuning_minimal.py # hyperparameter tuning for parsimonious model (i.e., minimal feature set) - APPENDIX (experiment_name="restraint_all_tuning_minimal_v2")
-│   └── restraint_split_tuning.py # hyperparameter tuning for model trained on any restraint, validated on mechanical restraint in oof - APPENDIX (experiment_name="restraint_split_tuning_v2")
+ect/ 
+├── model_training/
+│   └── ect_baseline.cg # baseline configuration for model hyperparameter tuning
+│   └── restraint_split_tuning.py # main script for training models across three different feature set: only strcutured features, only text features, and both
 ```
 
+The main hyperparameter tuning experiments are named 'ECT-trunc-and-hp-{feature_set_name}-xgboost-no-lookbehind-filter-best_run_evaluated_on_test' on MlFlow.
 
 ### 4. Model evaluation
-Fourth, model evaluation is performed.
+Fourth, model evaluation is performed. The main models are retrained on the combined train+validation set and tested on the test set. Furthermore, models for evaluating temporal and geographic stability are trained and evaluated on the test set:
+
 ```bash
-restraint/
-├── evaluation/
-│   └── retrain_models/
-│   │   └── retrain_best_model_on_test.py # takes best run from both main models and trains model on train+val and evaluates on test set, and also retrains a model on any restraint and evaluates on mechanical restraint
-│   │   └── retrain_best_model_on_test_minimal.py # takes best run from both parsimonious models and trains model on train+val and evaluates on test set
-│   └── main.py # main driver for generating all figures and tables for the paper and appendix
+ect/
+├── model_training/
+│   └── evaluate_models_on_test_set/
+│   │   └── eval_random_split.py # reconfigure, retrain and evaluate main model
+│   │   └── eval_geographic_split.py # reconfigure, retrain and evaluate geographic stability (trained on east and west sites, evaluated on central sites)
+│   │   └── eval_temporal_splits.py # reconfigure, retrain and evaluate temporal stability
 ```
 
-#### EVAL_DF
-The resulting evaluation dataframe is a `polars.DataFrame` and has the following format:
+The model evaluation experiments are named e.g. 'ECT-trunc-and-hp-{feature_set_name}-xgboost-no-lookbehind-filter' on MlFlow.
+
+#### Figures and eval_df
+
+The following script is used to produce all figures and tables for the article:
+
+```bash
+ect/
+├── paper_outputs/
+│   └── single_run.py
+```
+
+The figures and plots are saved in the same folder as the eval_df generated from model retraining and evaluation on the test set:
+
+```bash
+E:/shared_resources/ect/
+├── eval_runs/
+│   └── ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter_best_run_evaluated_on_test/
+│   │   └── figures/ # all figures and tables
+│   │   └── config.cfg # model config
+│   │   └── eval_df.parquet
+│   │   └── logs.log
+│   │   └── sklearn_pipe.pkl # full model sklearn pipeline
+│   └── ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter_best_run_evaluated_on_geographic_test/
+│   │   └── figures/ # all figures and tables
+│   │   └── config.cfg # model config
+│   │   └── eval_df.parquet
+│   │   └── logs.log
+│   │   └── sklearn_pipe.pkl # full model sklearn pipeline
+│   └── * # similar structure for all the other experiments
+│   └── figures/ # all figures for the temporal stability analyses
+```
+
+The evaluation dataframes are `polars.DataFrame` and have the following format:
 | pred_time_uuid        | y | y_hat_prob |
 |-----------------------|---|------------|
 | 1-yyyy-mm-dd-00:00:00 | 0 | 0.001      |
-
-
-```bash
-E:/shared_resources/restraint/
-├── eval_runs/
-│   └── restraint_mechanical_tuning_v2_best_run_evaluate_on_test/
-│   │   └── eval_df.parquet
-│   │   └── paper_outputs/ # contains all figures and tables
-│   └── restraint_all_tuning_v2_best_run_evaluate_on_test/
-│   │   └── eval_df.parquet
-│   │   └── paper_outputs/ # contains all figures and tables
-│   └── restraint_all_tuning_v2_best_run_evaluate_on_test_mechanical/
-│   │   └── eval_df.parquet
-│   │   └── paper_outputs/ # contains all figures and tables
-│   └── * # plus outputs from parsimonious models (same format as above)
-```
