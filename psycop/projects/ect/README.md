@@ -1,5 +1,5 @@
-# Restraint prediction
-Project-specific code for predicting mechanical restraint and related coercive measures. 
+# ECT prediction
+Project-specific code for predicting ECT initiation in hospital-admitted patients
 
 ## Running the pipeline
 
@@ -36,7 +36,7 @@ Second, features are generated based on the cohort definition. Please note that 
 
 Relevant files in the psycop-common repository: 
 ```bash
-restraint/  
+ect/  
 ├── feature_generation/ 
 │   └── main.py # main driver for generating feature set - different feature layers are defined in the script
 ```
@@ -65,8 +65,8 @@ Third, the model training procedure (hyperparameter tuning using cross-validatio
 ```bash
 ect/ 
 ├── model_training/
-│   └── ect_baseline.cg # baseline configuration for model hyperparameter tuning
-│   └── restraint_split_tuning.py # main script for training models across three different feature set: only strcutured features, only text features, and both
+│   └── ect_baseline.cfg # baseline configuration for model hyperparameter tuning
+│   └── hyperparam.py # main script for training models across three different feature set: only strcutured features, only text features, and both
 ```
 
 The main hyperparameter tuning experiments are named 'ECT-trunc-and-hp-{feature_set_name}-xgboost-no-lookbehind-filter-best_run_evaluated_on_test' on MlFlow.
