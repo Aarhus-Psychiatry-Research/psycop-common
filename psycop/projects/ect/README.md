@@ -1,26 +1,22 @@
-# CVD prediction
-Project-specific code for predicting CVD
+# ECT prediction
+Project-specific code for predicting ECT initiation in hospital-admitted patients
 
-## Installation
-All requirements are specified in the `*requirements.txt` files. To install the project, clone it locally and run:
-
-`pip install invoke`
-`inv install-requirements`
+## Running the pipeline
 
 ### 1. Cohort definition
 First, the cohort is defined. 
 ```bash
-cvd/  
-├── feafture_generation/ 
+ect/  
+├── feature_generation/ 
 │   └── cohort_definition/
-│   │   └── cvd_cohort_definition.py # defining the cohort
+│   │   └── ect_cohort_definition.py # defining the cohort
 ```
 
 <br />
 
 
 #### PREDICTION TIMESTAMPS
-Prediction timestamp df is derived from CVDCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.frame and has the following format:
+Prediction timestamp df is derived from ECTCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.frame and has the following format:
 
 | dw_ek_borger | timestamp           |
 |--------------|---------------------|
@@ -28,7 +24,7 @@ Prediction timestamp df is derived from CVDCohortDefiner.get_filtered_prediction
 
 
 #### OUTCOME TIMESTAMPS
-Outcome timestamps are derived from CVDCohortDefiner.get_outcome_timestamps() and the resulting df has the following format:
+Outcome timestamps are derived from ECTCohortDefiner.get_outcome_timestamps() and the resulting df has the following format:
 
 | dw_ek_borger | timestamp       | value        |
 |--------------|---------------------|---------------------|
@@ -40,42 +36,51 @@ Second, features are generated based on the cohort definition. Please note that 
 
 Relevant files in the psycop-common repository: 
 ```bash
-cvd/  
+ect/  
 ├── feature_generation/ 
 │   └── main.py # main driver for generating feature set - different feature layers are defined in the script
 ```
 
 The resulting feature set can be found here (on Ovartaci): 
 ```bash
-E:/shared_resources/cvd/
-├── feature_set/ 
-│   ├── flattened_datasets/ 
-│   │   └── cvd_feature_set/
-│   │   │   └── cvd_feature_set.parquet
+E:/shared_resources/ect/  
+├── flattened_datasets/ 
+│   └── full_feature_set_structured_tfidf_750_all_outcomes/
+│   │   └── full_with_pred_adm_day_count.parquet
 ```
 
+#### TEXT
+The tfidf features in the feature set are derived from previously generated embedded text files.
+
+The embedded text file can be found at:
+```bash
+E:/shared_resources/
+├── text_embeddings/ 
+│   └── text_embeddings_all_relevant_tfidf-1000.parquet
+```
 
 ### 3. Model training
 Third, the model training procedure (hyperparameter tuning using cross-validation) is performed.
 
 ```bash
-cvd/ 
+ect/ 
 ├── model_training/
-│   └── cvd_baseline.cfg # baseline configuration for model hyperparameter tuning
-│   └── main.py # main script for performing all hyperparameter tuning experiments
+│   └── ect_baseline.cfg # baseline configuration for model hyperparameter tuning
+│   └── hyperparam.py # main script for training models across three different feature set: only strcutured features, only text features, and both
 ```
 
-The main hyperparameter tuning experiments are no longer available on MlFlow.
-
+The main hyperparameter tuning experiments are named 'ECT-trunc-and-hp-{feature_set_name}-xgboost-no-lookbehind-filter-best_run_evaluated_on_test' on MlFlow.
 
 ### 4. Model evaluation
-Fourth, model evaluation is performed. The main models are retrained on the combined train+validation set and tested on the test set. Furthermore, models for evaluating geographic stability are trained and evaluated on the test set:
+Fourth, model evaluation is performed. The main models are retrained on the combined train+validation set and tested on the test set. Furthermore, models for evaluating temporal and geographic stability are trained and evaluated on the test set:
 
 ```bash
 ect/
 ├── model_training/
-│   └── eval_random_split.py # reconfigure, retrain and evaluate main model
-│   └── eval_geographic_split.py # reconfigure, retrain and evaluate geographic stability (trained on east and west sites, evaluated on central sites)
+│   └── evaluate_models_on_test_set/
+│   │   └── eval_random_split.py # reconfigure, retrain and evaluate main model
+│   │   └── eval_geographic_split.py # reconfigure, retrain and evaluate geographic stability (trained on east and west sites, evaluated on central sites)
+│   │   └── eval_temporal_splits.py # reconfigure, retrain and evaluate temporal stability
 ```
 
 The model evaluation experiments are named e.g. 'ECT-trunc-and-hp-{feature_set_name}-xgboost-no-lookbehind-filter' on MlFlow.
@@ -85,10 +90,9 @@ The model evaluation experiments are named e.g. 'ECT-trunc-and-hp-{feature_set_n
 The following script is used to produce all figures and tables for the article:
 
 ```bash
-cvd/
+ect/
 ├── paper_outputs/
-│   └── multi_run.py # script for producing comparitive table
-│   └── single_run.py # script for producing figures and tables for the main model (XGBoost model based only on layers 1 + 2)
+│   └── single_run.py
 ```
 
 The figures and plots are saved in the same folder as the eval_df generated from model retraining and evaluation on the test set:
