@@ -25,11 +25,7 @@ class SplitTrainerSeparatePreprocessing(BaselineTrainer):
     validation_preprocessing_pipeline: PreprocessingPipeline
     task: BaselineTask
     metric: BaselineMetric
-
-    # When using sklearn pipelines, the outcome column must retain its name
-    # throughout the pipeline.
-    # To accomplish this, we rename the two outcomes to a shared name.
-    _shared_outcome_col_name = "outcome"
+    additional_metrics: BaselineMetric | None = None
 
     @property
     def outcome_columns(self) -> Sequence[str]:
@@ -64,6 +60,13 @@ class SplitTrainerSeparatePreprocessing(BaselineTrainer):
         self._log_main_metric(main_metric)
         self._log_sklearn_pipe()
 
+        if self.additional_metrics:
+            additional_metric = self.additional_metrics.calculate(
+                y=validation_data_preprocessed[self.validation_outcome_col_name],
+                y_hat_prob=y_hat_prob,
+            )
+            self.logger.log_metric(additional_metric)
+
         eval_df = pl.DataFrame(
             {
                 "y": validation_data_preprocessed[self.validation_outcome_col_name],
@@ -88,11 +91,7 @@ class SplitTrainer(BaselineTrainer):
     preprocessing_pipeline: PreprocessingPipeline
     task: BaselineTask
     metric: BaselineMetric
-
-    # When using sklearn pipelines, the outcome column must retain its name
-    # throughout the pipeline.
-    # To accomplish this, we rename the two outcomes to a shared name.
-    _shared_outcome_col_name = "outcome"
+    additional_metrics: BaselineMetric | None = None
 
     @property
     def outcome_columns(self) -> Sequence[str]:
@@ -114,6 +113,7 @@ class SplitTrainer(BaselineTrainer):
             validation_preprocessing_pipeline=self.preprocessing_pipeline,
             task=self.task,
             metric=self.metric,
+            additional_metrics=self.additional_metrics,
         )
         trainer.set_logger(self.logger)
         return trainer.train()

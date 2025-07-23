@@ -21,8 +21,8 @@ log.setLevel(logging.INFO)
 
 def create_model_filename(
     model: Literal["bow", "tfidf"],
-    corpus_name: str,
     ngram_range: tuple[int, int],
+    splits: PresplitStep,
     max_df: float,
     min_df: int,
     max_features: Optional[int],
@@ -32,8 +32,8 @@ def create_model_filename(
 
     Args:
         model (Literal[str]): Which model to use. Takes either "bow" or "tfidf".
-        corpus_name (str): name of parquet with text data to fit model on.
         ngram_range (tuple): The lower and upper boundary of the range of n-values for different word n-grams or char n-grams to be extracted.
+        splits (str): Which splits to keep (train, val, test).
         max_df (float): The proportion of documents the words should appear in to be included.
         min_df (int): Remove words occuring in less than min_df documents.
         max_features (int, optional): If not None, build a vocabulary that only consider the top max_features ordered by term frequency across the corpus. Otherwise, all features are used.
@@ -43,14 +43,14 @@ def create_model_filename(
     ngram_range_str = "".join(c for c in str(ngram_range) if c.isdigit())
     sfi_type_str = "all_sfis" if not sfi_type else "".join(sfi_type).replace(" ", "")
 
-    return f"{model}_{corpus_name}_sfi_type_{sfi_type_str}_ngram_range_{ngram_range_str}_max_df_{max_df_str}_min_df_{min_df}_max_features_{max_features}.pkl"
+    return f"{model}_psycop_clozapine_preprocessed_added_psyk_konf_{splits}_sfi_type_{sfi_type_str}_ngram_range_{ngram_range_str}_max_df_{max_df_str}_min_df_{min_df}_max_features_{max_features}.pkl"
 
 
 def text_model_pipeline(
     model: Literal["bow", "tfidf"],
-    split_ids_presplit_step: PresplitStep | None = None,
-    corpus_name: str = "psycop_clozapine_train_val_all_sfis_preprocessed",
-    corpus_preproceseed: bool = False,
+    split_ids_presplit_step: PresplitStep,
+    corpus_name: str = "psycop_clozapine_train_val_test_all_sfis_preprocessed_added_psyk_konf",
+    corpus_preprocessed: bool = False,
     sfi_type: Optional[Sequence[str] | str] = None,
     ngram_range: tuple[int, int] = (1, 1),
     max_df: float = 1.0,
@@ -63,7 +63,7 @@ def text_model_pipeline(
     Args:
         model (Literal[str]): Which model to use. Takes either "bow" or "tfidf".
         corpus_name (str, optional): SQL table with text data (preprocessed or not) to fit model on. Defaults to "psycop_train_val_all_sfis_preprocessed".
-        corpus_preproceseed (bool, optional): Whether the corpus is already preprocessed. Defaults to False.
+        corpus_preprocessed (bool, optional): Whether the corpus is already preprocessed. Defaults to False.
         sfi_type (Sequence[str], optional): Which sfi types to include. Defaults to None.
         ngram_range (tuple, optional): The lower and upper boundary of the range of n-values for different word n-grams or char n-grams to be extracted. All values of n such such that min_n <= n <= max_n will be used. For example an ngram_range of (1, 1) means only unigrams, (1, 2) means unigrams and bigrams. Defaults to (1, 2).
         max_df (float, optional): The proportion of documents the words should appear in to be included. Defaults to 0.95.
@@ -85,7 +85,7 @@ def text_model_pipeline(
     # create model filename from params
     filename = create_model_filename(
         model=model,
-        corpus_name=corpus_name,
+        splits=split_ids_presplit_step,
         sfi_type=sfi_type,
         ngram_range=ngram_range,
         max_df=max_df,
@@ -99,8 +99,10 @@ def text_model_pipeline(
         log.warning(f"Text model with the chosen params already exists in dir: {model_path}.")
         return model_path
 
-    if corpus_preproceseed:
-        corpus = load_preprocessed_sfis(corpus_name=corpus_name)
+    if corpus_preprocessed:
+        corpus = load_preprocessed_sfis(
+            corpus_name=corpus_name, split_ids_presplit_step=split_ids_presplit_step
+        )
 
     else:
         corpus = load_text_split(
@@ -109,8 +111,7 @@ def text_model_pipeline(
             include_sfi_name=True,
             n_rows=n_rows,
         )
-
-    corpus = text_preprocessing(corpus)
+        corpus = text_preprocessing(corpus)
 
     # fit model
     vec = fit_text_model(

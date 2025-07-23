@@ -34,6 +34,7 @@ class CrossValidatorTrainer(BaselineTrainer):
     preprocessing_pipeline: PreprocessingPipeline
     task: BaselineTask
     metric: BaselineMetric
+    additional_metrics: BaselineMetric | None = None
     n_splits: int = 5
     group_col_name: str = "dw_ek_borger"
 
@@ -87,6 +88,14 @@ class CrossValidatorTrainer(BaselineTrainer):
         )
         self._log_main_metric(main_metric)
         self._log_sklearn_pipe()
+
+        if self.additional_metrics:
+            additional_metric = self.additional_metrics.calculate(
+                y=training_data_preprocessed[self.outcome_col_name],
+                y_hat_prob=training_data_preprocessed["oof_y_hat_prob"],
+                name_prefix="all_oof",
+            )
+            self.logger.log_metric(additional_metric)
 
         eval_df = pl.DataFrame(
             {

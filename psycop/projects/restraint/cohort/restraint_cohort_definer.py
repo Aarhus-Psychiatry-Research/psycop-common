@@ -43,7 +43,8 @@ class RestraintCohortDefiner(CohortDefiner):
             prediction_times=unfiltered_prediction_times,
             filtering_steps=[RestraintAdmissionTypeFilter(), RestraintMinAgeFilter()],
             entity_id_col_name="dw_ek_borger",
-        ).prediction_times.select(  # type: ignore
+            timestamp_col_name="datotid_start",
+        ).prediction_times.frame.select(
             pl.col(["dw_ek_borger", "datotid_start", "datotid_slut", "shakkode_ansvarlig"])
         )
 
@@ -53,29 +54,38 @@ class RestraintCohortDefiner(CohortDefiner):
             prediction_times=filtered_prediction_times,
             filtering_steps=[RestraintMinDateFilter()],
             entity_id_col_name="dw_ek_borger",
-        ).prediction_times
+            timestamp_col_name="datotid_start",
+        ).prediction_times.frame
 
         unfiltered_coercion_timestamps = pl.LazyFrame(pl.from_pandas(load_coercion_timestamps()))
 
-        filtered_coercion_timestamps = filter_prediction_times(
-            prediction_times=unfiltered_coercion_timestamps,
-            filtering_steps=[RestraintCoercionTypeFilter()],
-            entity_id_col_name="dw_ek_borger",
-        ).prediction_times.select(  # type: ignore
-            pl.col(["dw_ek_borger", "datotid_start_sei", "typetekst_sei", "behandlingsomraade"])
+        filtered_coercion_timestamps = (
+            filter_prediction_times(
+                prediction_times=unfiltered_coercion_timestamps,
+                filtering_steps=[RestraintCoercionTypeFilter()],
+                entity_id_col_name="dw_ek_borger",
+                timestamp_col_name="datotid_start_sei",
+            )
+            .prediction_times.frame.select(  # type: ignore
+                pl.col(["dw_ek_borger", "datotid_start_sei", "typetekst_sei", "behandlingsomraade"])
+            )
+            .unique()
         )
 
-        unfiltered_cohort = filtered_prediction_times.join(  # type: ignore
-            filtered_coercion_timestamps, how="left", on="dw_ek_borger"
+        unfiltered_cohort = pl.LazyFrame(
+            filtered_prediction_times.join(  # type: ignore
+                filtered_coercion_timestamps, how="left", on="dw_ek_borger"
+            )
         )
 
         excluded_cohort = filter_prediction_times(
             prediction_times=unfiltered_cohort,
             filtering_steps=[RestraintWashoutFilter()],
             entity_id_col_name="dw_ek_borger",
-        ).prediction_times
+            timestamp_col_name="datotid_start",
+        ).prediction_times.frame
 
-        excluded_cohort = excluded_cohort.unique(keep="first")  # type: ignore
+        excluded_cohort = pl.LazyFrame(excluded_cohort.unique(keep="first"))  # type: ignore
 
         filtered_cohort = unfiltered_cohort.join(
             excluded_cohort, how="anti", on=["dw_ek_borger", "datotid_start"]
@@ -85,7 +95,8 @@ class RestraintCohortDefiner(CohortDefiner):
             prediction_times=filtered_cohort,
             filtering_steps=[RestraintWithinAdmissionsFilter(), RestraintTreatmentUnitFilter()],
             entity_id_col_name="dw_ek_borger",
-        ).prediction_times
+            timestamp_col_name="datotid_start",
+        ).prediction_times.frame
 
         cohort_with_outcomes = select_outcomes(cohort_with_coercion)  # type: ignore
 
@@ -101,13 +112,15 @@ class RestraintCohortDefiner(CohortDefiner):
             prediction_times=filtered_cohort,
             filtering_steps=[RestraintAdmissionFilter(), RestraintShakCodeFilter()],
             entity_id_col_name="dw_ek_borger",
-        ).prediction_times
+            timestamp_col_name="datotid_start",
+        ).prediction_times.frame
 
         forced_admissions = filter_prediction_times(
             prediction_times=unfiltered_coercion_timestamps,
             filtering_steps=[RestraintForcedAdmissionFilter()],
             entity_id_col_name="dw_ek_borger",
-        ).prediction_times.select(  # type: ignore
+            timestamp_col_name="datotid_start_sei",
+        ).prediction_times.frame.select(  # type: ignore
             ["dw_ek_borger", "datotid_start_sei", "typetekst_sei", "behandlingsomraade"]
         )
 
@@ -125,28 +138,31 @@ class RestraintCohortDefiner(CohortDefiner):
             how="left",
             left_on=["dw_ek_borger", "dato_start"],
             right_on=["dw_ek_borger", "datotid_start_sei"],
-        )
+        ).unique()
 
         filtered_forced_admissions_cohort = filter_prediction_times(
-            prediction_times=forced_admissions_cohort,
+            prediction_times=pl.LazyFrame(forced_admissions_cohort),
             filtering_steps=[RestraintDoubleAdmissionFilter()],
             entity_id_col_name="dw_ek_borger",
-        ).prediction_times.select(  # type: ignore
+            timestamp_col_name="datotid_start",
+        ).prediction_times.frame.select(  # type: ignore
             ["dw_ek_borger", "datotid_start", "datotid_slut", "datotid_start_sei"]
         )
 
-        exploded_cohort = explode_admissions(filtered_forced_admissions_cohort)
+        exploded_cohort = explode_admissions(pl.LazyFrame(filtered_forced_admissions_cohort))
 
         filtered_exploded_cohort = filter_prediction_times(
             prediction_times=exploded_cohort,
             filtering_steps=[RestraintExcludeDaysFollowingCoercionFilter()],
             entity_id_col_name="dw_ek_borger",
-        ).prediction_times
+            timestamp_col_name="datotid_start",
+        ).prediction_times.frame
 
         return filter_prediction_times(
             prediction_times=filtered_exploded_cohort,  # type: ignore
             filtering_steps=[RestraintExcludeFirstDayFilter()],
             entity_id_col_name="dw_ek_borger",
+            timestamp_col_name="datotid_start",
         )
 
     @staticmethod
@@ -159,6 +175,7 @@ class RestraintCohortDefiner(CohortDefiner):
             prediction_times=unfiltered_prediction_times,
             filtering_steps=[RestraintAdmissionTypeFilter(), RestraintMinAgeFilter()],
             entity_id_col_name="dw_ek_borger",
+            timestamp_col_name="datotid_start",
         ).prediction_times
 
         filtered_prediction_times = preprocess_readmissions(df=filtered_prediction_times).select(  # type: ignore
@@ -171,6 +188,7 @@ class RestraintCohortDefiner(CohortDefiner):
             prediction_times=unfiltered_coercion_timestamps,
             filtering_steps=[RestraintCoercionTypeFilter(), RestraintTreatmentUnitFilter()],
             entity_id_col_name="dw_ek_borger",
+            timestamp_col_name="datotid_start_sei",
         ).prediction_times.select(["dw_ek_borger", "datotid_start_sei", "typetekst_sei"])  # type: ignore
 
         unfiltered_cohort = filtered_prediction_times.join(
@@ -181,6 +199,7 @@ class RestraintCohortDefiner(CohortDefiner):
             prediction_times=unfiltered_cohort,
             filtering_steps=[RestraintWithinAdmissionsFilter()],
             entity_id_col_name="dw_ek_borger",
+            timestamp_col_name="datotid_start",
         ).prediction_times
 
         outcome_df = select_outcomes(filtered_cohort)  # type: ignore

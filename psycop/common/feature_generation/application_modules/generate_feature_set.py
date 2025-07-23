@@ -119,7 +119,10 @@ def generate_feature_set_tsflattener_v1(
 
     if generate_in_chunks:
         flattened_df = ChunkedFeatureGenerator.create_flattened_dataset_with_chunking(
-            project_info, eligible_prediction_times, feature_specs, chunksize
+            project_info,
+            eligible_prediction_times,
+            feature_specs,
+            chunksize,  # type: ignore
         )
 
     else:

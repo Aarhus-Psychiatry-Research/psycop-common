@@ -140,3 +140,22 @@ class DateFilter(PresplitStep):
                 return input_df.filter(date_col < threshold_date)
             case "after-inclusive":
                 return input_df.filter(date_col >= threshold_date)
+
+
+@BaselineRegistry.preprocessing.register("value_filter")
+@dataclass
+class ValueFilter(PresplitStep):
+    """Filter rows based on a column and a value."""
+
+    column_name: str
+    threshold_value: float
+    direction: Literal["before", "after-inclusive"]
+
+    def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
+        value_col = pl.col(self.column_name)
+
+        match self.direction:
+            case "before":
+                return input_df.filter(value_col < self.threshold_value)
+            case "after-inclusive":
+                return input_df.filter(value_col >= self.threshold_value)

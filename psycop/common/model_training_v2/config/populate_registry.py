@@ -20,8 +20,15 @@ def populate_baseline_registry() -> None:
         miss_forest_imputation_step,
         ImputationSuggester,
     )
-    from ..trainer.task.estimator_steps.scalers import standard_scaler_step
-    from ..trainer.task.estimator_steps.feature_selection import select_percentile
+    from ..trainer.task.estimator_steps.scalers import (
+        standard_scaler_step,
+        noop_scaler_step,
+        minmax_scaler_step,
+    )
+    from ..trainer.task.estimator_steps.feature_selection import (
+        select_percentile,
+        FeatureSelectionSuggester,
+    )
 
     # Preprocessing
     from ..trainer.preprocessing.pipeline import BaselinePreprocessingPipeline
@@ -55,6 +62,12 @@ def populate_baseline_registry() -> None:
     from ..hyperparameter_suggester.hyperparameter_suggester import SuggesterSpace
     from ..trainer.task.estimator_steps.logistic_regression import LogisticRegressionSuggester
     from ..hyperparameter_suggester.suggesters.run_path_suggester import RunPathSuggester
+    from ..hyperparameter_suggester.suggesters.filter_suggester import (
+        SufficientWindowFilterSuggester,
+        LookbehindCombinationFilterSuggester,
+        BlacklistFilterSuggester,
+        ValueFilterSuggester,
+    )
 
     # Tasks
     from ..trainer.task.pipeline_constructor import pipeline_constructor
@@ -65,11 +78,15 @@ def populate_baseline_registry() -> None:
         BinaryClassificationPipeline,
     )
     from ..trainer.task.binary_classification.binary_metrics.binary_auroc import BinaryAUROC
+    from ..trainer.task.binary_classification.binary_metrics.binary_ppv import BinaryPPV
 
     # Trainers
     from ..trainer.cross_validator_trainer import CrossValidatorTrainer
     from ..trainer.split_trainer import SplitTrainer
     from ..trainer.selective_cross_validator_trainer import SelectiveCrossValidatorTrainer
+    from ..trainer.selective_outcome_cross_validator_trainer import (
+        SelectiveOutcomeCrossValidatorTrainer,
+    )
 
     # Test data
     from ..trainer.preprocessing.steps.test_row_filter_split import mock_split_id_sequence

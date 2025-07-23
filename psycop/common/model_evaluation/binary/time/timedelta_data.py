@@ -98,6 +98,7 @@ def get_auroc_by_timedelta_df(
     confidence_interval: bool = True,
     bin_continuous_input: bool = True,
     drop_na_events: bool = True,
+    stratified: bool = False,
     min_n_in_bin: int = 5,
     n_bootstraps: int = 100,
 ) -> pd.DataFrame:
@@ -117,6 +118,7 @@ def get_auroc_by_timedelta_df(
         bin_unit: Unit of time to use for bins.
         bin_continuous_input: Whether to bin input. Defaults to True.
         drop_na_events: Whether to drop rows where the event is NA. Defaults to True.
+        stratified: Whether to use stratified bootstrapping for confidence intervals.
         min_n_in_bin: Minimum number of rows in a bin to include in output. Defaults to 10.
         n_bootstraps: number of samples for bootstrap resampling
     Returns:
@@ -142,6 +144,7 @@ def get_auroc_by_timedelta_df(
         groupby_col_name="unit_from_event_binned",
         confidence_interval=confidence_interval,
         n_bootstraps=n_bootstraps,
+        stratified=stratified,
     )
 
     return grouped_df
@@ -158,6 +161,7 @@ def get_sensitivity_by_timedelta_df(
     confidence_interval: bool = True,
     bin_continuous_input: bool = True,
     drop_na_events: bool = True,
+    stratified: bool = False,
     min_n_in_bin: int = 5,
 ) -> pd.DataFrame:
     """Create dataframe for plotting performance metric from time to or from
@@ -176,6 +180,7 @@ def get_sensitivity_by_timedelta_df(
         bin_unit: Unit of time to use for bins.
         bin_continuous_input: Whether to bin input. Defaults to True.
         drop_na_events: Whether to drop rows where the event is NA. Defaults to True.
+        stratified: Whether to use stratified bootstrapping for confidence intervals.
         min_n_in_bin: Minimum number of rows in a bin to include in output. Defaults to 10.
     Returns:
         pd.DataFrame: Dataframe ready for plotting where each row represents a bin.
@@ -194,7 +199,10 @@ def get_sensitivity_by_timedelta_df(
     ).rename(columns={"output": "y_hat"})
 
     return sensitivity_by_group(
-        df=df, groupby_col_name="unit_from_event_binned", confidence_interval=confidence_interval
+        df=df,
+        groupby_col_name="unit_from_event_binned",
+        confidence_interval=confidence_interval,
+        stratified=stratified,
     )
 
 

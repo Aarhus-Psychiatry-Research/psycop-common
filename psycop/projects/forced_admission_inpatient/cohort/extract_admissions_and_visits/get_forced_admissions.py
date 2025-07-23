@@ -32,7 +32,7 @@ def forced_admissions_onset_timestamps(
 
     sql = "SELECT " + cols_to_keep + " FROM [fct]." + view
 
-    forced_admissions = pd.DataFrame(sql_load(sql)).drop_duplicates()  # type: ignore
+    forced_admissions = pd.DataFrame(sql_load(sql, n_rows=None)).drop_duplicates()  # type: ignore
 
     forced_admissions = forced_admissions.rename(  # type: ignore
         columns={"datotid_start_sei": "timestamp"}
@@ -56,7 +56,7 @@ def forced_admissions_end_timestamps() -> pd.DataFrame:
 
     sql = "SELECT " + cols_to_keep + " FROM [fct]." + view
 
-    forced_admissions = pd.DataFrame(sql_load(sql)).drop_duplicates()  # type: ignore
+    forced_admissions = pd.DataFrame(sql_load(sql, n_rows=None)).drop_duplicates()  # type: ignore
 
     forced_admissions = forced_admissions.rename(  # type: ignore
         columns={"datotid_slut_sei": "timestamp"}
