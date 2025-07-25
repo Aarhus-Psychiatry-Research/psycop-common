@@ -7,28 +7,18 @@ from psycop.common.model_training_v2.hyperparameter_suggester.optuna_hyperparame
 )
 
 FEATURE_SETS = {
-    "structured_only": [
-        "demographics",
-        "contacts",
-        "medication overall",
-        "broset + suicide risk assessment",
-        "diagnoses",
-        "medication",
-        "coercion",
-        "lab tests",
-    ],
-    "text_only": ["text"],
     "structured_text": [
-        "demographics",
         "contacts",
-        "medication-overall",
-        "broset + suicide risk assessment",
+        "selvmord-broset",
         "diagnoses",
         "medication",
+        "unique_count_medication",
+        "depot-medication",
+        "lab-results",
         "coercion",
-        "lab tests",
-        "layer_text",
-    ],
+        "ect",
+        "text",
+    ]
 }
 
 
@@ -40,8 +30,6 @@ def hyperparameter_search(cfg: PsycopConfig):
 
     # Set run name
     for feature_set, features in FEATURE_SETS.items():
-        if feature_set != "text_only":
-            continue
         cfg.mut(
             "logger.*.mlflow.experiment_name",
             f"clozapine hparam, {feature_set}, xgboost, no lookbehind filter",

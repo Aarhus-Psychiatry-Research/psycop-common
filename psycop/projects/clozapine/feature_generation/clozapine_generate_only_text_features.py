@@ -31,10 +31,7 @@ TEXT_FILE_NAME = "clozapine_text_tfidf_train_val_test_all_sfis_ngram_range_12_ma
 
 
 def get_clozapine_project_info() -> ProjectInfo:
-    return ProjectInfo(
-        project_name="clozapine",
-        project_path=OVARTACI_SHARED_DIR / "clozapine" / "flattened_datasets",
-    )
+    return ProjectInfo(project_name="clozapine", project_path=OVARTACI_SHARED_DIR / "clozapine")
 
 
 def split_df_to_list(  # noqa: D417
@@ -173,7 +170,7 @@ if __name__ == "__main__":
     )
 
     feature_layers = {
-        "basic": [
+        "demographic": [
             ts.OutcomeSpec(
                 value_frame=ts.ValueFrame(
                     init_df=combine_structured_and_text_outcome(),
@@ -183,7 +180,7 @@ if __name__ == "__main__":
                 lookahead_distances=[datetime.timedelta(days=365)],
                 aggregators=[ts.MaxAggregator()],
                 fallback=0,
-                column_prefix="outc_bp",
+                column_prefix="outc_clozapine",
             ),
             ts.StaticSpec(
                 value_frame=ts.StaticFrame(init_df=sex_female(), entity_id_col_name="dw_ek_borger"),
