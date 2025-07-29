@@ -25,7 +25,7 @@ def cross_validation_performance_table(
 
         # Step 1: Get best run by 'all_oof_BinaryAUROC'
         best_run = client.get_best_run_from_experiment(
-            experiment_name=experiment_name,  # pyright: ignore[reportGeneralTypeIssues]
+            experiment_name=experiment_name,  # pyright: ignore
             metric="all_oof_BinaryAUROC",
         )
 
