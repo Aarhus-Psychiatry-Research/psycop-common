@@ -13,6 +13,10 @@ MODEL_ALGORITHM = 1  # 0 fo logistic regression and 1 for best xgboost
 
 CLOZAPINE_EVAL_OUTPUT_DIR = Path("E:/shared_resources/clozapine/eval/")
 
+BEST_POS_RATE = 0.05
+DEV_GROUP_NAME = "chuddahs-caterwauls"
+
+
 ################
 # OUTPUT PATHS #
 ################

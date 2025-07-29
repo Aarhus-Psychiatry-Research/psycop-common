@@ -10,7 +10,7 @@ from tableone import TableOne
 
 from psycop.common.global_utils.cache import shared_cache
 from psycop.common.model_training.utils.utils import bin_continuous_data
-from psycop.projects.clozapine.cohort_examination.table_one.model import TableOneModel
+from psycop.projects.clozapine.model_eval.table_one.model import TableOneModel
 
 
 class RowCategory(enum.Enum):
