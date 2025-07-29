@@ -1,7 +1,7 @@
 # File specifying which folders require reviews when merging changes to main
 
 # Root file
-/*  @aarhus-psychiatry-research/devs
+/*  @Aarhus-Psychiatry-Research/devs
 
 # Common folders
 /psycop/common/     @Aarhus-Psychiatry-Research/devs
