@@ -3,7 +3,7 @@ data:
   # General config
   dir: E:\shared_resources\forced_admissions_outpatient\flattened_datasets\structured_feature_set
   suffix: parquet
-  splits_for_training: ["train"]
+  splits_for_training: ["train", "val"]
   splits_for_evaluation: null
 
   # Feature specs

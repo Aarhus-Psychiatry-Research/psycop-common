@@ -17,4 +17,3 @@ data:
     id: dw_ek_borger
     age: pred_age_in_years
     pred_time_uuid: prediction_time_uuid
-
