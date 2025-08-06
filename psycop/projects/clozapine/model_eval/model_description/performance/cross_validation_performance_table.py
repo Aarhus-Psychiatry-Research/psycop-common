@@ -110,6 +110,7 @@ if __name__ == "__main__":
                 "365d_lookahead_Only unique_count_antipsychotics",
                 "730d_lookahead_Structured + TF-IDF",
                 "730d_lookahead_Structured",
+                "730d_lookahead_only_TFIDF",
                 "730d_lookahead_Only unique_count_antipsychotics",
             ],
             "model_name": [
@@ -119,19 +120,12 @@ if __name__ == "__main__":
                 "clozapine hparam, only_unique_count_antipsychotics, xgboost, no lookbehind filter",
                 "clozapine hparam, structured_text_lookahead_730_days, xgboost, no lookbehind filter",
                 "clozapine hparam, only_structured_lookahead_730_days, xgboost, no lookbehind filter",
+                "clozapine hparam, only_tfidf_lookahead_730_days, xgboost, no lookbehind filter",
                 "clozapine hparam, only_unique_count_antipsychotics, xgboost, no lookbehind filter",
-            ],
-            "run_name": [
-                "salty-shoat-573",
-                "classy-ram-31",
-                "classy-shark-581",
-                "invincible-snail-362",
-                "charming-robin-834",
-                "bold-boar-280",
-                "zealous-kit-887",
             ],
             # change this for either XGboost or Logistic regression
             "pretty_model_type": [
+                "XGBoost",
                 "XGBoost",
                 "XGBoost",
                 "XGBoost",
@@ -144,3 +138,56 @@ if __name__ == "__main__":
     )
 
     cross_validation_performance_table(xg_df, "primary_models_xgboost_")
+
+    logreg_df = pd.DataFrame(
+        {
+            "pretty_model_name": [
+                "365d_lookahead_Structured + TF-IDF",
+                "365d_lookahead_Structured",
+                "365d_lookahead_TF-IDF 180 days",
+                "365d_lookahead_Only unique_count_antipsychotics",
+                "730d_lookahead_Structured + TF-IDF",
+                "730d_lookahead_Structured",
+                "730d_lookahead_only_TFIDF",
+                "730d_lookahead_Only unique_count_antipsychotics",
+            ],
+            "model_name": [
+                "clozapine hparam, structured+tfidf_lookahead_365_days, elastic_net, no lookbehind filter",
+                "clozapine hparam, only_structured_lookahead_365_days, elastic_net, no lookbehind filter",
+                "clozapine hparam, only_tfidf_180d_lookahead_365_days, elastic_net, no lookbehind filter",
+                "clozapine hparam, unique_antipsychotics_lookahead_365_days, elastic_net, no lookbehind filter",
+                "clozapine hparam, structured+text_lookahead_730_days, elastic_net, no lookbehind filter",
+                "clozapine hparam, only_structured_lookahead_730_days, elastic_net, no lookbehind filter",
+                "clozapine hparam, only_tfidf_180d_lookahead_730_days, elastic_net, no lookbehind filter",
+                "clozapine hparam, unique_antipsychotics_lookahead_730_days, elastic_net, no lookbehind filter",
+            ],
+            # change this for either XGboost or Logistic regression
+            "pretty_model_type": [
+                "Logistic regression",
+                "Logistic regression",
+                "Logistic regression",
+                "Logistic regression",
+                "Logistic regression",
+                "Logistic regression",
+                "Logistic regression",
+                "Logistic regression",
+            ],
+        }
+    )
+
+    cross_validation_performance_table(logreg_df, "primary_models_logreg_")
+
+    no_tfidf_clozapine_leponex = pd.DataFrame(
+        {
+            "pretty_model_name": ["no_tfidf_clozapine_leponex_365d_lookahead_Structured + TF-IDF"],
+            "model_name": [
+                "clozapine hparam, no_clozapine_leponex_tfidf_structured+tfidf_lookahead_365_days, xgboost, no lookbehind filter"
+            ],
+            # change this for either XGboost or Logistic regression
+            "pretty_model_type": ["XGBoost"],
+        }
+    )
+
+    cross_validation_performance_table(
+        no_tfidf_clozapine_leponex, "primary_models_no_tfidf_clozapine_leponex_"
+    )
