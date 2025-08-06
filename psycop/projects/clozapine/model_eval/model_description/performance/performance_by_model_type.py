@@ -14,7 +14,23 @@ if __name__ == "__main__":
         "XGBoost - 730d_lookahead": {
             "730d_lookahead_Structured + TF-IDF": "clozapine hparam, structured_text_lookahead_730_days, xgboost, no lookbehind filter",
             "730d_lookahead_Structured": "clozapine hparam, only_structured_lookahead_730_days, xgboost, no lookbehind filter",
+            "730d_lookahead_TF-IDF 180 days": "clozapine hparam, only_tfidf_lookahead_730_days, xgboost, no lookbehind filter",
             "730d_lookahead_Only unique_count_antipsychotics": "clozapine hparam, only_unique_count_antipsychotics, xgboost, no lookbehind filter",
+        },
+        "Logistic Regression - 365d_lookahead": {
+            "365d_lookahead_Structured + TF-IDF": "clozapine hparam, structured+tfidf_lookahead_365_days, elastic_net, no lookbehind filter",
+            "365d_lookahead_Structured": "clozapine hparam, only_structured_lookahead_365_days, elastic_net, no lookbehind filter",
+            "365d_lookahead_TF-IDF 180 days": "clozapine hparam, only_tfidf_180d_lookahead_365_days, elastic_net, no lookbehind filter",
+            "365d_lookahead_Only unique_count_antipsychotics": "clozapine hparam, unique_antipsychotics_lookahead_365_days, elastic_net, no lookbehind filter",
+        },
+        "Logistic Regression - 730d_lookahead": {
+            "730d_lookahead_Structured + TF-IDF": "clozapine hparam, structured+text_lookahead_730_days, elastic_net, no lookbehind filter",
+            "730d_lookahead_Structured": "clozapine hparam, only_structured_lookahead_730_days, elastic_net, no lookbehind filter",
+            "730d_lookahead_TF-IDF 180 days": "clozapine hparam, only_tfidf_180d_lookahead_730_days, elastic_net, no lookbehind filter",
+            "730d_lookahead_Only unique_count_antipsychotics": "clozapine hparam, unique_antipsychotics_lookahead_730_days, elastic_net, no lookbehind filter",
+        },
+        "No_clozapine_leponex_tfidf": {
+            "365d_lookahead_Structured + TF-IDF": "clozapine hparam, no_clozapine_leponex_tfidf_structured+tfidf_lookahead_365_days, xgboost, no lookbehind filter"
         },
     }
     metrics_of_interest = ["all_oof_BinaryAUROC"]
