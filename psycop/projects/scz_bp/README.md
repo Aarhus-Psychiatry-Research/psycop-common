@@ -1,5 +1,5 @@
-# scz_bp prediction
-Projscz_bp-specific code for predicting scz_bp initiation in hospital-admitted patients
+# Transition to schizophrenia/bipolar prediction
+Project code for predicting diagnostic progression to schizophrenia or bipolar disorder via machine learning
 
 ## Running the pipeline
 
