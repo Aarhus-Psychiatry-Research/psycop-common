@@ -1,25 +1,19 @@
-# Type 2 diabetes prediction
-Project-specific code for reproducing results from [Development and validation of a machine learning model for prediction of type 2 diabetes in patients with mental illness](https://doi.org/10.1111/acps.13687). 
-
-## Installation
-All requirements are specified in the `pyproject.toml`. To install the project, clone it locally and run:
-
-`pip install -r dev-requirements`
-
+# Temporal stability of type 2 diabetes prediction model
+Project-specific code for investigating the temporal stability of a type 2 diabetes prediction model.
 
 ## Running the pipeline
 
 ### 1. Cohort definition
 First, the cohort is defined. 
 ```bash
-t2d/  
-├── feature_generation/ 
+t2d_extended/
+├── feature_generation/
 │   └── cohort_definition/
 │   │   └── t2d_cohort_definer.py # defining the cohort
 ```
 
 #### PREDICTION TIMESTAMPS
-Prediction timestamps are derived from `T2DCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.frame.to_pandas()` and has the following format:
+Prediction timestamps are derived from `T2DCohortDefiner2025.get_filtered_prediction_times_bundle().prediction_times.frame.to_pandas()` and has the following format:
 
 | timestamp           | dw_ek_borger |
 |---------------------|--------------|
@@ -27,7 +21,7 @@ Prediction timestamps are derived from `T2DCohortDefiner.get_filtered_prediction
 
 
 #### OUTCOME TIMESTAMPS
-Outcome timestamps are derived from `T2DCohortDefiner.get_outcome_timestamps()` and has the following format:
+Outcome timestamps are derived from `T2DCohortDefiner2025.get_outcome_timestamps()` and has the following format:
 
 | timestamp           | dw_ek_borger | value |
 |---------------------|--------------|-------|
@@ -38,33 +32,30 @@ Second, features are generated based on the cohort definition. Please note that 
 
 Relevant files in the psycop-common repository: 
 ```bash
-t2d/  
+t2d_extended/  
 ├── feature_generation/ 
 │   └── main.py # main driver for generating feature set
 ```
 
 The resulting feature set can be found here (on Ovartaci): 
 ```bash
-E:/shared_resources/t2d/  
-├── feature_sets/ 
-│   └── psycop_t2d_adminber_features_2023_04_27_14_25/
-│   │   └── psycop_t2d_adminber_features_2023_04_27_14_25_test.parquet
-│   │   └── psycop_t2d_adminber_features_2023_04_27_14_25_train.parquet
-│   │   └── psycop_t2d_adminber_features_2023_04_27_14_25_val.parquet
+E:/shared_resources/t2d_extended/  
+├── feature_set/flattened_datasets/
+│   └── t2d_extended_feature_set_2025/
+│   │   └── t2d_extended_feature_set_2025.parquet
 ```
 
 ### 3. Model training
 Third, the model training procedure is performed based on experiment configurations. 
 
 ```bash
-t2d/ 
+t2d_extended/ 
 ├── model_training/
-│   └── train_models_in_parallel.py # main driver for model training
-│   └── config/ 
-│   │   └── * # contains subfolders with configuration files for model training
+│   └── temporal.py # main driver for model training
+│   └── t2d_extended.cfg 
 ```
 
-The models are saved here:
+The model is saved here:
 
 ```bash
 E:/shared_resources/t2d/
@@ -88,6 +79,23 @@ t2d/
 │   │   └── supplementary_full_eval.py # runs full evaluation for the supplementary materials (XGBoost)
 ```
 
+TEMPORAL EVALUATION
+To evaluate temporal stability, temporal cross-validation needs to be performed (adapted to model_training_v2 common code):
+```bash
+forced_admission_inpatient/ 
+├── model_training/
+│   └── inpatient_v2.cfg # model_training_v2-adapted config which can replicate the best XGBoost model from main model´
+│   └── replace_sklearn_pipe.py # function for adapting the abovementioned config to the best logistic regression model
+│   └── temporal.py # run temporal cross validation (logs models on mlflow - expriment name: "FA Inpatient - temporal cv") OBS - Mlflow logs are deleted and logging this way is outdated
+```
+To generate temporal stability plots:
+
+```bash
+forced_admission_inpatient/ 
+├── model_eval/
+│   └── model_permutation/
+│   │   └── temporal_view.py
+```
 
 #### EVAL_DF
 The resulting evaluation dataframe has the following format:
