@@ -22,11 +22,6 @@ FEATURE_SETS = {
 
 
 def hyperparameter_search(cfg: PsycopConfig):
-    cfg.mut(
-        "trainer.task.task_pipe.sklearn_pipe.*.model",
-        {"@estimator_steps_suggesters": "logistic_regression_suggester"},
-    )
-
     # Set run name
     for feature_set, features in FEATURE_SETS.items():
         cfg.mut(
