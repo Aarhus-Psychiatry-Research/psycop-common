@@ -15,14 +15,15 @@ def table_one_facade(
     output_dir = CLOZAPINE_EVAL_OUTPUT_DIR
     model = table_one_model(run=run, sex_col_name=sex_col_name)
     view = clozapine_table_one(model=model)
-    view.to_excel(output_dir / "table_one_365d_lookahead_train_val.xlsx")
-    view.to_csv(output_dir / "table_one_365d_lookahead_train_val.csv")
+    view.to_excel(output_dir / "table_one_365d_lookahead_train_val_1y_lookbehind_filter.xlsx")
+    view.to_csv(output_dir / "table_one_365d_lookahead_train_val1y_lookbehind_filter.csv")
 
 
 if __name__ == "__main__":
     table_one_facade(
         Path(__file__).parent,
         MlflowClientWrapper().get_run(
-            "clozapine hparam, structured_text, xgboost, no lookbehind filter", "salty-shoat-573"
+            "clozapine hparam, structured+tfidf_lookahead_365_days, xgboost, 1 year lookbehind filter",
+            "whimsical-snipe-108",
         ),
     )
