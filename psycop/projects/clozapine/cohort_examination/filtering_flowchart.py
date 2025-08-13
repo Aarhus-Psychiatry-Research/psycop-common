@@ -94,14 +94,15 @@ def filtering_flowchart_facade(
     )
 
     # Output to a file
-    (output_dir / "filtering_flowchart.csv").write_text("\n".join(lines))
+    (output_dir / "filtering_flowchart_1y_lookbehind.csv").write_text("\n".join(lines))
 
 
 if __name__ == "__main__":
     filtering_flowchart_facade(
         prediction_time_bundle=clozapine_pred_filtering(),
         run=MlflowClientWrapper().get_run(
-            "clozapine hparam, structured_text, xgboost, no lookbehind filter", "salty-shoat-573"
+            "clozapine hparam, structured+tfidf_lookahead_365_days, xgboost, 1 year lookbehind filter",
+            "whimsical-snipe-108",
         ),
         output_dir=pathlib.Path("E:/shared_resources/clozapine/cohort_examination"),
     )
