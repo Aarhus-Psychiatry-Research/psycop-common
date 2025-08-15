@@ -8,8 +8,8 @@ First, the cohort is defined.
 ```bash
 scz_bp/  
 ├── feature_generation/ 
-│   └── cohort_definition/
-│   │   └── scz_bp_cohort_definition.py # defining the cohort
+│   └── eligible_prediction_times/
+│   │   └── scz_bp_prediction_time_loader.py # defining the cohort
 ```
 
 <br />
@@ -34,29 +34,30 @@ Outcome timestamps are derived from SczBpCohort.get_outcome_timestamps() and the
 ### 2. Feature generation
 Second, features are generated based on the cohort definition. Please note that the feature generation pipeline is dependent on access to the Central Denmark Region (CDR)'s SQL server. As such, it cannot be run outside the CDR network without appropriate access.
 
-Relevant files in the psycop-common repository: 
+The main diver script for generating features is (many different feature set combinations are generated for the article):
 ```bash
 scz_bp/  
 ├── feature_generation/ 
-│   └── main.py # main driver for generating feature set - different feature layers are defined in the script
+│   └── scz_bp_generate_features.py # main driver for generating feature set
 ```
 
-The resulting feature set can be found here (on Ovartaci): 
+Other files in the folder are used to define feature layers, generate metadata features for tables, etc. 
+
+The resulting feature sets can be found here (on Ovartaci): 
 ```bash
 E:/shared_resources/scz_bp/  
 ├── flattened_datasets/ 
-│   └── full_feature_set_structured_tfidf_750_all_outcomes/
-│   │   └── full_with_pred_adm_day_count.parquet
+│   └── l1_l4-lookbehind_183_365_730-all_relevant_tfidf_1000_lookbehind_730.parquet
 ```
 
 #### TEXT
-The tfidf features in the feature set are derived from previously generated embedded text files.
+Text models are fitted and text features generated in the *text_experiment* folder.
 
-The embedded text file can be found at:
+The text model used to generate the tf-idf features is located here:
 ```bash
 E:/shared_resources/
-├── text_embeddings/ 
-│   └── text_embeddings_all_relevant_tfidf-1000.parquet
+├── text_models/ 
+│   └── tfidf_region_split_train_val_all_relevant_preprocessed_sfi_type__ngram_range_12_max_df_09_min_df_2_max_features_1000.pkl
 ```
 
 ### 3. Model training
@@ -65,11 +66,19 @@ Third, the model training procedure (hyperparameter tuning using cross-validatio
 ```bash
 scz_bp/ 
 ├── model_training/
-│   └── scz_bp_baseline.cfg # baseline configuration for model hyperparameter tuning
-│   └── hyperparam.py # main script for training models across three different feature set: only strcutured features, only text features, and both
+│   └── hparam_search_all_combinations_scz_bp.py # main script for hyperparameter tuning all model experiments
 ```
 
-The main hyperparameter tuning experiments are named 'scz_bp-trunc-and-hp-{feature_set_name}-xgboost-no-lookbehind-filter-best_run_evaluated_on_test' on MlFlow.
+Hyperparameter configs are found in:
+
+```bash
+scz_bp/ 
+├── model_training/
+│   └── config/
+│   │   └──hparam_tuning/
+```
+
+The main hyperparameter tuning experiments are named er no longer available on MLflow.
 
 ### 4. Model evaluation
 Fourth, model evaluation is performed. The main models are retrained on the combined train+validation set and tested on the test set. Furthermore, models for evaluating temporal and geographic stability are trained and evaluated on the test set:
