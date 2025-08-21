@@ -82,7 +82,7 @@ def load_from_codes(
     output_col_name: str | None = None,
     match_with_wildcard: bool = True,
     n_rows: int | None = None,
-    exclude_codes: list[str] | None = None,
+    exclude_atc_codes: list[str] | None = None,
     administration_route: str | None = None,
     administration_method: str | None = None,
     fixed_doses: tuple[int, ...] | None = None,
@@ -90,6 +90,7 @@ def load_from_codes(
     shak_code: int | None = None,
     keep_code_col: bool = False,
     shak_sql_operator: str | None = None,
+    add_code_to_output_col: bool = False,
 ) -> pd.DataFrame:
     """Load the visits that have diagnoses that match icd_code or atc code from
     the beginning of their adiagnosekode or atc code string. Aggregates all
@@ -113,7 +114,7 @@ def load_from_codes(
         match_with_wildcard (bool, optional): Whether to match on icd_code* / atc_code*.
             Defaults to true.
         n_rows: Number of rows to return. Defaults to None.
-        exclude_codes (list[str], optional): Drop rows if their code is in this list. Defaults to None.
+        exclude_atc_codes (list[str], optional): Drop rows if their code is in this list. Defaults to None. NB: Should only be used for medications!
         administration_route (str, optional): Whether to subset by a specific administration route, e.g. 'OR', 'IM' or 'IV'. Defaults to None.
         administration_method (str, optional): Whether to subset by method of administration, e.g. 'PN' or 'Fast'. Defaults to None.
         fixed_doses ( tuple(int), optional): Whether to subset by specific doses. Doses are set as micrograms (e.g., 100 mg = 100000). Defaults to None which return all doses. Find standard dosage for medications on pro.medicin.dk.
@@ -121,6 +122,7 @@ def load_from_codes(
         shak_code (int, optional): Shak code indicating where to keep/not keep visits from (e.g. 6600). Defaults to None.
         keep_code_col (bool, optional): Whether to keep the code column. Defaults to False.
         shak_sql_operator (str, optional): Operator indicating how to filter shak_code, e.g. "!= 6600" or "= 6600". Defaults to None.
+        add_code_to_output_col: When set to True, the value columns is set to contain the codes. This function is e.g. need for the "unique_count()" aggregation function. If False, the value column is set to 1. Defaults to False.
 
     Returns:
         pd.DataFrame: A pandas dataframe with dw_ek_borger, timestamp and
@@ -271,9 +273,9 @@ def load_from_codes(
 
     df = sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
 
-    if exclude_codes:
-        # Drop all rows whose code_col_name is in exclude_codes
-        df = df[~df[code_col_name].isin(exclude_codes)]
+    if exclude_atc_codes:
+        # Drop all rows whose code_col_name is in exclude_atc_codes
+        df = df[~df[code_col_name].isin(exclude_atc_codes)]
 
     if output_col_name is None:
         if isinstance(codes_to_match, list):
@@ -281,8 +283,10 @@ def load_from_codes(
         else:
             output_col_name = codes_to_match
 
-    df[output_col_name] = 1
-
+    if add_code_to_output_col:
+        df[output_col_name] = df[code_col_name]
+    else:
+        df[output_col_name] = 1
     if not keep_code_col:
         df = df.drop([f"{code_col_name}"], axis="columns")
 

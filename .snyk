@@ -1,7 +1,82 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.25.0
+version: v1.25.1
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
+  SNYK-PYTHON-TORCH-10337825:
+    - '*':
+        reason: >-
+          Mismatched Memory Management Routines vulnerability in torch function we do not use.
+          Exception approved via Slack conversation in programming channel on
+          2025-06-16.
+        created: 2025-06-17T10:39:00.000Z
+  SNYK-PYTHON-TORCH-10337826:
+    - '*':
+        reason: >-
+          Out-of-bounds Write vulnerability that requires local access to system to be exploitable.
+          Exception approved via Slack conversation in programming channel on
+          2025-06-16.
+        created: 2025-06-17T10:40:00.000Z
+  SNYK-PYTHON-TORCH-10337828:
+    - '*':
+        reason: >-
+          Out-of-bounds Write vulnerability that requires local access to system to be exploitable.
+          Exception approved via Slack conversation in programming channel on
+          2025-06-16.
+        created: 2025-06-17T10:41:00.000Z
+  SNYK-PYTHON-TORCH-10337834:
+    - '*':
+        reason: >-
+          Out-of-bounds Write vulnerability in a function we do not use.
+          Exception approved via Slack conversation in programming channel on
+          2025-06-16.
+        created: 2025-06-17T10:42:00.000Z
+  SNYK-PYTHON-TORCH-10332645:
+    - '*':
+        reason: >-
+          Buffer overflow vulnerability in torch function we do not use.
+          Exception approved via Slack conversation in programming channel on
+          2025-06-11.
+        created: 2025-06-12T11:54:00.000Z
+  SNYK-PYTHON-TORCH-10332644:
+    - '*':
+        reason: >-
+          Buffer overflow vulnerability in torch function we do not use.
+          Exception approved via Slack conversation in programming channel on
+          2025-06-11.
+        created: 2025-06-12T11:55:00.000Z
+  SNYK-PYTHON-TORCH-10332643:
+    - '*':
+        reason: >-
+          Improper resource shutdown vulnerability in torch. External code could crash processes.
+          Exception approved via Slack conversation in programming channel on
+          2025-06-11.
+        created: 2025-06-12T11:57:00.000Z
+  SNYK-PYTHON-TORCH-9726944:
+    - '*':
+        reason: >-
+          Denial of service vulnerability in torch function we do not use.
+          Exception approved via Slack conversation in programming channel on
+          2025-04-30.
+        created: 2025-04-30T13:32:25.000Z 
+  SNYK-PYTHON-TORCH-9634167:
+  - '*':
+      reason: >-
+        Vulnerability in torch function we do not use..
+        Exception approved via Slack conversation in programming channel on
+        2025-04-7.
+      created: 2025-04-7T14:39:00.000Z
+  SNYK-PYTHON-MLFLOW-9510841:
+    - '*':
+        reason: >-
+          Vulnerability in MLFlow service, which we do not provide. Exception
+          approved via Slack conversation on 2025-03-25.
+        created: 2025-04-02T015:02:00.000Z
+  SNYK-PYTHON-MLFLOW-9510934:
+    - '*':
+        reason: >-
+          Requires access to mlflow to exploit. Exception
+          approved via Slack conversation on 2025-03-25.
+        created: 2025-04-02T015:04:00.000Z
   SNYK-PYTHON-JUPYTERSERVER-6099119:
     - '*':
         reason: >-
@@ -117,16 +192,42 @@ ignore:
   SNYK-PYTHON-PYTORCHLIGHTNING-7411413:
     - '*':
         reason: >-
-          Vulnerability in pytorch lightning through the /v1/runs 
-          API endpoint when extracting tar.gz files which we do not. 
-          Exception approved via Slack conversation
-          in programming channel on 2024-08-05.
+          Vulnerability in pytorch lightning through the /v1/runs  API endpoint
+          when extracting tar.gz files which we do not.  Exception approved via
+          Slack conversation in programming channel on 2024-08-05.
         created: 2024-08-01T15:45:50.944Z
   SNYK-PYTHON-NLTK-7411380:
     - '*':
         reason: >-
-          Vulnerability in nltk which we do not use
-          Exception approved via Slack conversation
-          in programming channel on 2024-08-05.
+          Vulnerability in nltk which we do not use Exception approved via Slack
+          conversation in programming channel on 2024-08-05.
         created: 2024-08-01T15:50:53.944Z
+  SNYK-PYTHON-TRANSFORMERS-8400823:
+    - '*':
+        reason: >-
+          Vulnerability related to loading in malicious model files, which is
+          not relevant for us. Exception approved via Slack conversation in
+          programming channel on 03/06/2024.
+        created: 2024-12-03T08:02:34.487Z
+  SNYK-PYTHON-TRANSFORMERS-8400822:
+    - '*':
+        reason: >-
+          Vulnerability related to loading in malicious model files, which is
+          not relevant for us. Exception approved via Slack conversation in
+          programming channel on 03/06/2024.
+        created: 2024-12-03T08:02:58.812Z
+  SNYK-PYTHON-TRANSFORMERS-8400820:
+    - '*':
+        reason: >-
+          Vulnerability related to loading in malicious model files, which is
+          not relevant for us. Exception approved via Slack conversation in
+          programming channel on 03/06/2024.
+        created: 2024-12-03T08:03:06.650Z
+  SNYK-PYTHON-PANDAS-8549481:
+    - '*':
+        reason: >-
+          Vulnerability related to injecting code into the query() function. 
+          Exception approvedvia Slack conversation in
+          programming channel on 02/01/2025.
+        created: 2025-01-02T13:32:08.040Z
 patch: {}

@@ -27,11 +27,6 @@ class SyntheticSplitTrainerSeparatePreprocessing(BaselineTrainer):
     task: BaselineTask
     metric: BaselineMetric
 
-    # When using sklearn pipelines, the outcome column must retain its name
-    # throughout the pipeline.
-    # To accomplish this, we rename the two outcomes to a shared name.
-    _shared_outcome_col_name = "outcome"
-
     @property
     def outcome_columns(self) -> Sequence[str]:
         return [self.training_outcome_col_name, self.validation_outcome_col_name]

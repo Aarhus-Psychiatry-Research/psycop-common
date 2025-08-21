@@ -4,23 +4,22 @@ from typing import TYPE_CHECKING
 import patchworklib as pw
 import polars as pl
 
-from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
 from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits_to_psychiatry
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame, MlflowClientWrapper
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame
 from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
-from psycop.projects.cvd.model_evaluation.single_run.auroc_by.age_model import auroc_by_age_model
-from psycop.projects.cvd.model_evaluation.single_run.auroc_by.age_view import AUROCByAge
-from psycop.projects.cvd.model_evaluation.single_run.auroc_by.sex_model import auroc_by_sex_model
-from psycop.projects.cvd.model_evaluation.single_run.auroc_by.sex_view import AUROCBySex
-from psycop.projects.cvd.model_evaluation.single_run.auroc_by.time_from_first_visit_model import (
-    auroc_by_time_from_first_visit_model,
-)
 from psycop.projects.cvd.model_evaluation.single_run.auroc_by.time_from_first_visit_view import (
     AUROCByTimeFromFirstVisitPlot,
 )
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
+from psycop.projects.ect.model_evaluation.auroc_by.age_model import auroc_by_age_model
+from psycop.projects.ect.model_evaluation.auroc_by.age_view import AUROCByAge
 from psycop.projects.ect.model_evaluation.auroc_by.quarter_model import auroc_by_quarter_model
 from psycop.projects.ect.model_evaluation.auroc_by.quarter_view import AUROCByQuarterPlot
+from psycop.projects.ect.model_evaluation.auroc_by.sex_model import auroc_by_sex_model
+from psycop.projects.ect.model_evaluation.auroc_by.sex_view import AUROCBySex
+from psycop.projects.ect.model_evaluation.auroc_by.time_from_first_visit_model import (
+    auroc_by_time_from_first_visit_model,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -44,7 +43,7 @@ def single_run_robustness(
             auroc_by_age_model(eval_df=eval_df, birthdays=birthdays, bins=[18, *range(20, 80, 10)])
         ),
         AUROCByTimeFromFirstVisitPlot(
-            auroc_by_time_from_first_visit_model(eval_frame=eval_frame, all_visits_df=all_visits_df)
+            auroc_by_time_from_first_visit_model(eval_frame=eval_frame, all_visits_df=all_visits_df)  # type: ignore
         ),
         AUROCByQuarterPlot(auroc_by_quarter_model(eval_frame=eval_frame)),  # type: ignore
     ]
@@ -67,17 +66,20 @@ if __name__ == "__main__":
         datefmt="%Y/%m/%d %H:%M:%S",
     )
 
-    eval_frame = (
-        MlflowClientWrapper()
-        .get_run(experiment_name="baseline_v2_cvd", run_name="Layer 1")
-        .eval_frame()
-    )
+    import polars as pl
 
-    figure = single_run_robustness(
-        eval_frame=eval_frame,
-        birthdays=pl.from_pandas(birthdays()),
-        sex_df=pl.from_pandas(sex_female()),
-        all_visits_df=pl.from_pandas(physical_visits_to_psychiatry()),
+    from psycop.common.feature_generation.loaders.raw.load_visits import (
+        physical_visits_to_psychiatry,
     )
+    from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame
+    from psycop.projects.restraint.evaluation.utils import read_eval_df_from_disk
 
-    figure.savefig("test_cvd_robustness.png")
+    experiment = "ECT-trunc-and-hp-structured_only-xgboost-no-lookbehind-filter"
+    experiment_path = f"E:/shared_resources/ect/eval_runs/{experiment}_best_run_evaluated_on_test"
+    experiment_df = read_eval_df_from_disk(experiment_path)
+    eval_frame = EvalFrame(frame=experiment_df, allow_extra_columns=True)
+    all_visits_df = pl.from_pandas(physical_visits_to_psychiatry())
+
+    time_from_first_run = AUROCByTimeFromFirstVisitPlot(
+        auroc_by_time_from_first_visit_model(eval_frame=eval_frame, all_visits_df=all_visits_df)  # type: ignore
+    ).__call__

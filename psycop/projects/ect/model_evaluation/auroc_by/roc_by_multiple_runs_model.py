@@ -4,10 +4,9 @@ import polars as pl
 from sklearn.metrics import roc_auc_score, roc_curve
 
 from psycop.common.global_utils.cache import shared_cache
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame
 
 ROCByGroupDF = NewType("ROCByGroupDF", pl.DataFrame)
-ExperimentWithNames = NewType("ExperimentWithNames", dict[str, EvalFrame])
+ExperimentWithNames = NewType("ExperimentWithNames", dict[str, pl.DataFrame])
 
 
 @shared_cache().cache()
@@ -20,8 +19,8 @@ def _run_auroc_df(df: pl.DataFrame) -> pl.DataFrame:
     return auroc_df
 
 
-def _add_run_name(eval_frame: EvalFrame, name: str) -> pl.DataFrame:
-    return eval_frame.frame.with_columns(pl.lit(name).alias("run_name"))
+def _add_run_name(eval_frame: pl.DataFrame, name: str) -> pl.DataFrame:
+    return eval_frame.with_columns(pl.lit(name).alias("run_name"))
 
 
 @shared_cache().cache()
