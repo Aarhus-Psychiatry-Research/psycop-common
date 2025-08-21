@@ -12,8 +12,8 @@ import polars as pl
 import timeseriesflattener as ts
 from timeseriesflattener.aggregators import HasValuesAggregator
 
-from psycop.common.feature_generation.application_modules.generate_feature_set import (
-    generate_feature_set,
+from psycop.common.feature_generation.application_modules.flatten_dataset import (
+    create_flattened_dataset,
 )
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
@@ -22,7 +22,7 @@ from psycop.projects.uti.feature_generation.cohort_definition.uti_cohort_definer
     uti_pred_times,
 )
 from psycop.projects.uti.feature_generation.outcome_definition.uti_outcomes import (
-    uti_outcome_timestamps,
+    uti_outcomes,
     uti_postive_urine_sample_outcome_timestamps,
     uti_relevant_antibiotics_administrations_outcome_timestamps,
 )
@@ -128,14 +128,16 @@ def uti_generate_features(
     outcomes: Literal["combined", "urine_samples", "antibiotics"],
     lookahead_days: int = 3,
     feature_set_name: str = "uti_outcomes_full_definition",
+    antibiotics_window: tuple[int, int] = (-1, 5),
     add_feature_layers: dict[
         str, list[ts.PredictorSpec | ts.OutcomeSpec | ts.StaticSpec | ts.TimeDeltaSpec]
     ]
     | None = None,
-):
+    save: bool = True,
+) -> pl.DataFrame | None:
     match outcomes:
         case "combined":
-            outcome_df = uti_outcome_timestamps()
+            outcome_df = uti_outcomes(antibiotics_window)
         case "urine_samples":
             outcome_df = uti_postive_urine_sample_outcome_timestamps()
         case "antibiotics":
@@ -186,15 +188,43 @@ def uti_generate_features(
     specs = [_pair_to_spec(layer_spec) for layer_spec in layer_spec_pairs]
 
     logging.info("Generating feature set")
-    generate_feature_set(
-        project_info=get_uti_project_info(),
-        eligible_prediction_times_frame=uti_pred_times().prediction_times,
+    feature_set_dir = get_uti_project_info().flattened_dataset_dir / feature_set_name
+
+    if feature_set_dir.exists():
+        while True:
+            response = input(
+                f"The path '{feature_set_dir}' already exists. Do you want to potentially overwrite the contents of this folder with new feature sets? (yes/no): "
+            )
+
+            if response.lower() not in ["yes", "y", "no", "n"]:
+                print("Invalid response. Please enter 'yes/y' or 'no/n'.")
+            if response.lower() in ["no", "n"]:
+                print("Process stopped.")
+                return None
+            if response.lower() in ["yes", "y"]:
+                print(f"Folder '{feature_set_dir}' will be overwritten.")
+                break
+
+    feature_set_dir.mkdir(parents=True, exist_ok=True)
+
+    flattened_df = create_flattened_dataset(
         feature_specs=specs,
-        feature_set_name=feature_set_name,
+        prediction_times_frame=uti_pred_times().prediction_times,
         n_workers=None,
         step_size=datetime.timedelta(days=365),
-        do_dataset_description=False,
     )
+
+    # Remove rows that follow the first outcome of 1 for each adm_uuid
+    # Remove x rows following a positive outcome within the same admission
+
+    if save:
+        feature_set_path = feature_set_dir / f"{feature_set_name}.parquet"
+
+        logging.info(f"Writing feature set to {feature_set_path}")
+
+        flattened_df.write_parquet(feature_set_path)
+
+    return flattened_df
 
 
 if __name__ == "__main__":
