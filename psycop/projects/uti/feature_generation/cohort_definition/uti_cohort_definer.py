@@ -38,7 +38,7 @@ class UTICohortDefiner(CohortDefiner):
     def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle:
         unfiltered_prediction_times = pl.LazyFrame(
             pl.from_pandas(
-                load_admissions_discharge_timestamps().rename(
+                load_admissions_discharge_timestamps()[0:500].rename(
                     columns={"datotid_start": "timestamp"}
                 )
             )
@@ -52,11 +52,11 @@ class UTICohortDefiner(CohortDefiner):
             pl.col(["dw_ek_borger", "timestamp", "datotid_slut", "shakkode_ansvarlig"])
         )
 
-        filtered_prediction_times = preprocess_readmissions(df=filtered_prediction_times)
+        #filtered_prediction_times = preprocess_readmissions(df=filtered_prediction_times)
 
         filtered_prediction_times = pl.LazyFrame(
             filter_prediction_times(
-                prediction_times=filtered_prediction_times,
+                prediction_times=pl.LazyFrame(filtered_prediction_times),
                 filtering_steps=[UTIMinDateFilter()],
                 entity_id_col_name="dw_ek_borger",
             ).prediction_times.frame

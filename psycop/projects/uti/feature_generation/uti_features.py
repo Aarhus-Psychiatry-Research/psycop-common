@@ -125,7 +125,7 @@ def _pair_to_spec(pair: LayerSpecPair) -> AnySpec:
 
 
 def uti_generate_features(
-    outcomes: Literal["combined", "urine_samples", "antibiotics"],
+    outcomes: Literal["combined", "urine_samples", "antibiotics"] = "combined",
     lookahead_days: int = 3,
     feature_set_name: str = "uti_outcomes_full_definition",
     antibiotics_window: tuple[int, int] = (-1, 5),
@@ -229,6 +229,8 @@ def uti_generate_features(
 
 if __name__ == "__main__":
     import coloredlogs
+
+    uti_pred_times().prediction_times
 
     coloredlogs.install(  # type: ignore
         level="INFO",

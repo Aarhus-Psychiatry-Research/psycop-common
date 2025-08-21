@@ -153,3 +153,68 @@ def explode_admissions(df: pl.LazyFrame) -> pl.LazyFrame:
     df_concat = df_concat.rename(columns={"pred_time": "timestamp"})
 
     return pl.LazyFrame(df_concat)
+
+
+
+def unpack_adm_days_vectorized(df: pd.DataFrame, pred_hour: int = 6) -> pd.DataFrame:
+    """
+    Vectorized version of unpack_adm_days for all rows at once.
+    Expands admissions to long format (one row per day per admission).
+    """
+    # Generate daily ranges per admission
+    df["admission_days"] = df.apply(
+        lambda r: pd.date_range(r["timestamp"].date(), r["datotid_slut"].date()), axis=1
+    )
+
+    # Explode admission days
+    df_long = df.explode("admission_days").reset_index(drop=True)
+
+    # Keep the original admission start timestamp
+    df_long["adm_start"] = df_long["timestamp"]
+
+    # Counter for day within admission
+    df_long["pred_adm_day_count"] = (
+        df_long.groupby("timestamp").cumcount() + 1
+    )
+
+    # Prediction time = admission day + pred_hour
+    df_long["pred_time"] = df_long["admission_days"] + pd.Timedelta(hours=pred_hour)
+
+    # Apply the two filtering conditions
+    mask1 = df_long["adm_start"] < df_long["pred_time"]  # exclude same-day after pred
+    df_long = df_long[mask1]
+
+    # Exclude last row if admission longer than 1 day & time check fails
+    last_rows = (
+        df_long.groupby("timestamp", group_keys=False)
+        .apply(
+            lambda g: g.iloc[:-1]
+            if (len(g) > 1 and g.iloc[-1]["adm_start"].time() <= g.iloc[-1]["pred_time"].time())
+            else g
+        )
+        .reset_index(drop=True)
+    )
+
+    return last_rows.drop(columns=["admission_days", "adm_start"])
+
+
+def explode_admissions_vectorized(df: pl.LazyFrame, pred_hour: int = 6) -> pl.LazyFrame:
+    """
+    Explodes admissions into per-day rows, keeping the same semantics as the original.
+    """
+    df_pd = df.collect().to_pandas()
+
+    df_expanded = unpack_adm_days_vectorized(df_pd, pred_hour=pred_hour)
+
+    # Construct adm_uuid
+    df_expanded["adm_uuid"] = (
+        df_expanded["dw_ek_borger"].astype(str)
+        + "_"
+        + df_expanded["timestamp"].astype(str)
+    )
+
+    df_expanded = df_expanded[
+        ["dw_ek_borger", "adm_uuid", "pred_time", "pred_adm_day_count"]
+    ].rename(columns={"pred_time": "timestamp"})
+
+    return pl.LazyFrame(df_expanded)
