@@ -9,6 +9,7 @@ from typing import Callable, Literal
 
 import pandas as pd
 import polars as pl
+import numpy as np
 import timeseriesflattener as ts
 from timeseriesflattener.aggregators import HasValuesAggregator
 
@@ -17,7 +18,7 @@ from psycop.common.feature_generation.application_modules.flatten_dataset import
 )
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
-from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
+from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR, TEXT_EMBEDDINGS_DIR
 from psycop.projects.uti.feature_generation.cohort_definition.uti_cohort_definer import (
     uti_pred_times,
 )
@@ -26,6 +27,8 @@ from psycop.projects.uti.feature_generation.outcome_definition.uti_outcomes impo
     uti_postive_urine_sample_outcome_timestamps,
     uti_relevant_antibiotics_administrations_outcome_timestamps,
 )
+
+TEXT_FILE_NAME = "text_tfidf_all_sfis_ngram_range_added_konklusion_12_max_df_09_min_df_2_max_features_750.parquet"
 
 
 def get_uti_project_info() -> ProjectInfo:
@@ -171,7 +174,22 @@ def uti_generate_features(
                 fallback=0,
                 output_name="age",
             ),
-        ]
+        ],
+        "layer_text": [
+            ts.PredictorSpec(
+                value_frame=ts.ValueFrame(
+                    init_df=pl.read_parquet(TEXT_EMBEDDINGS_DIR / TEXT_FILE_NAME).drop(
+                        "overskrift"
+                    ),
+                    entity_id_col_name="dw_ek_borger",
+                    value_timestamp_col_name="timestamp",
+                ),
+                lookbehind_distances=[datetime.timedelta(days=730)],
+                aggregators=[ts.MeanAggregator()],
+                fallback=np.nan,
+                column_prefix="pred_layer_text",
+            )
+        ],
     }
 
     if add_feature_layers:
@@ -239,10 +257,10 @@ if __name__ == "__main__":
         stream=sys.stdout,
     )
     uti_generate_features(
-        outcomes="combined", lookahead_days=1, feature_set_name="uti_outcomes_full_definition"
+        outcomes="combined", lookahead_days=1, feature_set_name="uti_outcomes_full_definition_test2"
     )
     uti_generate_features(
-        outcomes="urine_samples", lookahead_days=1, feature_set_name="uti_outcomes_urine_samples"
+        outcomes="urine_samples", lookahead_days=1, feature_set_name="uti_outcomes_urine_samples_test"
     )
 
     uti_generate_features(
