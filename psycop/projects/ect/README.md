@@ -43,10 +43,10 @@ ect/
 
 The resulting feature set can be found here (on Ovartaci): 
 ```bash
-E:/shared_resources/ect/  
+E:/shared_resources/ect/feature_set/  
 ├── flattened_datasets/ 
-│   └── full_feature_set_structured_tfidf_750_all_outcomes/
-│   │   └── full_with_pred_adm_day_count.parquet
+│   └── ect_feature_set/
+│   │   └── ect_feature_set.parquet
 ```
 
 #### TEXT
