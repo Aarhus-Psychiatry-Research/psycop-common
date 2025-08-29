@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from confection import Config
 import pandas as pd
+from confection import Config
 
 
 class Getter(ABC):

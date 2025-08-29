@@ -1,6 +1,8 @@
 from pathlib import Path
-from confection import Config
+
 import pandas as pd
+from confection import Config
+
 from psycop.common.cross_experiments.getter import Getter
 from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 
@@ -20,7 +22,7 @@ class ECTGetter(Getter):
 
     @staticmethod
     def get_cfg() -> Config:
-        experiment = f"ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter"
+        experiment = "ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter"
         experiment_path = (
             f"E:/shared_resources/ect/eval_runs/{experiment}_best_run_evaluated_on_test"
         )
