@@ -10,7 +10,7 @@ from psycop.common.feature_generation.loaders.raw.load_lab_results import (
 
 def get_rows_above_value(
     value: float, df: pd.DataFrame, value_type: str
-) -> pd.DataFrame:  # TODO fh: new loaders?
+) -> pd.DataFrame:  # TODO: new loaders?
     output_df = df[df["value"] > value]
     output_df["value_type"] = value_type
 
