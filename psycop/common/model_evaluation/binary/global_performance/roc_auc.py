@@ -32,7 +32,7 @@ def bootstrap_roc(
             y_resampled, y_hat_probs_resampled = resample(
                 y, y_hat_probs, random_state=np_random_state.integers(n_bootstraps), stratify=y
             )  # type: ignore
-        else:
+        elif not stratify:
             y_resampled, y_hat_probs_resampled = resample(
                 y, y_hat_probs, random_state=np_random_state.integers(n_bootstraps)
             )
