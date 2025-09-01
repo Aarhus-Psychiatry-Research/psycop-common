@@ -16,6 +16,7 @@ def bootstrap_roc(
     y: pd.Series,  # type: ignore
     y_hat_probs: pd.Series,  # type: ignore
     random_state: int = 42,  # type: ignore
+    stratify: bool = False,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:  # type: ignore
     tprs_bootstrapped = []
     aucs_bootstrapped = []
@@ -27,9 +28,14 @@ def bootstrap_roc(
     # Bootstrap TPRs
     logging.info("Starting bootstrapping")
     for _ in range(n_bootstraps):
-        y_resampled, y_hat_probs_resampled = resample(
+        if stratify:
+            y_resampled, y_hat_probs_resampled = resample(
+                y, y_hat_probs, random_state=np_random_state.integers(n_bootstraps), stratify=y
+            )  # type: ignore
+        else:
+            y_resampled, y_hat_probs_resampled = resample(
             y, y_hat_probs, random_state=np_random_state.integers(n_bootstraps)
-        )  # type: ignore
+        )
         fpr_resampled, tpr_resampled, _ = roc_curve(y_resampled, y_hat_probs_resampled)
 
         tpr_bootstrapped = np.interp(base_fpr, fpr_resampled, tpr_resampled)
