@@ -3,7 +3,7 @@ import pandas as pd
 from psycop.common.feature_generation.loaders.raw.load_medications import load as load_medications
 
 
-def get_antidiabetic_medications() -> pd.DataFrame:  # TODO: new loaders?
+def get_antidiabetic_medications() -> pd.DataFrame:  # TODO new loaders?
     df = load_medications(
         atc_code="A10", load_prescribed=True, load_administered=True, wildcard_code=True
     )
