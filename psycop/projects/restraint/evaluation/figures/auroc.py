@@ -13,7 +13,7 @@ from psycop.projects.restraint.evaluation.utils import read_eval_df_from_disk
 def auroc_plot(data: AUROC, title: str = "AUROC") -> pn.ggplot:
     auroc_label = pn.annotate(
         "text",
-        label=f"AUROC (95% CI): {data.mean:.4f} ({data.ci[0]:.4f}-{data.ci[1]:.4f})",
+        label=f"AUROC (95% CI): {data.mean:.3f} ({data.ci[0]:.3f}-{data.ci[1]:.3f})",
         x=1,
         y=0,
         ha="right",
