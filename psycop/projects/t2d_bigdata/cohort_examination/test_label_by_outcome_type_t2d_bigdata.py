@@ -11,7 +11,7 @@ from psycop.projects.t2d_bigdata.cohort_examination.label_by_outcome_type import
 )
 
 
-# TODO make general test
+# TODO: make general test
 @dataclass(frozen=True)
 class Ex:
     given: str
@@ -36,7 +36,7 @@ def test_grouping_by_outcome_type(example: Ex) -> None:
     result = label_by_outcome_type(
         df,
         procedure_col="diagnosis_code",
-        type2procedures=CVD_PROCEDURE_CODES,  # TODO make more relevant test
+        type2procedures=CVD_PROCEDURE_CODES,  # TODO: make more relevant test
     )
 
     assert result.get_column("outcome_type").unique().to_list() == [example.then]

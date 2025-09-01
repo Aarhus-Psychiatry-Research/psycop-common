@@ -18,7 +18,7 @@ def incidence_by_time_model() -> IncidenceByTimeModel:
     df_lab_result = get_first_diabetes_lab_result_above_threshold()
 
     # grouped_by_outcome = (  # noqa: ERA001
-    #     label_by_outcome_type(pl.from_pandas(df_lab_result), procedure_col="cause") # TODO add type2prodecures dict for T2D (based on what to group by)  # noqa: ERA001
+    #     label_by_outcome_type(pl.from_pandas(df_lab_result), procedure_col="cause") # TODO: add type2prodecures dict for T2D (based on what to group by)  # noqa: ERA001
     #     .with_columns(
     #         pl.when(pl.col("outcome_type").str.contains("artery"))  # noqa: ERA001
     #         .then(pl.lit("PAD"))
