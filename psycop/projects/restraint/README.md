@@ -110,13 +110,13 @@ The resulting evaluation dataframe is a `polars.DataFrame` and has the following
 ```bash
 E:/shared_resources/restraint/
 ├── eval_runs/
-│   └── restraint_mechanical_tuning_v2_best_run_evaluate_on_test/
+│   └── restraint_mechanical_tuning_v2_best_run_evaluated_on_test/
 │   │   └── eval_df.parquet
 │   │   └── paper_outputs/ # contains all figures and tables
-│   └── restraint_all_tuning_v2_best_run_evaluate_on_test/
+│   └── restraint_all_tuning_v2_best_run_evaluated_on_test/
 │   │   └── eval_df.parquet
 │   │   └── paper_outputs/ # contains all figures and tables
-│   └── restraint_all_tuning_v2_best_run_evaluate_on_test_mechanical/
+│   └── restraint_all_tuning_v2_best_run_evaluated_on_test_mechanical/
 │   │   └── eval_df.parquet
 │   │   └── paper_outputs/ # contains all figures and tables
 │   └── * # plus outputs from parsimonious models (same format as above)
