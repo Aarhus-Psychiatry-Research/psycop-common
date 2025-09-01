@@ -32,12 +32,12 @@ msg = Printer(timestamp=True)
 
 @shared_cache().cache()
 def t2d_bigdata_pred_filtering() -> FilteredPredictionTimeBundle:
-    return T2DBigDataCohortDefiner().get_filtered_prediction_times_bundle()  # TODO:
+    return T2DBigDataCohortDefiner().get_filtered_prediction_times_bundle()  # TODO
 
 
 @shared_cache().cache()
 def t2d_bigdata_pred_times() -> PredictionTimeFrame:
-    return t2d_bigdata_pred_filtering().prediction_times  # TODO:
+    return t2d_bigdata_pred_filtering().prediction_times  # TODO
 
 
 @shared_cache().cache()
