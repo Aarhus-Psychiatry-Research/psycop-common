@@ -16,7 +16,7 @@ class ECTGetter(Getter):
 
     @staticmethod
     def get_feature_set_df() -> pd.DataFrame:
-        feature_set_df_path = "E:/shared_resources/ect/flattened_datasets/full_feature_set_structured_tfidf_750_all_outcomes/full_with_pred_adm_day_count.parquet"
+        feature_set_df_path = "E:/shared_resources/ect/feature_set/flattened_datasets/ect_feature_set/ect_feature_set.parquet"
 
         return pd.read_parquet(feature_set_df_path)
 
