@@ -9,9 +9,13 @@ from psycop.common.model_training_v2.config.populate_registry import populate_ba
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_suggester import (
     Suggester,
 )
+from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.filter_suggester import (
+    LookbehindCombinationFilterSuggester,
+)
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.suggester_spaces import (
     FloatSpace,
 )
+from psycop.common.test_utils.str_to_df import str_to_pl_df
 
 
 def float_space_for_test() -> FloatSpace:
@@ -40,3 +44,29 @@ def suggester_tester(suggester: Suggester) -> TestSuggestion:
         cfg = BaselineRegistry.resolve({"test_key": result})
 
     return TestSuggestion(pre_resolution=result, resolved=cfg)
+
+
+def test_lookbehind_combination_suggester():
+    df = str_to_pl_df(
+        """pred_age,pred_age_within_2_days,pred_age_within_3_days,pred_diagnosis_within_4_days
+        3,4,3,2
+        3,4,3,3
+        4,3,4,1
+        """
+    ).lazy()
+
+    lookbehind_combinations_sets = [
+        {"within_2_days", "within_3_days"},
+        {"within_3_days", "within_4_days"},
+        {"within_2_days", "within_4_days"},
+    ]
+    lookbehind_combinations = ["{2, 3}", "{3, 4}", "{2, 4}"]
+
+    suggestions = suggester_tester(
+        LookbehindCombinationFilterSuggester(
+            lookbehinds=lookbehind_combinations,  # type: ignore
+            pred_col_prefix="pred_",
+        )
+    )
+
+    assert suggestions.resolved["test_key"].lookbehinds in lookbehind_combinations_sets

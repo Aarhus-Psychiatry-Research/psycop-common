@@ -20,13 +20,16 @@ def bootstrap_roc(
     tprs_bootstrapped = []
     aucs_bootstrapped = []
 
+    np_random_state = np.random.default_rng(random_state)
     # Instead, we specify a base fpr array, and interpolate the tpr values onto it.
     base_fpr = np.linspace(0, 1, 101)
 
     # Bootstrap TPRs
     logging.info("Starting bootstrapping")
     for _ in range(n_bootstraps):
-        y_resampled, y_hat_probs_resampled = resample(y, y_hat_probs, random_state=random_state)  # type: ignore
+        y_resampled, y_hat_probs_resampled = resample(
+            y, y_hat_probs, random_state=np_random_state.integers(n_bootstraps)
+        )  # type: ignore
         fpr_resampled, tpr_resampled, _ = roc_curve(y_resampled, y_hat_probs_resampled)
 
         tpr_bootstrapped = np.interp(base_fpr, fpr_resampled, tpr_resampled)
@@ -83,7 +86,7 @@ def plot_auc_roc(
     # Calculate confidence interval for AUC
     auc_mean = np.mean(aucs_bootstrapped)
     auc_se = np.std(aucs_bootstrapped) / np.sqrt(n_bootstraps)
-    auc_ci = [auc_mean - 1.96 * auc_se, auc_mean + 1.96 * auc_se]
+    auc_ci = np.percentile(aucs_bootstrapped, [2.5, 97.5])
 
     df = pd.DataFrame(
         {"fpr": base_fpr, "tpr": mean_tprs, "tpr_lower": tprs_lower, "tpr_upper": tprs_upper}

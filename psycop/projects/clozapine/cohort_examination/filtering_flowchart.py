@@ -16,8 +16,8 @@ from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     BaselinePreprocessingPipeline,
     PreprocessingPipeline,
 )
-from psycop.projects.ect.feature_generation.cohort_definition.ect_cohort_definition import (
-    ect_pred_filtering,
+from psycop.projects.clozapine.feature_generation.cohort_definition.clozapine_cohort_definition import (
+    clozapine_pred_filtering,
 )
 
 
@@ -35,7 +35,9 @@ def _apply_preprocessing_pipeline(
     i = len(steps)
     for step in preprocessing_pipeline.steps:
         flattened_data = step.apply(flattened_data)
-        post_step_rows = len(flattened_data.collect())
+        collected = flattened_data.collect()
+        post_step_rows = len(collected)
+        post_step_unique_ids = collected.select(pl.col("dw_ek_borger")).unique().height
 
         diff = prior - post_step_rows
         print(f"Rows dropped by {step.__class__.__name__}: {diff}")
@@ -46,11 +48,11 @@ def _apply_preprocessing_pipeline(
                 step_name=step.__class__.__name__,
                 n_prediction_times_after=post_step_rows,
                 n_prediction_times_before=prior,
-                n_ids_after=0,
-                n_ids_before=0,
+                n_ids_after=post_step_unique_ids,
+                n_ids_before=0,  # Optional: track n_ids_before if needed
             )
         )
-        i += 1
+    i += 1
 
     return steps, flattened_data
 
@@ -64,9 +66,9 @@ def filtering_flowchart_facade(
 
     filled = filled_cfg_from_run(run, populate_registry_fns=[populate_baseline_registry])
 
-    pipeline: BaselinePreprocessingPipeline = filled["trainer"].training_preprocessing_pipeline
+    pipeline: BaselinePreprocessingPipeline = filled["trainer"].preprocessing_pipeline
     pipeline._logger = TerminalLogger()  # type: ignore
-    pipeline.steps[0].splits_to_keep = ["train", "val", "test"]  # type: ignore # Do not filter by split
+    pipeline.splits_to_keep = ["train", "val"]  # type: ignore # Do not filter by split
 
     flattened_data = pl.scan_parquet(cfg["trainer"]["training_data"]["paths"][0]).lazy()
 
@@ -77,25 +79,30 @@ def filtering_flowchart_facade(
     )
 
     def _stepdelta_line(prior: StepDelta, cur: StepDelta) -> str:
-        return f"{cur.step_name}: Dropped {prior.n_prediction_times_before - cur.n_prediction_times_after:,}\n\t Remaining: {cur.n_prediction_times_after:,}"
+        return f"{cur.step_name}: Dropped{prior.n_prediction_times_before - cur.n_prediction_times_after:,}\n\t Remaining: {cur.n_prediction_times_after:,} \n\t Remaining unique dw_ek_borger: {cur.n_ids_after:,}"
 
     lines = [_stepdelta_line(prior, cur) for prior, cur in zip(step_deltas, step_deltas[1:])]
 
-    outcome_matcher = pl.col(cfg["trainer"]["training_outcome_col_name"]) == pl.lit(1)
+    outcome_matcher = pl.col(cfg["trainer"]["outcome_col_name"]) == pl.lit(1)
+    final_collected = flattened_data.collect()
     lines.append(f"With outcome: {len(flattened_data.filter(outcome_matcher).collect()):,}")
     lines.append(
         f"Without outcome: {len(flattened_data.filter(outcome_matcher.not_()).collect()):,}"
     )
+    lines.append(
+        f"Final unique dw_ek_borger: {final_collected.select('dw_ek_borger').unique().height:,}"
+    )
 
     # Output to a file
-    (output_dir / "filtering_flowchart.csv").write_text("\n".join(lines))
+    (output_dir / "filtering_flowchart_1y_lookbehind.csv").write_text("\n".join(lines))
 
 
 if __name__ == "__main__":
     filtering_flowchart_facade(
-        prediction_time_bundle=ect_pred_filtering(),
+        prediction_time_bundle=clozapine_pred_filtering(),
         run=MlflowClientWrapper().get_run(
-            "ECT hparam, structured_only, xgboost", "handsome-smelt-991"
+            "clozapine hparam, structured+tfidf_lookahead_365_days, xgboost, 1 year lookbehind filter",
+            "whimsical-snipe-108",
         ),
-        output_dir=pathlib.Path(__file__).parent,
+        output_dir=pathlib.Path("E:/shared_resources/clozapine/cohort_examination"),
     )
