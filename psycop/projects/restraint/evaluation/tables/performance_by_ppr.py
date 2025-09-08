@@ -269,8 +269,8 @@ def restraint_output_performance_by_ppr(
 
 
 if __name__ == "__main__":
-    experiment_name = "restraint_all"
-    eval_dir = f"E:/shared_resources/restraint/eval_runs/{experiment_name}_tuning_best_run_evaluated_on_test"
+    experiment_name = "restraint_all_tuning_v2_best_run_evaluated_on_test_mechanical"
+    eval_dir = f"E:/shared_resources/restraint/eval_runs/{experiment_name}"
 
     restraint_output_performance_by_ppr(
         expand_eval_df_with_extra_cols(read_eval_df_from_disk(eval_dir)), eval_dir
