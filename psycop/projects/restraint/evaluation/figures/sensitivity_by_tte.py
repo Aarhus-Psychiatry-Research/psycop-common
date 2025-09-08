@@ -19,7 +19,7 @@ from psycop.projects.restraint.evaluation.utils import (
 )
 
 
-def plotnine_sensitivity_by_tte(df: pd.DataFrame, title: str = "Temporal Sensitivity") -> pn.ggplot:
+def plotnine_sensitivity_by_tte(df: pd.DataFrame, title: str = "Temporal sensitivity") -> pn.ggplot:
     categories = df["unit_from_event_binned"].dtype.categories[::-1]  # type: ignore
     df["unit_from_event_binned"] = df["unit_from_event_binned"].cat.set_categories(
         new_categories=categories,
@@ -40,8 +40,8 @@ def plotnine_sensitivity_by_tte(df: pd.DataFrame, title: str = "Temporal Sensiti
                 shape="actual_positive_rate",
             ),
         )  # + pn.scale_x_discrete(reverse=True)
-        + pn.geom_point(size=2.5)
-        + pn.geom_errorbar(width=0.05)
+        + pn.geom_point(size=4)
+        + pn.geom_errorbar(width=0.1)
         + pn.labs(
             x="Hours to outcome",
             y="Sensitivity",
@@ -53,19 +53,21 @@ def plotnine_sensitivity_by_tte(df: pd.DataFrame, title: str = "Temporal Sensiti
         + pn.theme(
             axis_text_x=pn.element_text(size=15),
             axis_text_y=pn.element_text(size=15),
-            legend_position=(0.35, 0.9),
+            legend_position=(0.45, 0.91),
             legend_title_align="center",
+            legend_title=pn.element_text(size=17),
+            legend_text=pn.element_text(size=14),
             axis_ticks=pn.element_blank(),
             panel_grid_minor=pn.element_blank(),  # text=(pn.element_text(family="Times New Roman")),
             axis_title=pn.element_text(size=22),
             plot_title=pn.element_text(size=30, ha="center"),
             dpi=300,
         )
-        + pn.scale_color_manual(values=["#669BBC", "#A8C686", "#F3A712"])
+        + pn.scale_color_manual(values=["#CCB233", "#44AA99", "#CC6677"])
     )
 
     for value in df["actual_positive_rate"].unique():
-        p += pn.geom_path(df[df["actual_positive_rate"] == value], group=1, size=1)
+        p += pn.geom_path(df[df["actual_positive_rate"] == value], group=1, size=1.2)
 
     return p
 
