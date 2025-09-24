@@ -35,9 +35,8 @@ def bootstrap_roc(
         elif not stratify:
             y_resampled, y_hat_probs_resampled = resample(
                 y, y_hat_probs, random_state=np_random_state.integers(n_bootstraps)
-            )
-        fpr_resampled, tpr_resampled, _ = roc_curve(y_resampled, y_hat_probs_resampled)
-
+            )  # type: ignore
+        fpr_resampled, tpr_resampled, _ = roc_curve(y_resampled, y_hat_probs_resampled)  # type: ignore
         tpr_bootstrapped = np.interp(base_fpr, fpr_resampled, tpr_resampled)
         tpr_bootstrapped[0] = 0.0
         tprs_bootstrapped.append(tpr_bootstrapped)
