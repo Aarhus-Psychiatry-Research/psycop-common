@@ -41,7 +41,7 @@ def bootstrap_roc(
         tpr_bootstrapped[0] = 0.0
         tprs_bootstrapped.append(tpr_bootstrapped)
 
-        auc_boot = roc_auc_score(y_resampled, y_hat_probs_resampled)
+        auc_boot = roc_auc_score(y_resampled, y_hat_probs_resampled)  # type: ignore
         aucs_bootstrapped.append(auc_boot)
 
     return np.array(tprs_bootstrapped), np.array(aucs_bootstrapped), base_fpr
