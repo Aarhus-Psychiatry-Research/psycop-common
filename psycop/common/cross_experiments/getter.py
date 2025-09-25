@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 import pandas as pd
 
 from psycop.common.model_training_v2.config.config_utils import PsycopConfig

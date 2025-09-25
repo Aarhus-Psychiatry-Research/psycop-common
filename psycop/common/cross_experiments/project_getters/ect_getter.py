@@ -22,7 +22,7 @@ class ECTGetter(Getter):
 
     @staticmethod
     def get_cfg() -> PsycopConfig:
-        experiment = f"ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter"
+        experiment = "ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter"
         experiment_path = (
             f"E:/shared_resources/ect/eval_runs/{experiment}_best_run_evaluated_on_test"
         )
