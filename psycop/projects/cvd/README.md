@@ -11,7 +11,7 @@ All requirements are specified in the `*requirements.txt` files. To install the 
 First, the cohort is defined. 
 ```bash
 cvd/  
-├── feafture_generation/ 
+├── feature_generation/ 
 │   └── cohort_definition/
 │   │   └── cvd_cohort_definition.py # defining the cohort
 ```

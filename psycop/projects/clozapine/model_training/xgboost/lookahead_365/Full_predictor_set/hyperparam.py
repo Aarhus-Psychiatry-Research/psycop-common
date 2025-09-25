@@ -7,7 +7,7 @@ from psycop.common.model_training_v2.hyperparameter_suggester.optuna_hyperparame
 )
 
 FEATURE_SETS = {
-    "structured_text": [
+    "structured_text_365d_lookahead": [
         "contacts",
         "selvmord-broset",
         "diagnoses",
@@ -32,7 +32,7 @@ def hyperparameter_search(cfg: PsycopConfig):
     for feature_set, features in FEATURE_SETS.items():
         cfg.mut(
             "logger.*.mlflow.experiment_name",
-            f"clozapine hparam, {feature_set}, xgboost, no lookbehind filter",
+            f"clozapine hparam, {feature_set}, xgboost, 1 year lookbehind filter",
         )
 
         layer_regex = "|".join(features)
@@ -57,5 +57,5 @@ if __name__ == "__main__":
     populate_baseline_registry()
 
     hyperparameter_search(
-        PsycopConfig().from_disk(Path(__file__).parent / "clozapine_baseline.cfg")
+        PsycopConfig().from_disk(Path(__file__).parent / "clozapine_xgb_365d_full_predictor.cfg")
     )
