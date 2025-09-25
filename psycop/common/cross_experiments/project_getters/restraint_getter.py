@@ -21,7 +21,7 @@ class RestraintGetter(Getter):
         return pd.read_parquet(feature_set_df_path)
 
     @staticmethod
-    def get_cfg() -> Config:
+    def get_cfg() -> PsycopConfig:
         config_path = "E:/shared_resources/restraint/eval_runs/restraint_all_tuning_v2_best_run_evaluated_on_test/config.cfg"
 
         return PsycopConfig(Config().from_disk(path=Path(config_path)))
