@@ -25,6 +25,9 @@ def retrain_best_model(
         train_splits = ["train"]
     test_run_experiment_name = f"{experiment_name}_best_run_{test_run_name}"
 
+    if split_outcome:
+        test_run_experiment_name += "_mechanical"
+
     test_run_path = "E:/shared_resources/" + "/restraint" + "/eval_runs/" + test_run_experiment_name
 
     best_run_cfg = (
@@ -36,17 +39,72 @@ def retrain_best_model(
     preprocessing_pipeline = best_run_cfg.retrieve("trainer.preprocessing_pipeline")
 
     if split_outcome:
-        validation_outcome_col_name = best_run_cfg.retrieve("trainer.validation_outcome_col_name")
-        training_outcome_col_name = best_run_cfg.retrieve("trainer.training_outcome_col_name")
+        validation_outcome_col_name = (
+            "outc_outcome_mechanical_restraint_within_2_days_boolean_fallback_0_dichotomous"
+        )
+        training_outcome_col_name = best_run_cfg.retrieve("trainer.outcome_col_name")
 
         best_run_cfg = (
             best_run_cfg.mut("logger.*.mlflow.experiment_name", test_run_experiment_name)
             .mut("logger.*.disk_logger.run_path", test_run_path)
             .mut("trainer.@trainers", trainer)
-            .rem("trainer.validation_outcome_col_name")
-            .rem("trainer.training_outcome_col_name")
+            .rem("trainer.outcome_col_name")
             .rem("trainer.preprocessing_pipeline")
             .rem("trainer.n_splits")
+        )
+
+        best_run_cfg = (
+            best_run_cfg.add("trainer.training_outcome_col_name", training_outcome_col_name)
+            .add("trainer.training_preprocessing_pipeline", preprocessing_pipeline)
+            .mut(
+                "trainer.training_preprocessing_pipeline.*.split_filter.@preprocessing",
+                data_split_filter,
+            )
+            .mut("trainer.training_preprocessing_pipeline.*.split_filter.splits_to_keep", train_splits)
+            .mut(
+                "trainer.training_preprocessing_pipeline.*.outcome_selector",
+                {
+                    "@preprocessing": "filter_columns_within_subset",
+                    "subset_rule": "outc_.+",
+                    "keep_matching": ".+(mechanical|all_restraint).+",
+                },
+            )
+            .mut(
+                "trainer.training_preprocessing_pipeline.*.column_prefix_count_expectation",
+                {
+                    "@preprocessing": "column_prefix_count_expectation",
+                    "column_expectations": [["outc_", 2], ["prediction_timestamp", 0]],
+                },
+            )
+        )
+
+        best_run_cfg = (
+            best_run_cfg.add(  # Handle validation dataset
+                "trainer.validation_data", best_run_cfg.retrieve("trainer.training_data")
+            )
+            .add("trainer.validation_data.paths", test_data_path)
+            .add("trainer.validation_outcome_col_name", validation_outcome_col_name)
+            .add("trainer.validation_preprocessing_pipeline", preprocessing_pipeline)
+            .mut(
+                "trainer.validation_preprocessing_pipeline.*.split_filter.@preprocessing",
+                data_split_filter,
+            )
+            .mut("trainer.validation_preprocessing_pipeline.*.split_filter.splits_to_keep", test_split)
+            .mut(
+                "trainer.validation_preprocessing_pipeline.*.outcome_selector",
+                {
+                    "@preprocessing": "filter_columns_within_subset",
+                    "subset_rule": "outc_.+",
+                    "keep_matching": ".+(mechanical|all_restraint).+",
+                },
+            )
+            .mut(
+                "trainer.validation_preprocessing_pipeline.*.column_prefix_count_expectation",
+                {
+                    "@preprocessing": "column_prefix_count_expectation",
+                    "column_expectations": [["outc_", 2], ["prediction_timestamp", 0]],
+                },
+            )
         )
 
     else:
@@ -62,29 +120,29 @@ def retrain_best_model(
             .rem("trainer.n_splits")
         )
 
-    best_run_cfg = (
-        best_run_cfg.add("trainer.training_outcome_col_name", training_outcome_col_name)
-        .add("trainer.training_preprocessing_pipeline", preprocessing_pipeline)
-        .mut(
-            "trainer.training_preprocessing_pipeline.*.split_filter.@preprocessing",
-            data_split_filter,
+        best_run_cfg = (
+            best_run_cfg.add("trainer.training_outcome_col_name", training_outcome_col_name)
+            .add("trainer.training_preprocessing_pipeline", preprocessing_pipeline)
+            .mut(
+                "trainer.training_preprocessing_pipeline.*.split_filter.@preprocessing",
+                data_split_filter,
+            )
+            .mut("trainer.training_preprocessing_pipeline.*.split_filter.splits_to_keep", train_splits)
         )
-        .mut("trainer.training_preprocessing_pipeline.*.split_filter.splits_to_keep", train_splits)
-    )
 
-    best_run_cfg = (
-        best_run_cfg.add(  # Handle validation dataset
-            "trainer.validation_data", best_run_cfg.retrieve("trainer.training_data")
+        best_run_cfg = (
+            best_run_cfg.add(  # Handle validation dataset
+                "trainer.validation_data", best_run_cfg.retrieve("trainer.training_data")
+            )
+            .add("trainer.validation_data.paths", test_data_path)
+            .add("trainer.validation_outcome_col_name", validation_outcome_col_name)
+            .add("trainer.validation_preprocessing_pipeline", preprocessing_pipeline)
+            .mut(
+                "trainer.validation_preprocessing_pipeline.*.split_filter.@preprocessing",
+                data_split_filter,
+            )
+            .mut("trainer.validation_preprocessing_pipeline.*.split_filter.splits_to_keep", test_split)
         )
-        .add("trainer.validation_data.paths", test_data_path)
-        .add("trainer.validation_outcome_col_name", validation_outcome_col_name)
-        .add("trainer.validation_preprocessing_pipeline", preprocessing_pipeline)
-        .mut(
-            "trainer.validation_preprocessing_pipeline.*.split_filter.@preprocessing",
-            data_split_filter,
-        )
-        .mut("trainer.validation_preprocessing_pipeline.*.split_filter.splits_to_keep", test_split)
-    )
 
     train_baseline_model_from_cfg(best_run_cfg)
 
@@ -107,7 +165,7 @@ if __name__ == "__main__":
         ],
     )
     retrain_best_model(
-        experiment_name="restraint_split_tuning_minimal_v2",
+        experiment_name="restraint_all_tuning_minimal_v2",
         train_splits=["train", "val"],
         test_split=["test"],
         split_outcome=True,

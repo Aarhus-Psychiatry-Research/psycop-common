@@ -100,15 +100,28 @@ def restraint_feature_importance_table_facade(pipeline: Pipeline, output_dir: Pa
     (output_dir / "predictor_importance.html").write_text(feat_imp.to_html())
 
 
-def plotnine_feature_importance(df: pd.DataFrame, title: str = "Predictor Importance") -> pn.ggplot:
+def plotnine_feature_importance(df: pd.DataFrame, title: str = "Predictor importance") -> pn.ggplot:
     df = df[0:10].sort_values(by="Feature Importance", ascending=False).reset_index(drop=True)
     df = df.sort_values(by="Feature Importance", ascending=True)
-    df["name"] = pd.Categorical(df["Feature Name"], categories=df["Feature Name"], ordered=True)
+
+    names = []
+    for row in df["Feature Name"]:
+        row = row.replace("Non sedative", "Non-sedative")
+        row = row.replace("Broeset", "Brøset")
+        row = row.replace("fast", "regular*")
+        row = row.replace("Tfidf", "TF-IDF")
+        row = row.replace("Skema 2", "Involuntary treatment**")
+        row = row.replace("mærke", '"Feel"')
+        row = row.replace("hjemmebesøg", '"Home visit"')
+        row = row.replace("kvinde", '"Woman"')
+        names.append(row)
+
+    df["name"] = pd.Categorical(names, categories=names, ordered=True)
     df["imp"] = df["Feature Importance"]
     
     p = (
         pn.ggplot(df, pn.aes(x="name", y="Feature Importance", fill="name"))
-        + pn.geom_bar(stat="identity", width=0.75)
+        + pn.geom_bar(stat="identity", width=0.75, color="black")
         + pn.coord_flip()
         + pn.labs(x="Predictor name", y="Information gain", title=title)
         + pn.theme_minimal()
@@ -117,22 +130,22 @@ def plotnine_feature_importance(df: pd.DataFrame, title: str = "Predictor Import
             axis_text_y=pn.element_text(size=14),
             legend_position="none",
             axis_title=pn.element_text(size=22),
-            plot_title=pn.element_text(size=30),
+            plot_title=pn.element_text(size=27),
             dpi=300,
             figure_size=(11,7)
         )
         + pn.scale_fill_manual(
             values=[
-                "#669BBC",
-                "#669BBC",
-                "#669BBC",
-                "#669BBC",
-                "#669BBC",
-                "#669BBC",
-                "#669BBC",
-                "#669BBC",
-                "#669BBC",
-                "#669BBC",
+                "#DDCC77",
+                "#DDCC77",
+                "#DDCC77",
+                "#DDCC77",
+                "#DDCC77",
+                "#DDCC77",
+                "#DDCC77",
+                "#DDCC77",
+                "#DDCC77",
+                "#DDCC77",
             ]
         )
     )

@@ -86,14 +86,6 @@ def run_paper_outputs(
 
     run = MlflowClientWrapper().get_best_run_from_experiment(run_name, metric="all_oof_BinaryAUROC")
 
-    feat_imp = restraint_generate_feature_importance_table(
-        pipeline=run.sklearn_pipeline(), clf_model_name="classifier"
-    )
-    
-    feat_imp.to_html(save_path / "predictor_importance.html")
-
-    plotnine_feature_importance(feat_imp).save(save_path / "restraint_feature_importance.png")
-
     training_data = pl.read_parquet(run.get_config()["trainer"]["training_data"]["paths"][0]).drop(
         ["dw_ek_borger", "timestamp", "prediction_time_uuid"]
     )
@@ -104,7 +96,7 @@ def run_paper_outputs(
 
 
 if __name__ == "__main__":
-    experiments = ["restraint_mechanical_tuning_v2_best_run_evaluated_on_test", "restraint_all_tuning_v2_best_run_evaluated_on_test", "restraint_all_tuning_v2_best_run_evaluated_on_test_mechanical"]
+    experiments = ["restraint_mechanical_tuning_minimal_v2_best_run_evaluated_on_test", "restraint_all_tuning_minimal_v2_best_run_evaluated_on_test", "restraint_all_tuning_minimal_v2_best_run_evaluated_on_test_mechanical"]
     best_pos_rate = 0.01
 
     save_dir = "E:/shared_resources/restraint/eval_runs"
@@ -126,7 +118,7 @@ if __name__ == "__main__":
         df = read_eval_df_from_disk(save_dir + "/" + run_name)
 
         # outcome_df = pl.from_pandas(load_restraint_outcome_timestamps())
-        if run_name == "restraint_all_tuning_v2_best_run_evaluated_on_test":
+        if run_name == "restraint_all_tuning_minimal_v2_best_run_evaluated_on_test":
             run_paper_outputs(
                 df=df,
                 outcome_timestamps=all_outcome_timestamps,
