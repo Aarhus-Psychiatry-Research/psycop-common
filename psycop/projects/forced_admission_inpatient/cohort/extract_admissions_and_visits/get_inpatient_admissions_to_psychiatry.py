@@ -60,7 +60,7 @@ def admissions_discharge_timestamps() -> pd.DataFrame:
 
     sql = "SELECT " + cols_to_keep + " FROM [fct]." + view
 
-    admissions_discharge_timestamps = pd.DataFrame(sql_load(sql, chunksize=None))  # type: ignore
+    admissions_discharge_timestamps = pd.DataFrame(sql_load(sql, n_rows=None))  # type: ignore
 
     admissions_discharge_timestamps = admissions_discharge_timestamps.rename(
         columns={"datotid_slut": "timestamp"}

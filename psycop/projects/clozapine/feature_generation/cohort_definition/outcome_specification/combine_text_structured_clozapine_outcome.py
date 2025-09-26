@@ -30,14 +30,24 @@ def combine_structured_and_text_outcome():  # noqa: ANN201
         "dw_ek_borger"
     )
 
+    counts = {"text_2013_2014": 0, "text_2014_2016": 0, "structured_2016_2024": 0}
+
     def select_timestamp(row: pd.DataFrame) -> pd.Timestamp:
         dw_ek_borger = row.name
         earliest_timestamp = row["timestamp"]
+
+        if pd.Timestamp("2013-01-01") <= earliest_timestamp < pd.Timestamp("2014-01-01"):
+            counts["text_2013_2014"] += 1
+        elif pd.Timestamp("2014-01-01") <= earliest_timestamp < pd.Timestamp("2016-10-01"):
+            counts["text_2014_2016"] += 1
+
         if dw_ek_borger in post_october_2016_structured.index:
             structured_row = post_october_2016_structured.loc[dw_ek_borger]
             structured_timestamp = structured_row["timestamp"]
             if earliest_timestamp >= pd.Timestamp("2016-10-01"):
+                counts["structured_2016_2024"] += 1  # <-- ADDED
                 return structured_timestamp  # type: ignore
+
         return earliest_timestamp  # type: ignore
 
     combined_clozapine_outcome = earliest_outcome_df.set_index("dw_ek_borger")
@@ -45,6 +55,11 @@ def combine_structured_and_text_outcome():  # noqa: ANN201
         select_timestamp,
         axis=1,  # noqa ANN202
     )
+
+    print(f"Text outcome (2013-2014): {counts['text_2013_2014']}")
+    print(f"Text outcome (2014-2016.10.01): {counts['text_2014_2016']}")
+    print(f"Structured outcome (2016-2024): {counts['structured_2016_2024']}")
+
     combined_clozapine_outcome.reset_index(inplace=True)  # noqa: PD002
 
     unique_dw_ek_borger_final = combined_clozapine_outcome["dw_ek_borger"].nunique()
