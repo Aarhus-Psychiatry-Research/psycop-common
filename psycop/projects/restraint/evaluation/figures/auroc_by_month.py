@@ -12,9 +12,10 @@ from psycop.projects.restraint.evaluation.utils import (
 
 
 def plotnine_auroc_by_month(
-    df: pd.DataFrame, title: str = "AUROC by Month of the Year"
+    df: pd.DataFrame, title: str = "AUROC by month of the year"
 ) -> pn.ggplot:
     df["proportion_of_n"] = df["n_in_bin"] / df["n_in_bin"].sum()
+    df["percentage_of_n"] = df["proportion_of_n"] * 100
 
     p = (
         pn.ggplot(df, pn.aes(x="time_bin", y="auroc"))
@@ -23,6 +24,18 @@ def plotnine_auroc_by_month(
         + pn.labs(x="Month", y="AUROC", title=title)
         + pn.ylim(0, 1)
         + pn.theme_minimal()
+        + pn.geom_text(
+            pn.aes(x="time_bin", y="proportion_of_n", fill="time_bin", label="percentage_of_n"),
+            nudge_y=0.01,
+            va="bottom",
+            format_string="{:.1f}%",
+        )
+        + pn.geom_text(
+            pn.aes(x="time_bin", y="ci_upper", label="auroc"),
+            nudge_y=0.01,
+            va="bottom",
+            format_string="{:.3f}",
+        )
         + pn.theme(
             axis_text_x=pn.element_text(size=15, rotation=45),
             axis_text_y=pn.element_text(size=15),
@@ -36,18 +49,18 @@ def plotnine_auroc_by_month(
         + pn.scale_x_discrete()
         + pn.scale_fill_manual(
             values=[
-                "#669BBC",
-                "#A8C686",
-                "#669BBC",
-                "#A8C686",
-                "#669BBC",
-                "#A8C686",
-                "#669BBC",
-                "#A8C686",
-                "#669BBC",
-                "#A8C686",
-                "#669BBC",
-                "#A8C686",
+                "#DDCC77",
+                "#DDCC77",
+                "#DDCC77",
+                "#DDCC77",
+                "#DDCC77",
+                "#DDCC77",
+                "#DDCC77",
+                "#DDCC77",
+                "#DDCC77",
+                "#DDCC77",
+                "#DDCC77",
+                "#DDCC77",
             ]
         )
     )

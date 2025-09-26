@@ -9,7 +9,7 @@ from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClien
 from psycop.common.model_training_v2.config.config_utils import resolve_and_fill_config
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 from psycop.common.model_training_v2.loggers.terminal_logger import TerminalLogger
-from psycop.projects.restraint.evaluation.tables.restraint_predictor_describer import ParsedPredictorColumn, tsflattener_v2_column_is_static, _get_match_group
+from psycop.projects.restraint.evaluation.tables.restraint_predictor_describer import ParsedPredictorColumn, tsflattener_v2_column_is_static, _get_match_group # type: ignore
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 
 def get_filtered_prediction_times(cfg: dict[str, Any]) -> pl.DataFrame:
@@ -109,7 +109,7 @@ def merge_predictor_lists(experiment_name: str, model_name: str, pred_list: pd.D
 
     run = MlflowClientWrapper().get_best_run_from_experiment(experiment_name, metric="all_oof_BinaryAUROC")
     if "Minimal" not in model_name:
-        mask=run.sklearn_pipeline()["feature_selection"].get_support()
+        mask=run.sklearn_pipeline()["feature_selection"].get_support() # type: ignore
         selected_features=input_features[mask]
     else:
         selected_features = input_features

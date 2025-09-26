@@ -21,6 +21,7 @@ from psycop.projects.restraint.evaluation.figures.auroc_by_week import (
     auroc_by_weekday_model,
     plotnine_auroc_by_weekday,
 )
+from psycop.projects.restraint.evaluation.figures.auroc_by_month import (plotnine_auroc_by_month, auroc_by_month_model)
 from psycop.projects.restraint.evaluation.figures.plot_grid_main import plot_grid
 from psycop.projects.restraint.evaluation.figures.predictor_importance import (
     restraint_generate_feature_importance_table,
@@ -51,12 +52,12 @@ def run_paper_outputs(
     save_path = Path(f"{save_dir}/{run_name}/paper_outputs/")
     save_path.mkdir(parents=True, exist_ok=True)
 
-    plot_grid(
-        df=df,
-        outcome_timestamps=outcome_timestamps,
-        first_letter_index=0,
-        best_pos_rate=best_pos_rate,
-    ).savefig(save_path / "main_grid.png")
+    # plot_grid(
+    #     df=df,
+    #     outcome_timestamps=outcome_timestamps,
+    #     first_letter_index=0,
+    #     best_pos_rate=best_pos_rate,
+    # ).savefig(save_path / "main_grid.png")
 
     plotnine_auroc_by_age(
         auroc_by_age_model(df=df, birthdays=pl.from_pandas(birthdays()), bins=[18, 25, 35, 45, 55])
@@ -69,6 +70,8 @@ def run_paper_outputs(
     plotnine_auroc_by_weekday(auroc_by_weekday_model(df=df)).save(
         save_path / "auroc_by_weekday.png"
     )
+
+    # plotnine_auroc_by_month(auroc_by_month_model(df=df))
 
     plotnine_auroc_by_region(auroc_by_region_model(df=df)).save(
         save_path / "restraint_auroc_by_region.png"

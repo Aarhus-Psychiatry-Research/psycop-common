@@ -20,7 +20,7 @@ from psycop.projects.restraint.feature_generation.modules.loaders.load_restraint
 )
 
 
-def plotnine_auroc_by_region(df: pd.DataFrame, title: str = "AUROC by Location") -> pn.ggplot:
+def plotnine_auroc_by_region(df: pd.DataFrame, title: str = "AUROC by location") -> pn.ggplot:
     df["proportion_of_n"] = df["n_in_bin"] / df["n_in_bin"].sum()
     df["percentage_of_n"] = df["proportion_of_n"] * 100
     df["region_en"] = pd.Categorical(
@@ -37,14 +37,15 @@ def plotnine_auroc_by_region(df: pd.DataFrame, title: str = "AUROC by Location")
         )  # + pn.geom_text(position=pn.position_stack(vjust=1))
         + pn.geom_text(
             pn.aes(x="region_en", y="proportion_of_n", fill="region_en", label="percentage_of_n"),
+            nudge_y=0.01,
             va="bottom",
             format_string="{:.1f}%",
         )
         + pn.geom_text(
-            pn.aes(x="region_en", y="auroc", label="auroc"),
-            nudge_y=0.15,
+            pn.aes(x="region_en", y="ci_upper", label="auroc"),
+            nudge_y=0.07,
             va="top",
-            format_string="{:.2f}",
+            format_string="{:.3f}",
         )
         + pn.ylim(0, 1.1)
         + pn.theme_minimal()
@@ -58,7 +59,7 @@ def plotnine_auroc_by_region(df: pd.DataFrame, title: str = "AUROC by Location")
             dpi=300,
         )
         + pn.scale_x_discrete()
-        + pn.scale_fill_manual(values=["#669BBC", "#A8C686", "#F3A712"])
+        + pn.scale_fill_manual(values=["#DDCC77", "#DDCC77", "#DDCC77"])
     )
 
     if "ci_lower" in df.columns:
