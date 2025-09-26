@@ -20,7 +20,7 @@ The shared code across the PSYCOP projects.
 
 <!-- end short-description -->
 
-## Installation
+## Installation 
 ### Method 1: Dev container
 1. Install [Orbstack](https://orbstack.dev/) or Docker Desktop. Make sure to complete the full install process before continuing.
 2. If not installed, install VSCode
