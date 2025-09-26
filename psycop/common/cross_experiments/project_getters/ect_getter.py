@@ -10,7 +10,7 @@ from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 class ECTGetter(Getter):
     @staticmethod
     def get_eval_df() -> pd.DataFrame:
-        eval_df_path = "E:/shared_resources/ect/ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter_best_run_evaluated_on_test/eval_df.parquet"
+        eval_df_path = "E:/shared_resources/ect/eval_runs/ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter_best_run_evaluated_on_test/eval_df.parquet"
 
         return pd.read_parquet(eval_df_path)
 
@@ -21,7 +21,7 @@ class ECTGetter(Getter):
         return pd.read_parquet(feature_set_df_path)
 
     @staticmethod
-    def get_cfg() -> Config:
+    def get_cfg() -> PsycopConfig:
         experiment = "ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter"
         experiment_path = (
             f"E:/shared_resources/ect/eval_runs/{experiment}_best_run_evaluated_on_test"

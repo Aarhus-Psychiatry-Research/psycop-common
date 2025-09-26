@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 
 import pandas as pd
-from confection import Config
+
+from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 
 
 class Getter(ABC):
@@ -15,4 +16,4 @@ class Getter(ABC):
 
     @staticmethod
     @abstractmethod
-    def get_cfg() -> Config: ...
+    def get_cfg() -> PsycopConfig: ...
