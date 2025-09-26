@@ -23,6 +23,7 @@ def roc_auc_by_periodic_time_df(
         bin_period (str): Which cyclic time period to bin on. Takes "H" for hour of day, "D" for day of week and "M" for month of year.
         confidence_interval (bool, optional): Whether to create bootstrapped confidence interval. Defaults to True.
         n_bootstraps: number of samples for bootstrap resampling
+        stratified (bool, optional): Whether to stratify groups based on outcome.
     Returns:
         pd.DataFrame: Dataframe ready for plotting
     """
