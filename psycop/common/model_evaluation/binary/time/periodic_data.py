@@ -12,6 +12,7 @@ def roc_auc_by_periodic_time_df(
     bin_period: str,
     confidence_interval: bool = True,
     n_bootstraps: int = 100,
+    stratified: bool = False,
 ) -> pd.DataFrame:
     """Calculate performance by cyclic time period of prediction time data
     frame. Cyclic time periods include e.g. day of week, hour of day, etc.
@@ -76,6 +77,7 @@ def roc_auc_by_periodic_time_df(
         groupby_col_name="time_bin",
         confidence_interval=confidence_interval,
         n_bootstraps=n_bootstraps,
+        stratified=stratified,
     )
 
     return output_df.reset_index().rename({0: "metric"}, axis=1)
