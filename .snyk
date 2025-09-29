@@ -230,4 +230,25 @@ ignore:
           Exception approvedvia Slack conversation in
           programming channel on 02/01/2025.
         created: 2025-01-02T13:32:08.040Z
+  SNYK-PYTHON-TORCH-13052805:
+    - '*':
+        reason: >-
+          Vulnerability related to torch in a backend mode that we do not use.
+          Exception approved via Slack conversation in
+          programming channel on xx/09/2025.
+        created: 2025-29-09T16:22:20.040Z
+  SNYK-PYTHON-TORCH-13052971:
+    - '*':
+        reason: >-
+          Vulnerability related to torch in a backend mode that we do not use.
+          Exception approved via Slack conversation in
+          programming channel on xx/09/2025.
+        created: 2025-29-09T16:22:20.040Z
+  SNYK-PYTHON-TORCH-13052969:
+    - '*':
+        reason: >-
+          Vulnerability related to torch in a backend mode that we do not use.
+          Exception approved via Slack conversation in
+          programming channel on xx/09/2025.
+        created: 2025-29-09T16:22:20.040Z
 patch: {}
