@@ -15,7 +15,7 @@ def hyperparameter_search(cfg: PsycopConfig):
     )
 
     # Set run name
-    for i in reversed([2]):
+    for i in reversed([1, 2, 3, 4]):
         cfg.mut(
             "logger.*.mlflow.experiment_name",
             f"CVD-hyperparam-tuning-layer-{i}-xgboost-disk-logged",
