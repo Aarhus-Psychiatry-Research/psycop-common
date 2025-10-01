@@ -10,9 +10,15 @@ from psycop.common.cohort_definition import OutcomeTimestampFrame
 from psycop.common.feature_generation.data_checks.flattened.feature_describer_tsflattener_v2 import (
     generate_feature_description_df,
 )
+from psycop.projects.cvd.cohort_examination.table_one.facade import table_one_facade
+from psycop.projects.cvd.cohort_examination.filtering_flowchart import filtering_flowchart_facade
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
 from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits_to_psychiatry
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
+    EvalFrame,
+    MlflowClientWrapper,
+    PsycopMlflowRun,
+)
 from psycop.common.model_evaluation.markdown.md_objects import (
     MarkdownArtifact,
     MarkdownFigure,
@@ -25,6 +31,7 @@ from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 from psycop.projects.cvd.cohort_examination.incidence_by_time.facade import incidence_by_time_facade
 from psycop.projects.cvd.feature_generation.cohort_definition.cvd_cohort_definition import (
     cvd_outcome_timestamps,
+    cvd_pred_filtering,
 )
 from psycop.projects.cvd.model_evaluation.single_run.performance_by_ppr.model import (
     performance_by_ppr_model,
@@ -121,7 +128,9 @@ def _markdown_artifacts_facade(
     return artifacts
 
 
-def single_run_facade(output_path: Path, eval_df: pl.DataFrame, cfg: PsycopConfig) -> None:
+def single_run_facade(
+    output_path: Path, eval_df: pl.DataFrame, cfg: PsycopConfig, run: PsycopMlflowRun
+) -> None:
     eval_frame = EvalFrame(frame=eval_df, allow_extra_columns=True)
 
     lookahead_days_str = re.findall(
@@ -158,11 +167,11 @@ def single_run_facade(output_path: Path, eval_df: pl.DataFrame, cfg: PsycopConfi
     (output_path / "Report.md").write_text(markdown_text)
 
     non_markdown_artifacts: Sequence[CVDArtifactFacade] = [
-        # lambda output_dir: table_one_facade(run=run, output_dir=output_dir),
-        lambda output_dir: incidence_by_time_facade(output_dir=output_dir)
-        # lambda output_dir: filtering_flowchart_facade(
-        #     prediction_time_bundle=cvd_pred_filtering(), run=run, output_dir=output_dir
-        # ),
+        lambda output_dir: table_one_facade(run=run, output_dir=output_dir),
+        lambda output_dir: incidence_by_time_facade(output_dir=output_dir),
+        lambda output_dir: filtering_flowchart_facade(
+            prediction_time_bundle=cvd_pred_filtering(), run=run, output_dir=output_dir
+        ),
     ]
     for artifact in non_markdown_artifacts:
         artifact(output_path)
@@ -187,8 +196,11 @@ if __name__ == "__main__":
         datefmt="%Y/%m/%d %H:%M:%S",
     )
 
-    run_name = "CVD-replicate-model-in-paper"
+    run_name = "CVD-hyperparam-tuning-layer-2-xgboost-disk-logged"
     run_path = f"E:/shared_resources/cvd/eval_runs/{run_name}_best_run_evaluated_on_test"
+    mlflow_run = MlflowClientWrapper().get_best_run_from_experiment(
+        experiment_name=run_name, metric="all_oof_BinaryAUROC"
+    )
     eval_df = read_eval_df_from_disk(run_path)
     eval_df = eval_df.with_columns(
         [pl.col("y").cast(pl.Int64), pl.col("y_hat_prob").cast(pl.Float64)]
@@ -197,4 +209,4 @@ if __name__ == "__main__":
 
     output_dir = Path(run_path) / "outputs"
     output_dir.mkdir(exist_ok=True, parents=True)
-    single_run_facade(output_dir, eval_df, run_cfg)
+    single_run_facade(output_dir, eval_df, run_cfg, mlflow_run)
