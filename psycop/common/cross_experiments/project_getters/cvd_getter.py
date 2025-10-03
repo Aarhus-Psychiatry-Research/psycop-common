@@ -27,7 +27,7 @@ class CVDGetter(Getter):
         experiment_path = (
             f"E:/shared_resources/cvd/eval_runs/{experiment}_best_run_evaluated_on_test"
         )
-        return PsycopConfig(Config().from_disk(path=Path(experiment_path)/"config.cfg"))
+        return PsycopConfig(Config().from_disk(path=Path(experiment_path) / "config.cfg"))
 
 
 if __name__ == "__main__":
