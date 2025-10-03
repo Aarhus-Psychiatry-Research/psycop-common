@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Protocol
 
 import polars as pl
+from confection import Config
 
 from psycop.common.cohort_definition import OutcomeTimestampFrame
 from psycop.common.feature_generation.data_checks.flattened.feature_describer_tsflattener_v2 import (
@@ -24,6 +25,7 @@ from psycop.common.model_evaluation.markdown.md_objects import (
 )
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema
+from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 from psycop.projects.cvd.cohort_examination.filtering_flowchart import filtering_flowchart_facade
 from psycop.projects.cvd.cohort_examination.incidence_by_time.facade import incidence_by_time_facade
 from psycop.projects.cvd.cohort_examination.table_one.facade import table_one_facade
@@ -41,6 +43,7 @@ from psycop.projects.cvd.model_evaluation.single_run.single_run_main import sing
 from psycop.projects.cvd.model_evaluation.single_run.single_run_robustness import (
     single_run_robustness,
 )
+from psycop.projects.restraint.evaluation.utils import read_eval_df_from_disk
 
 
 class CVDArtifactFacade(Protocol):
@@ -125,11 +128,14 @@ def _markdown_artifacts_facade(
     return artifacts
 
 
-def single_run_facade(output_path: Path, run: PsycopMlflowRun) -> None:
-    cfg = run.get_config()
-    eval_frame = run.eval_frame()
+def single_run_facade(
+    output_path: Path, eval_df: pl.DataFrame, cfg: PsycopConfig, run: PsycopMlflowRun
+) -> None:
+    eval_frame = EvalFrame(frame=eval_df, allow_extra_columns=True)
 
-    lookahead_days_str = re.findall(r".+_to_(\d+)_days.+", cfg["trainer"]["outcome_col_name"])[0]
+    lookahead_days_str = re.findall(
+        r".+_to_(\d+)_days.+", cfg["trainer"]["training_outcome_col_name"]
+    )[0]
     lookahead_years = int(int(lookahead_days_str) / 365)
     estimator_type = cfg["trainer"]["task"]["task_pipe"]["sklearn_pipe"]["*"]["model"][
         "@estimator_steps"
@@ -190,10 +196,17 @@ if __name__ == "__main__":
         datefmt="%Y/%m/%d %H:%M:%S",
     )
 
-    run_name = "CVD layer 1, base"
-    run = MlflowClientWrapper().get_best_run_from_experiment(
-        experiment_name="CVD, h, l-2, XGB", metric="all_oof_BinaryAUROC"
+    run_name = "CVD-hyperparam-tuning-layer-2-xgboost-disk-logged"
+    run_path = f"E:/shared_resources/cvd/eval_runs/{run_name}_best_run_evaluated_on_test"
+    mlflow_run = MlflowClientWrapper().get_best_run_from_experiment(
+        experiment_name=run_name, metric="all_oof_BinaryAUROC"
     )
-    output_dir = Path() / "outputs" / run.name
+    eval_df = read_eval_df_from_disk(run_path)
+    eval_df = eval_df.with_columns(
+        [pl.col("y").cast(pl.Int64), pl.col("y_hat_prob").cast(pl.Float64)]
+    )
+    run_cfg = PsycopConfig(Config().from_disk(path=Path(run_path) / "config.cfg"))
+
+    output_dir = Path(run_path) / "outputs"
     output_dir.mkdir(exist_ok=True, parents=True)
-    single_run_facade(output_dir, run)
+    single_run_facade(output_dir, eval_df, run_cfg, mlflow_run)
