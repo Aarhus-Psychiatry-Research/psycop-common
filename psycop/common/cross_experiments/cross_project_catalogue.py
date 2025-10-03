@@ -25,7 +25,7 @@ class ModelCatalogue:
     def get_cfgs(self):
         return {k: v.get_cfg() for k, v in self.project_getters.items()}
 
-    def retrain_from_configs(
+    def retrain_and_test_from_configs(
         self,
         split_filter: Literal[
             "regional_data_filter", "outcomestratified_split_filter"
@@ -45,7 +45,7 @@ class ModelCatalogue:
 
             project_path = experiment_path + f"/{project}"
 
-            # if imported cfg is set to geographic split, start by removing region split-specific args
+            # if imported cfg is set to geographic split, start by removing geographic split-specific args
             if cfg['trainer']['training_preprocessing_pipeline']['*']['split_filter']['@preprocessing'] == "regional_data_filter":
                 cfg = (
                     cfg.rem("trainer.training_preprocessing_pipeline.*.split_filter.regional_move_df")
@@ -57,6 +57,7 @@ class ModelCatalogue:
                         "trainer.training_preprocessing_pipeline.*.split_filter.timestamp_cutoff_col_name")
                     )
                 
+            # mutate config paths and filter
             cfg = (
                 cfg.mut("logger.*.mlflow.experiment_name", experiment_name)
                 .mut("logger.*.disk_logger.run_path", project_path)
@@ -89,5 +90,5 @@ class ModelCatalogue:
 
 if __name__ == "__main__":
     model_catalogue = ModelCatalogue(projects=["CVD", "ECT", "Restraint"])
-    auc_rocs = model_catalogue.retrain_from_configs()
+    auc_rocs = model_catalogue.retrain_and_test_from_configs()
     print(auc_rocs)
