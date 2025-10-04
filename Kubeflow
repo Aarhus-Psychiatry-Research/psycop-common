@@ -1,4 +1,4 @@
-FROM kubeflownotebookswg/codeserver-python:v1.9.0
+FROM reg.base.dias.rm.dk/zephalon/codeserver-python:v1.9.1-1.0.2
 
 # Switch over to root for building the custom image
 USER root
