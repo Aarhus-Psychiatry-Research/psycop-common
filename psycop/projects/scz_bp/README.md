@@ -78,51 +78,27 @@ scz_bp/
 │   │   └──hparam_tuning/
 ```
 
-The main hyperparameter tuning experiments are named er no longer available on MLflow.
+The main hyperparameter tuning experiments are no longer available on MLflow.
 
 ### 4. Model evaluation
-Fourth, model evaluation is performed. The main models are retrained on the combined train+validation set and tested on the test set. Furthermore, models for evaluating temporal and geographic stability are trained and evaluated on the test set:
+Fourth, model evaluation is performed. The best performing predictor set on the training set was the predictor set only containing the 1000 TFIDF features. The congfig for the models on the test set can be found in:
 
 ```bash
 scz_bp/
 ├── model_training/
-│   └── evaluate_models_on_test_set/
-│   │   └── eval_random_split.py # reconfigure, retrain and evaluate main model
-│   │   └── eval_geographic_split.py # reconfigure, retrain and evaluate geographic stability (trained on east and west sites, evaluated on central sites)
-│   │   └── eval_temporal_splits.py # reconfigure, retrain and evaluate temporal stability
+│   └── config/
+│   │   └── test_set/
 ```
 
-The model evaluation experiments are named e.g. 'scz_bp-trunc-and-hp-{feature_set_name}-xgboost-no-lookbehind-filter' on MlFlow.
+#### Eval df
 
-#### Figures and eval_df
-
-The following script is used to produce all figures and tables for the article:
-
-```bash
-scz_bp/
-├── paper_outputs/
-│   └── single_run.py
-```
-
-The figures and plots are saved in the same folder as the eval_df generated from model retraining and evaluation on the test set:
+The eval_df generated from model retraining and evaluation on the test set can be found here:
 
 ```bash
 E:/shared_resources/scz_bp/
-├── eval_runs/
-│   └── scz_bp-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter_best_run_evaluated_on_test/
-│   │   └── figures/ # all figures and tables
-│   │   └── config.cfg # model config
-│   │   └── eval_df.parquet
-│   │   └── logs.log
-│   │   └── sklearn_pipe.pkl # full model sklearn pipeline
-│   └── scz_bp-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter_best_run_evaluated_on_geographic_test/
-│   │   └── figures/ # all figures and tables
-│   │   └── config.cfg # model config
-│   │   └── eval_df.parquet
-│   │   └── logs.log
-│   │   └── sklearn_pipe.pkl # full model sklearn pipeline
-│   └── * # similar structure for all the other experiments
-│   └── figures/ # all figures for the temporal stability analyses
+├── testing/
+│   └── config.cfg # this is the config file for the model run on only TFIDF predictors on the tests set
+│   └── eval_df.parquet # this is the resulting eval_df
 ```
 
 The evaluation dataframes are `polars.DataFrame` and have the following format:
