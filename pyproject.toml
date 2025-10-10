@@ -176,3 +176,7 @@ markers = [
   "pre_push_test: Tests run on push. Should be as minimal as possible to maintain fast push speeds.",
 ]
 norecursedirs = [".venv", "*.egg-info", ".git", ".tox"]
+
+[project.optional-dependencies]
+dev = ["pandas"]
+gpu = ["torch"]
