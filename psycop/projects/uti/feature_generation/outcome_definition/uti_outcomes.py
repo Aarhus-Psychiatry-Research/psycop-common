@@ -4,10 +4,8 @@
 
 import pandas as pd
 
-from psycop.common.feature_generation.loaders_2024.load_urine_samples import (
-    uti_positive_urine_samples,
-)
-from psycop.common.feature_generation.loaders_2024.load_uti_relevant_anitbiotics import (
+from psycop.common.feature_generation.loaders.load_urine_samples import uti_positive_urine_samples
+from psycop.common.feature_generation.loaders.load_uti_relevant_anitbiotics import (
     uti_relevant_antibiotics,
 )
 from psycop.common.global_utils.cache import shared_cache
@@ -78,4 +76,3 @@ def uti_relevant_antibiotics_outcomes() -> pd.DataFrame:
 
 if __name__ == "__main__":
     df = uti_outcomes()
-    print("Hi!")
