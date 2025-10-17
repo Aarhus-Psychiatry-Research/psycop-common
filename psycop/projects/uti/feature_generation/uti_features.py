@@ -28,12 +28,10 @@ from psycop.projects.uti.feature_generation.outcome_definition.uti_outcomes impo
     uti_relevant_antibiotics_administrations_outcome_timestamps,
 )
 
-TEXT_FILE_NAME = "text_tfidf_all_sfis_ngram_range_added_konklusion_12_max_df_09_min_df_2_max_features_750.parquet"
-
 
 def get_uti_project_info() -> ProjectInfo:
     return ProjectInfo(
-        project_name="uti", project_path=OVARTACI_SHARED_DIR / "uti" / "flattened_datasets"
+        project_name="uti", project_path=OVARTACI_SHARED_DIR / "uti"
     )
 
 
@@ -43,7 +41,7 @@ def _init_uti_predictor(
     fallback: float | int,
     aggregation_fns: Sequence[ts.aggregators.Aggregator],
     lookbehind_distances: Sequence[datetime.timedelta] = [
-        datetime.timedelta(days=i) for i in [1, 5]
+        datetime.timedelta(days=i) for i in [365]
     ],
     column_prefix: str = "pred_layer_{}",
     entity_id_col_name: str = "dw_ek_borger",
@@ -140,11 +138,11 @@ def uti_generate_features(
 ) -> pl.DataFrame | None:
     match outcomes:
         case "combined":
-            outcome_df = uti_outcomes(antibiotics_window)
+            outcome_df = uti_outcomes(antibiotics_window).assign(value=1)
         case "urine_samples":
-            outcome_df = uti_postive_urine_sample_outcome_timestamps()
+            outcome_df = uti_postive_urine_sample_outcome_timestamps().assign(value=1)
         case "antibiotics":
-            outcome_df = uti_relevant_antibiotics_administrations_outcome_timestamps()
+            outcome_df = uti_relevant_antibiotics_administrations_outcome_timestamps().assign(value=1)
 
     feature_layers = {
         "basic": [
@@ -174,21 +172,7 @@ def uti_generate_features(
                 fallback=0,
                 output_name="age",
             ),
-        ],
-        "layer_text": [
-            ts.PredictorSpec(
-                value_frame=ts.ValueFrame(
-                    init_df=pl.read_parquet(TEXT_EMBEDDINGS_DIR / TEXT_FILE_NAME).drop(
-                        "overskrift"
-                    ),
-                    entity_id_col_name="dw_ek_borger",
-                    value_timestamp_col_name="timestamp",
-                ),
-                lookbehind_distances=[datetime.timedelta(days=730)],
-                aggregators=[ts.MeanAggregator()],
-                fallback=np.nan,
-                column_prefix="pred_layer_text",
-            )
+            BooleanSpec(uti_relevant_antibiotics_administrations_outcome_timestamps),
         ],
     }
 
@@ -232,8 +216,6 @@ def uti_generate_features(
         step_size=datetime.timedelta(days=365),
     )
 
-    # Remove rows that follow the first outcome of 1 for each adm_uuid
-    # Remove x rows following a positive outcome within the same admission
 
     if save:
         feature_set_path = feature_set_dir / f"{feature_set_name}.parquet"
@@ -248,21 +230,19 @@ def uti_generate_features(
 if __name__ == "__main__":
     import coloredlogs
 
-    uti_pred_times().prediction_times
-
     coloredlogs.install(  # type: ignore
         level="INFO",
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
         datefmt="%Y/%m/%d %H:%M:%S",
         stream=sys.stdout,
     )
-    uti_generate_features(
-        outcomes="combined", lookahead_days=1, feature_set_name="uti_outcomes_full_definition_test2"
-    )
-    uti_generate_features(
-        outcomes="urine_samples", lookahead_days=1, feature_set_name="uti_outcomes_urine_samples_test"
-    )
 
     uti_generate_features(
-        outcomes="antibiotics", lookahead_days=1, feature_set_name="uti_outcomes_antibiotics"
+        outcomes="antibiotics", lookahead_days=3, feature_set_name="uti_outcomes_antibiotics"
+    )
+    uti_generate_features(
+        outcomes="combined", lookahead_days=3, feature_set_name="uti_outcomes_full_definition"
+    )
+    uti_generate_features(
+        outcomes="urine_samples", lookahead_days=3, feature_set_name="uti_outcomes_urine_samples"
     )

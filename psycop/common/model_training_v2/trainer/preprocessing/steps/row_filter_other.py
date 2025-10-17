@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import Literal
+from typing import Literal, Union
 
 import polars as pl
 
@@ -159,3 +159,55 @@ class ValueFilter(PresplitStep):
                 return input_df.filter(value_col < self.threshold_value)
             case "after-inclusive":
                 return input_df.filter(value_col >= self.threshold_value)
+
+
+@BaselineRegistry.preprocessing.register("value_in_window_filter")
+@dataclass
+class ValueInWindowFilter(PresplitStep):
+    """Filter rows by whether their a value in another column within a window is above above as certain threshold"""
+    n_days: int
+    entity_id_col_name: str
+    look_direction: Literal["ahead", "behind"]
+    timestamp_col_name: str
+    column_name: str
+    threshold_value: float
+    threshold_direction: Literal["higher-inclusive", "lower"]
+
+    def __post_init__(self):
+        self.look_distance = timedelta(days=self.n_days) # type: ignore
+
+    def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
+        # Ensure timestamp column is a datetime
+        df = input_df.with_columns(
+            pl.col(self.timestamp_col_name).cast(pl.Datetime)
+        )
+
+        # Define condition based on threshold direction
+        match self.threshold_direction:
+            case "higher-inclusive":
+                value_condition = pl.col(self.column_name) >= self.threshold_value
+            case  "lower":
+                value_condition = pl.col(self.column_name) < self.threshold_value
+
+        # For each entity id, mark whether there exists a value in window meeting condition
+        # Assume you have these grouping keys in your frame
+        group_keys = [self.entity_id_col_name]
+
+        # Join back to mark whether there's any event in the window
+        flagged = (
+            df.join_asof(
+                df.filter(value_condition),
+                on=self.timestamp_col_name,
+                by=group_keys,
+                strategy="backward" if self.look_direction == "behind" else "forward",
+                tolerance=pl.duration(days=self.look_distance.days), # type: ignore
+            )
+            .with_columns(
+                pl.col(f"{self.column_name}_right").is_not_null().alias("has_value_in_window")
+            )
+        )
+
+        # Keep only rows where there was *no* value above threshold in window
+        filtered_df = flagged.filter(~pl.col("has_value_in_window")).select(df.columns)
+
+        return filtered_df.lazy()
