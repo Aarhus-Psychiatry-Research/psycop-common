@@ -1,6 +1,7 @@
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import Literal, Union
+from typing import Dict, Literal, Union
 
 import polars as pl
 
@@ -161,53 +162,52 @@ class ValueFilter(PresplitStep):
                 return input_df.filter(value_col >= self.threshold_value)
 
 
-@BaselineRegistry.preprocessing.register("value_in_window_filter")
+@BaselineRegistry.preprocessing.register("cooldown_after_positive_filter")
 @dataclass
-class ValueInWindowFilter(PresplitStep):
-    """Filter rows by whether their a value in another column within a window is above above as certain threshold"""
-    n_days: int
-    entity_id_col_name: str
-    look_direction: Literal["ahead", "behind"]
-    timestamp_col_name: str
-    column_name: str
-    threshold_value: float
-    threshold_direction: Literal["higher-inclusive", "lower"]
+class CooldownAfterPositiveFilter(PresplitStep):
+    """
+    Filter rows by removing the next `n_cooldown_days` after a positive outcome
+    in each group defined by `group_by_cols`.
+    """
 
-    def __post_init__(self):
-        self.look_distance = timedelta(days=self.n_days) # type: ignore
+    n_cooldown_days: int
+    group_by_cols: Sequence[str]
+    timestamp_col_name: str
+    outcome_col_name: str
 
     def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
-        # Ensure timestamp column is a datetime
-        df = input_df.with_columns(
-            pl.col(self.timestamp_col_name).cast(pl.Datetime)
-        )
+        """
+        Keep rows in each group until and after the positive outcome,
+        then remove the next `n_cooldown_days` rows after each positive.
+        """
 
-        # Define condition based on threshold direction
-        match self.threshold_direction:
-            case "higher-inclusive":
-                value_condition = pl.col(self.column_name) >= self.threshold_value
-            case  "lower":
-                value_condition = pl.col(self.column_name) < self.threshold_value
+        # Step 1: Sort rows within each group by timestamp
+        df = input_df.sort(self.group_by_cols + [self.timestamp_col_name]) # type: ignore
 
-        # For each entity id, mark whether there exists a value in window meeting condition
-        # Assume you have these grouping keys in your frame
-        group_keys = [self.entity_id_col_name]
+        # Step 2: Add helper columns
+        df = df.with_columns([
+            (pl.col(self.outcome_col_name) == 1).cast(pl.Int64).alias("event_flag"),
+            pl.arange(0, pl.count(), 1).over(self.group_by_cols).alias("row_idx")
+        ])
 
-        # Join back to mark whether there's any event in the window
-        flagged = (
-            df.join_asof(
-                df.filter(value_condition),
-                on=self.timestamp_col_name,
-                by=group_keys,
-                strategy="backward" if self.look_direction == "behind" else "forward",
-                tolerance=pl.duration(days=self.look_distance.days), # type: ignore
-            )
-            .with_columns(
-                pl.col(f"{self.column_name}_right").is_not_null().alias("has_value_in_window")
-            )
-        )
+        # Step 3: Define the per-group cooldown marking function
+        def mark_cooldown(group: pl.DataFrame) -> pl.DataFrame:
+            event_rows = group.filter(pl.col("event_flag") == 1)["row_idx"].to_list()
+            mask = [False] * len(group)
+            for r in event_rows:
+                for offset in range(1, self.n_cooldown_days + 1):
+                    if r + offset < len(mask):
+                        mask[r + offset] = True
+            # Keep only rows NOT in cooldown
+            return group.filter(~pl.Series(mask))
 
-        # Keep only rows where there was *no* value above threshold in window
-        filtered_df = flagged.filter(~pl.col("has_value_in_window")).select(df.columns)
 
-        return filtered_df.lazy()
+        schema: Dict[str, pl.DataType] = {name: dtype for name, dtype in input_df.schema.items()}
+
+        # Step 5: Apply per-group cooldown
+        filtered = df.groupby(self.group_by_cols).apply(mark_cooldown, schema=schema)
+
+        # Step 6: Drop helper columns
+        cleaned = filtered.collect().drop(["event_flag", "row_idx"])
+        
+        return cleaned.lazy()
