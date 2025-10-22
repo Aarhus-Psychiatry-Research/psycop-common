@@ -1,4 +1,4 @@
-"""Main feature generation."""
+"""Main script for defining features/predictors used for predicting UVI"""
 
 import datetime
 import logging
@@ -9,7 +9,6 @@ from typing import Callable, Literal
 
 import pandas as pd
 import polars as pl
-import numpy as np
 import timeseriesflattener as ts
 from timeseriesflattener.aggregators import HasValuesAggregator
 
@@ -18,7 +17,7 @@ from psycop.common.feature_generation.application_modules.flatten_dataset import
 )
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
-from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR, TEXT_EMBEDDINGS_DIR
+from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.projects.uti.feature_generation.cohort_definition.uti_cohort_definer import (
     uti_pred_times,
 )
@@ -30,18 +29,17 @@ from psycop.projects.uti.feature_generation.outcome_definition.uti_outcomes impo
 
 
 def get_uti_project_info() -> ProjectInfo:
-    return ProjectInfo(
-        project_name="uti", project_path=OVARTACI_SHARED_DIR / "uti"
-    )
+    return ProjectInfo(project_name="uti", project_path=OVARTACI_SHARED_DIR / "uti")
 
 
+# Lots of code for specifying schemas and object - not too relevant
 def _init_uti_predictor(
     df_loader: Callable[[], pd.DataFrame],
     layer: str,
     fallback: float | int,
     aggregation_fns: Sequence[ts.aggregators.Aggregator],
     lookbehind_distances: Sequence[datetime.timedelta] = [
-        datetime.timedelta(days=i) for i in [365]
+        datetime.timedelta(days=i) for i in [30, 365]
     ],
     column_prefix: str = "pred_layer_{}",
     entity_id_col_name: str = "dw_ek_borger",
@@ -70,6 +68,9 @@ class ContinuousSpec:
     loader: Callable[[], pd.DataFrame]
     aggregation_fns: Sequence[ts.aggregators.Aggregator]
     fallback: float
+    lookbehind_distances: Sequence[datetime.timedelta] = [
+        datetime.timedelta(days=i) for i in [30, 365]
+    ]
     name_overwrite: str | None = None
 
 
@@ -78,6 +79,9 @@ class BooleanSpec:
     loader: Callable[[], pd.DataFrame]
     aggregation_fns: Sequence[ts.aggregators.Aggregator] = (HasValuesAggregator(),)
     fallback: float = 0.0
+    lookbehind_distances: Sequence[datetime.timedelta] = [
+        datetime.timedelta(days=i) for i in [30, 365]
+    ]
     name_overwrite: str | None = None
 
 
@@ -86,6 +90,9 @@ class CategoricalSpec:
     loader: Callable[[], pd.DataFrame]
     aggregation_fns: Sequence[ts.aggregators.Aggregator]
     fallback: float
+    lookbehind_distances: Sequence[datetime.timedelta] = [
+        datetime.timedelta(days=i) for i in [30, 365]
+    ]
     name_overwrite: str | None = None
 
 
@@ -102,6 +109,7 @@ def _pair_to_spec(pair: LayerSpecPair) -> AnySpec:
                 df_loader=pair.spec.loader,
                 layer=pair.layer,
                 fallback=pair.spec.fallback,
+                lookbehind_distances=pair.spec.lookbehind_distances,
                 aggregation_fns=pair.spec.aggregation_fns,
                 name_overwrite=pair.spec.name_overwrite,
             )
@@ -110,6 +118,7 @@ def _pair_to_spec(pair: LayerSpecPair) -> AnySpec:
                 df_loader=pair.spec.loader,
                 layer=pair.layer,
                 fallback=pair.spec.fallback,
+                lookbehind_distances=pair.spec.lookbehind_distances,
                 aggregation_fns=pair.spec.aggregation_fns,
                 name_overwrite=pair.spec.name_overwrite,
             )
@@ -118,6 +127,7 @@ def _pair_to_spec(pair: LayerSpecPair) -> AnySpec:
                 df_loader=pair.spec.loader,
                 layer=pair.layer,
                 fallback=pair.spec.fallback,
+                lookbehind_distances=pair.spec.lookbehind_distances,
                 aggregation_fns=pair.spec.aggregation_fns,
                 name_overwrite=pair.spec.name_overwrite,
             )
@@ -125,27 +135,29 @@ def _pair_to_spec(pair: LayerSpecPair) -> AnySpec:
             return pair.spec
 
 
+# Main function for generating features
 def uti_generate_features(
     outcomes: Literal["combined", "urine_samples", "antibiotics"] = "combined",
-    lookahead_days: int = 3,
-    feature_set_name: str = "uti_outcomes_full_definition",
+    lookahead_days: int = 2,
+    feature_set_name: str = "uti_feature_set",
     antibiotics_window: tuple[int, int] = (-1, 5),
-    add_feature_layers: dict[
-        str, list[ts.PredictorSpec | ts.OutcomeSpec | ts.StaticSpec | ts.TimeDeltaSpec]
-    ]
-    | None = None,
     save: bool = True,
 ) -> pl.DataFrame | None:
+    # Loads the specified outcomes
     match outcomes:
         case "combined":
             outcome_df = uti_outcomes(antibiotics_window).assign(value=1)
         case "urine_samples":
             outcome_df = uti_postive_urine_sample_outcome_timestamps().assign(value=1)
         case "antibiotics":
-            outcome_df = uti_relevant_antibiotics_administrations_outcome_timestamps().assign(value=1)
+            outcome_df = uti_relevant_antibiotics_administrations_outcome_timestamps().assign(
+                value=1
+            )
 
+    # Define features
     feature_layers = {
         "basic": [
+            # Add outcome
             ts.OutcomeSpec(
                 value_frame=ts.ValueFrame(
                     init_df=outcome_df,
@@ -157,11 +169,13 @@ def uti_generate_features(
                 fallback=0,
                 column_prefix="outc_uti",
             ),
+            # Add sex feature
             ts.StaticSpec(
                 value_frame=ts.StaticFrame(init_df=sex_female(), entity_id_col_name="dw_ek_borger"),
                 fallback=0,
                 column_prefix="pred",
             ),
+            # Add age feature (in days)
             ts.TimeDeltaSpec(
                 init_frame=ts.TimestampValueFrame(
                     birthdays(),
@@ -172,14 +186,15 @@ def uti_generate_features(
                 fallback=0,
                 output_name="age",
             ),
-            BooleanSpec(uti_relevant_antibiotics_administrations_outcome_timestamps),
-        ],
+            # Add earlier uti-relevant antibiotics as a feature/preictors. Creates two seperate features looking back 30 and 365 days from the prediction timestamp. Features are coded as boolean (1=has been amdinistered antibiotics in this time window, 0=has not)
+            BooleanSpec(
+                uti_relevant_antibiotics_administrations_outcome_timestamps,
+                lookbehind_distances=[datetime.timedelta(days=i) for i in [30, 365]],
+            ),
+        ]
     }
 
-    if add_feature_layers:
-        for layer_name, layer_specs in add_feature_layers.items():
-            feature_layers[layer_name] = layer_specs  # type: ignore
-
+    # Process feature specifications
     layer_spec_pairs = [
         LayerSpecPair(layer, spec)
         for layer, spec_list in feature_layers.items()
@@ -207,8 +222,10 @@ def uti_generate_features(
                 print(f"Folder '{feature_set_dir}' will be overwritten.")
                 break
 
+    # Create a directory for saving feature set
     feature_set_dir.mkdir(parents=True, exist_ok=True)
 
+    # Create feature set (read more about the package used for this process here: https://github.com/Aarhus-Psychiatry-Research/timeseriesflattener)
     flattened_df = create_flattened_dataset(
         feature_specs=specs,
         prediction_times_frame=uti_pred_times().prediction_times,
@@ -216,7 +233,7 @@ def uti_generate_features(
         step_size=datetime.timedelta(days=365),
     )
 
-
+    # Save to disk
     if save:
         feature_set_path = feature_set_dir / f"{feature_set_name}.parquet"
 
@@ -237,12 +254,9 @@ if __name__ == "__main__":
         stream=sys.stdout,
     )
 
+    # Create feature set using antibitiotics-only outcome definition and looking 48 hours ahead
     uti_generate_features(
-        outcomes="antibiotics", lookahead_days=3, feature_set_name="uti_feature_set_antibiotics_outcome_definition"
+        outcomes="antibiotics",
+        lookahead_days=2,
+        feature_set_name="uti_feature_set_antibiotics_outcome_definition",
     )
-    # uti_generate_features(
-    #     outcomes="combined", lookahead_days=3, feature_set_name="uti_outcomes_full_definition"
-    # )
-    # uti_generate_features(
-    #     outcomes="urine_samples", lookahead_days=3, feature_set_name="uti_outcomes_urine_samples"
-    # )

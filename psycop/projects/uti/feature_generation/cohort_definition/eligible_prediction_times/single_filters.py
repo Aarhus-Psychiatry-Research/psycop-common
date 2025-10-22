@@ -19,11 +19,13 @@ from psycop.projects.uti.feature_generation.cohort_definition.eligible_predictio
 )
 
 
+# Filter for omitting the first prediction timestamp of each admission (day 1), as people may be admitted later than the set timestamp and because there is to little data
 class UTIExcludeFirstDayFilter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         return df.filter(pl.col("pred_adm_day_count") != 1)
 
 
+# Filters aways admissions that end after Nov. 2021 or has no end timestamp
 class UTIAdmissionFilter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         return df.filter(
@@ -32,34 +34,39 @@ class UTIAdmissionFilter(PredictionTimeFilter):
         )
 
 
+# Keeps only contacts of type 'Indlagt'
 class UTIAdmissionTypeFilter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         return df.filter(pl.col("pt_type") == ADMISSION_TYPE)
 
 
+# Keep only admissions in psychiatry
 class UTIShakCodeFilter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         return df.filter(pl.col("shakkode_ansvarlig").cast(pl.Utf8).str.slice(0, 4) != "6600")
 
 
+# Keep only admisssions after Dec. 2012
 class UTIMinDateFilter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         after_df = df.filter(pl.col("timestamp") > MIN_DATE)
         return after_df
 
 
+# Keep only admissions for patients 18 years or old
 class UTIMinAgeFilter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         return df.filter(pl.col("alder_start") >= MIN_AGE)
 
 
+# Only add patients who move to the region in the dataset interval after 30 days.
 class UTIWashoutMove(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         msg.info("Applying filter")
         not_within_two_years_from_move = QuarantineFilter(
             entity_id_col_name="dw_ek_borger",
             quarantine_timestamps_loader=MoveIntoRMBaselineLoader(),
-            quarantine_interval_days=730,
+            quarantine_interval_days=30,
             timestamp_col_name="timestamp",
         ).apply(df)
 

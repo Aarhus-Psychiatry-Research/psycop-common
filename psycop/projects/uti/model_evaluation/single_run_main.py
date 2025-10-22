@@ -1,3 +1,4 @@
+# Main script for generating main evaluation figure (AUROC plot and confusion matrix)
 import logging
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -5,15 +6,13 @@ from typing import TYPE_CHECKING
 import patchworklib as pw
 import polars as pl
 
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame
 from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
+from psycop.projects.restraint.evaluation.utils import read_eval_df_from_disk
 from psycop.projects.uti.model_evaluation.auroc.model import auroc_model
 from psycop.projects.uti.model_evaluation.auroc.view import AUROCPlot
 from psycop.projects.uti.model_evaluation.confusion_matrix.model import confusion_matrix_model
 from psycop.projects.uti.model_evaluation.confusion_matrix.view import ConfusionMatrixPlot
 from psycop.projects.uti.model_evaluation.single_run_artifact import SingleRunPlot
-from psycop.projects.restraint.evaluation.utils import read_eval_df_from_disk
-from psycop.projects.scz_bp.evaluation.configs import COLORS
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -24,12 +23,8 @@ log = logging.getLogger(__name__)
 
 
 def single_run_main(
-    eval_df: pl.DataFrame,
-    desired_positive_rate: float,
-    outcome_label: str,
-    first_letter_index: int,
+    eval_df: pl.DataFrame, desired_positive_rate: float, outcome_label: str, first_letter_index: int
 ) -> pw.Bricks:
-
     plots: Sequence[SingleRunPlot] = [
         AUROCPlot(auroc_model(eval_df=eval_df, n_bootstraps=5)),
         ConfusionMatrixPlot(
@@ -62,20 +57,15 @@ if __name__ == "__main__":
     )
     MAIN_METRIC = "all_oof_BinaryAUROC"
 
-    experiment = f"uti_hparam_test_run"
-    experiment_path = (
-        f"E:/shared_resources/uti/eval_runs/{experiment}_best_run_evaluated_on_test"
-    )
+    experiment = "uti_hparam_test_run"
+    experiment_path = f"E:/shared_resources/uti/eval_runs/{experiment}_best_run_evaluated_on_test"
     experiment_df = read_eval_df_from_disk(experiment_path)
 
     save_dir = Path(experiment_path + "/figures")
     save_dir.mkdir(parents=True, exist_ok=True)
 
     figure = single_run_main(
-        eval_df=experiment_df,
-        desired_positive_rate=0.02,
-        outcome_label="UTI",
-        first_letter_index=0,
+        eval_df=experiment_df, desired_positive_rate=0.02, outcome_label="UTI", first_letter_index=0
     )
 
     figure.savefig(save_dir / "uti_main_plot.png")

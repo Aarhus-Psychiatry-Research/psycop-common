@@ -1,3 +1,4 @@
+# Script for running hyperparametertuning from baseline configuration
 from pathlib import Path
 
 from psycop.common.model_training_v2.config.config_utils import PsycopConfig
@@ -8,19 +9,16 @@ from psycop.common.model_training_v2.hyperparameter_suggester.optuna_hyperparame
 
 
 def hyperparameter_search(cfg: PsycopConfig):
-    
     cfg.mut(
         "trainer.task.task_pipe.sklearn_pipe.*.model",
         {"@estimator_steps_suggesters": "xgboost_suggester"},
     )
 
-    cfg.mut(
-        "logger.*.mlflow.experiment_name", "uti_hparam_test_run",
-    )
+    cfg.mut("logger.*.mlflow.experiment_name", "uti_hparam_test_run")
 
     cfg.mut(
         "logger.*.disk_logger.run_path",
-        f"E:/shared_resources/ect/model_training/uti_hparam_test_run",
+        "E:/shared_resources/ect/model_training/uti_hparam_test_run",
     )
 
     OptunaHyperParameterOptimization().from_cfg(
