@@ -90,9 +90,6 @@ def eval_random_split_test_set(
 if __name__ == "__main__":
     populate_baseline_registry()
 
-
     eval_random_split_test_set(
-        experiment_name=f"uti_hparam_test_run",
-        train_splits=["train", "val"],
-        test_split=["test"],
+        experiment_name="uti_hparam_test_run", train_splits=["train", "val"], test_split=["test"]
     )

@@ -5,7 +5,9 @@ from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 
 
 def load_admissions_discharge_timestamps() -> pd.DataFrame:
-    return sql_load("SELECT * FROM fct.[FOR_kohorte_indhold_pt_journal_psyk_somatik_inkl_2021_feb2022]")
+    return sql_load(
+        "SELECT * FROM fct.[FOR_kohorte_indhold_pt_journal_psyk_somatik_inkl_2021_feb2022]"
+    )
 
 
 def concat_readmissions(
@@ -146,14 +148,15 @@ def explode_admissions(df: pl.LazyFrame) -> pl.LazyFrame:
 
     df_concat = pd.concat([unpack_adm_days(idx, row) for idx, row in df_.iterrows()])  # type: ignore
 
-    df_concat["adm_uuid"] = df_concat["dw_ek_borger"].astype(str) + "_" + df_concat["timestamp"].astype(str)
+    df_concat["adm_uuid"] = (
+        df_concat["dw_ek_borger"].astype(str) + "_" + df_concat["timestamp"].astype(str)
+    )
 
     df_concat = df_concat[["dw_ek_borger", "adm_uuid", "pred_time", "pred_adm_day_count"]]
 
     df_concat = df_concat.rename(columns={"pred_time": "timestamp"})
 
     return pl.LazyFrame(df_concat)
-
 
 
 def unpack_adm_days_vectorized(df: pd.DataFrame, pred_hour: int = 6) -> pd.DataFrame:
@@ -173,9 +176,7 @@ def unpack_adm_days_vectorized(df: pd.DataFrame, pred_hour: int = 6) -> pd.DataF
     df_long["adm_start"] = df_long["timestamp"]
 
     # Counter for day within admission
-    df_long["pred_adm_day_count"] = (
-        df_long.groupby("timestamp").cumcount() + 1
-    )
+    df_long["pred_adm_day_count"] = df_long.groupby("timestamp").cumcount() + 1
 
     # Prediction time = admission day + pred_hour
     df_long["pred_time"] = df_long["admission_days"] + pd.Timedelta(hours=pred_hour)
@@ -208,9 +209,7 @@ def explode_admissions_vectorized(df: pl.LazyFrame, pred_hour: int = 6) -> pl.La
 
     # Construct adm_uuid
     df_expanded["adm_uuid"] = (
-        df_expanded["dw_ek_borger"].astype(str)
-        + "_"
-        + df_expanded["timestamp"].astype(str)
+        df_expanded["dw_ek_borger"].astype(str) + "_" + df_expanded["timestamp"].astype(str)
     )
 
     df_expanded = df_expanded[

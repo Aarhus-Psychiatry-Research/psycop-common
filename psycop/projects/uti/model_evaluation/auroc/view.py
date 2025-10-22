@@ -3,9 +3,9 @@ from dataclasses import dataclass
 
 import plotnine as pn
 
+from psycop.projects.t2d.paper_outputs.config import THEME
 from psycop.projects.uti.model_evaluation.auroc.model import AUROC
 from psycop.projects.uti.model_evaluation.single_run_artifact import SingleRunPlot
-from psycop.projects.t2d.paper_outputs.config import THEME
 
 
 @dataclass(frozen=True)

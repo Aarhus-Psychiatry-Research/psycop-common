@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import Dict, Literal, Union
+from typing import Literal
 
 import polars as pl
 
@@ -182,13 +182,15 @@ class CooldownAfterPositiveFilter(PresplitStep):
         """
 
         # Step 1: Sort rows within each group by timestamp
-        df = input_df.sort(self.group_by_cols + [self.timestamp_col_name]) # type: ignore
+        df = input_df.sort([*self.group_by_cols, self.timestamp_col_name])  # type: ignore
 
         # Step 2: Add helper columns
-        df = df.with_columns([
-            (pl.col(self.outcome_col_name) == 1).cast(pl.Int64).alias("event_flag"),
-            pl.arange(0, pl.count(), 1).over(self.group_by_cols).alias("row_idx")
-        ])
+        df = df.with_columns(
+            [
+                (pl.col(self.outcome_col_name) == 1).cast(pl.Int64).alias("event_flag"),
+                pl.arange(0, pl.count(), 1).over(self.group_by_cols).alias("row_idx"),
+            ]
+        )
 
         # Step 3: Define the per-group cooldown marking function
         def mark_cooldown(group: pl.DataFrame) -> pl.DataFrame:
@@ -201,13 +203,12 @@ class CooldownAfterPositiveFilter(PresplitStep):
             # Keep only rows NOT in cooldown
             return group.filter(~pl.Series(mask))
 
-
-        schema: Dict[str, pl.DataType] = {name: dtype for name, dtype in input_df.schema.items()}
+        schema: dict[str, pl.DataType] = dict(input_df.schema.items())
 
         # Step 5: Apply per-group cooldown
         filtered = df.groupby(self.group_by_cols).apply(mark_cooldown, schema=schema)
 
         # Step 6: Drop helper columns
         cleaned = filtered.collect().drop(["event_flag", "row_idx"])
-        
+
         return cleaned.lazy()
