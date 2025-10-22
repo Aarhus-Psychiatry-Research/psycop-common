@@ -227,3 +227,7 @@ def uti_relevant_antibiotics(
         administration_route=administration_route,
         administration_method=administration_method,
     )
+
+if __name__ == "__main__":
+    uti_relevant_antibiotics(n_rows=1000)
+    print('Done!')

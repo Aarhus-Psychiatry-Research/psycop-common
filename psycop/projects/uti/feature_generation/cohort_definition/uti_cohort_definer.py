@@ -38,7 +38,7 @@ class UTICohortDefiner(CohortDefiner):
     def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle:
         unfiltered_prediction_times = pl.LazyFrame(
             pl.from_pandas(
-                load_admissions_discharge_timestamps()[0:500].rename(
+                load_admissions_discharge_timestamps()[0:40000].rename(
                     columns={"datotid_start": "timestamp"}
                 )
             )

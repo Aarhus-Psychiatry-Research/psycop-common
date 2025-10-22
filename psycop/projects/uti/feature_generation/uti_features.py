@@ -238,11 +238,11 @@ if __name__ == "__main__":
     )
 
     uti_generate_features(
-        outcomes="antibiotics", lookahead_days=3, feature_set_name="uti_outcomes_antibiotics"
+        outcomes="antibiotics", lookahead_days=3, feature_set_name="uti_feature_set_antibiotics_outcome_definition"
     )
-    uti_generate_features(
-        outcomes="combined", lookahead_days=3, feature_set_name="uti_outcomes_full_definition"
-    )
-    uti_generate_features(
-        outcomes="urine_samples", lookahead_days=3, feature_set_name="uti_outcomes_urine_samples"
-    )
+    # uti_generate_features(
+    #     outcomes="combined", lookahead_days=3, feature_set_name="uti_outcomes_full_definition"
+    # )
+    # uti_generate_features(
+    #     outcomes="urine_samples", lookahead_days=3, feature_set_name="uti_outcomes_urine_samples"
+    # )
