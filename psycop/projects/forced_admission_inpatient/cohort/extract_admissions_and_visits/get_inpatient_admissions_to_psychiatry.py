@@ -22,7 +22,7 @@ def get_admissions_to_psychiatry() -> pd.DataFrame:
     sql += "WHERE datotid_start > '2012-01-01' AND pt_type = 'Indlagt'"
     sql += "AND datotid_start IS NOT NULL AND datotid_slut IS NOT NULL;"
 
-    df = pd.DataFrame(sql_load(sql, chunksize=None))  # type: ignore
+    df = pd.DataFrame(sql_load(sql))  # type: ignore
 
     df[["datotid_start", "datotid_slut"]] = df[["datotid_start", "datotid_slut"]].apply(
         pd.to_datetime
