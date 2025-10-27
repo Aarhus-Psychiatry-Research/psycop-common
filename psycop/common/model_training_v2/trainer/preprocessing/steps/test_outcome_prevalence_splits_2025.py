@@ -82,10 +82,12 @@ if __name__ == "__main__":
     for outcome_name, (cohort_df, outcome_df) in outcome_cohort_pairs.items():
         print(f"\n=== PROCESSING OUTCOME: {outcome_name} ===")
 
+        cohort_df_2013 = cohort_df[cohort_df["timestamp"] >= "2013-01-01"]
+
         # Clean & deduplicate cohort and outcome
-        cohort_df_unique = cohort_df.drop_duplicates(subset=["dw_ek_borger"], keep="first").drop(
-            columns=["timestamp"], errors="ignore"
-        )
+        cohort_df_unique = cohort_df_2013.drop_duplicates(
+            subset=["dw_ek_borger"], keep="first"
+        ).drop(columns=["timestamp"], errors="ignore")
         outcome_unique = outcome_df.drop_duplicates(subset=["dw_ek_borger"], keep="first").drop(
             columns=["timestamp"], errors="ignore"
         )
