@@ -23,6 +23,8 @@ if __name__ == "__main__":
     cohort_df = add_only_patients_with_schizo().to_pandas()
     outcome_df = combine_structured_and_text_outcome()
 
+    cohort_df = cohort_df[cohort_df["timestamp"] >= "2013-01-01"]
+
     cohort_df = cohort_df.drop_duplicates(subset=["dw_ek_borger"], keep="first").drop(
         columns="timestamp"
     )
