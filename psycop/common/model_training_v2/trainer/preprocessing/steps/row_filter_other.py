@@ -166,8 +166,8 @@ class ValueFilter(PresplitStep):
 @dataclass
 class CooldownAfterPositiveFilter(PresplitStep):
     """
-    Filter rows by removing the next `n_cooldown_days` after a positive outcome
-    in each group defined by `group_by_cols`.
+    Filter rows by removing any that occur within `n_cooldown_days` after
+    a positive event (outcome==1) within each group.
     """
 
     n_cooldown_days: int
@@ -176,39 +176,42 @@ class CooldownAfterPositiveFilter(PresplitStep):
     outcome_col_name: str
 
     def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
-        """
-        Keep rows in each group until and after the positive outcome,
-        then remove the next `n_cooldown_days` rows after each positive.
-        """
-
         # Step 1: Sort rows within each group by timestamp
         df = input_df.sort([*self.group_by_cols, self.timestamp_col_name])  # type: ignore
 
-        # Step 2: Add helper columns
+        # Step 2: Mark positive events
+        df = df.with_columns((pl.col(self.outcome_col_name) == 1).alias("event_flag"))
+
+        # Step 3: Find most recent event timestamp for each row in its group
         df = df.with_columns(
-            [
-                (pl.col(self.outcome_col_name) == 1).cast(pl.Int64).alias("event_flag"),
-                pl.arange(0, pl.count(), 1).over(self.group_by_cols).alias("row_idx"),
-            ]
+            pl.when(pl.col("event_flag"))
+            .then(pl.col(self.timestamp_col_name))
+            .otherwise(None)
+            .alias("event_time")
         )
 
-        # Step 3: Define the per-group cooldown marking function
-        def mark_cooldown(group: pl.DataFrame) -> pl.DataFrame:
-            event_rows = group.filter(pl.col("event_flag") == 1)["row_idx"].to_list()
-            mask = [False] * len(group)
-            for r in event_rows:
-                for offset in range(1, self.n_cooldown_days + 1):
-                    if r + offset < len(mask):
-                        mask[r + offset] = True
-            # Keep only rows NOT in cooldown
-            return group.filter(~pl.Series(mask))
+        # Forward-fill the last event timestamp within each group
+        df = df.with_columns(pl.col("event_time").forward_fill().over(self.group_by_cols))
 
-        schema: dict[str, pl.DataType] = dict(input_df.schema.items())
+        # Step 4: Compute days since last event
+        df = df.with_columns(
+            (
+                (pl.col(self.timestamp_col_name) - pl.col("event_time"))
+                .dt.total_days()
+                .alias("days_since_event")
+            )
+        )
 
-        # Step 5: Apply per-group cooldown
-        filtered = df.groupby(self.group_by_cols).apply(mark_cooldown, schema=schema)
+        # Step 5: Filter out rows within cooldown period AFTER an event
+        # (Exclude the event row itself from cooldown)
+        df = df.filter(
+            (pl.col("days_since_event").is_null())  # before first event
+            | (pl.col("days_since_event") > self.n_cooldown_days)
+            | (pl.col("days_since_event") < 0)  # safeguard in case of time misordering
+            | (pl.col("event_flag"))  # keep the event itself
+        )
 
         # Step 6: Drop helper columns
-        cleaned = filtered.collect().drop(["event_flag", "row_idx"])
+        df = df.drop(["event_flag", "event_time", "days_since_event"])
 
-        return cleaned.lazy()
+        return df
