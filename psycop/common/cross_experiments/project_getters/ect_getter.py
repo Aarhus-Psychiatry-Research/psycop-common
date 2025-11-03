@@ -8,6 +8,8 @@ from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 
 
 class ECTGetter(Getter):
+    predicted_positive_rate: float = 0.02
+
     @staticmethod
     def get_eval_df() -> pd.DataFrame:
         eval_df_path = "E:/shared_resources/ect/eval_runs/ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter_best_run_evaluated_on_test/eval_df.parquet"
