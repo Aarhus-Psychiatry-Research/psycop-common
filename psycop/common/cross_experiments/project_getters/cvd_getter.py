@@ -8,6 +8,8 @@ from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 
 
 class CVDGetter(Getter):
+    predicted_positive_rate: float = 0.05
+
     @staticmethod
     def get_eval_df() -> pd.DataFrame:
         experiment = "CVD-hyperparam-tuning-layer-2-xgboost-disk-logged"
