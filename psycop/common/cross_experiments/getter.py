@@ -6,6 +6,8 @@ from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 
 
 class Getter(ABC):
+    predicted_positive_rate: float
+
     @staticmethod
     @abstractmethod
     def get_eval_df() -> pd.DataFrame: ...
