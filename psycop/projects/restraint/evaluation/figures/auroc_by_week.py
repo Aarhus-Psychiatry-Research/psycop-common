@@ -76,6 +76,7 @@ def auroc_by_weekday_model(df: pl.DataFrame) -> pd.DataFrame:
             y_hat_probs=eval_df["y_hat_prob"],
             timestamps=eval_df["timestamp"],
             bin_period="D",
+            stratified=True,
         )
     )
 

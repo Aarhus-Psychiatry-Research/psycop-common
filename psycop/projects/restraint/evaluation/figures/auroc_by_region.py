@@ -9,7 +9,7 @@ from psycop.common.model_training_v2.trainer.preprocessing.steps.geographical_sp
     add_shak_to_region_mapping,
     load_shak_to_location_mapping,
 )
-from psycop.projects.cvd.model_evaluation.single_run.auroc_by.auroc_by_model import auroc_by_model
+from psycop.projects.restraint.utils.auroc_by_model import auroc_by_model
 from psycop.projects.restraint.evaluation.utils import (
     parse_dw_ek_borger_from_uuid,
     parse_timestamp_from_uuid,
@@ -59,7 +59,7 @@ def plotnine_auroc_by_region(df: pd.DataFrame, title: str = "AUROC by location")
             dpi=300,
         )
         + pn.scale_x_discrete()
-        + pn.scale_fill_manual(values=["#DDCC77", "#DDCC77", "#DDCC77"])
+        + pn.scale_fill_manual(values=["#44AA99", "#CC6677", "#DDCC77"])
     )
 
     if "ci_lower" in df.columns:
@@ -110,6 +110,7 @@ def auroc_by_region_model(df: pl.DataFrame) -> pd.DataFrame:
             y_hat_probs=eval_df["y_hat_prob"],
             input_name="region",
             bin_continuous_input=False,
+            stratified=True,
         )
     )
 

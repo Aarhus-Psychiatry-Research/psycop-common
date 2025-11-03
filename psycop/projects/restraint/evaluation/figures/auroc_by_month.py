@@ -21,8 +21,8 @@ def plotnine_auroc_by_month(
         pn.ggplot(df, pn.aes(x="time_bin", y="auroc"))
         + pn.geom_bar(pn.aes(x="time_bin", y="proportion_of_n", fill="time_bin"), stat="identity")
         + pn.geom_path(group=1, size=1)
-        + pn.labs(x="Month", y="AUROC", title=title)
-        + pn.ylim(0, 1)
+        + pn.labs(x="Month of the year", y="AUROC", title=title)
+        + pn.ylim(0, 1.01)
         + pn.theme_minimal()
         + pn.geom_text(
             pn.aes(x="time_bin", y="proportion_of_n", fill="time_bin", label="percentage_of_n"),
@@ -32,15 +32,14 @@ def plotnine_auroc_by_month(
         )
         + pn.geom_text(
             pn.aes(x="time_bin", y="ci_upper", label="auroc"),
-            nudge_y=0.01,
+            nudge_y=0.001,
             va="bottom",
             format_string="{:.3f}",
         )
         + pn.theme(
-            axis_text_x=pn.element_text(size=15, rotation=45),
+            axis_text_x=pn.element_text(size=15, rotation=45, hjust=-1),
             axis_text_y=pn.element_text(size=15),
             panel_grid_minor=pn.element_blank(),
-            text=(pn.element_text(family="Times New Roman")),
             legend_position="none",
             axis_title=pn.element_text(size=22),
             plot_title=pn.element_text(size=30, ha="center"),
@@ -81,6 +80,7 @@ def auroc_by_month_model(df: pl.DataFrame) -> pd.DataFrame:
             y_hat_probs=eval_df["y_hat_prob"],
             timestamps=eval_df["timestamp"],
             bin_period="M",
+            stratified=True,
         )
     )
 

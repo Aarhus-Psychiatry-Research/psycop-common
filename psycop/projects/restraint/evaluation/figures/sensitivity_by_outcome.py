@@ -19,7 +19,7 @@ from psycop.projects.restraint.feature_generation.modules.loaders.load_restraint
 
 
 def plotnine_sensitivity_by_outcome(
-    df: pd.DataFrame, title: str = "Sensitivity by Outcome"
+    df: pd.DataFrame, title: str = "Sensitivity by restraint type"
 ) -> pn.ggplot:
     df["proportion_of_n"] = df["n_in_bin"] / df["n_in_bin"].sum()
 
@@ -28,6 +28,12 @@ def plotnine_sensitivity_by_outcome(
         + pn.geom_bar(pn.aes(fill="type"), stat="identity")
         + pn.labs(x="Restraint type", y="Sensitivity", title=title)
         # + pn.ylim(0, 0.8)
+        + pn.geom_text(
+            pn.aes(x="type", y="ci_upper", label="sensitivity"),
+            nudge_y=0.01,
+            va="bottom",
+            format_string="{:.3f}",
+        )
         + pn.theme_minimal()
         + pn.theme(
             axis_text_x=pn.element_text(size=15),
@@ -39,7 +45,7 @@ def plotnine_sensitivity_by_outcome(
             dpi=300,  # figure_size=(4, 5),
         )
         + pn.scale_x_discrete()
-        + pn.scale_fill_manual(values=["#669BBC", "#A8C686", "#F3A712"])
+        + pn.scale_fill_manual(values=["#44AA99", "#DDCC77", "#CC6677"])
     )
 
     if "ci_lower" in df.columns:
@@ -50,7 +56,7 @@ def plotnine_sensitivity_by_outcome(
 
 
 def plotnine_sensitivity_by_first_outcome(
-    df: pd.DataFrame, title: str = "Sensitivity by First Outcome"
+    df: pd.DataFrame, title: str = "Sensitivity by first restraint type"
 ) -> pn.ggplot:
     df["proportion_of_n"] = df["n_in_bin"] / df["n_in_bin"].sum()
 
@@ -59,6 +65,12 @@ def plotnine_sensitivity_by_first_outcome(
         + pn.geom_bar(pn.aes(fill="outcome"), stat="identity")
         + pn.labs(x="Restraint type", y="Sensitivity", title=title)
         # + pn.ylim(0, 0.8)
+        + pn.geom_text(
+            pn.aes(x="outcome", y="ci_upper", label="sensitivity"),
+            nudge_y=0.01,
+            va="bottom",
+            format_string="{:.3f}",
+        )
         + pn.theme_minimal()
         + pn.theme(
             axis_text_x=pn.element_text(size=15),
@@ -71,7 +83,7 @@ def plotnine_sensitivity_by_first_outcome(
             figure_size=(7, 5),
         )
         + pn.scale_x_discrete()
-        + pn.scale_fill_manual(values=["#669BBC", "#A8C686", "#F3A712"])
+        + pn.scale_fill_manual(values=["#44AA99", "#DDCC77", "#CC6677"])
     )
 
     if "ci_lower" in df.columns:

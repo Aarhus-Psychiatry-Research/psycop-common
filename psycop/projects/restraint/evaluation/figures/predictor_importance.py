@@ -121,16 +121,16 @@ def plotnine_feature_importance(df: pd.DataFrame, title: str = "Predictor import
     
     p = (
         pn.ggplot(df, pn.aes(x="name", y="Feature Importance", fill="name"))
-        + pn.geom_bar(stat="identity", width=0.75, color="black")
+        + pn.geom_bar(stat="identity", width=0.75)
         + pn.coord_flip()
-        + pn.labs(x="Predictor name", y="Information gain", title=title)
+        + pn.labs(x="Predictor name", y="Information gain")
         + pn.theme_minimal()
         + pn.theme(
             axis_text_x=pn.element_text(size=14, ha="right"),
             axis_text_y=pn.element_text(size=14),
             legend_position="none",
             axis_title=pn.element_text(size=22),
-            plot_title=pn.element_text(size=27),
+            #plot_title=pn.element_text(size=27),
             dpi=300,
             figure_size=(11,7)
         )

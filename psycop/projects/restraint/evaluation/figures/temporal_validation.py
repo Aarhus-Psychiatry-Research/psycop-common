@@ -16,7 +16,7 @@ from psycop.common.model_evaluation.binary.global_performance.roc_auc import boo
 from psycop.projects.restraint.evaluation.utils import read_eval_df_from_disk
 
 
-def plotnine_temporal_validation(df: pl.DataFrame, title: str = "Temporal Stability") -> pn.ggplot:
+def plotnine_temporal_validation(df: pl.DataFrame, title: str = "Temporal stability") -> pn.ggplot:
     df = df.with_columns(
         pl.col("train_end_date").dt.year().cast(pl.Utf8).alias("train_end_year"),
         (pl.col("start_date") - (pl.col("train_end_date"))).alias("since_train_end"),
@@ -38,21 +38,20 @@ def plotnine_temporal_validation(df: pl.DataFrame, title: str = "Temporal Stabil
             df, pn.aes(x="year", y="performance", color="train_interval", group="train_interval")
         )
         + pn.scale_color_ordinal()
-        + pn.geom_line()
-        + pn.geom_point(size=2)
-        + pn.geom_errorbar(pn.aes(x="year", ymin="lower_ci", ymax="upper_ci"))
+        + pn.geom_line(size=0.75)
+        + pn.geom_point(size=0.7)
+        + pn.geom_errorbar(pn.aes(x="year", ymin="lower_ci", ymax="upper_ci"), width=0.15)
         + pn.labs(x="Validation year", y="AUROC", title=title, color="Training years")
-        + pn.ylim(0.75, 1)
+        # + pn.ylim(0.75, 1)
         + pn.theme_minimal()
         + pn.theme(
-            axis_text_x=pn.element_text(size=15, angle=45, ha="right"),
-            axis_text_y=pn.element_text(size=15),
+            axis_text_x=pn.element_text(size=10, angle=45, ha="right"),
+            axis_text_y=pn.element_text(size=10),
             panel_grid_minor=pn.element_blank(),
-            text=(pn.element_text(family="Times New Roman")),
-            axis_title=pn.element_text(size=22),
-            plot_title=pn.element_text(size=30, ha="center"),
+            axis_title=pn.element_text(size=17),
+            plot_title=pn.element_text(size=25, ha="center"),
             dpi=300,
-        )  # + pn.scale_x_discrete() # + pn.scale_fill_manual(values=["#669BBC", "#A8C686", "#F3A712"])
+        ) + pn.scale_color_manual(values=["#117733", "#44AA99", "#88CCEE", "#DDCC77", "#CC6677"])
     )
 
     return p
@@ -141,10 +140,10 @@ if __name__ == "__main__":
     save_dir = Path(__file__).parent
     save_dir.mkdir(parents=True, exist_ok=True)
 
-    runs = MlflowClientWrapper().get_runs_from_experiment("restraint_temporal_validation")
+    runs = MlflowClientWrapper().get_runs_from_experiment("restraint_all_tuning_v2_best_run_evaluated_on_test_mechanical_temporal_validation")
 
-    xg_performances = temporal_stability(runs, n_bootstraps=1000)
+    xg_performances = temporal_stability(runs, n_bootstraps=100)
 
     df = pl.concat(run.to_dataframe() for run in xg_performances)
 
-    plotnine_temporal_validation(df).save(save_dir / "restraint_temporal_validation.png")
+    plotnine_temporal_validation(df).save(save_dir / "restraint_all_tuning_v2_best_run_evaluated_on_test_mechanical_temporal_validation.png")

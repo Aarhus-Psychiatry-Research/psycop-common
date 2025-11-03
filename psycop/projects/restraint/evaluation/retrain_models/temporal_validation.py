@@ -16,7 +16,7 @@ def eval_stratified_split(
             "logger.*.disk_logger.run_path",
             f"E:/shared_resources//restraint/eval_runs/temporal_validation/{cfg.retrieve('logger.*.mlflow.experiment_name')}_{training_end_date}_{evaluation_interval[0]}_{evaluation_interval[1]}",
         )
-        .mut("logger.*.mlflow.experiment_name", "restraint_temporal_validation")
+        .mut("logger.*.mlflow.experiment_name", f"{cfg.retrieve('logger.*.mlflow.experiment_name')}_temporal_validation")
         .add(
             "logger.*.mlflow.run_name",
             f"{training_end_date}_{evaluation_interval[0]}_{evaluation_interval[1]}",
@@ -41,7 +41,7 @@ def eval_stratified_split(
         # train and eval across all splits
         .mut(
             "trainer.training_preprocessing_pipeline.*.split_filter.splits_to_keep",
-            ["train", "val"],
+            ["train", "val", "test"],
         )
     )
 
@@ -76,20 +76,20 @@ def eval_stratified_split(
         # train and eval across all splits
         .mut(
             "trainer.validation_preprocessing_pipeline.*.split_filter.splits_to_keep",
-            ["train", "val"],
+            ["train", "val", "test"],
         )
     )
 
     return train_baseline_model_from_cfg(cfg)
 
 
-def evaluate_year(train_end_year: int) -> tuple[int, dict[int, float]]:
+def evaluate_year(train_end_year: int, experiment_name: str) -> tuple[int, dict[int, float]]:
     evaluation_years = range(train_end_year, 22)
     year_aurocs = {
         y: eval_stratified_split(
             MlflowClientWrapper()
             .get_best_run_from_experiment(
-                experiment_name="restraint_all_tuning_best_run_evaluated_on_test",
+                experiment_name=experiment_name,
                 larger_is_better=True,
                 metric="BinaryAUROC",
             )
@@ -112,5 +112,5 @@ train_end_years = range(16, 21)
 # compute in parallel across train end year (15 workers)
 # can be flattened to be done across evaluation years as well but, meh
 results = Parallel(n_jobs=len(train_end_years))(
-    delayed(evaluate_year)(train_end_year=train_end_year) for train_end_year in train_end_years
+    delayed(evaluate_year)(train_end_year=train_end_year, experiment_name="restraint_all_tuning_v2_best_run_evaluated_on_test_mechanical") for train_end_year in train_end_years
 )

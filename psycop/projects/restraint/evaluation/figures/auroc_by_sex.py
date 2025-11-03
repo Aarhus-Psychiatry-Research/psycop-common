@@ -5,7 +5,7 @@ import plotnine as pn
 import polars as pl
 
 from psycop.common.feature_generation.loaders.raw.load_demographic import sex_female
-from psycop.projects.cvd.model_evaluation.single_run.auroc_by.auroc_by_model import auroc_by_model
+from psycop.projects.restraint.utils.auroc_by_model import auroc_by_model
 from psycop.projects.restraint.evaluation.utils import (
     parse_dw_ek_borger_from_uuid,
     read_eval_df_from_disk,
@@ -68,6 +68,7 @@ def auroc_by_sex_model(df: pl.DataFrame, sex_df: pl.DataFrame) -> pd.DataFrame:
             y_hat_probs=eval_df["y_hat_prob"],
             input_name="sex",
             bin_continuous_input=False,
+            stratified=True,
         )
     )
 

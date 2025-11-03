@@ -59,33 +59,33 @@ def run_paper_outputs(
     #     best_pos_rate=best_pos_rate,
     # ).savefig(save_path / "main_grid.png")
 
-    plotnine_auroc_by_age(
-        auroc_by_age_model(df=df, birthdays=pl.from_pandas(birthdays()), bins=[18, 25, 35, 45, 55])
-    ).save(save_path / "auroc_by_age.png")
+    # plotnine_auroc_by_age(
+    #     auroc_by_age_model(df=df, birthdays=pl.from_pandas(birthdays()), bins=[18, 25, 35, 45, 55])
+    # ).save(save_path / "auroc_by_age.png")
 
-    plotnine_auroc_by_sex(auroc_by_sex_model(df=df, sex_df=pl.from_pandas(sex_female()))).save(
-        save_path / "auroc_by_sex.png"
-    )
+    # plotnine_auroc_by_sex(auroc_by_sex_model(df=df, sex_df=pl.from_pandas(sex_female()))).save(
+    #     save_path / "auroc_by_sex.png"
+    # )
 
-    plotnine_auroc_by_weekday(auroc_by_weekday_model(df=df)).save(
-        save_path / "auroc_by_weekday.png"
-    )
+    # plotnine_auroc_by_weekday(auroc_by_weekday_model(df=df)).save(
+    #     save_path / "auroc_by_weekday.png"
+    # )
 
-    # plotnine_auroc_by_month(auroc_by_month_model(df=df))
+    # plotnine_auroc_by_month(auroc_by_month_model(df=df)).save(save_path / "restraint_auroc_by_month.png")
 
-    plotnine_auroc_by_region(auroc_by_region_model(df=df)).save(
-        save_path / "restraint_auroc_by_region.png"
-    )
+    # plotnine_auroc_by_region(auroc_by_region_model(df=df)).save(
+    #     save_path / "restraint_auroc_by_region.png"
+    # )
 
-    outcome_df = pl.from_pandas(load_restraint_outcome_timestamps())
+    # outcome_df = pl.from_pandas(load_restraint_outcome_timestamps())
 
-    plotnine_sensitivity_by_first_outcome(
-        sensitivity_by_first_outcome_model(df=df, outcome_df=outcome_df, best_pos_rate=best_pos_rate)
-    ).save(save_path / "restraint_sensitivity_by_first_outcome.png")
+    # plotnine_sensitivity_by_first_outcome(
+    #     sensitivity_by_first_outcome_model(df=df, outcome_df=outcome_df, best_pos_rate=best_pos_rate)
+    # ).save(save_path / "restraint_sensitivity_by_first_outcome.png")
 
-    plotnine_sensitivity_by_outcome(
-        sensitivity_by_outcome_model(df=df, outcome_df=outcome_df, best_pos_rate=best_pos_rate)
-    ).save(save_path / "restraint_sensitivity_by_outcome.png")
+    # plotnine_sensitivity_by_outcome(
+    #     sensitivity_by_outcome_model(df=df, outcome_df=outcome_df, best_pos_rate=best_pos_rate)
+    # ).save(save_path / "restraint_sensitivity_by_outcome.png")
 
     run = MlflowClientWrapper().get_best_run_from_experiment(run_name, metric="all_oof_BinaryAUROC")
 
@@ -97,17 +97,17 @@ def run_paper_outputs(
 
     plotnine_feature_importance(feat_imp).save(save_path / "restraint_feature_importance.png")
 
-    training_data = pl.read_parquet(run.get_config()["trainer"]["training_data"]["paths"][0]).drop(
-        ["dw_ek_borger", "timestamp", "prediction_time_uuid"]
-    )
+    # training_data = pl.read_parquet(run.get_config()["trainer"]["training_data"]["paths"][0]).drop(
+    #     ["dw_ek_borger", "timestamp", "prediction_time_uuid"]
+    # )
 
-    feature_description = generate_feature_description_df(df=training_data)
-    data = feature_description.to_pandas().to_html()
-    (save_path / "predictor_description.html").write_text(data)
+    # feature_description = generate_feature_description_df(df=training_data)
+    # data = feature_description.to_pandas().to_html()
+    # (save_path / "predictor_description.html").write_text(data)
 
 
 if __name__ == "__main__":
-    experiments = ["restraint_mechanical_tuning_v2_best_run_evaluated_on_test", "restraint_all_tuning_v2_best_run_evaluated_on_test", "restraint_all_tuning_v2_best_run_evaluated_on_test_mechanical"]
+    experiments = ["restraint_mechanical_tuning_v2_best_run_evaluated_on_test", "restraint_all_tuning_v2_best_run_evaluated_on_test_mechanical", "restraint_all_tuning_v2_best_run_evaluated_on_test"]
     best_pos_rate = 0.01
 
     save_dir = "E:/shared_resources/restraint/eval_runs"
