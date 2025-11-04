@@ -5,10 +5,10 @@ import pytest
 
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
     AgeFilter,
+    CooldownAfterPositiveFilter,
     DateFilter,
     QuarantineFilter,
     WindowFilter,
-    CooldownAfterPositiveFilter,
 )
 
 from .....test_utils.str_to_df import str_to_pl_df
@@ -181,6 +181,6 @@ def test_cooldown_after_positive_filter(
 
     filtered_df = cooldown_filter.apply(df).collect()
 
-    assert filtered_df.height == expected_n_rows, (
-        f"Expected {expected_n_rows} rows after cooldown filter, but got {filtered_df.height}."
-    )
+    assert (
+        filtered_df.height == expected_n_rows
+    ), f"Expected {expected_n_rows} rows after cooldown filter, but got {filtered_df.height}."

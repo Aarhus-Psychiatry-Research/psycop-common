@@ -195,11 +195,9 @@ class CooldownAfterPositiveFilter(PresplitStep):
 
         # Days since last event
         df = df.with_columns(
-            (
-                (pl.col(self.timestamp_col_name) - pl.col("event_time"))
-                .dt.total_days()
-                .alias("days_since_event")
-            )
+            (pl.col(self.timestamp_col_name) - pl.col("event_time"))
+            .dt.total_days()
+            .alias("days_since_event")
         )
 
         # Filter out rows within cooldown period AFTER an event
