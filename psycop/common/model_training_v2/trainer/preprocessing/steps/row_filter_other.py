@@ -176,13 +176,13 @@ class CooldownAfterPositiveFilter(PresplitStep):
     outcome_col_name: str
 
     def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
-        # Step 1: Sort rows within each group by timestamp
+        # Sort rows within each group (e.g. patient or admission) by timestamp
         df = input_df.sort([*self.group_by_cols, self.timestamp_col_name])  # type: ignore
 
-        # Step 2: Mark positive events
+        # Mark prediction timestamps with positive outcome
         df = df.with_columns((pl.col(self.outcome_col_name) == 1).alias("event_flag"))
 
-        # Step 3: Find most recent event timestamp for each row in its group
+        # Find most recent event timestamp for each row in its group
         df = df.with_columns(
             pl.when(pl.col("event_flag"))
             .then(pl.col(self.timestamp_col_name))
@@ -193,7 +193,7 @@ class CooldownAfterPositiveFilter(PresplitStep):
         # Forward-fill the last event timestamp within each group
         df = df.with_columns(pl.col("event_time").forward_fill().over(self.group_by_cols))
 
-        # Step 4: Compute days since last event
+        # Days since last event
         df = df.with_columns(
             (
                 (pl.col(self.timestamp_col_name) - pl.col("event_time"))
@@ -202,7 +202,7 @@ class CooldownAfterPositiveFilter(PresplitStep):
             )
         )
 
-        # Step 5: Filter out rows within cooldown period AFTER an event
+        # Filter out rows within cooldown period AFTER an event
         # (Exclude the event row itself from cooldown)
         df = df.filter(
             (pl.col("days_since_event").is_null())  # before first event
@@ -211,7 +211,7 @@ class CooldownAfterPositiveFilter(PresplitStep):
             | (pl.col("event_flag"))  # keep the event itself
         )
 
-        # Step 6: Drop helper columns
+        #  Drop helper columns
         df = df.drop(["event_flag", "event_time", "days_since_event"])
 
         return df

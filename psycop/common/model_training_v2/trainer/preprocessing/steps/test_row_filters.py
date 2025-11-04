@@ -8,6 +8,7 @@ from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_othe
     DateFilter,
     QuarantineFilter,
     WindowFilter,
+    CooldownAfterPositiveFilter,
 )
 
 from .....test_utils.str_to_df import str_to_pl_df
@@ -141,3 +142,45 @@ def test_date_filter(
     assert filtered_df["timestamp"].cast(pl.Utf8).to_list() == [
         f"{date} 00:00:00.000000000" for date in expected_dates
     ]
+
+
+@pytest.mark.parametrize(
+    (
+        "n_cooldown_days",
+        "group_by_cols",
+        "timestamp_col_name",
+        "outcome_col_name",
+        "expected_n_rows",
+    ),
+    [(6, ["dw_ek_borger"], "timestamp", "outcome", 4)],
+)
+def test_cooldown_after_positive_filter(
+    n_cooldown_days: int,
+    group_by_cols: list[str],
+    timestamp_col_name: str,
+    outcome_col_name: str,
+    expected_n_rows: int,
+):
+    df = str_to_pl_df(
+        """timestamp,outcome,dw_ek_borger
+        2023-01-01,0,1
+        2023-01-04,1,1
+        2023-01-07,0,1
+        2023-01-10,0,1
+        2023-01-13,0,1
+        2023-01-16,0,1
+        """
+    ).lazy()
+
+    cooldown_filter = CooldownAfterPositiveFilter(
+        n_cooldown_days=n_cooldown_days,
+        group_by_cols=group_by_cols,
+        timestamp_col_name=timestamp_col_name,
+        outcome_col_name=outcome_col_name,
+    )
+
+    filtered_df = cooldown_filter.apply(df).collect()
+
+    assert filtered_df.height == expected_n_rows, (
+        f"Expected {expected_n_rows} rows after cooldown filter, but got {filtered_df.height}."
+    )
