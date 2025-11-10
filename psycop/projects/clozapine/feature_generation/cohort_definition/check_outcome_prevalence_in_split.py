@@ -7,6 +7,7 @@ from psycop.projects.clozapine.feature_generation.cohort_definition.eligible_pre
 from psycop.projects.clozapine.feature_generation.cohort_definition.outcome_specification.combine_text_structured_clozapine_outcome import (
     combine_structured_and_text_outcome,
 )
+from psycop.projects.clozapine.loaders.demographics import birthdays
 
 
 def load_split_ids_2025(split: str) -> pd.DataFrame:
@@ -19,13 +20,28 @@ def load_split_ids_2025(split: str) -> pd.DataFrame:
 if __name__ == "__main__":
     splits = ["train", "val", "test"]
 
+    birthdays_df = birthdays()
+
     # Load cohort and outcome data
     cohort_df = add_only_patients_with_schizo().to_pandas()
     outcome_df = combine_structured_and_text_outcome()
 
-    cohort_df = cohort_df[cohort_df["timestamp"] >= "2013-01-01"]
+    cohort_df_2013 = cohort_df[cohort_df["timestamp"] >= "2013-01-01"]
 
-    cohort_df = cohort_df.drop_duplicates(subset=["dw_ek_borger"], keep="first").drop(
+    # Merge birthdays
+    cohort_df_2013 = cohort_df_2013.merge(birthdays_df, on="dw_ek_borger", how="inner")
+
+    # Ensure datetime
+    cohort_df_2013["timestamp"] = pd.to_datetime(cohort_df_2013["timestamp"])
+    cohort_df_2013["date_of_birth"] = pd.to_datetime(cohort_df_2013["date_of_birth"])
+
+    # Compute age at timestamp and filter
+    cohort_df_2013["age_years"] = (
+        cohort_df_2013["timestamp"] - cohort_df_2013["date_of_birth"]
+    ).dt.days / 365.25
+    cohort_df_2013 = cohort_df_2013[cohort_df_2013["age_years"] >= 18]
+
+    cohort_df = cohort_df_2013.drop_duplicates(subset=["dw_ek_borger"], keep="first").drop(
         columns="timestamp"
     )
 
