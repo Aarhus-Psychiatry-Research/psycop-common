@@ -1,5 +1,6 @@
 import pandas as pd
 
+from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     admissions,
     physical_visits_to_psychiatry,
@@ -44,6 +45,7 @@ def load_split_ids_2025(split: str) -> pd.DataFrame:
 if __name__ == "__main__":
     splits = ["train", "val", "test"]
 
+    birthdays_df = birthdays()
     # === Load prediction-time cohorts ===
     inv_admission_cohort_df = admissions_discharge_timestamps()
     cancer_cohort_df = physical_visits_to_psychiatry()
@@ -82,7 +84,21 @@ if __name__ == "__main__":
     for outcome_name, (cohort_df, outcome_df) in outcome_cohort_pairs.items():
         print(f"\n=== PROCESSING OUTCOME: {outcome_name} ===")
 
+        # Restrict cohort to entries on or after 2013-01-01 (still pandas here)
         cohort_df_2013 = cohort_df[cohort_df["timestamp"] >= "2013-01-01"]
+
+        # Merge birthdays
+        cohort_df_2013 = cohort_df_2013.merge(birthdays_df, on="dw_ek_borger", how="inner")
+
+        # Ensure datetime
+        cohort_df_2013["timestamp"] = pd.to_datetime(cohort_df_2013["timestamp"])
+        cohort_df_2013["date_of_birth"] = pd.to_datetime(cohort_df_2013["date_of_birth"])
+
+        # Compute age at timestamp and filter
+        cohort_df_2013["age_years"] = (
+            cohort_df_2013["timestamp"] - cohort_df_2013["date_of_birth"]
+        ).dt.days / 365.25
+        cohort_df_2013 = cohort_df_2013[cohort_df_2013["age_years"] >= 18]
 
         # Clean & deduplicate cohort and outcome
         cohort_df_unique = cohort_df_2013.drop_duplicates(
