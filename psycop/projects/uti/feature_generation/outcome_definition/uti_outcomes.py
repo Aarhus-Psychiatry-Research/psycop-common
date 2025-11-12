@@ -1,8 +1,10 @@
 # Script for finding UVI outcomes and outcome timestamps
 import pandas as pd
 
-from psycop.common.feature_generation.loaders.load_urine_samples import uti_positive_urine_samples
-from psycop.common.feature_generation.loaders.load_uti_relevant_anitbiotics import (
+from psycop.common.feature_generation.loaders.raw.load_urine_samples import (
+    uti_positive_urine_samples,
+)
+from psycop.common.feature_generation.loaders.raw.load_uti_relevant_antibiotics import (
     uti_relevant_antibiotics,
 )
 from psycop.common.global_utils.cache import shared_cache

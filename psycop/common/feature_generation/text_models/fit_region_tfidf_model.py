@@ -18,6 +18,11 @@ if __name__ == "__main__":
         "all_relevant": [
             "Observation af patient, Psykiatri",
             "Samtale med behandlingssigte",
+            "Aktuelt psykisk",
+            "Aktuelt socialt, Psykiatri",
+            "Aftaler, Psykiatri",
+            "Aktuelt somatisk, Psykiatri",
+            "Objektivt psykisk",
             "Kontaktårsag",
             "Telefonnotat",
             "Semistruktureret diagnostisk interview",
