@@ -1,4 +1,3 @@
-from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import timedelta
 from typing import Literal
@@ -160,56 +159,3 @@ class ValueFilter(PresplitStep):
                 return input_df.filter(value_col < self.threshold_value)
             case "after-inclusive":
                 return input_df.filter(value_col >= self.threshold_value)
-
-
-@BaselineRegistry.preprocessing.register("cooldown_after_positive_filter")
-@dataclass
-class CooldownAfterPositiveFilter(PresplitStep):
-    """
-    Filter rows by removing any that occur within `n_cooldown_days` after
-    a positive event (outcome==1) within each group.
-    """
-
-    n_cooldown_days: int
-    group_by_cols: Sequence[str]
-    timestamp_col_name: str
-    outcome_col_name: str
-
-    def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
-        # Sort rows within each group (e.g. patient or admission) by timestamp
-        df = input_df.sort([*self.group_by_cols, self.timestamp_col_name])  # type: ignore
-
-        # Mark prediction timestamps with positive outcome
-        df = df.with_columns((pl.col(self.outcome_col_name) == 1).alias("event_flag"))
-
-        # Find most recent event timestamp for each row in its group
-        df = df.with_columns(
-            pl.when(pl.col("event_flag"))
-            .then(pl.col(self.timestamp_col_name))
-            .otherwise(None)
-            .alias("event_time")
-        )
-
-        # Forward-fill the last event timestamp within each group
-        df = df.with_columns(pl.col("event_time").forward_fill().over(self.group_by_cols))
-
-        # Days since last event
-        df = df.with_columns(
-            (pl.col(self.timestamp_col_name) - pl.col("event_time"))
-            .dt.total_days()
-            .alias("days_since_event")
-        )
-
-        # Filter out rows within cooldown period AFTER an event
-        # (Exclude the event row itself from cooldown)
-        df = df.filter(
-            (pl.col("days_since_event").is_null())  # before first event
-            | (pl.col("days_since_event") > self.n_cooldown_days)
-            | (pl.col("days_since_event") < 0)  # safeguard in case of time misordering
-            | (pl.col("event_flag"))  # keep the event itself
-        )
-
-        #  Drop helper columns
-        df = df.drop(["event_flag", "event_time", "days_since_event"])
-
-        return df
