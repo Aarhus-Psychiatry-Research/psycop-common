@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import Enum
 from typing import TYPE_CHECKING
 
 import polars as pl
@@ -17,10 +16,7 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
 
-class SplitName(Enum):
-    TRAIN = "train"
-    VALIDATION = "val"
-    TEST = "test"
+from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
 
 
 @dataclass(frozen=True)
