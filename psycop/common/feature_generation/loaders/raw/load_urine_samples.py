@@ -272,7 +272,3 @@ def uti_positive_urine_samples(n_rows: int | None = None) -> pd.DataFrame:
             "afdeling_rekivernt",
         ]
     ]
-
-
-if __name__ == "__main__":
-    uti_positive_urine_samples()

@@ -8,6 +8,8 @@ from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 
 
 class RestraintGetter(Getter):
+    predicted_positive_rate: float = 0.01
+
     @staticmethod
     def get_eval_df() -> pd.DataFrame:
         eval_df_path = "E:/shared_resources/restraint/eval_runs/restraint_all_tuning_v2_best_run_evaluated_on_test/eval_df.parquet"
