@@ -7,7 +7,7 @@ from typing import Literal, Optional
 
 from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
-    FilterByOutcomeStratifiedSplits,
+    FilterByRandom2025Splits,
 )
 from psycop.projects.clozapine.loaders.text import load_preprocessed_sfis, load_text_split
 from psycop.projects.clozapine.text_models.clozapine_text_model_paths import TEXT_MODEL_DIR
@@ -42,14 +42,15 @@ def create_model_filename(
     max_df_str = str(max_df).replace(".", "")
     ngram_range_str = "".join(c for c in str(ngram_range) if c.isdigit())
     sfi_type_str = "all_sfis" if not sfi_type else "".join(sfi_type).replace(" ", "")
+    splits_str = "_".join(splits.splits_to_keep)
 
-    return f"{model}_psycop_clozapine_preprocessed_added_psyk_konf_{splits}_sfi_type_{sfi_type_str}_ngram_range_{ngram_range_str}_max_df_{max_df_str}_min_df_{min_df}_max_features_{max_features}.pkl"
+    return f"{model}_psycop_clozapine_preprocessed_added_psyk_konf_added_2025_random_split_{splits_str}_sfi_type_{sfi_type_str}_ngram_range_{ngram_range_str}_max_df_{max_df_str}_min_df_{min_df}_max_features_{max_features}.pkl"
 
 
 def text_model_pipeline(
     model: Literal["bow", "tfidf"],
     split_ids_presplit_step: PresplitStep,
-    corpus_name: str = "psycop_clozapine_train_val_test_all_sfis_preprocessed_added_psyk_konf",
+    corpus_name: str = "psycop_clozapine_train_val_test_all_sfis_preprocessed_added_psyk_konf_2025_random_split",
     corpus_preprocessed: bool = False,
     sfi_type: Optional[Sequence[str] | str] = None,
     ngram_range: tuple[int, int] = (1, 1),
@@ -79,7 +80,7 @@ def text_model_pipeline(
     split_ids_presplit_step = (
         split_ids_presplit_step
         if split_ids_presplit_step
-        else FilterByOutcomeStratifiedSplits(splits_to_keep=["train", "val"])
+        else FilterByRandom2025Splits(splits_to_keep=["train", "val"])
     )
 
     # create model filename from params
