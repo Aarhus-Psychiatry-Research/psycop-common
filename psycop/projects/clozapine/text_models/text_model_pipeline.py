@@ -5,7 +5,6 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Literal, Optional
 
-from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
     FilterByRandom2025Splits,
 )
@@ -22,7 +21,7 @@ log.setLevel(logging.INFO)
 def create_model_filename(
     model: Literal["bow", "tfidf"],
     ngram_range: tuple[int, int],
-    splits: PresplitStep,
+    splits: FilterByRandom2025Splits,
     max_df: float,
     min_df: int,
     max_features: Optional[int],
@@ -49,7 +48,7 @@ def create_model_filename(
 
 def text_model_pipeline(
     model: Literal["bow", "tfidf"],
-    split_ids_presplit_step: PresplitStep,
+    split_ids_presplit_step: FilterByRandom2025Splits,
     corpus_name: str = "psycop_clozapine_train_val_test_all_sfis_preprocessed_added_psyk_konf_2025_random_split",
     corpus_preprocessed: bool = False,
     sfi_type: Optional[Sequence[str] | str] = None,
