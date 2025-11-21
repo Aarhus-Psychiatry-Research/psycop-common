@@ -1,53 +1,33 @@
-import re
-import sys
 from collections.abc import Sequence
 from typing import Literal, Optional
 
 import pandas as pd
+import polars as pl
 
 from psycop.common.feature_generation.text_models.utils import stop_words
 from psycop.common.global_utils.sql.writer import write_df_to_sql
 from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
-    FilterByOutcomeStratifiedSplits,
+    FilterByRandom2025Splits,
     RegionalFilter,
 )
 from psycop.projects.clozapine.loaders.text import get_valid_text_sfi_names, load_text_split
 
 
 def text_preprocessing(df: pd.DataFrame, text_column_name: str = "value") -> pd.DataFrame:
-    """Preprocess texts by lower casing, removing stopwords and symbols.
+    pl_df = pl.from_pandas(df)
 
-    Args:
-        df (pd.DataFrame): Dataframe with a column containing text to clean.
-        text_column_name (str): Name of column containing text. Defaults to "value".
-
-    Returns:
-        pd.DataFrame: df with preprocessed text
-    """
-    # Define regex for stop words with empty string in beginning and end
-    regex_stop_words_surrounded_by_empty_strings = [rf"\b{stop_word}\b" for stop_word in stop_words]
-    regex_stop_words = "|".join(regex_stop_words_surrounded_by_empty_strings)
-
-    # Define regex that removes symbols (by keeping everything else)
+    # Build regex
+    regex_stop_words = "|".join([rf"\b{sw}\b" for sw in stop_words])
     regex_symbol_removal = r"[^ÆØÅæøåA-Za-z0-9 ]+"
+    combined_regex = f"{regex_stop_words}|{regex_symbol_removal}"
 
-    # combine
-    regex_symbol_removal_and_stop_words = re.compile(f"{regex_stop_words}|{regex_symbol_removal}")
+    # Entire column processed in parallel by Polars
+    pl_df = pl_df.with_columns(
+        [pl.col(text_column_name).str.to_lowercase().str.replace_all(combined_regex, "")]
+    )
 
-    # lower case and remove stop words and symbols
-    total_rows = len(df)
-    for i, text in enumerate(df[text_column_name]):
-        df.at[i, text_column_name] = re.sub(regex_symbol_removal_and_stop_words, "", text.lower())
-
-        # Update progress bar
-        progress = (i + 1) / total_rows
-        sys.stdout.write(f"\rProcessing: [{'#' * int(progress * 50):<50}] {progress * 100:.1f}%")
-        sys.stdout.flush()
-
-    print()  # Add a newline at the end of the progress bar
-
-    return df
+    return pl_df.to_pandas()
 
 
 def text_preprocessing_pipeline(
@@ -69,7 +49,7 @@ def text_preprocessing_pipeline(
     splits_to_keep = (
         split_ids_presplit_step
         if split_ids_presplit_step
-        else FilterByOutcomeStratifiedSplits(splits_to_keep=["train", "val"])
+        else FilterByRandom2025Splits(splits_to_keep=["train", "val"])
     )
 
     # Load text from splits
@@ -84,20 +64,24 @@ def text_preprocessing_pipeline(
     df = text_preprocessing(df)
 
     # save to parquet
-    split_names = "_".join(splits_to_keep)  # type: ignore
+    split_names = "_".join(splits_to_keep.splits_to_keep)  # type: ignore
 
     sfis = "_".join(sfi_type) if sfi_type else "all_sfis"
 
-    write_df_to_sql(df, f"psycop_clozapine_{split_names}_{sfis}_preprocessed")
+    write_df_to_sql(
+        df,
+        f"psycop_clozapine_{split_names}_{sfis}_preprocessed_added_psyk_konf_2025_random_split",
+        if_exists="replace",
+    )
 
     return f"Text preprocessed and uploaded to SQL as {split_names}_{sfis}_preprocessed"
 
 
 if __name__ == "__main__":
-    TRAIN_SPLITS: list[Literal["train", "val", "test"]] = ["train", "val"]
+    TRAIN_SPLITS: list[Literal["train", "val", "test"]] = ["train", "val", "test"]
     split_id_loaders = {
         "region": RegionalFilter(splits_to_keep=TRAIN_SPLITS),
-        "id_outcome": FilterByOutcomeStratifiedSplits(splits_to_keep=TRAIN_SPLITS),
+        "id_outcome": FilterByRandom2025Splits(splits_to_keep=TRAIN_SPLITS),
     }
     SPLIT_TYPE = "id_outcome"
 
