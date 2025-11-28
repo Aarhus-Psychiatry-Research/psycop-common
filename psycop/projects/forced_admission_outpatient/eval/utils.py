@@ -104,20 +104,22 @@ def parse_dw_ek_borger_from_uuid(
     )
 
 
-def parse_outcome_timestamps(df: pl.DataFrame) -> pl.DataFrame:
-    outcome_timestamps = pl.DataFrame(
-        sql_load(
-            "SELECT pred_times.dw_ek_borger, pred_time, first_mechanical_restraint as timestamp FROM fct.psycop_coercion_outcome_timestamps as pred_times LEFT JOIN fct.psycop_coercion_outcome_timestamps_2 as outc_times ON (pred_times.dw_ek_borger = outc_times.dw_ek_borger AND pred_times.datotid_start = outc_times.datotid_start)"
-        ).drop_duplicates()
+def parse_outcome_timestamps(
+    df: pl.DataFrame, flattened_df_path: str, outcome_timestamp_col_name: str | None = None
+) -> pl.DataFrame:
+    outcome_timestamp_col_name = (
+        outcome_timestamp_col_name
+        if outcome_timestamp_col_name is not None
+        else "outcome_timestamp"
     )
 
-    eval_dataset = df.with_columns(pl.col("timestamp").dt.cast_time_unit("ns")).join(
-        outcome_timestamps,
-        left_on=["dw_ek_borger", "timestamp"],
-        right_on=["dw_ek_borger", "pred_time"],
-        suffix="_outcome",
-        how="left",
+    outcome_timestamps = (
+        pl.read_parquet(flattened_df_path)
+        .select(["dw_ek_borger", "timestamp", outcome_timestamp_col_name])
+        .rename({outcome_timestamp_col_name: "outcome_timestamp"})
     )
+
+    eval_dataset = df.join(outcome_timestamps, on=["dw_ek_borger", "timestamp"], how="left")
 
     return eval_dataset
 
@@ -132,12 +134,14 @@ def add_age(df: pl.DataFrame, birthdays: pl.DataFrame, age_col_name: str = "age"
     return df
 
 
-def expand_eval_df_with_extra_cols(eval_df: pl.DataFrame) -> pd.DataFrame:
+def expand_eval_df_with_extra_cols(
+    eval_df: pl.DataFrame, flattened_df_path: str, outcome_timestamp_col_name: str | None = None
+) -> pd.DataFrame:
     birthdates = pl.from_pandas(birthdays())
 
     eval_df = parse_timestamp_from_uuid(eval_df)
     eval_df = parse_dw_ek_borger_from_uuid(eval_df)
     eval_df = add_age(eval_df, birthdates)
-    eval_df = parse_outcome_timestamps(eval_df)
+    eval_df = parse_outcome_timestamps(eval_df, flattened_df_path, outcome_timestamp_col_name)
 
     return eval_df.to_pandas()

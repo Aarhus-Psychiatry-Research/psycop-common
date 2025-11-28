@@ -182,9 +182,16 @@ def fa_outpatient_output_performance_by_ppr(
 
 
 if __name__ == "__main__":
-    experiment_name = "restraint_all"
-    eval_dir = f"E:/shared_resources/restraint/eval_runs/{experiment_name}_tuning_best_run_evaluated_on_test"
+    experiment_name = "full_model_without_text_features_TEST"
+    eval_dir = f"E:/shared_resources/forced_admissions_outpatient/eval_runs/{experiment_name}_best_run_evaluated_on_test"
+    flattend_df_dir = f"E:/shared_resources/forced_admissions_outpatient/flattened_datasets/structured_feature_set/structured_feature_set.parquet"
+    outcome_timestamp_col_name = "timestamp_outcome__within_180_days_earliest_fallback_nan"
 
     fa_outpatient_output_performance_by_ppr(
-        expand_eval_df_with_extra_cols(read_eval_df_from_disk(eval_dir)), eval_dir
+        expand_eval_df_with_extra_cols(
+            read_eval_df_from_disk(eval_dir),
+            flattend_df_dir,
+            outcome_timestamp_col_name=outcome_timestamp_col_name,
+        ),
+        eval_dir,
     )
