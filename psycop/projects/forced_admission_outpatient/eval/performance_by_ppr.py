@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from pathlib import Path
 
 import pandas as pd
 from wasabi import Printer
@@ -142,7 +143,7 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
 
 def fa_outpatient_output_performance_by_ppr(
     eval_df: pd.DataFrame,
-    output_path: str | None = None,
+    eval_dir: str | None = None,
     positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01, 0.001],
 ) -> pd.DataFrame | None:
     eval_dataset = _df_to_eval_dataset(eval_df)
@@ -174,8 +175,9 @@ def fa_outpatient_output_performance_by_ppr(
 
     df = clean_up_performance_by_ppr(df)
 
-    if output_path:
-        df.to_excel(output_path, index=False)
+    if eval_dir:
+        (Path(eval_dir) / "figure_and_tables").mkdir(parents=True, exist_ok=True)
+        df.to_excel(Path(eval_dir) / "figure_and_tables" / "performance_by_ppr.xlsx", index=False)
         return None
 
     return df
@@ -184,7 +186,7 @@ def fa_outpatient_output_performance_by_ppr(
 if __name__ == "__main__":
     experiment_name = "full_model_without_text_features_TEST"
     eval_dir = f"E:/shared_resources/forced_admissions_outpatient/eval_runs/{experiment_name}_best_run_evaluated_on_test"
-    flattend_df_dir = f"E:/shared_resources/forced_admissions_outpatient/flattened_datasets/structured_feature_set/structured_feature_set.parquet"
+    flattend_df_dir = "E:/shared_resources/forced_admissions_outpatient/flattened_datasets/structured_feature_set/structured_feature_set.parquet"
     outcome_timestamp_col_name = "timestamp_outcome__within_180_days_earliest_fallback_nan"
 
     fa_outpatient_output_performance_by_ppr(

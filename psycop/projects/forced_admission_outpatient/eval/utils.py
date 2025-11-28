@@ -1,21 +1,12 @@
-import re
-
 import pandas as pd
 import polars as pl
 
-from psycop.common.feature_generation.loaders.raw import sql_load
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
     FilterByOutcomeStratifiedSplits,
     RegionalFilter,
-)
-from psycop.projects.restraint.feature_generation.modules.loaders.load_restraint_prediction_timestamps import (
-    load_restraint_prediction_timestamps,
-)
-from psycop.projects.t2d.paper_outputs.dataset_description.table_one.table_one_lib import (
-    RowSpecification,
 )
 
 
@@ -115,8 +106,9 @@ def parse_outcome_timestamps(
 
     outcome_timestamps = (
         pl.read_parquet(flattened_df_path)
+        .with_columns(pl.col("timestamp").dt.cast_time_unit("us"))
         .select(["dw_ek_borger", "timestamp", outcome_timestamp_col_name])
-        .rename({outcome_timestamp_col_name: "outcome_timestamp"})
+        .rename({outcome_timestamp_col_name: "timestamp_outcome"})
     )
 
     eval_dataset = df.join(outcome_timestamps, on=["dw_ek_borger", "timestamp"], how="left")
