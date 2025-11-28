@@ -8,11 +8,25 @@ from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr
     get_true_positives,
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.forced_admission_outpatient.old_project_code.utils.pipeline_objects import (
-    ForcedAdmissionOutpatientPipelineRun,
+from psycop.projects.forced_admission_outpatient.eval.utils import (
+    expand_eval_df_with_extra_cols,
+    read_eval_df_from_disk,
 )
 
 msg = Printer(timestamp=True)
+
+
+def _df_to_eval_dataset(df: pd.DataFrame) -> EvalDataset:
+    """Convert dataframe to EvalDataset."""
+    return EvalDataset(
+        ids=df["dw_ek_borger"],
+        pred_time_uuids=df["pred_time_uuid"],
+        y=df["y"],
+        y_hat_probs=df["y_hat_prob"],
+        pred_timestamps=df["timestamp"],
+        outcome_timestamps=df["timestamp_outcome"],
+        age=df["age"],
+    )
 
 
 def _get_num_of_unique_outcome_events(eval_dataset: EvalDataset) -> int:
@@ -127,15 +141,11 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
 
 
 def fa_outpatient_output_performance_by_ppr(
-    run: ForcedAdmissionOutpatientPipelineRun,
-    save: bool = True,
-    min_alert_days: None | int = 30,
+    eval_df: pd.DataFrame,
+    output_path: str | None = None,
     positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01, 0.001],
 ) -> pd.DataFrame | None:
-    output_path = (
-        run.paper_outputs.paths.tables / run.paper_outputs.artifact_names.performance_by_ppr
-    )
-    eval_dataset = run.pipeline_outputs.get_eval_dataset()
+    eval_dataset = _df_to_eval_dataset(eval_df)
 
     df: pd.DataFrame = generate_performance_by_ppr_table(  # type: ignore
         eval_dataset=eval_dataset, positive_rates=positive_rates
@@ -151,7 +161,7 @@ def fa_outpatient_output_performance_by_ppr(
 
     df["Number of unique outcome events detected ≥1"] = [
         _get_number_of_outcome_events_with_at_least_one_true_positve(
-            eval_dataset=eval_dataset, positive_rate=pos_rate, min_alert_days=min_alert_days
+            eval_dataset=eval_dataset, positive_rate=pos_rate
         )
         for pos_rate in positive_rates
     ]
@@ -164,7 +174,7 @@ def fa_outpatient_output_performance_by_ppr(
 
     df = clean_up_performance_by_ppr(df)
 
-    if save:
+    if output_path:
         df.to_excel(output_path, index=False)
         return None
 
@@ -172,8 +182,9 @@ def fa_outpatient_output_performance_by_ppr(
 
 
 if __name__ == "__main__":
-    from psycop.projects.forced_admission_outpatient.old_project_code.model_eval.selected_runs import (
-        get_best_eval_pipeline,
-    )
+    experiment_name = "restraint_all"
+    eval_dir = f"E:/shared_resources/restraint/eval_runs/{experiment_name}_tuning_best_run_evaluated_on_test"
 
-    fa_outpatient_output_performance_by_ppr(run=get_best_eval_pipeline())
+    fa_outpatient_output_performance_by_ppr(
+        expand_eval_df_with_extra_cols(read_eval_df_from_disk(eval_dir)), eval_dir
+    )
