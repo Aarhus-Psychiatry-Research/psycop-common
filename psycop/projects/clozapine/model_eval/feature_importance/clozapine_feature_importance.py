@@ -11,6 +11,17 @@ from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClien
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 
 
+def load_vocab(path: Path) -> pl.DataFrame:
+    """Load a .pkl vocabulary file (Word -> Index) into a Polars DataFrame."""
+    vocab_pd = pd.read_pickle(path)  # Load pickle via pandas
+    vocab = pl.from_pandas(vocab_pd)  # Convert to Polars
+
+    # Ensure correct dtypes
+    vocab = vocab.with_columns([pl.col("Word").cast(pl.Utf8), pl.col("Index").cast(pl.Int64)])
+
+    return vocab
+
+
 def clozapine_parse_static_feature(full_string: str) -> str:
     """Takes a static feature name and returns a human readable version of it."""
     feature_name = full_string.replace("pred_", "")
@@ -37,17 +48,24 @@ def clozapine_parse_temporal_feature(full_string: str) -> str:
     resolve_multiple = re.findall(r"days_(.*)?_fallback", full_string)[0]
 
     if "Tfidf" in feature_name:
-        vocab = pl.read_parquet(
+        vocab_path = (
             OVARTACI_SHARED_DIR
             / "clozapine"
             / "text_models"
             / "vocabulary_lists"
-            / "vocab_tfidf_psycop_clozapine_preprocessed_added_psyk_konf_added_2025_random_split_train_val_sfi_type_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750.parquet"
+            / "vocab_tfidf_psycop_clozapine_preprocessed_added_psyk_konf_added_2025_random_split_train_val_sfi_type_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750.pkl"
         )
 
-        tfidf_idx = re.search(r"(\d+)", feature_name).group(0)  # type: ignore
-        tfidf_word = vocab.filter(pl.col("Index") == int(tfidf_idx))["Word"][0]
-        feature_name = re.sub(tfidf_idx, tfidf_word, feature_name)
+        vocab = load_vocab(vocab_path)
+
+        # Extract index from feature name, e.g. "Tfidf_1234_mean" → "1234"
+        tfidf_idx = int(re.search(r"(\d+)", feature_name).group(0))
+
+        # Lookup word from vocabulary
+        tfidf_word = vocab.filter(pl.col("Index") == tfidf_idx)["Word"][0]
+
+        # Replace index with the actual word
+        feature_name = re.sub(str(tfidf_idx), tfidf_word, feature_name)
 
     output_string = f"{feature_name} {lookbehind}-day {resolve_multiple} "
     return output_string
@@ -68,7 +86,13 @@ def clozapine_generate_feature_importance_table(
     feature_importances = pipeline.named_steps[clf_model_name].feature_importances_
 
     feature_names_ = pipeline.feature_names_in_
-    feature_names = feature_names_[pipeline.named_steps["feature_selection"].get_support()]
+
+    if "feature_selection" in pipeline.named_steps:
+        support_mask = pipeline.named_steps["feature_selection"].get_support()
+        feature_names = feature_names_[support_mask]
+    else:
+        # No feature selection in pipeline → use all input features
+        feature_names = feature_names_
 
     # Create a DataFrame to store the feature names and their corresponding gain
     feature_table = pl.DataFrame(
@@ -101,8 +125,8 @@ def clozapine_feature_importance_table_facade(pipeline: Pipeline, output_dir: Pa
 
 if __name__ == "__main__":
     run = MlflowClientWrapper().get_run(
-        "clozapine hparam, structured_text_365d_lookahead, xgboost, 1 year lookbehind filter",
-        "bemused-lamb-288",
+        "clozapine hparam, structured_text_365d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split",
+        "fearless-roo-774",
     )
 
     feat_imp = clozapine_generate_feature_importance_table(
