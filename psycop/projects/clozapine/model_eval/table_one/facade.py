@@ -16,16 +16,19 @@ def table_one_facade(
     model = table_one_model(run=run, sex_col_name=sex_col_name)
     view = clozapine_table_one(model=model)
     view.to_excel(
-        output_dir / "test_new_table_one_365d_lookahead_train_val_1y_lookbehind_filter.xlsx"
+        output_dir
+        / "table_one_365d_lookahead_train_val_1y_lookbehind_filter_2025_random_split.xlsx"
     )
-    view.to_csv(output_dir / "test-new_table_one_365d_lookahead_train_val_1y_lookbehind_filter.csv")
+    view.to_csv(
+        output_dir / "table_one_365d_lookahead_train_val_1y_lookbehind_filter_2025_random_split.csv"
+    )
 
 
 if __name__ == "__main__":
     table_one_facade(
         Path(__file__).parent,
         MlflowClientWrapper().get_run(
-            "clozapine hparam, structured_text_365d_lookahead, xgboost, 1 year lookbehind filter",
-            "mysterious-stag-169",
+            "clozapine hparam, structured_text_365d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split",
+            "fearless-roo-774",
         ),
     )
