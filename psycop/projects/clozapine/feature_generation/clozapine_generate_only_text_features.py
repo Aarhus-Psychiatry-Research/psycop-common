@@ -27,7 +27,7 @@ from psycop.projects.clozapine.feature_generation.cohort_definition.outcome_spec
 from psycop.projects.clozapine.loaders.demographics import birthdays, sex_female
 from psycop.projects.clozapine.text_models.clozapine_text_model_paths import TEXT_EMBEDDINGS_DIR
 
-TEXT_FILE_NAME = "clozapine_text_tfidf_train_val_test_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750_added_psyk_konf.parquet"
+TEXT_FILE_NAME = "clozapine_text_tfidf_train_val_test_2025_random_split_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750.parquet"
 
 
 def get_clozapine_project_info() -> ProjectInfo:

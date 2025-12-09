@@ -12,7 +12,7 @@ from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     BaselinePreprocessingPipeline,
 )
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
-    FilterByOutcomeStratifiedSplits,
+    FilterByRandom2025Splits,
 )
 from psycop.common.types.validated_frame import ValidatedFrame
 from psycop.projects.clozapine.feature_generation.cohort_definition.outcome_specification.combine_text_structured_clozapine_outcome import (
@@ -32,13 +32,13 @@ class TableOneModel(ValidatedFrame[pl.DataFrame]):
 def _train_val_column(flattened_data: pl.DataFrame) -> pl.DataFrame:
     """Adds a 'dataset' column to the dataframe, indicating whether the row is in the train or test set."""
     train_data = (
-        FilterByOutcomeStratifiedSplits(["train"])
+        FilterByRandom2025Splits(["train"])
         .apply(flattened_data.lazy())
         .with_columns(dataset=pl.lit(" train"))
         .collect()
     )
     test_data = (
-        FilterByOutcomeStratifiedSplits(["val"])
+        FilterByRandom2025Splits(["val"])
         .apply(flattened_data.lazy())
         .with_columns(dataset=pl.lit("val"))
         .collect()

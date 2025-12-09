@@ -100,7 +100,6 @@ def cross_validation_performance_table(
 
 if __name__ == "__main__":
     #### XGBOOST ####
-    # add this later "730d_lookahead_TF-IDF 180 days",
     xg_df = pd.DataFrame(
         {
             "pretty_model_name": [
@@ -114,14 +113,14 @@ if __name__ == "__main__":
                 "730d_lookahead_Only unique_count_antipsychotics",
             ],
             "model_name": [
-                "clozapine hparam, structured+tfidf_lookahead_365_days, xgboost, 1 year lookbehind filter",
-                "clozapine hparam, only_structured_lookahead_365_days, xgboost, 1 year lookbehind filter",
-                "clozapine hparam, only_tfidf_lookahead_365_days, xgboost, 1 year lookbehind filter",
-                "clozapine hparam, unique_antipsychotics_365d_lookahead, xgboost, 1 year lookbehind filter",
-                "clozapine hparam, structured_text_730d_lookahead, xgboost, 1 year lookbehind filter",
-                "clozapine hparam, only_structured_730d_lookahead, xgboost, 1 year lookbehind filter",
-                "clozapine hparam, only_tfidf_730d_lookahead, xgboost, 1 year lookbehind filter",
-                "clozapine hparam, unique_antipsychotics_730d_lookahead, xgboost, 1 year lookbehind filter",
+                "clozapine hparam, structured_text_365d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split",
+                "clozapine hparam, only_structured_365d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split",
+                "clozapine hparam, only_tfidf_365d_lookahead, xgboost, 1 year lookbehind filter,2025_random_split",
+                "clozapine hparam, unique_antipsychotics_365d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split",
+                "clozapine hparam, structured_text_730d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split",
+                "clozapine hparam, only_structured_730d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split",
+                "clozapine hparam, only_tfidf_730d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split",
+                "clozapine hparam, unique_antipsychotics_730d_lookahead, xgboost, 1 year lookbehind filter,2025_random_split",
             ],
             # change this for either XGboost or Logistic regression
             "pretty_model_type": [
@@ -139,7 +138,7 @@ if __name__ == "__main__":
 
     cross_validation_performance_table(xg_df, "primary_models_xgboost_1y_lookbehind_filter_")
 
-    logreg_df = pd.DataFrame(
+    log_reg_df = pd.DataFrame(
         {
             "pretty_model_name": [
                 "365d_lookahead_Structured + TF-IDF",
@@ -152,45 +151,27 @@ if __name__ == "__main__":
                 "730d_lookahead_Only unique_count_antipsychotics",
             ],
             "model_name": [
-                "clozapine hparam, structured_text_365d_lookahead, log_reg, 1 year lookbehind filter",
-                "clozapine hparam, only_structured_365d_lookahead, log_reg, 1 year lookbehind filter",
-                "clozapine hparam, only_tfidf_365d_lookahead, log_reg, 1 year lookbehind filter",
-                "clozapine hparam, unique_antipsychotics_365d_lookahead, log_reg, 1 year lookbehind filter",
-                "clozapine hparam, structured_text_730d_lookahead, log_reg, 1 year lookbehind filter",
-                "clozapine hparam, only_structured_730d_lookahead, log_reg, 1 year lookbehind filter",
-                "clozapine hparam, only_tfidf_730d_lookahead, log_reg, 1 year lookbehind filter",
-                "clozapine hparam, unique_antipsychotics_730d_lookahead, log_reg, 1 year lookbehind filter",
+                "clozapine hparam, structured_text_365d_lookahead, log_reg, 1 year lookbehind filter, 2025_random_split",
+                "clozapine hparam, only_structured_365d_lookahead, log_reg, 1 year lookbehind filter,2025_random_split",
+                "clozapine hparam, only_tfidf_365d_lookahead, log_reg, 1 year lookbehind filter,2025_random_split",
+                "clozapine hparam, unique_antipsychotics_365d_lookahead, log_reg, 1 year lookbehind filter, 2025_random_split",
+                "clozapine hparam, structured_text_730d_lookahead, log_reg, 1 year lookbehind filter,2025_random_split",
+                "clozapine hparam, only_structured_730d_lookahead, log_reg, 1 year lookbehind filter, 2025_random_split",
+                "clozapine hparam, only_tfidf_730d_lookahead, log_reg, 1 year lookbehind filter,2025_random_split",
+                "clozapine hparam, unique_antipsychotics_730d_lookahead, log_reg, 1 year lookbehind filter, 2025_random_split",
             ],
             # change this for either XGboost or Logistic regression
             "pretty_model_type": [
-                "Logistic regression",
-                "Logistic regression",
-                "Logistic regression",
-                "Logistic regression",
-                "Logistic regression",
-                "Logistic regression",
-                "Logistic regression",
-                "Logistic regression",
+                "Log_reg",
+                "Log_reg",
+                "Log_reg",
+                "Log_reg",
+                "Log_reg",
+                "Log_reg",
+                "Log_reg",
+                "Log_reg",
             ],
         }
     )
 
-    cross_validation_performance_table(logreg_df, "primary_models_logreg_1y_lookbehind_filter_")
-
-    no_tfidf_clozapine_leponex = pd.DataFrame(
-        {
-            "pretty_model_name": [
-                "clozapine hparam, no_clozapine_leponex_tfidf_structured+tfidf_lookahead_365_days, xgboost, 1 year lookbehind filter"
-            ],
-            "model_name": [
-                "clozapine hparam, no_clozapine_leponex_tfidf_structured+tfidf_lookahead_365_days, xgboost, 1 year lookbehind filter"
-            ],
-            # change this for either XGboost or Logistic regression
-            "pretty_model_type": ["XGBoost"],
-        }
-    )
-
-    cross_validation_performance_table(
-        no_tfidf_clozapine_leponex,
-        "primary_models_no_tfidf_clozapine_leponex_1y_lookbehind_filter_",
-    )
+    cross_validation_performance_table(log_reg_df, "primary_models_log_reg_1y_lookbehind_filter_")
