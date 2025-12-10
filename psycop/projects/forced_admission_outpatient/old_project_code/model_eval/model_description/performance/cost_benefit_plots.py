@@ -11,13 +11,16 @@ from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr
     generate_performance_by_ppr_table,
 )
 from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
-from psycop.projects.forced_admission_inpatient.model_eval.config import COLORS, FA_PN_THEME
-from psycop.projects.forced_admission_inpatient.model_eval.model_description.performance.performance_by_ppr import (
+from psycop.projects.forced_admission_outpatient.old_project_code.model_eval.config import (
+    COLORS,
+    FA_PN_THEME,
+)
+from psycop.projects.forced_admission_outpatient.old_project_code.model_eval.model_description.performance.performance_by_ppr import (
     _get_num_of_unique_outcome_events,  # type: ignore
     _get_number_of_outcome_events_with_at_least_one_true_positve,  # type: ignore
 )
-from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
-    ForcedAdmissionInpatientPipelineRun,
+from psycop.projects.forced_admission_outpatient.old_project_code.utils.pipeline_objects import (
+    ForcedAdmissionOutpatientPipelineRun,
 )
 
 
@@ -187,7 +190,7 @@ def calculate_cost_benefit_estimates_stats(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def calculate_cost_benefit(
-    run: ForcedAdmissionInpatientPipelineRun,
+    run: ForcedAdmissionOutpatientPipelineRun,
     cost_benefit_ratio: int,
     per_true_positive: bool = True,
     min_alert_days: None | int = 30,
@@ -247,7 +250,7 @@ def plot_cost_benefit_by_ppr(df: pd.DataFrame, per_true_positive: bool) -> pn.gg
         + pn.theme(
             panel_grid_major=pn.element_blank(),
             panel_grid_minor=pn.element_blank(),
-            legend_position=(0.3, 0.18),
+            legend_position=(0.4, 0.18),
         )
         + pn.geom_hline(yintercept=0, linetype="dotted", color="red")
         + pn.annotate(
@@ -271,9 +274,9 @@ def plot_cost_benefit_by_ppr(df: pd.DataFrame, per_true_positive: bool) -> pn.gg
     )
 
     if per_true_positive:
-        p += pn.ggtitle("Cost/benefit estimate based on True Positives")
+        p += pn.ggtitle("Cost/benefit pr. positive outcomes")
     else:
-        p += pn.ggtitle("Cost/benefit estimate based on unique outcomes predicted ≥1")
+        p += pn.ggtitle("Cost/benefit pr. unique outcomes")
 
     for value in legend_order:
         p += pn.geom_path(df[df["cost_benefit_ratio_str"] == value], group=1)  # type: ignore
@@ -281,7 +284,7 @@ def plot_cost_benefit_by_ppr(df: pd.DataFrame, per_true_positive: bool) -> pn.gg
 
 
 def fa_cost_benefit_by_ratio_and_ppr(
-    run: ForcedAdmissionInpatientPipelineRun,
+    run: ForcedAdmissionOutpatientPipelineRun,
     per_true_positive: bool,
     cost_benefit_ratios: Sequence[int],
     min_alert_days: None | int = 30,
@@ -293,8 +296,8 @@ def fa_cost_benefit_by_ratio_and_ppr(
         df = calculate_cost_benefit(
             run=run,
             cost_benefit_ratio=ratio,
-            per_true_positive=per_true_positive,
             min_alert_days=min_alert_days,
+            per_true_positive=per_true_positive,
             positive_rates=positive_rates,
         )
 
@@ -310,19 +313,23 @@ def fa_cost_benefit_by_ratio_and_ppr(
     if per_true_positive:
         p.save(
             filename=run.paper_outputs.paths.figures
-            / "fa_inpatient_cost_benefit_per_true_positives.png"
+            / "fa_outpatient_cost_benefit_estimates_per_true_positives.png",
+            width=7,
+            height=7,
         )
     else:
         p.save(
             filename=run.paper_outputs.paths.figures
-            / "fa_inpatient_cost_benefit_per_true_unique_outcomes.png"
+            / "fa_outpatient_cost_benefit_estimates_per_true_unique_outcomes.png",
+            width=7,
+            height=7,
         )
 
     return p
 
 
 def fa_cost_benefit_from_monte_carlo_simulations(
-    run: ForcedAdmissionInpatientPipelineRun,
+    run: ForcedAdmissionOutpatientPipelineRun,
     per_true_positive: bool,
     min_alert_days: None | int = 30,
     positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
@@ -363,23 +370,20 @@ def fa_cost_benefit_from_monte_carlo_simulations(
     if per_true_positive:
         grid_output_path = (
             run.paper_outputs.paths.figures
-            / "fa_inpatient_mc_cost_benefit_per_positives_outcomes.png"
+            / "fa_outpatient_mc_cost_benefit_estimates_per_positives_outcomes.png"
         )
         grid.savefig(grid_output_path)
     else:
-        file_name = (
-            f"fa_inpatient_mc_cost_benefit_per_unique_outcomes_min_days_{min_alert_days}.png"
-            if min_alert_days is not None
-            else "fa_inpatient_mc_cost_benefit_per_unique_outcomes.png"
+        grid_output_path = (
+            run.paper_outputs.paths.figures
+            / "fa_outpatient_mc_cost_benefit_estimates_per_unique_outcomes.png"
         )
-        grid_output_path = run.paper_outputs.paths.figures / file_name
         grid.savefig(grid_output_path)
-
     return p
 
 
 def fa_patchwork_sampling_distribution_plots(
-    run: ForcedAdmissionInpatientPipelineRun,
+    run: ForcedAdmissionOutpatientPipelineRun,
     df: pd.DataFrame,
     cols_to_plot: Sequence[str],
     grid_plot: bool = False,
@@ -393,7 +397,7 @@ def fa_patchwork_sampling_distribution_plots(
         if save:
             grid_output_path = (
                 run.paper_outputs.paths.figures
-                / "fa_inpatient_cost_benefit_intervention_efficiency_sampled_distributions.png"
+                / "fa_outpatient_cost_benefit_intervention_efficiency_sampled_distributions.png"
             )
             grid.savefig(grid_output_path)
 
@@ -403,7 +407,7 @@ def fa_patchwork_sampling_distribution_plots(
 
 
 if __name__ == "__main__":
-    from psycop.projects.forced_admission_inpatient.model_eval.selected_runs import (
+    from psycop.projects.forced_admission_outpatient.old_project_code.model_eval.selected_runs import (
         get_best_eval_pipeline,
     )
 
