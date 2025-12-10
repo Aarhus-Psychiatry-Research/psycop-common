@@ -25,7 +25,6 @@ ENV PATH=$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 RUN npm install -g snyk
 
 # Install dev tools
-# The cache mount caches downloaded packages for Docker
 # The --no-compile options defers compilation to runtime, instead of install-time. This can dramatically save on build time, at the cost of slightly increased first-run times.
 RUN pip install uv
 
