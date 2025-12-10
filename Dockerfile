@@ -30,16 +30,20 @@ RUN npm install -g snyk
 RUN pip install uv
 
 COPY test-requirements.txt .
-RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r test-requirements.txt --no-compile
+RUN --mount=type=cache,target=/root/.cache/uv,size=2G \
+    uv pip install -r test-requirements.txt --no-compile
 
 COPY dev-requirements.txt .
-RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r dev-requirements.txt --no-compile
+RUN --mount=type=cache,target=/root/.cache/uv,size=2G \
+    uv pip install -r dev-requirements.txt --no-compile
 
 COPY gpu-requirements.txt .
-RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r gpu-requirements.txt --no-compile
+RUN --mount=type=cache,target=/root/.cache/uv,size=2G \
+    uv pip install -r gpu-requirements.txt --no-compile
 
 COPY requirements.txt .
-RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r requirements.txt --no-compile
+RUN --mount=type=cache,target=/root/.cache/uv,size=2G \
+    uv pip install -r requirements.txt --no-compile
 
 # Set the working directory to /app
 WORKDIR /app
