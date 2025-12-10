@@ -18,7 +18,7 @@ from psycop.projects.forced_admission_inpatient.model_eval.model_description.per
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
     ForcedAdmissionInpatientPipelineRun,
 )
-from psycop.projects.forced_admission_outpatient.model_eval.config import COLORS, FA_PN_THEME
+from psycop.projects.forced_admission_inpatient.model_eval.config import COLORS, FA_PN_THEME
 
 
 def _sample_float_from_truncated_log_normal(
