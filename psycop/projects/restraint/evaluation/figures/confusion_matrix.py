@@ -15,7 +15,7 @@ from psycop.projects.restraint.evaluation.utils import read_eval_df_from_disk
 
 
 def plotnine_confusion_matrix(
-    matrix: ConfusionMatrix, title: str = "Confusion Matrix"
+    matrix: ConfusionMatrix, title: str = "Confusion matrix"
 ) -> pn.ggplot:
     df = str_to_df(
         f"""true,pred,estimate,metric
@@ -23,8 +23,8 @@ def plotnine_confusion_matrix(
 +,-,{matrix.false_negatives}," ",
 -,+,{matrix.false_positives}," ",
 -,-,{matrix.true_negatives}," ",
-" ",+," ","PPV:\n{round(matrix.ppv*100, 1)}%",
-" ",-," ","NPV:\n{round(matrix.npv*100, 1)}%",
+" ",+," ","Positive\npredictive\nvalue: {round(matrix.ppv*100, 1)}%",
+" ",-," ","Negative\npredictive\nvalue: {round(matrix.npv*100, 1)}%",
 -," "," ","Specificity:\n{round(matrix.specificity*100, 1)}%",
 +," "," ","Sensitivity:\n{round(matrix.sensitivity*100, 1)}%",
 """
@@ -38,12 +38,12 @@ def plotnine_confusion_matrix(
         pn.ggplot(df, pn.aes(x="true", y="pred", fill="fill"))
         + pn.geom_tile(pn.aes(width=0.95, height=0.95))
         + pn.geom_text(
-            pn.aes(label="metric"), size=20, color="white"
+            pn.aes(label="metric"), size=16, color="white"
         )  # , family="Times New Roman")
         + pn.geom_text(
             pn.aes(label="estimate"),
             size=25,
-            color="white",
+            color="black",
             fontweight="bold",  # family="Times New Roman",
         )
         + pn.theme(
@@ -60,7 +60,7 @@ def plotnine_confusion_matrix(
             dpi=300,
         )
         + pn.scale_y_discrete(reverse=True)
-        + pn.scale_fill_manual(values=["#B7C8B5", "#1E536D"])
+        + pn.scale_fill_manual(values=["#F0DEB4", "#2C6D62"])
         + pn.labs(title=title, y="Predicted", x="Actual")
     )
 
