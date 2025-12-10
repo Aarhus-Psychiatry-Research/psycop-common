@@ -197,4 +197,3 @@ if __name__ == "__main__":
         ),
         eval_dir,
     )
-    print("Hi")
