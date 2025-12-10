@@ -1,5 +1,4 @@
 # type: ignore
-import pathlib
 import re
 from pathlib import Path
 
@@ -9,6 +8,7 @@ from sklearn.pipeline import Pipeline
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
+from psycop.projects.clozapine.model_eval.config import CLOZAPINE_EVAL_OUTPUT_DIR
 
 
 def load_vocab(path: Path) -> pl.DataFrame:
@@ -119,8 +119,11 @@ def clozapine_feature_importance_table_facade(pipeline: Pipeline, output_dir: Pa
     feat_imp = clozapine_generate_feature_importance_table(
         pipeline=pipeline, clf_model_name="classifier"
     )
+    output_dir = CLOZAPINE_EVAL_OUTPUT_DIR
     pl.Config.set_tbl_rows(100)
-    (output_dir / "predictor_importance.html").write_text(feat_imp.to_html())
+    feat_imp.to_excel(output_dir / "predictor_importance.xlsx")
+
+    feat_imp.to_csv(output_dir / "predictor_importance.csv")
 
 
 if __name__ == "__main__":
@@ -129,9 +132,6 @@ if __name__ == "__main__":
         "fearless-roo-774",
     )
 
-    feat_imp = clozapine_generate_feature_importance_table(
-        pipeline=run.sklearn_pipeline(), clf_model_name="classifier"
+    clozapine_feature_importance_table_facade(
+        pipeline=run.sklearn_pipeline(), output_dir=CLOZAPINE_EVAL_OUTPUT_DIR
     )
-    pl.Config.set_tbl_rows(100)
-
-    pathlib.Path("clozapine_feature_importances.html").write_text(feat_imp.to_html())
