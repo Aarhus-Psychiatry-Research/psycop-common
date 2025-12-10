@@ -1,5 +1,4 @@
 # type: ignore
-import pathlib
 import re
 from pathlib import Path
 
@@ -9,6 +8,7 @@ from sklearn.pipeline import Pipeline
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
+from psycop.projects.clozapine.model_eval.config import CLOZAPINE_EVAL_OUTPUT_DIR
 
 
 def clozapine_parse_static_feature(full_string: str) -> str:
@@ -67,8 +67,7 @@ def clozapine_generate_feature_importance_table(
     # Get feature importance scores
     feature_importances = pipeline.named_steps[clf_model_name].feature_importances_
 
-    feature_names_ = pipeline.feature_names_in_
-    feature_names = feature_names_[pipeline.named_steps["feature_selection"].get_support()]
+    feature_names = pipeline.feature_names_in_
 
     # Create a DataFrame to store the feature names and their corresponding gain
     feature_table = pl.DataFrame(
@@ -95,19 +94,19 @@ def clozapine_feature_importance_table_facade(pipeline: Pipeline, output_dir: Pa
     feat_imp = clozapine_generate_feature_importance_table(
         pipeline=pipeline, clf_model_name="classifier"
     )
+    output_dir = CLOZAPINE_EVAL_OUTPUT_DIR
     pl.Config.set_tbl_rows(100)
-    (output_dir / "predictor_importance.html").write_text(feat_imp.to_html())
+    feat_imp.to_excel(output_dir / "predictor_importance.xlsx")
+
+    feat_imp.to_csv(output_dir / "predictor_importance.csv")
 
 
 if __name__ == "__main__":
     run = MlflowClientWrapper().get_run(
-        "clozapine hparam, structured_text_365d_lookahead, xgboost, 1 year lookbehind filter",
-        "bemused-lamb-288",
+        "clozapine hparam, structured_text_365d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split",
+        "fearless-roo-774",
     )
 
-    feat_imp = clozapine_generate_feature_importance_table(
-        pipeline=run.sklearn_pipeline(), clf_model_name="classifier"
+    clozapine_feature_importance_table_facade(
+        pipeline=run.sklearn_pipeline(), output_dir=CLOZAPINE_EVAL_OUTPUT_DIR
     )
-    pl.Config.set_tbl_rows(100)
-
-    pathlib.Path("clozapine_feature_importances.html").write_text(feat_imp.to_html())
