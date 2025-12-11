@@ -145,7 +145,7 @@ if __name__ == "__main__":
     with multiprocessing.Pool(processes=15) as pool:
         specs = list(tqdm(pool.imap(_pair_to_spec, layer_spec_pairs), total=len(layer_spec_pairs)))
 
-    logging.info("Generating feature set")
+    logging.info("Generating feature set for training")
     generate_feature_set(
         project_info=ProjectInfo(
             project_name="t2d_extended", 

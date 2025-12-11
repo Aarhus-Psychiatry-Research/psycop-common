@@ -265,3 +265,8 @@ def first_visit_to_psychiatry_2025() -> pl.DataFrame:
         .agg(pl.col("timestamp").min())
     )
     return first_visit
+
+
+
+if __name__ == "__main__":
+    physical_visits_to_psychiatry_2025()

@@ -12,5 +12,3 @@ def populate_with_t2d_extended_registry() -> None:
         BoolToInt,
     )
 
-
-populate_with_t2d_extended_registry()
