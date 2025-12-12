@@ -39,7 +39,7 @@ def outpatient_visits_timestamps() -> pd.DataFrame:
 
     sql = "SELECT * FROM [fct]." + view
 
-    outpatient_visits = pd.DataFrame(sql_load(sql, chunksize=None))  # type: ignore
+    outpatient_visits = pd.DataFrame(sql_load(sql))  # type: ignore
 
     outpatient_visits = outpatient_visits.rename(columns={"datotid_predict": "timestamp"})
 
