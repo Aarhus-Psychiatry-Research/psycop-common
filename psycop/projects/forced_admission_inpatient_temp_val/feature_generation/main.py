@@ -29,7 +29,7 @@ from psycop.projects.forced_admission_inpatient_temp_val.feature_generation.modu
 )
 from psycop.projects.forced_admission_inpatient_temp_val.feature_generation.modules.specify_text_features import (
     TextFeatureSpecifier,
-)
+)  # type: ignore
 
 log = logging.getLogger()
 warnings.simplefilter(action="ignore", category=RuntimeWarning)
@@ -77,7 +77,7 @@ def main(
     ).get_feature_specs()
 
     if add_text_features:
-        text_feature_specs = TextFeatureSpecifier(
+        text_feature_specs = TextFeatureSpecifier(  # type: ignore
             project_info=project_info,
             min_set_for_debug=min_set_for_debug,  # Remember to set to False when generating full dataset
         ).get_text_feature_specs(embedding_method=text_embedding_method)  # type: ignore
