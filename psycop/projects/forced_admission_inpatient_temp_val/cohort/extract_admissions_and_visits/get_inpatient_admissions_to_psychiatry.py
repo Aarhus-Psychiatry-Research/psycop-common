@@ -57,7 +57,7 @@ def admissions_onset_timestamps_2025() -> pd.DataFrame:
 def admissions_discharge_timestamps_2025() -> pd.DataFrame:
     # Load forced_admissions data
     view = "[FOR_kohorte_indhold_pt_journal_tvangsindlæggelse_sep_2025]"
-    cols_to_keep = "datotid_slut, dw_ek_borger"
+    cols_to_keep = "datotid_start,datotid_slut, dw_ek_borger"
 
     sql = "SELECT " + cols_to_keep + " FROM [fct]." + view
 
