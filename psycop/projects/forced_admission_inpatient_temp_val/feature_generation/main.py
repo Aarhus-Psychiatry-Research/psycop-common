@@ -28,8 +28,8 @@ from psycop.projects.forced_admission_inpatient_temp_val.feature_generation.modu
     FeatureSpecifier,
 )
 from psycop.projects.forced_admission_inpatient_temp_val.feature_generation.modules.specify_text_features import (
-    TextFeatureSpecifier,
-)  # type: ignore
+    TextFeatureSpecifier,  # type: ignore
+)
 
 log = logging.getLogger()
 warnings.simplefilter(action="ignore", category=RuntimeWarning)
