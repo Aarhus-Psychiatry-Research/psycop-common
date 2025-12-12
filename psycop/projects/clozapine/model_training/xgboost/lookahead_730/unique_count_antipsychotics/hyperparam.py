@@ -19,7 +19,7 @@ def hyperparameter_search(cfg: PsycopConfig):
     for feature_set, features in FEATURE_SETS.items():
         cfg.mut(
             "logger.*.mlflow.experiment_name",
-            f"clozapine hparam, {feature_set}, xgboost, 1 year lookbehind filter,2025_random_split",
+            f"clozapine hparam, {feature_set}, xgboost, 1 year lookbehind filter, 2025_random_split",
         )
 
         layer_regex = "|".join(features)

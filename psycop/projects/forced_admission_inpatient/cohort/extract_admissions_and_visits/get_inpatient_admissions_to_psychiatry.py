@@ -44,7 +44,7 @@ def admissions_onset_timestamps() -> pd.DataFrame:
 
     sql = "SELECT " + cols_to_keep + " FROM [fct]." + view
 
-    admissions_onset_timestamps = pd.DataFrame(sql_load(sql, chunksize=None))  # type: ignore
+    admissions_onset_timestamps = pd.DataFrame(sql_load(sql))  # type: ignore
 
     admissions_onset_timestamps = admissions_onset_timestamps.rename(
         columns={"datotid_star": "timestamp"}
