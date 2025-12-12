@@ -16,9 +16,12 @@ def table_one_facade(
     model = table_one_model(run=run, sex_col_name=sex_col_name)
     view = clozapine_table_one(model=model)
     view.to_excel(
-        output_dir / "2025_random_split_table_one_730d_lookahead_train_val_1y_lookbehind_filter.xlsx"
+        output_dir
+        / "2025_random_split_table_one_730d_lookahead_train_val_1y_lookbehind_filter.xlsx"
     )
-    view.to_csv(output_dir / "2025_random_split_table_one_730d_lookahead_train_val_1y_lookbehind_filter.csv")
+    view.to_csv(
+        output_dir / "2025_random_split_table_one_730d_lookahead_train_val_1y_lookbehind_filter.csv"
+    )
 
 
 if __name__ == "__main__":
