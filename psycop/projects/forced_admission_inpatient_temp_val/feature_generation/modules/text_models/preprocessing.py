@@ -8,7 +8,7 @@ from psycop.common.feature_generation.text_models.utils import stop_words
 from psycop.common.global_utils.sql.writer import write_df_to_sql
 from psycop.projects.forced_admission_inpatient_temp_val.feature_generation.modules.loaders.load_text_fa_2025 import (
     get_valid_text_sfi_names,
-    load_text_split,
+    load_text_sfis,
 )
 
 
@@ -41,9 +41,7 @@ def text_preprocessing_pipeline(sfi_type: Optional[Sequence[str] | str] = None) 
     """
 
     # Load text from splits
-    df = load_text_split(
-        text_sfi_names=sfi_type if sfi_type else get_valid_text_sfi_names(), include_sfi_name=True
-    )
+    df = load_text_sfis(text_sfi_names=sfi_type if sfi_type else get_valid_text_sfi_names())
 
     # preprocess
     df = text_preprocessing(df)
