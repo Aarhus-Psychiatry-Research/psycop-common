@@ -13,13 +13,15 @@ class T2DGetter(Getter):
     @staticmethod
     def get_eval_df() -> pd.DataFrame:
         experiment = "nonviolentstigmaria-eval-on-test"
-        eval_df_path = f"E:/shared_resources/t2d/model_eval/urosepsis-helicoid-eval-on-test/{experiment}_best_run_evaluated_on_test/evaluation_dataset.parquet"
+        eval_df_path = f"E:/shared_resources/t2d/model_eval/urosepsis-helicoid-eval-on-test/{experiment}/evaluation_dataset.parquet"
 
         return pd.read_parquet(eval_df_path)
 
     @staticmethod
     def get_feature_set_df() -> pd.DataFrame:
-        feature_set_df_path = "psycop_t2d_adminber_features_2023_04_27_14_25"
+        feature_set_df_path = (
+            "E:/shared_resources/t2d/feature_sets/psycop_t2d_adminmanber_features_2023_04_27_14_25"
+        )
 
         all_files = Path(feature_set_df_path).glob("*.parquet")
         df_list = [pd.read_parquet(file) for file in all_files]
@@ -30,7 +32,9 @@ class T2DGetter(Getter):
     @staticmethod
     def get_cfg() -> PsycopConfig:
         experiment = "nonviolentstigmaria-eval-on-test"
-        experiment_path = f"E:/shared_resources/t2d/model_eval/urosepsis-helicoid-eval-on-test/{experiment}_best_run_evaluated_on_test"
+        experiment_path = (
+            f"E:/shared_resources/t2d/model_eval/urosepsis-helicoid-eval-on-test/{experiment}"
+        )
         return PsycopConfig(Config().from_disk(path=Path(experiment_path) / "config.cfg"))
 
 
