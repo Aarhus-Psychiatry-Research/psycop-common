@@ -1,9 +1,12 @@
 from pathlib import Path
 
 import pandas as pd
+from typing import Literal
 
 
-def load_and_merge_feature_sets(base_path: str | Path, new_name: str) -> pd.DataFrame:
+def load_and_merge_feature_sets(
+    base_path: str | Path, new_name: str, axis: Literal[0, 1] = 0
+) -> pd.DataFrame:
     """
     Load train, validation, and test parquet files from a base path,
     concatenate them vertically, save the merged parquet file,
@@ -22,7 +25,7 @@ def load_and_merge_feature_sets(base_path: str | Path, new_name: str) -> pd.Data
         df_list.append(pd.read_parquet(file_path))
 
     # Stack/concat vertically
-    merged_df = pd.concat(df_list, axis=0, ignore_index=True)
+    merged_df = pd.concat(df_list, axis=axis, ignore_index=True)
 
     # Save final merged df
     output_path = base_path / f"{new_name}.parquet"
@@ -36,4 +39,4 @@ if __name__ == "__main__":
         "E:/shared_resources/forced_admissions_outpatient/flattened_datasets/text_features"
     )
 
-    merged = load_and_merge_feature_sets(FEATURE_SET_DIR, "full_feature_set")
+    merged = load_and_merge_feature_sets(FEATURE_SET_DIR, "full_feature_set", axis=1)
