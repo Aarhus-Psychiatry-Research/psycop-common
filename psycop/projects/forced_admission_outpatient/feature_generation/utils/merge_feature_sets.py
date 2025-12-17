@@ -33,7 +33,7 @@ def load_and_merge_feature_sets(base_path: str | Path, new_name: str) -> pd.Data
 
 if __name__ == "__main__":
     FEATURE_SET_DIR = Path(
-        "E:/shared_resources/forced_admissions_outpatient/flattened_datasets/structured_feature_set"
+        "E:/shared_resources/forced_admissions_outpatient/flattened_datasets/text_features"
     )
 
-    merged = load_and_merge_feature_sets(FEATURE_SET_DIR, "structured_feature_set")
+    merged = load_and_merge_feature_sets(FEATURE_SET_DIR, "full_feature_set")
