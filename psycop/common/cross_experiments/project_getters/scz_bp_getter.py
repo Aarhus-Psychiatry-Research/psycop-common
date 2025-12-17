@@ -7,7 +7,7 @@ from psycop.common.cross_experiments.getter import Getter
 from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 
 
-class ECTGetter(Getter):
+class SczBpGetter(Getter):
     predicted_positive_rate: float = 0.02
 
     @staticmethod
@@ -29,7 +29,7 @@ class ECTGetter(Getter):
 
 
 if __name__ == "__main__":
-    getter = ECTGetter()
+    getter = SczBpGetter()
     print(getter.get_cfg())
     print(getter.get_eval_df().head())
     print(getter.get_feature_set_df().head())
