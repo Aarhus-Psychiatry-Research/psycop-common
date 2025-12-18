@@ -69,7 +69,7 @@ def load_and_join_feature_sets(
     if len(merged_df) != len(left_df):
         raise ValueError("Join changed row count — join keys do not match 1-to-1")
 
-    output_path = dir_path / f"{new_name}.parquet"
+    output_path = dir_path / f"{new_name}" / f"{new_name}.parquet"
     merged_df.to_parquet(output_path)
 
     return merged_df
@@ -78,7 +78,7 @@ def load_and_join_feature_sets(
 if __name__ == "__main__":
     FEATURE_SET_DIR = Path("E:/shared_resources/forced_admissions_outpatient/flattened_datasets")
 
-    join_keys = ["dw_ek_borger", "timestamp", "age", "pred_age_in_years"]
+    join_keys = ["dw_ek_borger", "timestamp", "age", "pred_age_in_years", "prediction_time_uuid"]
 
     merged = load_and_join_feature_sets(
         dir_path=FEATURE_SET_DIR,
