@@ -24,6 +24,7 @@ from psycop.projects.restraint.evaluation.figures.auroc_by_week import (
 from psycop.projects.restraint.evaluation.figures.plot_grid_main import plot_grid
 from psycop.projects.restraint.evaluation.figures.predictor_importance import (
     restraint_generate_feature_importance_table,
+    plotnine_feature_importance,
 )
 from psycop.projects.restraint.evaluation.figures.sensitivity_by_outcome import (
     plotnine_sensitivity_by_first_outcome,
@@ -76,18 +77,22 @@ def run_paper_outputs(
     outcome_df = pl.from_pandas(load_restraint_outcome_timestamps())
 
     plotnine_sensitivity_by_first_outcome(
-        sensitivity_by_first_outcome_model(df=df, outcome_df=outcome_df)
+        sensitivity_by_first_outcome_model(df=df, outcome_df=outcome_df, best_pos_rate=best_pos_rate)
     ).save(save_path / "restraint_sensitivity_by_first_outcome.png")
 
     plotnine_sensitivity_by_outcome(
-        sensitivity_by_outcome_model(df=df, outcome_df=outcome_df)
+        sensitivity_by_outcome_model(df=df, outcome_df=outcome_df, best_pos_rate=best_pos_rate)
     ).save(save_path / "restraint_sensitivity_by_outcome.png")
 
     run = MlflowClientWrapper().get_best_run_from_experiment(run_name, metric="all_oof_BinaryAUROC")
 
-    restraint_generate_feature_importance_table(
+    feat_imp = restraint_generate_feature_importance_table(
         pipeline=run.sklearn_pipeline(), clf_model_name="classifier"
-    ).to_html(save_path / "predictor_importance.html")
+    )
+    
+    feat_imp.to_html(save_path / "predictor_importance.html")
+
+    plotnine_feature_importance(feat_imp).save(save_path / "restraint_feature_importance.png")
 
     training_data = pl.read_parquet(run.get_config()["trainer"]["training_data"]["paths"][0]).drop(
         ["dw_ek_borger", "timestamp", "prediction_time_uuid"]
@@ -99,31 +104,34 @@ def run_paper_outputs(
 
 
 if __name__ == "__main__":
-    run_name = "restraint_all_tuning_v2_best_run_evaluated_on_test_mechanical"
+    experiments = ["restraint_mechanical_tuning_v2_best_run_evaluated_on_test", "restraint_all_tuning_v2_best_run_evaluated_on_test", "restraint_all_tuning_v2_best_run_evaluated_on_test_mechanical"]
+    # run_name = "restraint_mechanical_tuning_v2_best_run_evaluated_on_test"
     best_pos_rate = 0.01
 
     save_dir = "E:/shared_resources/restraint/eval_runs"
 
-    df = read_eval_df_from_disk(save_dir + "/" + run_name)
+    for run_name in experiments:
 
-    mechanical_outcome_timestamps = pl.DataFrame(
-        sql_load(
-            "SELECT pred_times.dw_ek_borger, pred_time, first_mechanical_restraint as timestamp FROM fct.psycop_coercion_outcome_timestamps as pred_times LEFT JOIN fct.psycop_coercion_outcome_timestamps_2 as outc_times ON (pred_times.dw_ek_borger = outc_times.dw_ek_borger AND pred_times.datotid_start = outc_times.datotid_start)"
-        ).drop_duplicates()
-    )
+        df = read_eval_df_from_disk(save_dir + "/" + run_name)
 
-    all_outcome_timestamps = pl.DataFrame(
-        sql_load(
-            "SELECT pred_times.dw_ek_borger, pred_time, outc_times.datotid_start_sei as timestamp FROM fct.psycop_coercion_outcome_timestamps as pred_times LEFT JOIN fct.psycop_coercion_outcome_timestamps_2 as outc_times ON (pred_times.dw_ek_borger = outc_times.dw_ek_borger AND pred_times.datotid_start = outc_times.datotid_start)"
-        ).drop_duplicates()
-    )
+        mechanical_outcome_timestamps = pl.DataFrame(
+            sql_load(
+                "SELECT pred_times.dw_ek_borger, pred_time, first_mechanical_restraint as timestamp FROM fct.psycop_coercion_outcome_timestamps as pred_times LEFT JOIN fct.psycop_coercion_outcome_timestamps_2 as outc_times ON (pred_times.dw_ek_borger = outc_times.dw_ek_borger AND pred_times.datotid_start = outc_times.datotid_start)"
+            ).drop_duplicates()
+        )
 
-    outcome_df = pl.from_pandas(load_restraint_outcome_timestamps())
+        all_outcome_timestamps = pl.DataFrame(
+            sql_load(
+                "SELECT pred_times.dw_ek_borger, pred_time, outc_times.datotid_start_sei as timestamp FROM fct.psycop_coercion_outcome_timestamps as pred_times LEFT JOIN fct.psycop_coercion_outcome_timestamps_2 as outc_times ON (pred_times.dw_ek_borger = outc_times.dw_ek_borger AND pred_times.datotid_start = outc_times.datotid_start)"
+            ).drop_duplicates()
+        )
 
-    run_paper_outputs(
-        df=df,
-        outcome_timestamps=mechanical_outcome_timestamps,
-        best_pos_rate=best_pos_rate,
-        save_dir=save_dir,
-        run_name=run_name,
-    )
+        outcome_df = pl.from_pandas(load_restraint_outcome_timestamps())
+
+        run_paper_outputs(
+            df=df,
+            outcome_timestamps=mechanical_outcome_timestamps,
+            best_pos_rate=best_pos_rate,
+            save_dir=save_dir,
+            run_name=run_name,
+        )
