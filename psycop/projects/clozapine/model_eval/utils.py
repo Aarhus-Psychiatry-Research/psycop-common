@@ -1,9 +1,12 @@
 import pandas as pd
 import polars as pl
 
-from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
+from psycop.projects.clozapine.feature_generation.cohort_definition.outcome_specification.combine_text_structured_clozapine_outcome import (
+    combine_structured_and_text_outcome,
+)
+from psycop.projects.clozapine.loaders.demographics import birthdays
 
 
 def log_cross_val_eval_df_from_best_run(experiment_name: str):
@@ -26,7 +29,7 @@ def parse_timestamp_from_uuid(df: pl.DataFrame, output_col_name: str = "timestam
         .str.split("-")
         .list.slice(1)
         .list.join("-")
-        .str.strptime(pl.Datetime, format="%Y-%m-%d-%H-%M-%S")
+        .str.to_datetime()
         .alias(output_col_name)
     )
 
@@ -60,6 +63,20 @@ def parse_outcome_timestamps(
     return eval_dataset
 
 
+def add_outcome_timestamps_to_eval_df(eval_df: pl.DataFrame) -> pl.DataFrame:
+    clozapine_outcomes = (
+        pl.from_pandas(combine_structured_and_text_outcome())
+        .select("dw_ek_borger", "timestamp")
+        .rename({"timestamp": "timestamp_outcome"})
+    )
+
+    prediction_time_df = parse_timestamp_from_uuid(parse_dw_ek_borger_from_uuid(eval_df))
+
+    eval_df = prediction_time_df.join(clozapine_outcomes, on="dw_ek_borger", how="left")
+
+    return eval_df
+
+
 def add_age(df: pl.DataFrame, birthdays: pl.DataFrame, age_col_name: str = "age") -> pl.DataFrame:
     df = df.join(birthdays, on="dw_ek_borger", how="left")
     df = df.with_columns(
@@ -70,14 +87,12 @@ def add_age(df: pl.DataFrame, birthdays: pl.DataFrame, age_col_name: str = "age"
     return df
 
 
-def expand_eval_df_with_extra_cols(
-    eval_df: pl.DataFrame, flattened_df_path: str, outcome_timestamp_col_name: str | None = None
-) -> pd.DataFrame:
+def expand_eval_df_with_extra_cols(eval_df: pl.DataFrame) -> pd.DataFrame:
     birthdates = pl.from_pandas(birthdays())
 
     eval_df = parse_timestamp_from_uuid(eval_df)
     eval_df = parse_dw_ek_borger_from_uuid(eval_df)
     eval_df = add_age(eval_df, birthdates)
-    eval_df = parse_outcome_timestamps(eval_df, flattened_df_path, outcome_timestamp_col_name)
+    eval_df = add_outcome_timestamps_to_eval_df(eval_df)
 
     return eval_df.to_pandas()

@@ -177,25 +177,20 @@ def clozapine_output_performance_by_ppr(
 
     if eval_dir:
         (Path(eval_dir) / "figure_and_tables").mkdir(parents=True, exist_ok=True)
-        df.to_excel(Path(eval_dir) / "figure_and_tables" / "performance_by_ppr.xlsx", index=False)
+        df.to_excel(
+            Path(eval_dir) / "figure_and_tables" / "performance_by_ppr_fa_code.xlsx", index=False
+        )
         return None
 
     return df
 
 
 if __name__ == "__main__":
-    experiment_name = "clozapine hparam, structured_text_365d_lookahead, log_reg, 1 year lookbehind filter, 2025_random_split"
+    experiment_name = "clozapine hparam, structured_text_365d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split"
     eval_dir = (
         f"E:/shared_resources/clozapine/eval_runs/{experiment_name}_best_run_evaluated_on_test"
     )
-    flattend_df_dir = "E:/shared_resources/clozapine/flattened_datasets/clozapine_full_feature_set_with_tfidf_2025_random_split/clozapine_full_feature_set_with_tfidf_2025_random_split.parquet"
-    outcome_timestamp_col_name = "timestamp_outcome__within_180_days_earliest_fallback_nan"
 
     clozapine_output_performance_by_ppr(
-        expand_eval_df_with_extra_cols(
-            read_eval_df_from_disk(eval_dir),
-            flattend_df_dir,
-            outcome_timestamp_col_name=outcome_timestamp_col_name,
-        ),
-        eval_dir,
+        expand_eval_df_with_extra_cols(read_eval_df_from_disk(eval_dir)), eval_dir
     )
