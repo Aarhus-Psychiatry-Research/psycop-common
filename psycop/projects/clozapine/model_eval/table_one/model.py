@@ -28,19 +28,18 @@ class TableOneModel(ValidatedFrame[pl.DataFrame]):
     pred_time_uuid_col_name: str = "pred_time_uuid"
 
 
-@shared_cache().cache
 def _train_val_column(flattened_data: pl.DataFrame) -> pl.DataFrame:
     """Adds a 'dataset' column to the dataframe, indicating whether the row is in the train or test set."""
     train_data = (
-        FilterByRandom2025Splits(["train"])
+        FilterByRandom2025Splits(["train", "val"])
         .apply(flattened_data.lazy())
-        .with_columns(dataset=pl.lit(" train"))
+        .with_columns(dataset=pl.lit("train"))
         .collect()
     )
     test_data = (
-        FilterByRandom2025Splits(["val"])
+        FilterByRandom2025Splits(["test"])
         .apply(flattened_data.lazy())
-        .with_columns(dataset=pl.lit("val"))
+        .with_columns(dataset=pl.lit("test"))
         .collect()
     )
 
@@ -77,14 +76,17 @@ def table_one_model(run: PsycopMlflowRun, sex_col_name: str) -> TableOneModel:
 
     pipeline: BaselinePreprocessingPipeline = filled["trainer"].preprocessing_pipeline
     pipeline._logger = TerminalLogger()  # type: ignore
+
+    for step in pipeline.steps:
+        if isinstance(step, FilterByRandom2025Splits):
+            step.splits_to_keep = ["train", "val", "test"]
+
     pipeline.steps = [
         step
         for step in pipeline.steps
         if "filter" in step.__class__.__name__.lower()  # Only keep potential row filters
         and "column"
         not in step.__class__.__name__.lower()  # Do not filter columns (e.g. keep timestamps for further processing)
-        and "outcomestratified"
-        not in step.__class__.__name__.lower()  # Do not filter on id split (happens when adding split labels)
     ]
 
     preprocessed_visits = _preprocessed_data(cfg["trainer"]["training_data"]["paths"][0], pipeline)
