@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 
-FEATURE_SET_DIR = Path("E:/shared_resources/forced_admissions_inpatient/flattened_datasets")
+FEATURE_SET_DIR = Path("E:/shared_resources/forced_admissions_outpatient/flattened_datasets")
 
 
 def subset_feature_df(feature_set_path: str):
@@ -79,30 +79,25 @@ def subset_text_features(feature_set_path: str, output_path: str):
     FULL_OUTPUT_PATH = FEATURE_SET_DIR / output_path
 
     # Load feature set
-    structured_df = pd.read_parquet(FULL_FEATURE_SET_PATH)
+    df = pd.read_parquet(FULL_FEATURE_SET_PATH)
 
     # Prefixes to keep
-    keep_prefixes = ("pred_tfidf", "pred_sen_emb", "pred_sex_female", "pred_age_in_years")
+    keep_prefixes = ("pred_pred_tfidf", "pred_pred_sen_emb", "pred_sex_female", "pred_age_in_years")
 
     # Identify columns to drop
     cols_to_drop = [
-        col
-        for col in structured_df.columns
-        if col.startswith("pred_") and not col.startswith(keep_prefixes)
+        col for col in df.columns if col.startswith("pred_") and not col.startswith(keep_prefixes)
     ]
 
     # Subset dataframe
-    structured_df = structured_df.drop(columns=cols_to_drop)
+    df = df.drop(columns=cols_to_drop)
 
     # Ensure output directory exists
     Path.mkdir(FULL_OUTPUT_PATH, exist_ok=True)
 
     # Save result
-    structured_df.to_parquet(FULL_OUTPUT_PATH / "text_feature_set.parquet")
+    df.to_parquet(FULL_OUTPUT_PATH / "text_feature_set.parquet")
 
 
 if __name__ == "__main__":
-    subset_text_features(
-        "full_feature_set_with_sentence_transformers_and_tfidf_750",
-        "text_feature_set_with_sentence_transformers_and_tfidf_750",
-    )
+    subset_text_features("full_feature_set", "text_feature_set")
