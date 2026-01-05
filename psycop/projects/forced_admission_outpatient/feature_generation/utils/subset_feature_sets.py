@@ -74,5 +74,35 @@ def subset_feature_df(feature_set_path: str):
         structured_df.to_parquet(structured_path / f"{split}.parquet")
 
 
+def subset_text_features(feature_set_path: str, output_path: str):
+    FULL_FEATURE_SET_PATH = FEATURE_SET_DIR / feature_set_path
+    FULL_OUTPUT_PATH = FEATURE_SET_DIR / output_path
+
+    # Load feature set
+    structured_df = pd.read_parquet(FULL_FEATURE_SET_PATH)
+
+    # Prefixes to keep
+    keep_prefixes = ("pred_tfidf", "pred_sen_emb", "pred_sex_female", "pred_age_in_years")
+
+    # Identify columns to drop
+    cols_to_drop = [
+        col
+        for col in structured_df.columns
+        if col.startswith("pred_") and not col.startswith(keep_prefixes)
+    ]
+
+    # Subset dataframe
+    structured_df = structured_df.drop(columns=cols_to_drop)
+
+    # Ensure output directory exists
+    Path.mkdir(FULL_OUTPUT_PATH, exist_ok=True)
+
+    # Save result
+    structured_df.to_parquet(FULL_OUTPUT_PATH / "text_feature_set.parquet")
+
+
 if __name__ == "__main__":
-    subset_feature_df("full_feature_set_with_sentence_transformers_and_tfidf_750")
+    subset_text_features(
+        "full_feature_set_with_sentence_transformers_and_tfidf_750",
+        "text_feature_set_with_sentence_transformers_and_tfidf_750",
+    )
