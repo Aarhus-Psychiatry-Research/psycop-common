@@ -1,8 +1,8 @@
 from typing import Callable
+
 import numpy as np
 import pandas as pd
 
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_evaluation.binary.bootstrap_estimates import bootstrap_estimates
 from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
@@ -30,6 +30,7 @@ def get_training_performance_cis(
         positive_rate (float, optional): Desired positive rate for thresholding. Defaults to 0.03
         n_bootstrap_samples (int, optional): Number of bootstrap samples. Defaults to 1000.
         ci (int, optional): Confidence interval width (in percentage). Defaults to 95.
+        file_name (str): Name of the output file
 
     Returns:
         pd.DataFrame: DataFrame containing confidence intervals for each experiment.
@@ -38,7 +39,7 @@ def get_training_performance_cis(
     experiment_names = []
 
     for experiment in experiments:
-        path = f"{base_path}/{experiment}/eval_df.parquet"
+        path = f"{base_path}/{experiment}"
 
         df = read_eval_df_from_disk(path).to_pandas()
 
@@ -50,15 +51,12 @@ def get_training_performance_cis(
         )[0]
 
         boot_ci = bootstrap_estimates(
-            y_true=y_true,  # type: ignore
-            y_pred=y_hat_probs if metric.__name__ == "roc_auc" else y_pred,  # type: ignore
-            metric=metric,
+            metric,
+            n_bootstraps=n_bootstrap_samples,
             ci_width=ci / 100,
-            n_resamples=n_bootstrap_samples,
-            method="basic",
-            random_state=42,
-            stratified=True,
-        )
+            input_1=y_true,
+            input_2=y_hat_probs if metric.__name__ == "roc_auc" else y_pred,  # type: ignore,
+        )["ci"]
 
         ci_results.append(boot_ci)
         experiment_names.append(experiment)
@@ -82,12 +80,12 @@ if __name__ == "__main__":
         experiments=[
             "ECT-trunc-and-hp-structured_only-xgboost-no-lookbehind-filter_best_run_evaluated_on_test",
             "ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter_best_run_evaluated_on_test",
-            "ECT-trunc-and-hp-text_only-xgboost-with-lookbehind-filter_best_run_evaluated_on_test",
+            "ECT-trunc-and-hp-text_only-xgboost-no-lookbehind-filter_best_run_evaluated_on_test",
         ],
         metric=lambda y_true, y_pred: np.mean(y_true == y_pred),  # type: ignore
         positive_rate=0.03,
         n_bootstrap_samples=1000,
         ci=95,
-        file_name="accuracy_ci",
+        file_name="eval_on_test_cis",
     )
     print(ci_df)
