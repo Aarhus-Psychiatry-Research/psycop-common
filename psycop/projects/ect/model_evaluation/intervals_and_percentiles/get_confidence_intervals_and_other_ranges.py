@@ -50,15 +50,12 @@ def get_training_performance_cis(
         )[0]
 
         boot_ci = bootstrap_estimates(
-            y_true=y_true,  # type: ignore
-            y_pred=y_hat_probs if metric.__name__ == "roc_auc" else y_pred,  # type: ignore
-            metric=metric,
+            metric,
+            n_bootstraps=n_bootstrap_samples,
             ci_width=ci / 100,
-            n_resamples=n_bootstrap_samples,
-            method="basic",
-            random_state=42,
-            stratified=True,
-        )
+            input_1=y_true,
+            input_2=y_hat_probs if metric.__name__ == "roc_auc" else y_pred,  # type: ignore,
+        )["ci"]
 
         ci_results.append(boot_ci)
         experiment_names.append(experiment)
