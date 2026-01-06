@@ -161,6 +161,11 @@ def _calculate_row(positive_rate: float, eval_df: pl.DataFrame) -> pl.DataFrame:
                 eval_dataset=eval_df, positive_rate=positive_rate, aggregation_method="median"
             )
         ).alias("median_warning_days"),
+        pl.lit(
+            days_from_first_positive_to_event(
+                eval_dataset=eval_df, positive_rate=positive_rate, aggregation_method=[0.25, 0.75]
+            )
+        ).alias("quantile_warning_days"),
     )
 
     return threshold_metrics

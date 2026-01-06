@@ -1,19 +1,22 @@
 from typing import Callable
 
-import numpy as np
 import pandas as pd
+from sklearn.metrics import recall_score, roc_auc_score
 
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_evaluation.binary.bootstrap_estimates import bootstrap_estimates
 from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
 )
+from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
 from psycop.projects.restraint.evaluation.utils import read_eval_df_from_disk
 
 
 def get_training_performance_cis(
     base_path: str,
     experiments: list[str],
-    metric: Callable[[pd.Series, pd.Series], float],
+    metric: Callable[[pd.Series, pd.Series], float],  # type: ignore
+    from_disk: bool = True,
     positive_rate: float = 0.03,
     n_bootstrap_samples: int = 1000,
     ci: int = 95,
@@ -27,6 +30,7 @@ def get_training_performance_cis(
         base_path (str): Base path where evaluation dataframes are stored.
         experiments (list[str]): List of experiment names to evaluate.
         metric (Callable[[pd.Series, pd.Series], float]): Metric function to evaluate.
+        from_disk (bool): Whether the eval df for the experiment is logged on disk or needs to be generated from a config on MLflow. Defaults to True.
         positive_rate (float, optional): Desired positive rate for thresholding. Defaults to 0.03
         n_bootstrap_samples (int, optional): Number of bootstrap samples. Defaults to 1000.
         ci (int, optional): Confidence interval width (in percentage). Defaults to 95.
@@ -40,6 +44,17 @@ def get_training_performance_cis(
 
     for experiment in experiments:
         path = f"{base_path}/{experiment}"
+
+        if not from_disk:
+            best_run_cfg = (
+                MlflowClientWrapper()
+                .get_best_run_from_experiment(
+                    experiment_name=experiment, metric="all_oof_BinaryAUROC"
+                )
+                .get_config()
+            )
+
+            _ = train_baseline_model_from_cfg(best_run_cfg)  # type: ignore
 
         df = read_eval_df_from_disk(path).to_pandas()
 
@@ -55,7 +70,7 @@ def get_training_performance_cis(
             n_bootstraps=n_bootstrap_samples,
             ci_width=ci / 100,
             input_1=y_true,
-            input_2=y_hat_probs if metric.__name__ == "roc_auc" else y_pred,  # type: ignore,
+            input_2=y_hat_probs if metric.__name__ == "roc_auc_score" else y_pred,  # type: ignore,
         )["ci"]
 
         ci_results.append(boot_ci)
@@ -82,10 +97,70 @@ if __name__ == "__main__":
             "ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter_best_run_evaluated_on_test",
             "ECT-trunc-and-hp-text_only-xgboost-no-lookbehind-filter_best_run_evaluated_on_test",
         ],
-        metric=lambda y_true, y_pred: np.mean(y_true == y_pred),  # type: ignore
+        metric=recall_score,  # type: ignore
         positive_rate=0.03,
         n_bootstrap_samples=1000,
         ci=95,
-        file_name="eval_on_test_cis",
+        file_name="eval_on_test_sensitivity_cis",
+    )
+    print(ci_df)
+
+    ci_df = get_training_performance_cis(
+        base_path="E:/shared_resources/ect/training",
+        experiments=[
+            "ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter",
+            "ECT-trunc-and-hp-structured_only-xgboost-no-lookbehind-filter",
+            "ECT-trunc-and-hp-text_only-xgboost-no-lookbehind-filter",
+        ],
+        metric=roc_auc_score,  # type: ignore
+        positive_rate=0.03,
+        n_bootstrap_samples=1000,
+        ci=95,
+        file_name="training_cv_auroc_cis",
+    )
+    print(ci_df)
+
+    ci_df = get_training_performance_cis(
+        base_path="E:/shared_resources/ect/eval_runs",
+        experiments=[
+            "ECT-trunc-and-hp-structured_only-xgboost-no-lookbehind-filter_best_run_evaluated_on_test",
+            "ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter_best_run_evaluated_on_test",
+            "ECT-trunc-and-hp-text_only-xgboost-no-lookbehind-filter_best_run_evaluated_on_test",
+        ],
+        metric=roc_auc_score,  # type: ignore
+        positive_rate=0.03,
+        n_bootstrap_samples=1000,
+        ci=95,
+        file_name="eval_on_test_auroc_cis",
+    )
+    print(ci_df)
+
+    ci_df = get_training_performance_cis(
+        base_path="E:/shared_resources/ect/eval_runs",
+        experiments=[
+            "ECT-trunc-and-hp-structured_only-xgboost-no-lookbehind-filter_best_run_evaluated_on_test",
+            "ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter_best_run_evaluated_on_test",
+            "ECT-trunc-and-hp-text_only-xgboost-no-lookbehind-filter_best_run_evaluated_on_test",
+        ],
+        metric=recall_score,  # type: ignore
+        positive_rate=0.03,
+        n_bootstrap_samples=1000,
+        ci=95,
+        file_name="eval_on_test_sensitivity_cis",
+    )
+    print(ci_df)
+
+    ci_df = get_training_performance_cis(
+        base_path="E:/shared_resources/ect/eval_runs",
+        experiments=[
+            "ECT-trunc-and-hp-structured_only-xgboost-no-lookbehind-filter_best_run_evaluated_on_test",
+            "ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter_best_run_evaluated_on_test",
+            "ECT-trunc-and-hp-text_only-xgboost-no-lookbehind-filter_best_run_evaluated_on_test",
+        ],
+        metric=recall_score,  # type: ignore
+        positive_rate=0.03,
+        n_bootstrap_samples=1000,
+        ci=95,
+        file_name="eval_on_test_sensitivity_cis",
     )
     print(ci_df)
