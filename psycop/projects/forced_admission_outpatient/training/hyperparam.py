@@ -34,6 +34,6 @@ if __name__ == "__main__":
     populate_baseline_registry()
     populate_with_fao_registry()
     hyperparameter_search(
-        PsycopConfig().from_disk(Path(__file__).parent / "fao_all_features_hyperparam.cfg"),
-        run_name="full_model_all_features",
+        PsycopConfig().from_disk(Path(__file__).parent / "fao_text_hyperparam.cfg"),
+        run_name="full_model_text_features",
     )
