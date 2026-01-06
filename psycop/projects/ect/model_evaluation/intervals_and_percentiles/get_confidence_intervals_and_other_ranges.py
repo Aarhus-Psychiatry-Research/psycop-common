@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
-from psycop.common.model_evaluation.binary.bootstrap_estimates import stratified_bootstrap
+from psycop.common.model_evaluation.binary.bootstrap_estimates import bootstrap_estimates
 from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
 )
@@ -40,7 +40,7 @@ def get_training_performance_cis(
     for experiment in experiments:
         path = f"{base_path}/{experiment}/eval_df.parquet"
 
-        df = read_eval_df_from_disk(path)
+        df = read_eval_df_from_disk(path).to_pandas()
 
         y_true = df["y"]
         y_hat_probs = df["y_hat_prob"]
@@ -49,7 +49,7 @@ def get_training_performance_cis(
             y_hat_probs=df["y_hat_prob"],  # type: ignore
         )[0]
 
-        boot_ci = stratified_bootstrap(
+        boot_ci = bootstrap_estimates(
             y_true=y_true,  # type: ignore
             y_pred=y_hat_probs if metric.__name__ == "roc_auc" else y_pred,  # type: ignore
             metric=metric,
@@ -57,6 +57,7 @@ def get_training_performance_cis(
             n_resamples=n_bootstrap_samples,
             method="basic",
             random_state=42,
+            stratified=True,
         )
 
         ci_results.append(boot_ci)
