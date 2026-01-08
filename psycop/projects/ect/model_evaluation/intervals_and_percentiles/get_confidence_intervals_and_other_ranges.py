@@ -9,6 +9,13 @@ from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
 )
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
+from psycop.projects.ect.model_evaluation.performance_by_ppr.days_from_first_positive_to_event import (
+    _get_time_from_first_positive_to_diagnosis_df,
+)
+from psycop.projects.ect.model_evaluation.uuid_parsers import (
+    parse_dw_ek_borger_from_uuid,
+    parse_timestamp_from_uuid,
+)
 from psycop.projects.restraint.evaluation.utils import read_eval_df_from_disk
 
 
@@ -89,7 +96,77 @@ def get_training_performance_cis(
     return ci_df
 
 
+def get_median_time_from_first_positive_to_event(
+    base_path: str,
+    experiments: list[str],
+    from_disk: bool = True,
+    positive_rate: float = 0.03,
+    file_name: str = "median_time_from_first_positive_to_event",
+) -> pd.DataFrame:
+    """
+    Function to calculate the median time from first positive to event occurrence.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing time and event columns.
+        positive_rate (float, optional): Desired positive rate for thresholding. Defaults to 0.02.
+    Returns:
+        float: Median time from first positive to event occurrence.
+    """
+    median = []
+    quantiles = []
+    experiment_names = []
+
+    for experiment in experiments:
+        path = f"{base_path}/{experiment}"
+
+        if not from_disk:
+            best_run_cfg = (
+                MlflowClientWrapper()
+                .get_best_run_from_experiment(
+                    experiment_name=experiment, metric="all_oof_BinaryAUROC"
+                )
+                .get_config()
+            )
+
+            _ = train_baseline_model_from_cfg(best_run_cfg)  # type: ignore
+
+        eval_df = read_eval_df_from_disk(path).to_pandas()
+
+        df = _get_time_from_first_positive_to_diagnosis_df(input_df=eval_df)  # type: ignore
+        median = df["days_from_pred_to_event"].agg("median")
+        quantiles = df["days_from_pred_to_event"].quantile([0.25, 0.75])
+
+        experiment_names.append(experiment)
+        median.append(median)
+        quantiles.append(quantiles)
+
+    median_df = pd.DataFrame(
+        {
+            "experiment": experiment_names,
+            "median_days_from_first_positive_to_event": median,
+            "25th_percentile_days_from_first_positive_to_event": [q[0.25] for q in quantiles],  # type: ignore
+            "75th_percentile_days_from_first_positive_to_event": [q[0.75] for q in quantiles],  # type: ignore
+        }
+    )
+
+    median_df.to_csv(f"E:/shared_resources/ect/eval_runs/tables/{file_name}.csv")
+
+    return median_df
+
+
 if __name__ == "__main__":
+    median_df = get_median_time_from_first_positive_to_event(
+        base_path="E:/shared_resources/ect/eval_runs",
+        experiments=[
+            "ECT-trunc-and-hp-structured_only-xgboost-no-lookbehind-filter_best_run_evaluated_on_test",
+            "ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter_best_run_evaluated_on_test",
+            "ECT-trunc-and-hp-text_only-xgboost-no-lookbehind-filter_best_run_evaluated_on_test",
+        ],
+        positive_rate=0.02,
+        file_name="eval_on_test_median_time_from_first_positive_to_event",
+    )
+    print(median_df)
+
     ci_df = get_training_performance_cis(
         base_path="E:/shared_resources/ect/eval_runs",
         experiments=[
@@ -98,7 +175,7 @@ if __name__ == "__main__":
             "ECT-trunc-and-hp-text_only-xgboost-no-lookbehind-filter_best_run_evaluated_on_test",
         ],
         metric=recall_score,  # type: ignore
-        positive_rate=0.03,
+        positive_rate=0.02,
         n_bootstrap_samples=1000,
         ci=95,
         file_name="eval_on_test_sensitivity_cis",
@@ -113,7 +190,7 @@ if __name__ == "__main__":
             "ECT-trunc-and-hp-text_only-xgboost-no-lookbehind-filter",
         ],
         metric=roc_auc_score,  # type: ignore
-        positive_rate=0.03,
+        positive_rate=0.02,
         n_bootstrap_samples=1000,
         ci=95,
         file_name="training_cv_auroc_cis",
@@ -128,7 +205,7 @@ if __name__ == "__main__":
             "ECT-trunc-and-hp-text_only-xgboost-no-lookbehind-filter_best_run_evaluated_on_test",
         ],
         metric=roc_auc_score,  # type: ignore
-        positive_rate=0.03,
+        positive_rate=0.02,
         n_bootstrap_samples=1000,
         ci=95,
         file_name="eval_on_test_auroc_cis",
@@ -143,7 +220,7 @@ if __name__ == "__main__":
             "ECT-trunc-and-hp-text_only-xgboost-no-lookbehind-filter_best_run_evaluated_on_test",
         ],
         metric=recall_score,  # type: ignore
-        positive_rate=0.03,
+        positive_rate=0.02,
         n_bootstrap_samples=1000,
         ci=95,
         file_name="eval_on_test_sensitivity_cis",
@@ -158,7 +235,7 @@ if __name__ == "__main__":
             "ECT-trunc-and-hp-text_only-xgboost-no-lookbehind-filter_best_run_evaluated_on_test",
         ],
         metric=recall_score,  # type: ignore
-        positive_rate=0.03,
+        positive_rate=0.02,
         n_bootstrap_samples=1000,
         ci=95,
         file_name="eval_on_test_sensitivity_cis",
