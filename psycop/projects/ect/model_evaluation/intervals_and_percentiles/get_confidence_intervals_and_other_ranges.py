@@ -174,6 +174,33 @@ if __name__ == "__main__":
     median_df = get_median_time_from_first_positive_to_event(
         base_path="E:/shared_resources/ect/eval_runs",
         experiments=[
+            "ECT-trunc-and-hp-structured_only-xgboost-no-lookbehind-filter_best_run_evaluated_on_geographic_test",
+            "ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter_best_run_evaluated_on_geographic_test",
+            "ECT-trunc-and-hp-text_only-xgboost-no-lookbehind-filter_best_run_evaluated_on_geographic_test",
+        ],
+        positive_rate=0.02,
+        file_name="eval_on_geographic_test_median_time_from_first_positive_to_event",
+    )
+    print(median_df)
+
+    ci_df = get_training_performance_cis(
+        base_path="E:/shared_resources/ect/eval_runs",
+        experiments=[
+            "ECT-trunc-and-hp-structured_only-xgboost-no-lookbehind-filter_best_run_evaluated_on_geographic_test",
+            "ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter_best_run_evaluated_on_geographic_test",
+            "ECT-trunc-and-hp-text_only-xgboost-no-lookbehind-filter_best_run_evaluated_on_geographic_test",
+        ],
+        metric=roc_auc_score,  # type: ignore
+        positive_rate=0.02,
+        n_bootstrap_samples=1000,
+        ci=95,
+        file_name="eval_on_geographic_test_auroc_cis",
+    )
+    print(ci_df)
+
+    median_df = get_median_time_from_first_positive_to_event(
+        base_path="E:/shared_resources/ect/eval_runs",
+        experiments=[
             "ECT-trunc-and-hp-structured_only-xgboost-no-lookbehind-filter_best_run_evaluated_on_test",
             "ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter_best_run_evaluated_on_test",
             "ECT-trunc-and-hp-text_only-xgboost-no-lookbehind-filter_best_run_evaluated_on_test",
