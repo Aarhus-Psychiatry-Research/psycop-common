@@ -13,7 +13,7 @@ from psycop.projects.ect.feature_generation.cohort_definition.outcome_specificat
     add_first_ect_time_after_prediction_time,
 )
 from psycop.projects.ect.model_evaluation.performance_by_ppr.days_from_first_positive_to_event import (
-    _get_time_from_first_positive_to_diagnosis_df,
+    get_time_from_first_positive_to_diagnosis_df,
 )
 from psycop.projects.restraint.evaluation.utils import read_eval_df_from_disk
 
@@ -148,7 +148,7 @@ def get_median_time_from_first_positive_to_event(
             }
         )
 
-        df = _get_time_from_first_positive_to_diagnosis_df(input_df=df)  # type: ignore
+        df = get_time_from_first_positive_to_diagnosis_df(input_df=df)  # type: ignore
         median = df["days_from_pred_to_event"].agg("median")
         quantile = df["days_from_pred_to_event"].quantile([0.25, 0.75])
 

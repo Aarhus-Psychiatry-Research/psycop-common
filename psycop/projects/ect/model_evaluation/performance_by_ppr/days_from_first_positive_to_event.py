@@ -31,12 +31,12 @@ def days_from_first_positive_to_event(
         }
     )
 
-    df = _get_time_from_first_positive_to_diagnosis_df(input_df=df)
+    df = get_time_from_first_positive_to_diagnosis_df(input_df=df)
     aggregated = df["days_from_pred_to_event"].agg(aggregation_method)
     return aggregated
 
 
-def _get_time_from_first_positive_to_diagnosis_df(input_df: pd.DataFrame) -> pd.DataFrame:
+def get_time_from_first_positive_to_diagnosis_df(input_df: pd.DataFrame) -> pd.DataFrame:
     df = pl.from_pandas(input_df).with_columns(
         (pl.col("outcome_timestamps") - pl.col("pred_timestamps")).alias("time_from_pred_to_event")
     )
