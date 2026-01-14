@@ -198,6 +198,21 @@ if __name__ == "__main__":
     )
     print(ci_df)
 
+    ci_df = get_training_performance_cis(
+        base_path="E:/shared_resources/ect/training",
+        experiments=[
+            "ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter",
+            "ECT-trunc-and-hp-structured_only-xgboost-no-lookbehind-filter",
+            "ECT-trunc-and-hp-text_only-xgboost-no-lookbehind-filter",
+        ],
+        metric=roc_auc_score,  # type: ignore
+        positive_rate=0.02,
+        n_bootstrap_samples=1000,
+        ci=95,
+        file_name="training_cv_auroc_cis",
+    )
+    print(ci_df)
+
     median_df = get_median_time_from_first_positive_to_event(
         base_path="E:/shared_resources/ect/eval_runs",
         experiments=[
@@ -222,21 +237,6 @@ if __name__ == "__main__":
         n_bootstrap_samples=1000,
         ci=95,
         file_name="eval_on_test_sensitivity_cis",
-    )
-    print(ci_df)
-
-    ci_df = get_training_performance_cis(
-        base_path="E:/shared_resources/ect/training",
-        experiments=[
-            "ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter",
-            "ECT-trunc-and-hp-structured_only-xgboost-no-lookbehind-filter",
-            "ECT-trunc-and-hp-text_only-xgboost-no-lookbehind-filter",
-        ],
-        metric=roc_auc_score,  # type: ignore
-        positive_rate=0.02,
-        n_bootstrap_samples=1000,
-        ci=95,
-        file_name="training_cv_auroc_cis",
     )
     print(ci_df)
 
