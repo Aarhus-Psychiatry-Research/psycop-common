@@ -17,7 +17,7 @@ from psycop.projects.ect.model_evaluation.uuid_parsers import (
 def days_from_first_positive_to_event(
     eval_dataset: pl.DataFrame,
     positive_rate: float = 0.5,
-    aggregation_method: Union[str, Sequence[float]] = "sum",
+    aggregation_method: str = "sum",
 ) -> float:
     logging.info(f"Getting days from first positive to event with agg method {aggregation_method}")
     base_df = parse_timestamp_from_uuid(parse_dw_ek_borger_from_uuid(eval_dataset)).to_pandas()
