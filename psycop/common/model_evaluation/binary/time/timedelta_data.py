@@ -238,3 +238,49 @@ def get_time_from_first_positive_to_diagnosis_df(input_df: pd.DataFrame) -> pd.D
     ).to_pandas()
 
     return plot_df
+
+
+def get_time_from_prediction_to_true_positive_df(input_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Input df must contain columns:
+        y: 1 or 0
+        pred: 1 or 0
+        id: Patient ID
+        pred_timestamps: Timestamp of prediction
+        outcome_timestamps: Timestamp of outcome
+
+    Returns a DataFrame with additional columns:
+        years_from_pred_to_event: Years from prediction to event
+        days_from_pred_to_event: Days from prediction to event
+    """
+    import polars as pl
+
+    # Convert to Polars
+    df = pl.from_pandas(input_df)
+
+    # Keep only true positive predictions (pred=1 & y=1) and where timestamps exist
+    tp_df = df.filter(
+        (pl.col("pred") == 1)
+        & (pl.col("y") == 1)
+        & pl.col("pred_timestamps").is_not_null()
+        & pl.col("outcome_timestamps").is_not_null()
+    )
+
+    # Calculate time difference from prediction to event
+    tp_df = tp_df.with_columns(
+        (pl.col("outcome_timestamps") - pl.col("pred_timestamps")).alias(
+            "time_from_prediction_to_tp"
+        )
+    )
+
+    # Calculate days and years
+    tp_df = tp_df.with_columns(
+        [
+            (pl.col("time_from_prediction_to_tp").dt.days()).alias("days_from_prediction_to_tp"),
+            (pl.col("time_from_prediction_to_tp").dt.days() / 365.25).alias(
+                "years_from_prediction_to_tp"
+            ),
+        ]
+    )
+
+    return tp_df.to_pandas()

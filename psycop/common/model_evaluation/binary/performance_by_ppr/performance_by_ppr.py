@@ -10,6 +10,7 @@ from psycop.common.model_evaluation.binary.performance_by_ppr.prop_of_all_events
 )
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_time_from_first_positive_to_diagnosis_df,
+    get_time_from_prediction_to_true_positive_df,
 )
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
     get_confusion_matrix_cells_from_df,
@@ -165,6 +166,47 @@ def get_days_from_first_positive_to_diagnosis_from_df(
     return aggregated
 
 
+def days_from_prediction_to_true_positive(
+    eval_dataset: EvalDataset, positive_rate: float = 0.5, aggregation_method: str = "sum"
+) -> float:
+    """Calculate number of days from the first positive prediction to the
+    patient's outcome timestamp.
+
+    Args:
+        eval_dataset (EvalDataset): EvalDataset object.
+        positive_rate (float): Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
+        aggregation_method (str): How to aggregate the warning days. Defaults to "sum".
+
+    Returns:
+        float: Total number of days from first positive prediction to outcome.
+    """
+    # Generate df with only true positives
+    df = pd.DataFrame(
+        {
+            "id": eval_dataset.ids,
+            "pred": eval_dataset.get_predictions_for_positive_rate(
+                desired_positive_rate=positive_rate
+            )[0],
+            "y": eval_dataset.y,
+            "pred_timestamps": eval_dataset.pred_timestamps,
+            "outcome_timestamps": eval_dataset.outcome_timestamps,
+        }
+    )
+
+    return get_days_from_prediction_to_true_positive_from_df(
+        aggregation_method=aggregation_method, df=df
+    )
+
+
+def get_days_from_prediction_to_true_positive_from_df(
+    aggregation_method: str, df: pd.DataFrame
+) -> float:
+    df = get_time_from_prediction_to_true_positive_df(input_df=df)
+
+    aggregated = df["days_from_prediction_to_tp"].agg(aggregation_method)
+    return aggregated
+
+
 def get_prop_with_at_least_one_true_positve(
     eval_dataset: EvalDataset, positive_rate: float = 0.5
 ) -> float:
@@ -216,6 +258,24 @@ def generate_performance_by_ppr_table(
 
         threshold_metrics["median_warning_days"] = days_from_first_positive_to_diagnosis(
             eval_dataset=eval_dataset, positive_rate=positive_rate, aggregation_method="median"
+        )
+
+        threshold_metrics["total_warning_days_prediction_time_to_tp"] = (
+            days_from_prediction_to_true_positive(
+                eval_dataset=eval_dataset, positive_rate=positive_rate, aggregation_method="sum"
+            )
+        )
+
+        threshold_metrics["mean_warning_days_prediction_time_to_tp"] = (
+            days_from_prediction_to_true_positive(
+                eval_dataset=eval_dataset, positive_rate=positive_rate, aggregation_method="mean"
+            )
+        )
+
+        threshold_metrics["median_warning_days_prediction_time_to_tp"] = (
+            days_from_prediction_to_true_positive(
+                eval_dataset=eval_dataset, positive_rate=positive_rate, aggregation_method="median"
+            )
         )
 
         threshold_metrics["prop with ≥1 true positive"] = get_prop_with_at_least_one_true_positve(

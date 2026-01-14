@@ -103,6 +103,9 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
             "negative_rate",
             "mean_warning_days",
             "median_warning_days",
+            "mean_warning_days_prediction_time_to_tp",
+            "median_warning_days_prediction_time_to_tp",
+            "total_warning_days_prediction_time_to_tp",
             "prop with ≥1 true positive",
             "prop of all events captured",
         ],
@@ -136,7 +139,9 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
     for col in count_cols:
         renamed_df[col] = renamed_df[col].apply(format_with_thousand_separator)
 
-    renamed_df["Median days from first positive to outcome"] = round(df["median_warning_days"], 1)
+    renamed_df["Median days from prediction time to tp"] = round(
+        df["median_warning_days_prediction_time_to_tp"], 1
+    )
 
     return renamed_df
 
@@ -178,7 +183,8 @@ def clozapine_output_performance_by_ppr(
     if eval_dir:
         (Path(eval_dir) / "figure_and_tables").mkdir(parents=True, exist_ok=True)
         df.to_excel(
-            Path(eval_dir) / "figure_and_tables" / "performance_by_ppr_fa_code.xlsx", index=False
+            Path(eval_dir) / "figure_and_tables" / "performance_by_ppr_with_new_median_days.xlsx",
+            index=False,
         )
         return None
 
