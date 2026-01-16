@@ -240,7 +240,7 @@ def get_time_from_first_positive_to_diagnosis_df(input_df: pd.DataFrame) -> pd.D
     return plot_df
 
 
-def get_time_from_prediction_to_true_positive_df(input_df: pd.DataFrame) -> pd.DataFrame:
+def get_time_from_first_true_positive_to_outcome_df(input_df: pd.DataFrame) -> pd.DataFrame:
     """
     Input df must contain columns:
         y: 1 or 0
@@ -250,8 +250,8 @@ def get_time_from_prediction_to_true_positive_df(input_df: pd.DataFrame) -> pd.D
         outcome_timestamps: Timestamp of outcome
 
     Returns a DataFrame with additional columns:
-        years_from_pred_to_event: Years from prediction to event
-        days_from_pred_to_event: Days from prediction to event
+        years_from_true_positive_to_event: Years from true positive to event
+        days_from_true_positive_to_event: Days from true positive to event
     """
     import polars as pl
 
@@ -269,16 +269,18 @@ def get_time_from_prediction_to_true_positive_df(input_df: pd.DataFrame) -> pd.D
     # Calculate time difference from prediction to event
     tp_df = tp_df.with_columns(
         (pl.col("outcome_timestamps") - pl.col("pred_timestamps")).alias(
-            "time_from_prediction_to_tp"
+            "time_from_true_positive_to_event"
         )
     )
 
     # Calculate days and years
     tp_df = tp_df.with_columns(
         [
-            (pl.col("time_from_prediction_to_tp").dt.days()).alias("days_from_prediction_to_tp"),
-            (pl.col("time_from_prediction_to_tp").dt.days() / 365.25).alias(
-                "years_from_prediction_to_tp"
+            (pl.col("time_from_true_positive_to_event").dt.days()).alias(
+                "days_from_true_positive_to_event"
+            ),
+            (pl.col("time_from_true_positive_to_event").dt.days() / 365.25).alias(
+                "years_from_true_positive_to_event"
             ),
         ]
     )

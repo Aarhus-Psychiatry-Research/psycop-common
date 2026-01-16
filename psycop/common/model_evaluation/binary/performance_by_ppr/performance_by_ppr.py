@@ -10,7 +10,7 @@ from psycop.common.model_evaluation.binary.performance_by_ppr.prop_of_all_events
 )
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_time_from_first_positive_to_diagnosis_df,
-    get_time_from_prediction_to_true_positive_df,
+    get_time_from_first_true_positive_to_outcome_df,
 )
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
     get_confusion_matrix_cells_from_df,
@@ -166,7 +166,7 @@ def get_days_from_first_positive_to_diagnosis_from_df(
     return aggregated
 
 
-def days_from_prediction_to_true_positive(
+def days_from_first_true_positive_to_outcome(
     eval_dataset: EvalDataset, positive_rate: float = 0.5, aggregation_method: str = "sum"
 ) -> float:
     """Calculate number of days from the first positive prediction to the
@@ -193,17 +193,17 @@ def days_from_prediction_to_true_positive(
         }
     )
 
-    return get_days_from_prediction_to_true_positive_from_df(
+    return get_days_from_first_true_positive_to_outcome_df(
         aggregation_method=aggregation_method, df=df
     )
 
 
-def get_days_from_prediction_to_true_positive_from_df(
+def get_days_from_first_true_positive_to_outcome_df(
     aggregation_method: str, df: pd.DataFrame
 ) -> float:
-    df = get_time_from_prediction_to_true_positive_df(input_df=df)
+    df = get_time_from_first_true_positive_to_outcome_df(input_df=df)
 
-    aggregated = df["days_from_prediction_to_tp"].agg(aggregation_method)
+    aggregated = df["days_from_true_positive_to_event"].agg(aggregation_method)
     return aggregated
 
 
@@ -260,20 +260,20 @@ def generate_performance_by_ppr_table(
             eval_dataset=eval_dataset, positive_rate=positive_rate, aggregation_method="median"
         )
 
-        threshold_metrics["total_warning_days_prediction_time_to_tp"] = (
-            days_from_prediction_to_true_positive(
+        threshold_metrics["total_warning_days_for_true_positives"] = (
+            days_from_first_true_positive_to_outcome(
                 eval_dataset=eval_dataset, positive_rate=positive_rate, aggregation_method="sum"
             )
         )
 
-        threshold_metrics["mean_warning_days_prediction_time_to_tp"] = (
-            days_from_prediction_to_true_positive(
+        threshold_metrics["mean_warning_days_for_true_positives"] = (
+            days_from_first_true_positive_to_outcome(
                 eval_dataset=eval_dataset, positive_rate=positive_rate, aggregation_method="mean"
             )
         )
 
-        threshold_metrics["median_warning_days_prediction_time_to_tp"] = (
-            days_from_prediction_to_true_positive(
+        threshold_metrics["median_warning_days_for_true_positives"] = (
+            days_from_first_true_positive_to_outcome(
                 eval_dataset=eval_dataset, positive_rate=positive_rate, aggregation_method="median"
             )
         )

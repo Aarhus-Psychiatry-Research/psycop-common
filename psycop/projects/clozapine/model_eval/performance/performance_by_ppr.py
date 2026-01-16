@@ -103,9 +103,9 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
             "negative_rate",
             "mean_warning_days",
             "median_warning_days",
-            "mean_warning_days_prediction_time_to_tp",
-            "median_warning_days_prediction_time_to_tp",
-            "total_warning_days_prediction_time_to_tp",
+            "mean_warning_days_for_true_positives",
+            "median_warning_days_for_true_positives",
+            "total_warning_days_for_true_positives",
             "prop with ≥1 true positive",
             "prop of all events captured",
         ],
@@ -139,8 +139,8 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
     for col in count_cols:
         renamed_df[col] = renamed_df[col].apply(format_with_thousand_separator)
 
-    renamed_df["Median days from prediction time to tp"] = round(
-        df["median_warning_days_prediction_time_to_tp"], 1
+    renamed_df["Median days from true positive to outcome"] = round(
+        df["median_warning_days_for_true_positives"], 1
     )
 
     return renamed_df
