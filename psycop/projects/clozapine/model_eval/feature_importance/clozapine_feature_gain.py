@@ -119,7 +119,8 @@ def clozapine_feature_importance_table_facade(pipeline: Pipeline, output_dir: Pa
     feat_imp = clozapine_generate_feature_importance_table(
         pipeline=pipeline, clf_model_name="classifier"
     )
-    output_dir = CLOZAPINE_EVAL_OUTPUT_DIR
+    output_dir = Path(CLOZAPINE_EVAL_OUTPUT_DIR / model)
+    output_dir.mkdir(parents=True, exist_ok=True)
     pl.Config.set_tbl_rows(100)
     feat_imp.to_excel(output_dir / "predictor_importance.xlsx")
 
@@ -127,10 +128,8 @@ def clozapine_feature_importance_table_facade(pipeline: Pipeline, output_dir: Pa
 
 
 if __name__ == "__main__":
-    run = MlflowClientWrapper().get_run(
-        "clozapine hparam, structured_text_365d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split",
-        "fearless-roo-774",
-    )
+    model = "clozapine hparam, only_structured_365d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split"
+    run = MlflowClientWrapper().get_run(model, "fearless-whale-268")
 
     clozapine_feature_importance_table_facade(
         pipeline=run.sklearn_pipeline(), output_dir=CLOZAPINE_EVAL_OUTPUT_DIR

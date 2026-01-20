@@ -102,25 +102,22 @@ def clozapine_generate_feature_importance_table(
     # Sort the table by gain in descending order
     feature_table = feature_table.sort("Feature Importance", descending=True)
 
-    top_bottom_features = feature_table.tail(50).to_pandas
-    top_top_features = feature_table.head(50).to_pandas
+    top_bottom_features = feature_table.tail(50)
+    top_top_features = feature_table.head(50)
 
     # Get the top 50 features by
     # Concatenate the two DataFrames
     top_features_50 = pl.concat([top_bottom_features, top_top_features])
 
-    top_features_50 = top_features_50.reset_index()
-    top_features_50["index"] = top_features_50["index"] + 1
-    top_features_50 = top_features_50.set_index("index")
-
-    return top_features_50
+    return top_features_50.to_pandas()
 
 
 def clozapine_feature_importance_table_facade(pipeline: Pipeline, output_dir: Path) -> None:
     feat_imp = clozapine_generate_feature_importance_table(
         pipeline=pipeline, clf_model_name="classifier"
     )
-    output_dir = CLOZAPINE_EVAL_OUTPUT_DIR
+    output_dir = Path(CLOZAPINE_EVAL_OUTPUT_DIR / model)
+    output_dir.mkdir(parents=True, exist_ok=True)
     pl.Config.set_tbl_rows(100)
     feat_imp.to_excel(output_dir / "predictor_coefs.xlsx")
 
@@ -128,10 +125,8 @@ def clozapine_feature_importance_table_facade(pipeline: Pipeline, output_dir: Pa
 
 
 if __name__ == "__main__":
-    run = MlflowClientWrapper().get_run(
-        "clozapine hparam, structured_text_365d_lookahead, log_reg, 1 year lookbehind filter, 2025_random_split",
-        "redolent-rook-999",
-    )
+    model = "clozapine hparam, only_structured_365d_lookahead, log_reg, 1 year lookbehind filter,2025_random_split"
+    run = MlflowClientWrapper().get_run(model, "rogue-wasp-80")
 
     clozapine_feature_importance_table_facade(
         pipeline=run.sklearn_pipeline(), output_dir=CLOZAPINE_EVAL_OUTPUT_DIR
