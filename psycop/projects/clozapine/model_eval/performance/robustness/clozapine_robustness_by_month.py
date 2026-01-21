@@ -1,36 +1,33 @@
-from collections.abc import Sequence
 from pathlib import Path
 
 import pandas as pd
 import plotnine as pn
 import polars as pl
 
-from psycop.projects.clozapine.loaders.demographics import birthdays
+from psycop.common.model_evaluation.binary.time.periodic_data import roc_auc_by_periodic_time_df
 from psycop.projects.clozapine.model_eval.utils import (
-    add_age,
-    parse_dw_ek_borger_from_uuid,
     parse_timestamp_from_uuid,
     read_eval_df_from_disk,
 )
-from psycop.projects.cvd.model_evaluation.single_run.auroc_by.auroc_by_model import auroc_by_model
 
 
-def plotnine_auroc_by_age(df: pd.DataFrame, title: str = "AUROC by Age") -> pn.ggplot:
+def plotnine_auroc_by_month(
+    df: pd.DataFrame, title: str = "AUROC by Month of the Year"
+) -> pn.ggplot:
     df["proportion_of_n"] = df["n_in_bin"] / df["n_in_bin"].sum()
 
     p = (
-        pn.ggplot(df, pn.aes(x="age_binned", y="auroc"))
-        + pn.geom_bar(
-            pn.aes(x="age_binned", y="proportion_of_n", fill="age_binned"), stat="identity"
-        )
+        pn.ggplot(df, pn.aes(x="time_bin", y="auroc"))
+        + pn.geom_bar(pn.aes(x="time_bin", y="proportion_of_n", fill="time_bin"), stat="identity")
         + pn.geom_path(group=1, size=1)
-        + pn.labs(x="Age in years", y="AUROC", title=title)
+        + pn.labs(x="Month", y="AUROC", title=title)
         + pn.ylim(0, 1)
         + pn.theme_minimal()
         + pn.theme(
-            axis_text_x=pn.element_text(size=15),
+            axis_text_x=pn.element_text(size=15, rotation=45),
             axis_text_y=pn.element_text(size=15),
-            panel_grid_minor=pn.element_blank(),  # text=(pn.element_text(family="Times New Roman")),
+            panel_grid_minor=pn.element_blank(),
+            text=(pn.element_text(family="Times New Roman")),
             legend_position="none",
             axis_title=pn.element_text(size=22),
             plot_title=pn.element_text(size=30, ha="center"),
@@ -40,20 +37,17 @@ def plotnine_auroc_by_age(df: pd.DataFrame, title: str = "AUROC by Age") -> pn.g
         + pn.scale_fill_manual(
             values=[
                 "#669BBC",
+                "#A8C686",
                 "#669BBC",
+                "#A8C686",
                 "#669BBC",
+                "#A8C686",
                 "#669BBC",
+                "#A8C686",
                 "#669BBC",
+                "#A8C686",
                 "#669BBC",
-                # "#A8C686",
-                # "#669BBC",
-                # "#A8C686",
-                # "#669BBC",
-                # "#A8C686",
-                # "#669BBC",
-                # "#A8C686",
-                # "#669BBC",
-                # "#A8C686",
+                "#A8C686",
             ]
         )
     )
@@ -65,20 +59,15 @@ def plotnine_auroc_by_age(df: pd.DataFrame, title: str = "AUROC by Age") -> pn.g
     return p
 
 
-def auroc_by_age_model(
-    df: pl.DataFrame, birthdays: pl.DataFrame, bins: Sequence[float]
-) -> pd.DataFrame:
-    eval_df = (
-        add_age(parse_timestamp_from_uuid(parse_dw_ek_borger_from_uuid(df)), birthdays)
-    ).to_pandas()
+def auroc_by_month_model(df: pl.DataFrame) -> pd.DataFrame:
+    eval_df = parse_timestamp_from_uuid(df).to_pandas()
 
     df = pl.DataFrame(
-        auroc_by_model(
-            input_values=eval_df["age"],
-            y=eval_df["y"],
+        roc_auc_by_periodic_time_df(
+            labels=eval_df["y"],
             y_hat_probs=eval_df["y_hat_prob"],
-            input_name="age",
-            bins=bins,
+            timestamps=eval_df["timestamp"],
+            bin_period="M",
         )
     )
 
@@ -95,8 +84,6 @@ if __name__ == "__main__":
 
     save_dir = Path("E:/shared_resources/clozapine/eval/figures")
 
-    birthdays = pl.from_pandas(birthdays())
-
-    plotnine_auroc_by_age(
-        auroc_by_age_model(df=eval_df, birthdays=birthdays, bins=[18, *range(20, 70, 10)])
-    ).save(save_dir / "clozapine_auroc_by_age_xgboost.png")
+    plotnine_auroc_by_month(auroc_by_month_model(df=eval_df)).save(
+        save_dir / "clozapine_auroc_by_month_xgboost.png"
+    )

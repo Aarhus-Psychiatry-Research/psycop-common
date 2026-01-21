@@ -9,7 +9,6 @@ from sklearn.calibration import calibration_curve
 from sklearn.metrics import brier_score_loss
 
 from psycop.projects.clozapine.model_eval.utils import read_eval_df_from_disk
-from psycop.projects.forced_admission_inpatient.model_eval.config import BEST_POS_RATE
 
 
 def calibration_plot(eval_df: pd.DataFrame, save_dir: Path):
@@ -18,7 +17,7 @@ def calibration_plot(eval_df: pd.DataFrame, save_dir: Path):
         eval_df.y, eval_df["y_hat_prob"], n_bins=30, strategy="uniform"
     )
 
-    positive_threshold = eval_df["y_hat_prob"].quantile(1 - BEST_POS_RATE)
+    positive_threshold = eval_df["y_hat_prob"].quantile(1 - best_pos_rate)
 
     # Only keep bins with a prob_pred value below 0.2
     prob_true = prob_true[prob_pred < 0.2]
@@ -41,12 +40,12 @@ def calibration_plot(eval_df: pd.DataFrame, save_dir: Path):
         x=positive_threshold,
         color="red",
         linestyle="--",
-        label=f"Positive prediction threshold (PPR of {BEST_POS_RATE*100}%)",
+        label=f"Positive prediction threshold (PPR of {best_pos_rate*100}%)",
     )
     ax1.text(
         0.31,
         0.95,
-        f"Positive prediction threshold (PPR of {BEST_POS_RATE*100}%)",
+        f"Positive prediction threshold (PPR of {best_pos_rate*100}%)",
         color="red",
         fontsize=6,
         transform=ax1.transAxes,
@@ -79,12 +78,12 @@ def calibration_plot(eval_df: pd.DataFrame, save_dir: Path):
         x=positive_threshold,
         color="red",
         linestyle="--",
-        label=f"Positive prediction threshold (PPR of {BEST_POS_RATE*100}%)",
+        label=f"Positive prediction threshold (PPR of {best_pos_rate*100}%)",
     )
     ax2.text(
         0.2,
         0.95,
-        f"Positive prediction threshold (PPR of {BEST_POS_RATE*100}%)",
+        f"Positive prediction threshold (PPR of {best_pos_rate*100}%)",
         color="red",
         fontsize=8,
         transform=ax2.transAxes,
@@ -93,14 +92,14 @@ def calibration_plot(eval_df: pd.DataFrame, save_dir: Path):
 
     # Adjust layout and save figure
     plt.tight_layout()
-    calibration_curve_hist_path = save_dir / "clozapine_calibration_curve_hist_xgboost.png"
+    calibration_curve_hist_path = save_dir / "clozapine_calibration_curve_hist_xgboost_7.5%.png"
     plt.savefig(calibration_curve_hist_path)
     plt.show()
 
 
 if __name__ == "__main__":
     experiment_name = "clozapine hparam, structured_text_365d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split"
-    best_pos_rate = 0.05
+    best_pos_rate = 0.075
     eval_dir = (
         f"E:/shared_resources/clozapine/eval_runs/{experiment_name}_best_run_evaluated_on_test"
     )
