@@ -27,7 +27,7 @@ def plotnine_sensitivity_by_outcome(
         pn.ggplot(df, pn.aes(x="type", y="sensitivity"))
         + pn.geom_bar(pn.aes(fill="type"), stat="identity")
         + pn.labs(x="Restraint type", y="Sensitivity", title=title)
-        + pn.ylim(0, 0.8)
+        # + pn.ylim(0, 0.8)
         + pn.theme_minimal()
         + pn.theme(
             axis_text_x=pn.element_text(size=15),
@@ -58,7 +58,7 @@ def plotnine_sensitivity_by_first_outcome(
         pn.ggplot(df, pn.aes(x="outcome", y="sensitivity"))
         + pn.geom_bar(pn.aes(fill="outcome"), stat="identity")
         + pn.labs(x="Restraint type", y="Sensitivity", title=title)
-        + pn.ylim(0, 0.8)
+        # + pn.ylim(0, 0.8)
         + pn.theme_minimal()
         + pn.theme(
             axis_text_x=pn.element_text(size=15),
@@ -98,7 +98,11 @@ def sensitivity_by_restraint_type(df: pd.DataFrame) -> pd.DataFrame:
     return all_restraint
 
 
-def sensitivity_by_outcome_model(df: pl.DataFrame, outcome_df: pl.DataFrame) -> pd.DataFrame:
+def sensitivity_by_outcome_model(df: pl.DataFrame, outcome_df: pl.DataFrame, best_pos_rate: float = 0.05) -> pd.DataFrame:
+    # y_hat_probs = df.to_series(1).to_pandas()
+    # y_hat=get_predictions_for_positive_rate(best_pos_rate, y_hat_probs)[0]
+    # df.insert_column(index=3, column=pl.Series(name="y_hat", values=y_hat.tolist()))
+    
     positives = parse_timestamp_from_uuid(parse_dw_ek_borger_from_uuid(df)).filter(pl.col("y") == 1)
 
     outcome_df = outcome_df.with_columns(
@@ -127,12 +131,14 @@ def sensitivity_by_outcome_model(df: pl.DataFrame, outcome_df: pl.DataFrame) -> 
         & (eval_df["timestamp"].dt.date <= eval_df["datotid_slut"].dt.date)
     ]  # type: ignore
 
-    eval_df["y_hat"] = get_predictions_for_positive_rate(0.5, eval_df.y_hat_prob)[0]
-
     return sensitivity_by_restraint_type(eval_df)
 
 
-def sensitivity_by_first_outcome_model(df: pl.DataFrame, outcome_df: pl.DataFrame) -> pd.DataFrame:
+def sensitivity_by_first_outcome_model(df: pl.DataFrame, outcome_df: pl.DataFrame, best_pos_rate: float = 0.05) -> pd.DataFrame:
+    y_hat_probs = df.to_series(1).to_pandas()
+    y_hat=get_predictions_for_positive_rate(best_pos_rate, y_hat_probs)[0]
+    df.insert_column(index=3, column=pl.Series(name="y_hat", values=y_hat.tolist()))
+    
     positives = parse_timestamp_from_uuid(parse_dw_ek_borger_from_uuid(df)).filter(pl.col("y") == 1)
 
     eval_df = (positives.join(outcome_df, on="dw_ek_borger", how="left")).to_pandas()
@@ -141,8 +147,6 @@ def sensitivity_by_first_outcome_model(df: pl.DataFrame, outcome_df: pl.DataFram
         ((eval_df["timestamp"].dt.date + pd.DateOffset(2)) >= eval_df["datotid_start"].dt.date)  # type: ignore
         & (eval_df["timestamp"].dt.date <= eval_df["datotid_slut"].dt.date)
     ]  # type: ignore
-
-    eval_df["y_hat"] = get_predictions_for_positive_rate(0.5, eval_df.y_hat_prob)[0]
 
     eval_df["outcome"] = (
         eval_df[["mechanical_restraint", "chemical_restraint", "manual_restraint"]]
@@ -156,7 +160,7 @@ def sensitivity_by_first_outcome_model(df: pl.DataFrame, outcome_df: pl.DataFram
         )
     )
 
-    return sensitivity_by_group(eval_df, groupby_col_name="outcome")
+    return sensitivity_by_group(eval_df, groupby_col_name="outcome", stratified=True)
 
 
 if __name__ == "__main__":
