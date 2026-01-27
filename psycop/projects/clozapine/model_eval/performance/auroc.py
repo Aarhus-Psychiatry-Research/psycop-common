@@ -13,7 +13,7 @@ from psycop.projects.cvd.model_evaluation.single_run.auroc.model import AUROC
 def auroc_plot(data: AUROC, title: str = "AUROC") -> pn.ggplot:
     auroc_label = pn.annotate(
         "text",
-        label=f"AUROC (95% CI): {data.mean:.2f} ({data.ci[0]:.2f}-{data.ci[1]:.2f})",
+        label=f"AUROC: {data.mean:.2f}",
         x=1,
         y=0,
         ha="right",

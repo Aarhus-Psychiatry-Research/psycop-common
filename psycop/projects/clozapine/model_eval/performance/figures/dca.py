@@ -57,7 +57,7 @@ def decision_curve_analysis(eval_df: pl.DataFrame) -> dict:  # type: ignore
 def plot_decision_curve(dca: dict, model_label: str | list[str]):  # type: ignore
     # Perform Decision Curve Analysis
 
-    plt.figure(figsize=(8, 6))
+    plt.figure(figsize=(8, 6), dpi=300)
 
     plt.plot(dca["thresholds"], dca["net_benefit_model"], label=model_label, color="#0072B2")
     plt.plot(
@@ -82,8 +82,10 @@ def plot_decision_curve(dca: dict, model_label: str | list[str]):  # type: ignor
 
     save_dir = Path("E:/shared_resources/clozapine/eval/figures")
     save_dir.mkdir(parents=True, exist_ok=True)
-    save_path = save_dir / f"dca_clozapine_{model_label}.png"
-    plt.savefig(save_path)
+    save_path_png = save_dir / f"dca_clozapine_{model_label}.png"
+    save_path_pdf = save_dir / f"dca_clozapine_{model_label}.pdf"
+    plt.savefig(save_path_png, format="png", dpi=600, bbox_inches="tight")
+    plt.savefig(save_path_pdf, format="pdf", dpi=300, bbox_inches="tight")
     plt.close()
 
 
