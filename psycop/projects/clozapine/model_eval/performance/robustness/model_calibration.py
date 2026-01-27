@@ -27,7 +27,7 @@ def calibration_plot(eval_df: pd.DataFrame, save_dir: Path):
     brier = brier_score_loss(eval_df.y, eval_df["y_hat_prob"])
 
     # Create subplots
-    fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, figsize=(8, 8))  # type: ignore
+    fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, figsize=(8, 8), dpi=600)  # type: ignore
 
     # Plot calibration curve
     ax1.plot(prob_pred, prob_true, marker="o", color="#0072B2", label="Calibration Curve")
@@ -92,13 +92,12 @@ def calibration_plot(eval_df: pd.DataFrame, save_dir: Path):
 
     # Adjust layout and save figure
     plt.tight_layout()
-    calibration_curve_hist_path = save_dir / "clozapine_calibration_curve_hist_xgboost_7.5%.png"
-    plt.savefig(calibration_curve_hist_path)
-    plt.show()
+    calibration_curve_hist_path = save_dir / "clozapine_calibration_curve_hist_log_reg_7.5%.png"
+    plt.savefig(calibration_curve_hist_path, dpi=600)
 
 
 if __name__ == "__main__":
-    experiment_name = "clozapine hparam, structured_text_365d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split"
+    experiment_name = "clozapine hparam, structured_text_365d_lookahead, log_reg, 1 year lookbehind filter, 2025_random_split"
     best_pos_rate = 0.075
     eval_dir = (
         f"E:/shared_resources/clozapine/eval_runs/{experiment_name}_best_run_evaluated_on_test"
