@@ -27,10 +27,8 @@ from psycop.common.feature_generation.application_modules.generate_feature_set i
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.projects.clozapine.feature_generation.cohort_definition.clozapine_cohort_definition import (
+    clozapine_outcome_timestamps,
     clozapine_pred_times,
-)
-from psycop.projects.clozapine.feature_generation.cohort_definition.outcome_specification.combine_text_structured_clozapine_outcome import (
-    combine_structured_and_text_outcome,
 )
 from psycop.projects.clozapine.loaders.coercion import skema_1, skema_2_without_nutrition, skema_3
 from psycop.projects.clozapine.loaders.demographics import birthdays, sex_female
@@ -246,7 +244,7 @@ if __name__ == "__main__":
         "demographic": [
             ts.OutcomeSpec(
                 value_frame=ts.ValueFrame(
-                    init_df=combine_structured_and_text_outcome(),
+                    init_df=clozapine_outcome_timestamps().frame,
                     entity_id_col_name="dw_ek_borger",
                     value_timestamp_col_name="timestamp",
                 ),
@@ -443,7 +441,7 @@ if __name__ == "__main__":
         project_info=get_clozapine_project_info(),
         eligible_prediction_times_frame=clozapine_pred_times(),
         feature_specs=specs,
-        feature_set_name="clozapine_full_feature_set_with_tfidf_2025_random_split",
+        feature_set_name="clozapine_full_feature_set_with_tfidf_2025_random_split_with_outcome_move_filter",
         n_workers=None,
         step_size=datetime.timedelta(days=365),
         do_dataset_description=False,

@@ -62,17 +62,22 @@ class ClozapineCohortDefiner(CohortDefiner):
 
     @staticmethod
     def get_outcome_timestamps() -> OutcomeTimestampFrame:
-        return OutcomeTimestampFrame(
-            frame=(
-                pl.from_pandas(combine_structured_and_text_outcome())
-                .with_columns(value=pl.lit(1))
-                .select(["dw_ek_borger", "timestamp", "value"])
-            )
+        frame = (
+            pl.from_pandas(combine_structured_and_text_outcome())
+            .with_columns(value=pl.lit(1))
+            .select(["dw_ek_borger", "timestamp", "value"])
         )
+
+        # Apply MOVE washout filter (same logic as prediction times)
+        filtered_frame = ClozapineWashoutMoveFilter().apply(frame.lazy()).collect()
+
+        return OutcomeTimestampFrame(frame=filtered_frame)
 
 
 if __name__ == "__main__":
     filtered_prediction_time_bundle = ClozapineCohortDefiner.get_filtered_prediction_times_bundle()
+
+    outcome_timestamps_bundle = ClozapineCohortDefiner.get_outcome_timestamps()
 
     for filtering_step in filtered_prediction_time_bundle.filter_steps:
         msg.info(f"Filter step {filtering_step.step_index} {filtering_step.step_name}")
