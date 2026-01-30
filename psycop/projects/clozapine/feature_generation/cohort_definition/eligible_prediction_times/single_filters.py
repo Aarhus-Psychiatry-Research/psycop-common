@@ -1,7 +1,10 @@
 import polars as pl
 
 from psycop.common.cohort_definition import PredictionTimeFilter
-from psycop.common.feature_generation.loaders.raw.load_moves import MoveIntoRMBaselineLoader
+from psycop.common.feature_generation.loaders.raw.load_moves import (
+    MoveIntoRMBaselineLoader,
+    load_move_into_rm_for_exclusion,
+)
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
     QuarantineFilter,
 )
@@ -103,3 +106,37 @@ class ClozapinePrevalentFilter(PredictionTimeFilter):
         )
 
         return df.join(prevalent_prediction_times, on=["dw_ek_borger", "timestamp"], how="anti")
+
+
+class ClozapinePrevalentMoveFilter(PredictionTimeFilter):
+    """
+    Remove patients who have an outcome within 182 days after a move into the region.
+    """
+
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
+        # 1️⃣ Load move dates
+        move_dates = pl.from_pandas(load_move_into_rm_for_exclusion()).select(
+            pl.col("dw_ek_borger"), pl.col("timestamp").alias("move_timestamp")
+        )
+
+        # 2️⃣ Load outcome timestamps
+        outcomes = pl.from_pandas(combine_structured_and_text_outcome()).select(
+            pl.col("dw_ek_borger"), pl.col("timestamp").alias("outcome_timestamp")
+        )
+
+        # 3️⃣ Merge outcomes with moves on dw_ek_borger
+        merged = outcomes.join(move_dates, on="dw_ek_borger", how="inner")
+
+        # 4️⃣ Keep only outcomes within 182 days after move
+        outcomes_in_washout = merged.filter(
+            (pl.col("outcome_timestamp") > pl.col("move_timestamp"))
+            & ((pl.col("outcome_timestamp") - pl.col("move_timestamp")).dt.days() <= 182)
+        )
+
+        # 5️⃣ Get unique patients to remove
+        patients_to_remove = outcomes_in_washout.select("dw_ek_borger").unique()
+
+        # 6️⃣ Remove these patients from prediction times
+        filtered_df = df.join(patients_to_remove.lazy(), on="dw_ek_borger", how="anti")
+
+        return filtered_df

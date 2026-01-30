@@ -13,6 +13,7 @@ from psycop.projects.clozapine.feature_generation.cohort_definition.eligible_pre
     ClozapineMinAgeFilter,
     ClozapineMinDateFilter,
     ClozapinePrevalentFilter,
+    ClozapinePrevalentMoveFilter,
     ClozapineSchizophrenia,
     ClozapineWashoutMoveFilter,
 )
@@ -54,6 +55,7 @@ class ClozapineCohortDefiner(CohortDefiner):
                 ClozapineMinAgeFilter(),
                 ClozapinePrevalentFilter(),
                 ClozapineWashoutMoveFilter(),
+                ClozapinePrevalentMoveFilter(),
             ),
             entity_id_col_name="dw_ek_borger",
         )
@@ -61,7 +63,9 @@ class ClozapineCohortDefiner(CohortDefiner):
         return result
 
     @staticmethod
+    @staticmethod
     def get_outcome_timestamps() -> OutcomeTimestampFrame:
+        # Load all outcome timestamps
         frame = (
             pl.from_pandas(combine_structured_and_text_outcome())
             .with_columns(value=pl.lit(1))
