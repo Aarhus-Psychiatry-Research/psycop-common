@@ -4,6 +4,11 @@ from typing import Literal
 import pandas as pd
 from psycop.common.cross_experiments.project_getters.ect_getter import ECTGetter
 from psycop.common.cross_experiments.project_getters.restraint_getter import RestraintGetter
+from psycop.common.cross_experiments.project_getters.fa_inpatient_getter import (
+    ForcedAdmissionsInpatientGetter,
+)
+from psycop.common.cross_experiments.project_getters.t2d_getter import T2DGetter
+from psycop.common.cross_experiments.project_getters.scz_bp_getter import SczBpGetter
 from psycop.common.cross_experiments.project_getters.cvd_getter import CVDGetter
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
 
@@ -11,9 +16,26 @@ CROSS_EXPERIMENTS_BASE_PATH = "E:/shared_resources/cross_experiments/"
 
 
 class ModelCatalogue:
-    def __init__(self, projects: list[Literal["CVD", "ECT", "Restraint"]] = ["CVD", "ECT", "Restraint"]):
+    def __init__(
+        self,
+        projects: list[Literal["CVD", "ECT", "Restraint", "FAI", "SCZ_BP", "T2D"]] = [
+            "CVD",
+            "ECT",
+            "Restraint",
+            "FAI",
+            "SCZ_BP",
+            "T2D",
+        ],
+    ):
         self.projects = projects
-        self.project_getters = {"CVD": CVDGetter, "ECT": ECTGetter, "Restraint": RestraintGetter}
+        self.project_getters = {
+            "CVD": CVDGetter,
+            "ECT": ECTGetter,
+            "Restraint": RestraintGetter,
+            "FAI": ForcedAdmissionsInpatientGetter,
+            "SCZ_BP": SczBpGetter,
+            "T2D": T2DGetter,
+        }
         self.project_getters = {k: v for k, v in self.project_getters.items() if k in self.projects}
 
     def get_eval_dfs(self):
@@ -46,32 +68,50 @@ class ModelCatalogue:
             project_path = experiment_path + f"/{project}"
 
             # if imported cfg is set to geographic split, start by removing geographic split-specific args
-            if cfg['trainer']['training_preprocessing_pipeline']['*']['split_filter']['@preprocessing'] == "regional_data_filter":
+            if (
+                cfg["trainer"]["training_preprocessing_pipeline"]["*"]["split_filter"][
+                    "@preprocessing"
+                ]
+                == "regional_data_filter"
+            ):
                 cfg = (
-                    cfg.rem("trainer.training_preprocessing_pipeline.*.split_filter.regional_move_df")
+                    cfg.rem(
+                        "trainer.training_preprocessing_pipeline.*.split_filter.regional_move_df"
+                    )
                     .rem(
                         "trainer.training_preprocessing_pipeline.*.split_filter.timestamp_col_name"
                     )
                     .rem("trainer.training_preprocessing_pipeline.*.split_filter.region_col_name")
                     .rem(
-                        "trainer.training_preprocessing_pipeline.*.split_filter.timestamp_cutoff_col_name")
+                        "trainer.training_preprocessing_pipeline.*.split_filter.timestamp_cutoff_col_name"
                     )
-                
+                )
+
             # mutate config paths and filter
             cfg = (
                 cfg.mut("logger.*.mlflow.experiment_name", experiment_name)
                 .mut("logger.*.disk_logger.run_path", project_path)
-                .mut("trainer.training_preprocessing_pipeline.*.split_filter.@preprocessing", split_filter)
+                .mut(
+                    "trainer.training_preprocessing_pipeline.*.split_filter.@preprocessing",
+                    split_filter,
+                )
             )
 
             # if desired split filter is geopgraphic, re-add necessary filters
             if split_filter == "regional_data_filter":
                 cfg = (
-                    cfg.add("trainer.training_preprocessing_pipeline.*.split_filter.regional_move_df", None)
-                    .add(
-                        "trainer.training_preprocessing_pipeline.*.split_filter.timestamp_col_name", "timestamp"
+                    cfg.add(
+                        "trainer.training_preprocessing_pipeline.*.split_filter.regional_move_df",
+                        None,
                     )
-                    .add("trainer.training_preprocessing_pipeline.*.split_filter.region_col_name", "region")
+                    .add(
+                        "trainer.training_preprocessing_pipeline.*.split_filter.timestamp_col_name",
+                        "timestamp",
+                    )
+                    .add(
+                        "trainer.training_preprocessing_pipeline.*.split_filter.region_col_name",
+                        "region",
+                    )
                     .add(
                         "trainer.training_preprocessing_pipeline.*.split_filter.timestamp_cutoff_col_name",
                         "first_regional_move_timestamp",
@@ -89,6 +129,6 @@ class ModelCatalogue:
 
 
 if __name__ == "__main__":
-    model_catalogue = ModelCatalogue(projects=["CVD", "ECT", "Restraint"])
+    model_catalogue = ModelCatalogue(projects=["T2D", "SCZ_BP", "FAI"])
     auc_rocs = model_catalogue.retrain_and_test_from_configs()
     print(auc_rocs)
