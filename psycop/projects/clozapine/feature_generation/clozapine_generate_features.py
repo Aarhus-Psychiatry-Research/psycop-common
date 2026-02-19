@@ -49,7 +49,6 @@ from psycop.projects.clozapine.loaders.ect import ect_all
 from psycop.projects.clozapine.loaders.lab_results import (
     cancelled_standard_lab_results,
     p_aripiprazol,
-    p_clozapine,
     p_ethanol,
     p_haloperidol,
     p_olanzapine,
@@ -394,7 +393,6 @@ if __name__ == "__main__":
         "lab-results": [
             BooleanSpec(cancelled_standard_lab_results),
             BooleanSpec(p_aripiprazol),
-            BooleanSpec(p_clozapine),
             BooleanSpec(p_ethanol),
             BooleanSpec(p_haloperidol),
             BooleanSpec(p_olanzapine),
