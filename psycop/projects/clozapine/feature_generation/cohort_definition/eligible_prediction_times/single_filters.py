@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import polars as pl
 
 from psycop.common.cohort_definition import PredictionTimeFilter
@@ -25,6 +27,7 @@ from psycop.projects.clozapine.feature_generation.cohort_definition.eligible_pre
 from psycop.projects.clozapine.feature_generation.cohort_definition.outcome_specification.combine_text_structured_clozapine_outcome import (
     combine_structured_and_text_outcome,
 )
+from psycop.projects.clozapine.loaders.lab_results import p_clozapine
 
 
 class ClozapineMinDateFilter(PredictionTimeFilter):
@@ -114,29 +117,75 @@ class ClozapinePrevalentMoveFilter(PredictionTimeFilter):
     """
 
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
-        # 1️⃣ Load move dates
+        # Load move dates
         move_dates = pl.from_pandas(load_move_into_rm_for_exclusion()).select(
             pl.col("dw_ek_borger"), pl.col("timestamp").alias("move_timestamp")
         )
 
-        # 2️⃣ Load outcome timestamps
+        # Load outcome timestamps
         outcomes = pl.from_pandas(combine_structured_and_text_outcome()).select(
             pl.col("dw_ek_borger"), pl.col("timestamp").alias("outcome_timestamp")
         )
 
-        # 3️⃣ Merge outcomes with moves on dw_ek_borger
+        # Merge outcomes with moves on dw_ek_borger
         merged = outcomes.join(move_dates, on="dw_ek_borger", how="inner")
 
-        # 4️⃣ Keep only outcomes within 182 days after move
+        # Keep only outcomes within 182 days after move
         outcomes_in_washout = merged.filter(
             (pl.col("outcome_timestamp") > pl.col("move_timestamp"))
             & ((pl.col("outcome_timestamp") - pl.col("move_timestamp")).dt.days() <= 182)
         )
 
-        # 5️⃣ Get unique patients to remove
+        # Get unique patients to remove
         patients_to_remove = outcomes_in_washout.select("dw_ek_borger").unique()
 
-        # 6️⃣ Remove these patients from prediction times
+        # Remove these patients from prediction times
+        filtered_df = df.join(patients_to_remove.lazy(), on="dw_ek_borger", how="anti")
+
+        return filtered_df
+
+
+class ClozapinePlasmaClozapineFilter(PredictionTimeFilter):
+    """
+    Remove patients if:
+    - They have plasma clozapine BEFORE their first outcome timestamp
+    - They have plasma clozapine but NEVER have an outcome timestamp
+    """
+
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
+        # Load plasma clozapine timestamps
+        plasma = (
+            pl.from_pandas(p_clozapine())
+            .filter(pl.col("timestamp") >= datetime(2014, 1, 1))
+            .select(pl.col("dw_ek_borger"), pl.col("timestamp").alias("plasma_timestamp"))
+        )
+
+        # Load outcome timestamps
+        outcomes = pl.from_pandas(combine_structured_and_text_outcome()).select(
+            pl.col("dw_ek_borger"), pl.col("timestamp").alias("outcome_timestamp")
+        )
+
+        # Identify patients with plasma but NO outcome
+        plasma_patients = plasma.select("dw_ek_borger").unique()
+        outcome_patients = outcomes.select("dw_ek_borger").unique()
+
+        plasma_without_outcome = plasma_patients.join(
+            outcome_patients, on="dw_ek_borger", how="anti"
+        )
+
+        # Identify plasma BEFORE outcome
+        plasma_with_outcome = plasma.join(outcomes, on="dw_ek_borger", how="inner")
+
+        plasma_before_outcome = (
+            plasma_with_outcome.filter(pl.col("plasma_timestamp") < pl.col("outcome_timestamp"))
+            .select("dw_ek_borger")
+            .unique()
+        )
+
+        # Combine patients to remove
+        patients_to_remove = plasma_without_outcome.vstack(plasma_before_outcome).unique()
+
+        # Remove from prediction times
         filtered_df = df.join(patients_to_remove.lazy(), on="dw_ek_borger", how="anti")
 
         return filtered_df
