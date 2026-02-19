@@ -12,7 +12,9 @@ from psycop.common.global_utils.cache import shared_cache
 from psycop.projects.clozapine.feature_generation.cohort_definition.eligible_prediction_times.single_filters import (
     ClozapineMinAgeFilter,
     ClozapineMinDateFilter,
+    ClozapinePlasmaClozapineFilter,
     ClozapinePrevalentFilter,
+    ClozapinePrevalentMoveFilter,
     ClozapineSchizophrenia,
     ClozapineWashoutMoveFilter,
 )
@@ -54,6 +56,8 @@ class ClozapineCohortDefiner(CohortDefiner):
                 ClozapineMinAgeFilter(),
                 ClozapinePrevalentFilter(),
                 ClozapineWashoutMoveFilter(),
+                ClozapinePrevalentMoveFilter(),
+                ClozapinePlasmaClozapineFilter(),
             ),
             entity_id_col_name="dw_ek_borger",
         )
@@ -61,18 +65,25 @@ class ClozapineCohortDefiner(CohortDefiner):
         return result
 
     @staticmethod
+    @staticmethod
     def get_outcome_timestamps() -> OutcomeTimestampFrame:
-        return OutcomeTimestampFrame(
-            frame=(
-                pl.from_pandas(combine_structured_and_text_outcome())
-                .with_columns(value=pl.lit(1))
-                .select(["dw_ek_borger", "timestamp", "value"])
-            )
+        # Load all outcome timestamps
+        frame = (
+            pl.from_pandas(combine_structured_and_text_outcome())
+            .with_columns(value=pl.lit(1))
+            .select(["dw_ek_borger", "timestamp", "value"])
         )
+
+        # Apply MOVE washout filter (same logic as prediction times)
+        filtered_frame = ClozapineWashoutMoveFilter().apply(frame.lazy()).collect()
+
+        return OutcomeTimestampFrame(frame=filtered_frame)
 
 
 if __name__ == "__main__":
     filtered_prediction_time_bundle = ClozapineCohortDefiner.get_filtered_prediction_times_bundle()
+
+    outcome_timestamps_bundle = ClozapineCohortDefiner.get_outcome_timestamps()
 
     for filtering_step in filtered_prediction_time_bundle.filter_steps:
         msg.info(f"Filter step {filtering_step.step_index} {filtering_step.step_name}")
