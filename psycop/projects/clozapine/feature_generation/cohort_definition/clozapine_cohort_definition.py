@@ -12,6 +12,7 @@ from psycop.common.global_utils.cache import shared_cache
 from psycop.projects.clozapine.feature_generation.cohort_definition.eligible_prediction_times.single_filters import (
     ClozapineMinAgeFilter,
     ClozapineMinDateFilter,
+    ClozapinePlasmaClozapineFilter,
     ClozapinePrevalentFilter,
     ClozapinePrevalentMoveFilter,
     ClozapineSchizophrenia,
@@ -56,6 +57,7 @@ class ClozapineCohortDefiner(CohortDefiner):
                 ClozapinePrevalentFilter(),
                 ClozapineWashoutMoveFilter(),
                 ClozapinePrevalentMoveFilter(),
+                ClozapinePlasmaClozapineFilter(),
             ),
             entity_id_col_name="dw_ek_borger",
         )
