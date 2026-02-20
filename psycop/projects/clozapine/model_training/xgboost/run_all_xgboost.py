@@ -17,7 +17,7 @@ def run_xgboost_models(base_dir: str):
 
     for script_path in script_paths:
         model_dir = script_path.parent
-        print(f"🚀 Running logreg model: {model_dir.relative_to(base_path)}")
+        print(f"🚀 Running xgboost model: {model_dir.relative_to(base_path)}")
 
         try:
             subprocess.run(["python", str(script_path)], check=True)
@@ -27,4 +27,4 @@ def run_xgboost_models(base_dir: str):
 
 
 if __name__ == "__main__":
-    run_xgboost_models("E:/ERPERF/psycop-common-1/psycop/projects/clozapine/model_training")
+    run_xgboost_models("E:/ERPERF/psycop-common-2/psycop/projects/clozapine/model_training")
