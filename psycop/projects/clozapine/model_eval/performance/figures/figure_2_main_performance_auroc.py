@@ -80,10 +80,10 @@ def create_auroc_confmat_patchwork_two_experiments(
 if __name__ == "__main__":
     experiment_names = {
         "Logistic regression": (
-            "clozapine hparam, structured_text_365d_lookahead, log_reg, 1 year lookbehind filter, 2025_random_split_best_run_evaluated_on_test"
+            "clozapine hparam, structured_text_365d_lookahead, log_reg, 1 year lookbehind filter, 2025_random_split,no_plasma_clozapine_best_run_evaluated_on_test"
         ),
         "XGBoost": (
-            "clozapine hparam, structured_text_365d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split_best_run_evaluated_on_test"
+            "clozapine hparam, structured_text_365d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split, no_plasma_clozapine_best_run_evaluated_on_test"
         ),
     }
 
@@ -95,7 +95,8 @@ if __name__ == "__main__":
         experiments[label] = read_eval_df_from_disk(eval_dir).to_pandas()
 
     output_path = Path(
-        "E:/shared_resources/clozapine/eval/figures/" "clozapine_auroc_conf_matrix_figure2.png"
+        "E:/shared_resources/clozapine/eval/figures/"
+        "clozapine_auroc_conf_matrix_figure2_no_p_clozapine.png"
     )
 
     create_auroc_confmat_patchwork_two_experiments(

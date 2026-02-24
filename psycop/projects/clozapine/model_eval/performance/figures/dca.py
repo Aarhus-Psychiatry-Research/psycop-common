@@ -82,8 +82,8 @@ def plot_decision_curve(dca: dict, model_label: str | list[str]):  # type: ignor
 
     save_dir = Path("E:/shared_resources/clozapine/eval/figures")
     save_dir.mkdir(parents=True, exist_ok=True)
-    save_path_png = save_dir / f"dca_clozapine_{model_label}.png"
-    save_path_pdf = save_dir / f"dca_clozapine_{model_label}.pdf"
+    save_path_png = save_dir / f"dca_clozapine_{model_label}_no_plasma_clozapine.png"
+    save_path_pdf = save_dir / f"dca_clozapine_{model_label}_no_plasma_clozapine.pdf"
     plt.savefig(save_path_png, format="png", dpi=600, bbox_inches="tight")
     plt.savefig(save_path_pdf, format="pdf", dpi=300, bbox_inches="tight")
     plt.close()
@@ -97,7 +97,7 @@ if __name__ == "__main__":
         # Build the experiment name including the current model
         experiment_name = (
             "clozapine hparam, structured_text_365d_lookahead, "
-            f"{model_label}, 1 year lookbehind filter, 2025_random_split"
+            f"{model_label}, 1 year lookbehind filter, 2025_random_split, no_plasma_clozapine"
         )
 
         eval_dir = (
