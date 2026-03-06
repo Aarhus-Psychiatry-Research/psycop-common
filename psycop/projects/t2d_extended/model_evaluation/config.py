@@ -20,8 +20,16 @@ EVAL_GROUP = RunGroup(name=EVAL_GROUP_NAME)
 ################
 date_str = datetime.now().strftime("%Y-%m-%d")
 
-T2D_PN_THEME = pn.theme_bw() + pn.theme(
-    panel_grid=pn.element_blank(), axis_title=pn.element_text(size=14)
+T2D_PN_THEME = (
+    pn.theme_bw()
+    + pn.theme(
+        text=pn.element_text(
+            family="Times New Roman",
+            color="black"
+        ),
+        axis_title=pn.element_text(size=14),
+        panel_grid=pn.element_blank(),
+    )
 )
 
 from collections.abc import Sequence
