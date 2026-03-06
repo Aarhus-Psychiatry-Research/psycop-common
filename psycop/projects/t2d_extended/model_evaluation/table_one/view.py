@@ -203,11 +203,11 @@ def _patient_frame(
     # Apply overrides
     specs = [_apply_overrides(c, overrides) for c in specs]
 
-    patient_df = model.frame.groupby("dw_ek_borger").agg(
+    patient_df = model.frame.groupby(["dw_ek_borger", "dataset"]).agg(
         pl.col(model.sex_col_name).first().alias(model.sex_col_name),
         pl.col(model.outcome_col_name).max().alias(model.outcome_col_name),
         pl.col("timestamp").min().alias("first_contact_timestamp"),
-        pl.col("dataset").first().alias("dataset"),
+        # pl.col("dataset").first().alias("dataset"),
         # pl.col("cause").first().alias("outcome_cause"),  # noqa: ERA001
     )
 

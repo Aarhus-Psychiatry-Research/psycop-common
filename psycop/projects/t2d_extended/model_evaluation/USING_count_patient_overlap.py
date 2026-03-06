@@ -4,8 +4,8 @@ from typing import Literal, Mapping
 import polars as pl
 
 from psycop.common.model_training_v2.config.config_utils import PsycopConfig
-from psycop.projects.t2d_extended.model_evaluation.table_one.model import TableOneModel, prepare_table_one_dataset
-from psycop.projects.t2d_extended.model_evaluation.table_one.view import t2d_extended_table_one
+from psycop.projects.t2d_extended.model_evaluation.table_one.model import prepare_table_one_dataset
+
 
 
 def table_one_facade(
@@ -28,19 +28,11 @@ def table_one_facade(
 
     all_processed = pl.concat(processed_dfs, how="vertical")
 
-    model = TableOneModel(
-        all_processed,
-        allow_extra_columns=True,
-        outcome_col_name=next(iter(datasets.values()))[0]["trainer"]["training_outcome_col_name"],
-        sex_col_name=sex_col_name,
-    )
 
-    fname = f"table_one"
+    fname = "count"
 
-    view = t2d_extended_table_one(model=model)
-    view.to_excel(output_dir / f"{fname}.xlsx")
-    view.to_csv(output_dir / f"{fname}.csv")
-
+    all_processed.to_excel(output_dir / f"{fname}.xlsx")
+    all_processed.to_csv(output_dir / f"{fname}.csv")
 
 if __name__ == "__main__":
 
