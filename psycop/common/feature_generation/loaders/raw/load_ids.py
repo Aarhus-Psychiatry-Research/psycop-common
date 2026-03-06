@@ -7,6 +7,7 @@ from enum import Enum
 from typing import TYPE_CHECKING
 
 import polars as pl
+import pandas as pd
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 
@@ -52,5 +53,42 @@ def load_stratified_by_outcome_split_ids(split: SplitName, n_rows: int | None = 
     return SplitFrame(
         frame=pl.from_pandas(df.reset_index(drop=True)).lazy(),
         split_name=split.value,
+        allow_extra_columns=True,
+    )
+
+
+@dataclass(frozen=True)
+class FullFrame(ValidatedFrame[pl.LazyFrame]):
+    id_col_name: str = "dw_ek_borger"
+    id_col_rules: Sequence[ValidatorRule] = (
+        ColumnExistsRule(),
+        ColumnTypeRule(expected_type=pl.Int64),
+    )
+
+
+def load_and_concatenate_2025_ids(n_rows: int | None = None) -> FullFrame:
+    """Loads all ids from CVD_T2D_kohorte_demografi_marts_2025. Used for creating validation sets for temporal stability evaluation.
+
+    Args:
+        n_rows: Number of rows to return. Defaults to None.
+
+    Returns:
+        pd.DataFrame: Only dw_ek_borger column with ids
+    """
+    dfs = []
+
+    for split_name in ["train", "test", "val"]:
+        view = f"[psycop_{split_name}_ids_2025]"
+
+        sql = f"SELECT * FROM [fct].{view}"
+
+        df = sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
+
+        dfs.append(df)
+
+    combined_df = pd.concat(dfs).reset_index(drop=True)
+
+    return FullFrame(
+        frame=pl.from_pandas(combined_df).lazy(),
         allow_extra_columns=True,
     )

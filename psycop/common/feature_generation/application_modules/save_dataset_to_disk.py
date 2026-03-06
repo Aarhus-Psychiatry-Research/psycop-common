@@ -12,6 +12,7 @@ from psycop.common.feature_generation.application_modules.project_setup import P
 from psycop.common.feature_generation.loaders.raw.load_ids import (
     SplitName,
     load_stratified_by_outcome_split_ids,
+    load_and_concatenate_2025_ids,
 )
 from psycop.common.feature_generation.utils import write_df_to_file
 
@@ -68,6 +69,13 @@ def filter_by_split_ids(
 def get_split_id_df(split_name: SplitName) -> pd.DataFrame:
     """Get a dataframe with the splits ids."""
     split_id_df = load_stratified_by_outcome_split_ids(split=split_name)
+
+    return split_id_df.frame.collect().to_pandas()
+
+
+def get_all_2025_ids_df() -> pd.DataFrame:
+    """Get a dataframe with the all ids from CVD_T2D_kohorte_demografi_marts_2025."""
+    split_id_df = load_and_concatenate_2025_ids()
 
     return split_id_df.frame.collect().to_pandas()
 
