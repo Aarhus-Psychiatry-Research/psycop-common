@@ -47,6 +47,16 @@ class ModelCatalogue:
     def get_cfgs(self):
         return {k: v.get_cfg() for k, v in self.project_getters.items()}
 
+    def get_predicted_positive_rates(self):
+        return {k: v.predicted_positive_rate for k, v in self.project_getters.items()}
+
+    def get_hyperparameter_tuning_cfgs(self):
+        return {
+            k: v.get_hyperparameter_tuning_cfg()  # type: ignore
+            for k, v in self.project_getters.items()
+            if hasattr(v, "get_hyperparameter_tuning_cfg")
+        }
+
     def retrain_and_test_from_configs(
         self,
         split_filter: Literal[
@@ -130,5 +140,6 @@ class ModelCatalogue:
 
 if __name__ == "__main__":
     model_catalogue = ModelCatalogue(projects=["T2D", "SCZ_BP", "FAI"])
+    model_catalogue.project_getters["T2D"].predicted_positive_rate
     auc_rocs = model_catalogue.retrain_and_test_from_configs()
     print(auc_rocs)
