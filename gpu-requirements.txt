@@ -1,4 +1,4 @@
-sentence-transformers==3.1.0
+sentence-transformers==5.2.3
 #torch==1.13.1
 torch==2.10.0 # Due to Snyk vuln SNYK-PYTHON-TORCH-13052994 and more
 lightning==2.5.1.post
