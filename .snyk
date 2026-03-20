@@ -250,31 +250,31 @@ ignore:
           Exception approved via Slack conversation in programming channel on
           29/09/2025.
         created: 2027-05-09T16:22:20.040Z
-  SNYK-PYTHON-TORCH-14560695:
+  SNYK-PYTHON-TRANSFORMERS-14560695:
     - '*':
         reason: Approved via Slack conversation in programming channel on 01/14/26
         created: 2026-03-11T17:05:16.626Z
-  SNYK-PYTHON-TORCH-14563374:
+  SNYK-PYTHON-TRANSFORMERS-14563374:
     - '*':
         reason: Approved via Slack conversation in programming channel on 01/14/26
         created: 2026-03-11T17:05:16.626Z
-  SNYK-PYTHON-TORCH-14564275:
+  SNYK-PYTHON-TRANSFORMERS-14564275:
     - '*':
         reason: Approved via Slack conversation in programming channel on 01/14/26
         created: 2026-03-11T17:05:16.626Z
-  SNYK-PYTHON-TORCH-14564363:
+  SNYK-PYTHON-TRANSFORMERS-14564363:
     - '*':
         reason: Approved via Slack conversation in programming channel on 01/14/26
         created: 2026-03-11T17:05:16.626Z
-  SNYK-PYTHON-TORCH-14564364:
+  SNYK-PYTHON-TRANSFORMERS-14564364:
     - '*':
         reason: Approved via Slack conversation in programming channel on 01/14/26
         created: 2026-03-11T17:05:16.626Z
-  SNYK-PYTHON-TORCH-14564365:
+  SNYK-PYTHON-TRANSFORMERS-14564365:
     - '*':
         reason: Approved via Slack conversation in programming channel on 01/14/26
         created: 2026-03-11T17:05:16.626Z
-  SNYK-PYTHON-TORCH-14564366:
+  SNYK-PYTHON-TRANSFORMERS-14564366:
     - '*':
         reason: Approved via Slack conversation in programming channel on 01/14/26
         created: 2026-03-11T17:05:16.626Z
