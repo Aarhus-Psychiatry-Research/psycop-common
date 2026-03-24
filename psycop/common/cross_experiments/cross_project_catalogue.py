@@ -12,6 +12,7 @@ from psycop.common.cross_experiments.project_getters.restraint_getter import Res
 from psycop.common.cross_experiments.project_getters.scz_bp_getter import SczBpGetter
 from psycop.common.cross_experiments.project_getters.t2d_getter import T2DGetter
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
+from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 
 CROSS_EXPERIMENTS_BASE_PATH = "E:/shared_resources/cross_experiments/"
 
@@ -34,19 +35,19 @@ class ModelCatalogue:
         }
         self.project_getters = {k: v for k, v in self.project_getters.items() if k in self.projects}
 
-    def get_eval_dfs(self):
+    def get_eval_dfs(self) -> dict[str, pd.DataFrame]:
         return {k: v.get_eval_df() for k, v in self.project_getters.items()}
 
-    def get_feature_set_dfs(self):
+    def get_feature_set_dfs(self) -> dict[str, pd.DataFrame]:
         return {k: v.get_feature_set_df() for k, v in self.project_getters.items()}
 
-    def get_cfgs(self):
+    def get_cfgs(self) -> dict[str, PsycopConfig]:
         return {k: v.get_cfg() for k, v in self.project_getters.items()}
 
-    def get_predicted_positive_rates(self):
+    def get_predicted_positive_rates(self) -> dict[str, float]:
         return {k: v.predicted_positive_rate for k, v in self.project_getters.items()}
 
-    def get_hyperparameter_tuning_cfgs(self):
+    def get_hyperparameter_tuning_cfgs(self) -> dict[str, PsycopConfig]:  # type: ignore
         return {
             k: v.get_hyperparameter_tuning_cfg()  # type: ignore
             for k, v in self.project_getters.items()
@@ -59,7 +60,7 @@ class ModelCatalogue:
             "regional_data_filter", "outcomestratified_split_filter"
         ] = "outcomestratified_split_filter",
         experiment_name: str = "models_retrained_from_catalogue",
-    ):
+    ) -> dict[str, float]:
         cfgs = self.get_cfgs()
 
         date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -136,6 +137,5 @@ class ModelCatalogue:
 
 if __name__ == "__main__":
     model_catalogue = ModelCatalogue(projects=["T2D", "SCZ_BP", "FAI"])
-    model_catalogue.project_getters["T2D"].predicted_positive_rate
     auc_rocs = model_catalogue.retrain_and_test_from_configs()
     print(auc_rocs)
