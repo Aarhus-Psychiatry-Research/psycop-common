@@ -1,10 +1,9 @@
+from datetime import datetime
 from typing import Literal
 
-from datetime import datetime
-
 from psycop.common.cross_experiments.cross_project_catalogue import (
-    ModelCatalogue,
     CROSS_EXPERIMENTS_BASE_PATH,
+    ModelCatalogue,
 )
 from psycop.common.model_training_v2.hyperparameter_suggester.optuna_hyperparameter_search import (
     OptunaHyperParameterOptimization,
@@ -17,7 +16,6 @@ def optimize_models_on_metric(
     metric: str,
     max_fpr: float | None = None,
 ):
-
     catalogue = ModelCatalogue(projects=projects)
     tuning_cfgs = catalogue.get_hyperparameter_tuning_cfgs()
 

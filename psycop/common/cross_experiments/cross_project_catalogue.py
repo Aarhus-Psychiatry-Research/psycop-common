@@ -1,15 +1,16 @@
 from datetime import datetime
-from typing import Literal
+from typing import Literal, Optional
 
 import pandas as pd
+
+from psycop.common.cross_experiments.project_getters.cvd_getter import CVDGetter
 from psycop.common.cross_experiments.project_getters.ect_getter import ECTGetter
-from psycop.common.cross_experiments.project_getters.restraint_getter import RestraintGetter
 from psycop.common.cross_experiments.project_getters.fa_inpatient_getter import (
     ForcedAdmissionsInpatientGetter,
 )
-from psycop.common.cross_experiments.project_getters.t2d_getter import T2DGetter
+from psycop.common.cross_experiments.project_getters.restraint_getter import RestraintGetter
 from psycop.common.cross_experiments.project_getters.scz_bp_getter import SczBpGetter
-from psycop.common.cross_experiments.project_getters.cvd_getter import CVDGetter
+from psycop.common.cross_experiments.project_getters.t2d_getter import T2DGetter
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
 
 CROSS_EXPERIMENTS_BASE_PATH = "E:/shared_resources/cross_experiments/"
@@ -18,15 +19,10 @@ CROSS_EXPERIMENTS_BASE_PATH = "E:/shared_resources/cross_experiments/"
 class ModelCatalogue:
     def __init__(
         self,
-        projects: list[Literal["CVD", "ECT", "Restraint", "FAI", "SCZ_BP", "T2D"]] = [
-            "CVD",
-            "ECT",
-            "Restraint",
-            "FAI",
-            "SCZ_BP",
-            "T2D",
-        ],
+        projects: Optional[list[Literal["CVD", "ECT", "Restraint", "FAI", "SCZ_BP", "T2D"]]] = None,
     ):
+        if projects is None:
+            projects = ["CVD", "ECT", "Restraint", "FAI", "SCZ_BP", "T2D"]
         self.projects = projects
         self.project_getters = {
             "CVD": CVDGetter,
