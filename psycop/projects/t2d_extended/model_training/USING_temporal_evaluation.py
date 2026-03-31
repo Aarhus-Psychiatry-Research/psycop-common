@@ -1,4 +1,6 @@
+from collections.abc import Sequence
 from pathlib import Path
+from typing import Optional
 
 import numpy as np
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
@@ -39,9 +41,11 @@ def eval_df_to_eval_dataset(cfg: PsycopConfig) -> EvalDataset:
     )
 
 
+
+
 def plot_auc_roc(
     eval_dataset: EvalDataset,
-    title: str = "Receiver Operating Characteristic (ROC) Curve",
+    title: str = "", #Receiver Operating Characteristic (ROC) Curve
     n_bootstraps: int = 100,
 ) -> pn.ggplot:
     """Plot AUC ROC curve with bootstrapped 95% confidence interval using Seaborn.
@@ -111,6 +115,10 @@ def plot_auc_roc(
         + pn.ylim(0, 1)
         + T2D_PN_THEME
         + auroc_label
+        + pn.theme(
+        figure_size=(5, 5),
+        dpi=300,
+    )
     )
 
 
@@ -177,9 +185,12 @@ def plotnine_confusion_matrix(matrix: ConfusionMatrix, outcome_text: str) -> pn.
             panel_grid_minor=pn.element_blank(),
             panel_background=pn.element_blank(),
             legend_position="none",
+            figure_size=(5, 5),
+            dpi=300,
         )
         + pn.scale_y_discrete(reverse=True)
         + pn.labs(x=f"Actual {outcome_text}", y=f"Predicted {outcome_text}")
+        
     )
 
     return p
@@ -188,11 +199,12 @@ def plotnine_confusion_matrix(matrix: ConfusionMatrix, outcome_text: str) -> pn.
 
 if __name__ == "__main__":
 
-    training_start_date="2013-01-01"
-    training_end_date="2018-01-01"
-    evaluation_interval=(f"2018-01-01", f"2018-12-31")
+    y = 23
 
-    run_path = f"E:/shared_resources/t2d_extended/training/T2D-extended, temporal validation/{training_start_date}_{training_end_date}_{evaluation_interval[0]}_{evaluation_interval[1]}"
+    run_path = (
+        f"E:/shared_resources/t2d_extended/training/T2D-extended, temporal validation/"
+        f"2013-01-01_2018-01-01_20{y}-01-01_20{y}-12-31"
+    )
 
     cfg = PsycopConfig().from_disk(f"{run_path}/config.cfg")
 
@@ -200,5 +212,5 @@ if __name__ == "__main__":
 
     confusion_matrix = confusion_matrix_plot(cfg=cfg)
 
-    print("hey")
+    print("heya")
 

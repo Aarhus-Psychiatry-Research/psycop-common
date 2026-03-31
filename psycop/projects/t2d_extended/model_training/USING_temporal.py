@@ -107,5 +107,31 @@ if __name__ == "__main__":
         for y in range(18, 24)
     }
 
+    # quarters = [
+    #     ("01-01", "03-31"),
+    #     ("04-01", "06-30"),
+    #     ("07-01", "09-30"),
+    #     ("10-01", "12-31"),
+    # ]
 
+    # aurocs = {}
+
+    # for y in range(18, 24):
+    #     for q, (start, end) in enumerate(quarters, start=1):
+    #         label = f"20{y}-Q{q}"
+    #         interval = (f"20{y}-{start}", f"20{y}-{end}")
+
+    #         try:
+    #             aurocs[label] = eval_temporal_stability(
+    #                 PsycopConfig().from_disk(Path(__file__).parent / "t2d_extended.cfg"),
+    #                 training_start_date="2013-01-01",
+    #                 training_end_date="2018-01-01",
+    #                 evaluation_interval=interval,
+    #             )
+    #         except ValueError as e:
+    #             if "Found array with 0 sample(s)" in str(e):
+    #                 print(f"Skipping {label}: no samples in {interval}")
+    #                 aurocs[label] = None
+    #             else:
+    #                 raise
     print(aurocs)

@@ -408,7 +408,7 @@ plt.plot(
     linewidth=0.4,
     markersize=6,
     markerfacecolor="gray",
-    label="Cumulative models"
+    label="Annually updated models"
 )
 
 plt.plot(
@@ -489,4 +489,237 @@ plt.legend(frameon=False, fontsize=10)
 
 plt.tight_layout()
 #plt.savefig("t2d-extended_linear-regression_increasing.png")
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+from pathlib import Path
+import re
+import numpy as np
+import matplotlib.pyplot as plt
+import statsmodels.api as sm
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes, mark_inset
+
+# -----------------------------
+# Input
+# -----------------------------
+training_end_year = 2018
+auroc_dict = {
+    '2018-Q1': 0.8400040336969341,
+    '2018-Q2': 0.8359752673163382,
+    '2018-Q3': 0.8404948619647145,
+    '2018-Q4': 0.8347001040175571,
+    '2019-Q1': 0.8209814966488928,
+    '2019-Q2': 0.8213330179464475,
+    '2019-Q3': 0.8481368713034474,
+    '2019-Q4': 0.8464409792346841,
+    '2020-Q1': 0.8351541791499517,
+    '2020-Q2': 0.8776858827208691,
+    '2020-Q3': 0.8985925492795771,
+    '2020-Q4': 0.8750314173563778,
+    '2021-Q1': 0.8004293018520722,
+    '2021-Q2': 0.8173167136163941,
+    '2021-Q3': 0.7843003536258585,
+    '2021-Q4': 0.789668354178592,
+    '2022-Q1': 0.8384457827344268,
+    '2022-Q2': 0.8390170790161712,
+    '2022-Q3': 0.8396669059806182,
+    '2022-Q4': 0.84729069906338,
+    '2023-Q1': 0.7985506465746504,
+    '2023-Q2': None,
+    '2023-Q3': None,
+    '2023-Q4': None,
+}
+
+training_end_date = f"{training_end_year}-01-01"
+evaluation_interval = (
+    f"{training_end_year}-01-01",
+    f"{training_end_year}-12-31",
+)
+
+# -----------------------------
+# Parse quarterly dict
+# -----------------------------
+def quarter_to_decimal_year(label: str) -> float:
+    m = re.fullmatch(r"(\d{4})-Q([1-4])", label)
+    if not m:
+        raise ValueError(f"Unexpected quarter label: {label}")
+    year = int(m.group(1))
+    quarter = int(m.group(2))
+    # place each point in the middle of the quarter
+    return year + (quarter - 0.5) / 4
+
+valid_items = [(k, v) for k, v in auroc_dict.items() if v is not None]
+valid_items = sorted(valid_items, key=lambda kv: quarter_to_decimal_year(kv[0]))
+
+labels = [k for k, _ in valid_items]
+x = np.array([quarter_to_decimal_year(k) for k in labels])
+y = np.array([v for _, v in valid_items])
+
+# -----------------------------
+# Plot styling
+# -----------------------------
+plt.rcParams["font.family"] = "Times New Roman"
+plt.rcParams["axes.linewidth"] = 1
+plt.rcParams["font.size"] = 11
+
+fig, ax_main = plt.subplots(figsize=(7, 4), dpi=300)
+
+# main scatter
+ax_main.scatter(
+    x, y,
+    s=40,
+    facecolors="white",
+    edgecolors="black",
+    linewidth=1.0,
+    zorder=3
+)
+
+# connect quarterly observations
+ax_main.plot(x, y, color="black", linewidth=0.9, alpha=0.7, zorder=2)
+
+# -----------------------------
+# OLS trend line
+# -----------------------------
+if len(x) >= 2:
+    X = sm.add_constant(x)
+    model = sm.OLS(y, X).fit()
+
+    x_pred = np.linspace(x.min(), x.max(), 300)
+    X_pred = sm.add_constant(x_pred)
+
+    pred = model.get_prediction(X_pred)
+    pred_mean = pred.predicted_mean
+    pred_ci = pred.conf_int()
+
+    # Uncomment if you want trend line in main panel too
+    # ax_main.plot(x_pred, pred_mean, color="darkblue", linewidth=1.5, zorder=1)
+    # ax_main.fill_between(
+    #     x_pred,
+    #     pred_ci[:, 0],
+    #     pred_ci[:, 1],
+    #     color="darkblue",
+    #     alpha=0.07,
+    #     zorder=0
+    # )
+
+    slope = model.params[1]
+    slope_se = model.bse[1]
+    print("Slope:", slope)
+    print("Standard error:", slope_se)
+else:
+    print("Only one observation available; linear model not estimated.")
+
+# -----------------------------
+# Main axes formatting
+# -----------------------------
+ax_main.set_xlabel("Year", fontsize=12)
+ax_main.set_ylabel("AUROC", fontsize=12)
+ax_main.set_ylim(0, 1)
+ax_main.set_xlim(2017.7, 2023.3)
+ax_main.grid(True, linestyle=":", linewidth=0.5, alpha=0.6)
+
+# year ticks only
+year_ticks = np.arange(2018, 2024)
+ax_main.set_xticks(year_ticks)
+ax_main.set_xticklabels([str(y) for y in year_ticks])
+
+# optional vertical lines between years
+for year in range(2019, 2024):
+    ax_main.axvline(year, color="lightgray", linestyle=":", linewidth=0.6, zorder=0)
+
+# -----------------------------
+# Zoom area
+# -----------------------------
+zoom_xlim = (2017.7, 2023.3)
+zoom_ylim = (0.75, 0.91)
+
+rect = plt.Rectangle(
+    (zoom_xlim[0], zoom_ylim[0]),
+    zoom_xlim[1] - zoom_xlim[0],
+    zoom_ylim[1] - zoom_ylim[0],
+    linewidth=1.0,
+    edgecolor="darkgray",
+    facecolor="none",
+    linestyle="--"
+)
+ax_main.add_patch(rect)
+
+# -----------------------------
+# Inset
+# -----------------------------
+ax_inset = inset_axes(
+    ax_main,
+    width="35%",
+    height="35%",
+    loc="lower center",
+    bbox_to_anchor=(0, 0.08, 1, 1),
+    bbox_transform=ax_main.transAxes,
+    borderpad=1.2
+)
+
+ax_inset.scatter(
+    x, y,
+    s=22,
+    facecolors="white",
+    edgecolors="black",
+    linewidth=0.8,
+    zorder=3
+)
+ax_inset.plot(x, y, color="black", linewidth=0.8, alpha=0.7, zorder=2)
+
+if len(x) >= 2:
+    ax_inset.plot(x_pred, pred_mean, color="darkblue", linewidth=1.2, zorder=1)
+    ax_inset.fill_between(
+        x_pred,
+        pred_ci[:, 0],
+        pred_ci[:, 1],
+        color="darkblue",
+        alpha=0.07,
+        zorder=0
+    )
+
+ax_inset.set_xlim(*zoom_xlim)
+ax_inset.set_ylim(*zoom_ylim)
+ax_inset.set_xticks(year_ticks)
+ax_inset.set_xticklabels([str(y) for y in year_ticks], fontsize=8)
+ax_inset.tick_params(axis="y", labelsize=8)
+
+for spine in ax_inset.spines.values():
+    spine.set_linewidth(0.8)
+
+ax_inset.grid(True, linestyle=":", linewidth=0.4, alpha=0.5)
+
+mark_inset(
+    ax_main,
+    ax_inset,
+    loc1=2,
+    loc2=4,
+    fc="none",
+    ec="darkgray",
+    linewidth=0.8,
+    alpha=0.5,
+)
+
+# -----------------------------
+# Save
+# -----------------------------
+plt.tight_layout()
+
+outpath = Path(".")
+plt.savefig(
+    outpath / f"t2d-extended_quarterly-regression_inset_{training_end_date}_{evaluation_interval[0]}_{evaluation_interval[1]}.png",
+    bbox_inches="tight"
+)
 plt.show()
