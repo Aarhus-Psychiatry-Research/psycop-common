@@ -103,8 +103,8 @@ def create_auroc_patchwork_four_panel(
             plots=plots, single_plot_dimensions=single_plot_dimensions, n_in_row=2
         )
 
-        png_path = save_dir / "clozapine_auroc_patchwork_4panel_log_reg.png"
-        pdf_path = save_dir / "clozapine_auroc_patchwork_4panel_log_reg.pdf"
+        png_path = save_dir / "clozapine_auroc_patchwork_4panel_log_reg_no_p_clozapine.png"
+        pdf_path = save_dir / "clozapine_auroc_patchwork_4panel_log_reg_no_p_clozapine.pdf"
 
         grid.savefig(png_path)
         msg.good(f"Saved patchwork PNG to {png_path}")
@@ -115,8 +115,7 @@ def create_auroc_patchwork_four_panel(
 
 if __name__ == "__main__":
     experiment_name = (
-        "clozapine hparam, structured_text_365d_lookahead, "
-        "log_reg, 1 year lookbehind filter, 2025_random_split"
+        "clozapine hparam, structured_text_365d_lookahead, log_reg, no_plasma_clozapine"
     )
     eval_dir = (
         f"E:/shared_resources/clozapine/eval_runs/" f"{experiment_name}_best_run_evaluated_on_test"

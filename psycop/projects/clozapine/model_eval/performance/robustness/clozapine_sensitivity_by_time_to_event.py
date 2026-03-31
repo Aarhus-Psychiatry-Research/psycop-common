@@ -46,7 +46,7 @@ def _plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
             panel_grid_major=pn.element_blank(),
             panel_grid_minor=pn.element_blank(),
             legend_text=pn.element_text(size=10, color="black"),
-            legend_position=(0.3, 0.88),
+            legend_position=(0.82, 0.92),
             axis_text=pn.element_text(size=10, weight="bold", color="black"),
             axis_title=pn.element_text(size=14, color="black"),
         )
@@ -93,8 +93,7 @@ def sensitivity_by_time_to_event(
 
     for ppr in positive_rates:
         y_hat_int, actual_positive_rate = get_predictions_for_positive_rate(
-            desired_positive_rate=ppr,  # ✅ scalar
-            y_hat_probs=eval_dataset["y_hat_prob"].to_pandas(),
+            desired_positive_rate=ppr, y_hat_probs=eval_dataset["y_hat_prob"].to_pandas()
         )
 
         df = get_sensitivity_by_timedelta_df(
@@ -138,7 +137,9 @@ def clozapine_sensitivity_by_time_to_event(
 
 
 if __name__ == "__main__":
-    experiment_name = "clozapine hparam, structured_text_365d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split"
+    experiment_name = (
+        "clozapine hparam, structured_text_365d_lookahead, xgboost, no_plasma_clozapine"
+    )
     best_pos_rate = 0.05
     eval_dir = (
         f"E:/shared_resources/clozapine/eval_runs/{experiment_name}_best_run_evaluated_on_test"

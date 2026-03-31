@@ -83,7 +83,7 @@ def auroc_model(df: pd.DataFrame, n_bootstraps: int = 100) -> AUROC:
 
 
 if __name__ == "__main__":
-    experiment_name = "clozapine hparam, structured_text_365d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split"
+    experiment_name = "clozapine hparam, structured_text_365d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split, no_plasma_clozapine"
     best_pos_rate = 0.05
     eval_dir = (
         f"E:/shared_resources/clozapine/eval_runs/{experiment_name}_best_run_evaluated_on_test"
@@ -93,4 +93,4 @@ if __name__ == "__main__":
     save_dir = Path("E:/shared_resources/clozapine/eval/figures")
     save_dir.mkdir(parents=True, exist_ok=True)
 
-    auroc_plot(auroc_model(eval_df)).save(save_dir / "clozapine_auroc_xgboost.png")
+    auroc_plot(auroc_model(eval_df)).save(save_dir / "clozapine_auroc_xgboost_no_p_clozapine.png")

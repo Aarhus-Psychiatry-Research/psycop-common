@@ -43,7 +43,7 @@ def calibration_plot(eval_df: pd.DataFrame, save_dir: Path):
         label=f"Positive prediction threshold (PPR of {best_pos_rate*100}%)",
     )
     ax1.text(
-        0.31,
+        0.29,
         0.95,
         f"Positive prediction threshold (PPR of {best_pos_rate*100}%)",
         color="red",
@@ -92,12 +92,16 @@ def calibration_plot(eval_df: pd.DataFrame, save_dir: Path):
 
     # Adjust layout and save figure
     plt.tight_layout()
-    calibration_curve_hist_path = save_dir / "clozapine_calibration_curve_hist_log_reg_7.5%.png"
+    calibration_curve_hist_path = (
+        save_dir / "clozapine_calibration_curve_hist_log_reg_7.5%_no_p_clozapine.png"
+    )
     plt.savefig(calibration_curve_hist_path, dpi=600)
 
 
 if __name__ == "__main__":
-    experiment_name = "clozapine hparam, structured_text_365d_lookahead, log_reg, 1 year lookbehind filter, 2025_random_split"
+    experiment_name = (
+        "clozapine hparam, structured_text_365d_lookahead, log_reg, no_plasma_clozapine"
+    )
     best_pos_rate = 0.075
     eval_dir = (
         f"E:/shared_resources/clozapine/eval_runs/{experiment_name}_best_run_evaluated_on_test"

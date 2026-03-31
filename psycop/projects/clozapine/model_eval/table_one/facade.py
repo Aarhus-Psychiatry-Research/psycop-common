@@ -17,11 +17,13 @@ def table_one_facade(
     view = clozapine_table_one(model=model)
     view.to_excel(
         output_dir
-        / "2025_random_split_table_one_365d_lookahead_train_val_test_1y_lookbehind_filter.xlsx"
+        / "tables"
+        / "2025_random_split_table_one_365d_lookahead_train_val_test_no_plasma_clozapine.xlsx"
     )
     view.to_csv(
         output_dir
-        / "2025_random_split_table_one_365d_lookahead_train_val_test_1y_lookbehind_filter.csv"
+        / "tables"
+        / "2025_random_split_table_one_365d_lookahead_train_val_test_no_plasma_clozapine.csv"
     )
 
 
@@ -29,7 +31,7 @@ if __name__ == "__main__":
     table_one_facade(
         Path(__file__).parent,
         MlflowClientWrapper().get_run(
-            "clozapine hparam, structured_text_365d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split",
-            "fearless-roo-774",
+            "clozapine hparam, structured_text_365d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split, no_plasma_clozapine",
+            "resilient-worm-458",
         ),
     )

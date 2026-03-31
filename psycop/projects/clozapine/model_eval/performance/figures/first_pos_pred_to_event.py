@@ -91,7 +91,7 @@ def first_pos_pred_to_model(
 
 
 if __name__ == "__main__":
-    experiment_name = "clozapine hparam, structured_text_365d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split"
+    experiment_name = "clozapine hparam, structured_text_365d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split, no_plasma_clozapine"
     best_pos_rate = 0.05
     eval_dir = (
         f"E:/shared_resources/clozapine/eval_runs/{experiment_name}_best_run_evaluated_on_test"
@@ -104,4 +104,4 @@ if __name__ == "__main__":
 
     plotnine_first_true_pos_pred_to_event(
         first_pos_pred_to_model(df=eval_df, outcome_timestamps=outcome_timestamps)
-    ).save(save_dir / "clozapine_first_true_positive_to_event_xgboost.png")
+    ).save(save_dir / "clozapine_first_true_positive_to_event_xgboost_no_p_clozapine.png")

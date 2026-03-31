@@ -181,9 +181,11 @@ def clozapine_output_performance_by_ppr(
     df = clean_up_performance_by_ppr(df)
 
     if eval_dir:
-        (Path(eval_dir) / "figure_and_tables").mkdir(parents=True, exist_ok=True)
+        (Path(save_dir) / "tables").mkdir(parents=True, exist_ok=True)
         df.to_excel(
-            Path(eval_dir) / "figure_and_tables" / "performance_by_ppr_with_new_median_days.xlsx",
+            Path(save_dir)
+            / "tables"
+            / "performance_by_ppr_with_new_median_days_no_plasma_clozapine_log_reg.xlsx",
             index=False,
         )
         return None
@@ -192,10 +194,14 @@ def clozapine_output_performance_by_ppr(
 
 
 if __name__ == "__main__":
-    experiment_name = "clozapine hparam, structured_text_365d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split"
+    experiment_name = (
+        "clozapine hparam, structured_text_365d_lookahead, log_reg,  no_plasma_clozapine"
+    )
     eval_dir = (
         f"E:/shared_resources/clozapine/eval_runs/{experiment_name}_best_run_evaluated_on_test"
     )
+
+    save_dir = "E:/shared_resources/clozapine/eval/"
 
     clozapine_output_performance_by_ppr(
         expand_eval_df_with_extra_cols(read_eval_df_from_disk(eval_dir)), eval_dir
