@@ -125,8 +125,8 @@ def clozapine_feature_importance_table_facade(pipeline: Pipeline, output_dir: Pa
 
 
 if __name__ == "__main__":
-    model = "clozapine hparam, only_structured_365d_lookahead, log_reg, 1 year lookbehind filter,2025_random_split"
-    run = MlflowClientWrapper().get_run(model, "rogue-wasp-80")
+    model = "clozapine hparam, structured_text_365d_lookahead, log_reg, 1 year lookbehind filter, 2025_random_split, no_plasma_clozapine"
+    run = MlflowClientWrapper().get_run(model, "rogue-lynx-14")
 
     clozapine_feature_importance_table_facade(
         pipeline=run.sklearn_pipeline(), output_dir=CLOZAPINE_EVAL_OUTPUT_DIR

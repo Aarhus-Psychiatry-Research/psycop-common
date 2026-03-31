@@ -97,7 +97,7 @@ if __name__ == "__main__":
         # Build the experiment name including the current model
         experiment_name = (
             "clozapine hparam, structured_text_365d_lookahead, "
-            f"{model_label}, 1 year lookbehind filter, 2025_random_split, no_plasma_clozapine"
+            f"{model_label}, no_plasma_clozapine"
         )
 
         eval_dir = (

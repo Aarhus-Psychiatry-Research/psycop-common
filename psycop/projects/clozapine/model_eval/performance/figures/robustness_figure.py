@@ -115,8 +115,7 @@ def create_auroc_patchwork_four_panel(
 
 if __name__ == "__main__":
     experiment_name = (
-        "clozapine hparam, structured_text_365d_lookahead, "
-        "log_reg, 1 year lookbehind filter, 2025_random_split, no_plasma_clozapine"
+        "clozapine hparam, structured_text_365d_lookahead, log_reg, no_plasma_clozapine"
     )
     eval_dir = (
         f"E:/shared_resources/clozapine/eval_runs/" f"{experiment_name}_best_run_evaluated_on_test"

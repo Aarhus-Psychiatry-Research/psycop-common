@@ -93,11 +93,11 @@ def eval_random_split_test_set(
 if __name__ == "__main__":
     populate_baseline_registry()
 
-    feature_sets = ["structured_text_365d_lookahead"]
+    feature_sets = ["no_clozapine_leponex_tfidf structured_text_365d_lookahead"]
 
     for feature_set in feature_sets:
         eval_random_split_test_set(
-            experiment_name=f"clozapine hparam, {feature_set}, log_reg, 1 year lookbehind filter, 2025_random_split",
+            experiment_name=f"clozapine hparam, {feature_set}, xgboost, 1 year lookbehind filter, 2025_random_split, no_plasma_clozapine",
             train_splits=["train", "val"],
             test_split=["test"],
         )

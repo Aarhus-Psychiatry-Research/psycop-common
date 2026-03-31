@@ -85,7 +85,7 @@ def clozapine_generate_feature_importance_table(
     # Get feature importance scores
     feature_importances = pipeline.named_steps[clf_model_name].feature_importances_
 
-    feature_names_ = pipeline.feature_names_in_
+    feature_names_ = pipeline.named_steps[clf_model_name].feature_names_in_
 
     if "feature_selection" in pipeline.named_steps:
         support_mask = pipeline.named_steps["feature_selection"].get_support()
@@ -128,8 +128,8 @@ def clozapine_feature_importance_table_facade(pipeline: Pipeline, output_dir: Pa
 
 
 if __name__ == "__main__":
-    model = "clozapine hparam, only_structured_365d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split"
-    run = MlflowClientWrapper().get_run(model, "fearless-whale-268")
+    model = "clozapine hparam, structured_text_365d_lookahead, xgboost, 1 year lookbehind filter, 2025_random_split, no_plasma_clozapine"
+    run = MlflowClientWrapper().get_run(model, "resilient-worm-458")
 
     clozapine_feature_importance_table_facade(
         pipeline=run.sklearn_pipeline(), output_dir=CLOZAPINE_EVAL_OUTPUT_DIR
