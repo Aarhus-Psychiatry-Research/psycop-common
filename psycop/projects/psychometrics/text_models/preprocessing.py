@@ -1,4 +1,3 @@
-from collections.abc import Sequence
 from typing import Optional
 
 import pandas as pd
@@ -6,7 +5,7 @@ import polars as pl
 
 from psycop.common.feature_generation.text_models.utils import stop_words
 from psycop.common.global_utils.sql.writer import write_df_to_sql
-from psycop.projects.psychometrics.loaders.text import get_valid_text_sfi_names, load_text_sfis
+from psycop.projects.psychometrics.loaders.text import load_all_notes
 
 
 def text_preprocessing(df: pd.DataFrame, text_column_name: str = "value") -> pd.DataFrame:
@@ -25,26 +24,18 @@ def text_preprocessing(df: pd.DataFrame, text_column_name: str = "value") -> pd.
     return pl_df.to_pandas()
 
 
-def text_preprocessing_pipeline(
-    n_rows: Optional[int] = None, sfi_type: Optional[Sequence[str] | str] = None
-) -> str:
-    """Pipeline for preprocessing all sfis from given splits. Filtering of which sfis to include in features happens in the loader.
+def text_preprocessing_pipeline(n_rows: Optional[int] = None) -> str:
+    """Pipeline for preprocessing all text regardless of sfi_type"
 
     Args:
-        split_ids_presplit_step: PresplitStep that filters rows by split ids (e.g. RegionalFilter or FilterByOutcomeStratifiedSplits)
         n_rows (Optional[int], optional): How many rows to load. Defaults to None, which loads all rows.
-        sfi_type (Optional[Sequence[str] | str], optional): Which sfi types to include. Defaults to None, which includes all sfis.
 
     Returns:
         str: Text describing where preprocessed text has been saved.
     """
 
     # Load text from splits
-    df = load_text_sfis(
-        text_sfi_names=sfi_type if sfi_type else get_valid_text_sfi_names(),
-        include_sfi_name=True,
-        n_rows=n_rows,
-    )
+    df = load_all_notes(include_sfi_name=True, n_rows=n_rows)
 
     # preprocess
     df = text_preprocessing(df)
@@ -55,4 +46,4 @@ def text_preprocessing_pipeline(
 
 
 if __name__ == "__main__":
-    text_preprocessing_pipeline(n_rows=None)
+    text_preprocessing_pipeline(n_rows=1000)
