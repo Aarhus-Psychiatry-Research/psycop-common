@@ -9,9 +9,9 @@ from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_spli
     FilterByRandom2025Splits,
 )
 from psycop.projects.psychometrics.loaders.text import load_preprocessed_sfis, load_text_split
-from psycop.projects.psychometrics.text_models.clozapine_text_model_paths import TEXT_MODEL_DIR
 from psycop.projects.psychometrics.text_models.fit_text_models import fit_text_model
 from psycop.projects.psychometrics.text_models.preprocessing import text_preprocessing
+from psycop.projects.psychometrics.text_models.psychometrics_text_model_paths import TEXT_MODEL_DIR
 from psycop.projects.psychometrics.text_models.utils import save_text_model_to_shared_dir
 
 log = logging.getLogger(__name__)
