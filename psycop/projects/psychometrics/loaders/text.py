@@ -142,19 +142,34 @@ def load_text_split(
     return text_split_df
 
 
-def load_all_notes(n_rows: int | None = None, include_sfi_name: bool = False) -> pd.DataFrame:
-    """Returns all notes from all years.
+def load_all_notes(
+    view: str | None = "psykometri_SFI_fritekst_resultater",
+    n_rows: int | None = None,
+    include_sfi_name: bool = False,
+) -> pd.DataFrame:
+    """Returns all notes regardless of sfi_type from all years.
 
     Args:
+        view (str): Which sql table to load. Defaults to psykometri_SFI_fritekst_resultater.
         n_rows (Optional[int], optional): Number of rows to load. Defaults to None.
         include_sfi_name (bool, optional): Whether to include column with sfi name ("overskrift"). Defaults to False.
 
     Returns:
         pd.DataFrame: (Featurized) notes
     """
-    return load_text_sfis(
-        text_sfi_names=get_valid_text_sfi_names(), n_rows=n_rows, include_sfi_name=include_sfi_name
-    )
+    sql = "SELECT dw_ek_borger, datotid_senest_aendret_i_sfien, fritekst"
+
+    if include_sfi_name:
+        sql += ", overskrift"
+    view = "psykometri_SFI_fritekst_resultater"
+
+    sql += f" FROM [fct].[{view}]"
+
+    df = sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
+
+    df = df.rename({"datotid_senest_aendret_i_sfien": "timestamp", "fritekst": "value"}, axis=1)
+
+    return df
 
 
 def load_preprocessed_sfis(
