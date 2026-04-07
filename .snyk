@@ -278,4 +278,8 @@ ignore:
     - '*':
         reason: Approved via Slack conversation in programming channel on 01/14/26
         created: 2026-03-11T17:05:16.626Z
+  SNYK-PYTHON-MLFLOW-15325638:
+    - '*':
+        reason: Approved after consultation with colleagues in DIAS and D&D. See Slack conversation in programming channel on 03/27/26
+        created: 2026-04-02T17:05:16.626Z
 patch: {}

@@ -19,9 +19,10 @@ polars==0.20.10
 protobuf==5.29.6 # Due to Snyk vuln SNYK-PYTHON-PROTOBUF-10364902
 pyarrow==14.0.1
 pydantic==2.5.3
+pygments>=2.20.0 # Due to SNYK-PYTHON-PYGMENTS-15746419
 pyodbc==4.0.39
 Random-Word==1.0.11
-requests>=2.32.4 # Due to Snyk vuln SNYK-PYTHON-REQUESTS-10305723
+requests>=2.33.0 # Due to Snyk vuln SNYK-PYTHON-REQUESTS-10305723 / SNYK-PYTHON-REQUESTS-15763443]
 setuptools==78.1.1 # Due to Snyk vuln fSNYK-PYTHON-SETUPTOOLS-7448482
 scikit-learn==1.5.0
 scipy==1.10.0
@@ -36,3 +37,4 @@ xgboost==1.7.3
 imbalanced-learn==0.12.3
 rapidfuzz==3.6.1
 fairlearn==0.10.0
+cryptography==46.0.6 # Due to SNYK-PYTHON-CRYPTOGRAPHY-15809188
