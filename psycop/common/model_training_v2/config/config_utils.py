@@ -137,3 +137,21 @@ class PsycopConfig(confection.Config):
             PsycopConfig: The loaded config.
         """
         return PsycopConfig(Config().from_disk(path, interpolate=interpolate, overrides=overrides))
+    
+    def from_str(
+        self,
+        text: str,
+        interpolate: bool = True,
+        overrides: dict[str, Any] = {},  # noqa: B006
+    ) -> "PsycopConfig":
+        """Load a config from a string.
+
+        Args:
+            text: String config to load.
+            interpolate: Whether to interpolate variables in the config. Defaults to True.
+            overrides: A dictionary of overrides to apply to the config.
+
+        Returns:
+            PsycopConfig: The loaded config.
+        """
+        return PsycopConfig(Config().from_str(text, interpolate=interpolate, overrides=overrides))
