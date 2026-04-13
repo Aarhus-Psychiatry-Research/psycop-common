@@ -137,7 +137,7 @@ class PsycopConfig(confection.Config):
             PsycopConfig: The loaded config.
         """
         return PsycopConfig(Config().from_disk(path, interpolate=interpolate, overrides=overrides))
-    
+
     def from_str(
         self,
         text: str,

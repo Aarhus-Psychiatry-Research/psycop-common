@@ -59,29 +59,20 @@ class ModelCatalogue:
         project: str,
         cfg: PsycopConfig,
         experiment_name: str,
-        split_filter: Literal[
-            "regional_data_filter", "outcomestratified_split_filter"
-        ],
+        split_filter: Literal["regional_data_filter", "outcomestratified_split_filter"],
     ) -> dict[str, str | float]:
-        
         print(f"Retraining model for project {project}")
 
         project_path = CROSS_EXPERIMENTS_BASE_PATH + experiment_name + f"/{project}"
 
         # if imported cfg is set to geographic split, start by removing geographic split-specific args
         if (
-            cfg["trainer"]["training_preprocessing_pipeline"]["*"]["split_filter"][
-                "@preprocessing"
-            ]
+            cfg["trainer"]["training_preprocessing_pipeline"]["*"]["split_filter"]["@preprocessing"]
             == "regional_data_filter"
         ):
             cfg = (
-                cfg.rem(
-                    "trainer.training_preprocessing_pipeline.*.split_filter.regional_move_df"
-                )
-                .rem(
-                    "trainer.training_preprocessing_pipeline.*.split_filter.timestamp_col_name"
-                )
+                cfg.rem("trainer.training_preprocessing_pipeline.*.split_filter.regional_move_df")
+                .rem("trainer.training_preprocessing_pipeline.*.split_filter.timestamp_col_name")
                 .rem("trainer.training_preprocessing_pipeline.*.split_filter.region_col_name")
                 .rem(
                     "trainer.training_preprocessing_pipeline.*.split_filter.timestamp_cutoff_col_name"
@@ -111,8 +102,7 @@ class ModelCatalogue:
         if split_filter == "regional_data_filter":
             cfg = (
                 cfg.add(
-                    "trainer.training_preprocessing_pipeline.*.split_filter.regional_move_df",
-                    None,
+                    "trainer.training_preprocessing_pipeline.*.split_filter.regional_move_df", None
                 )
                 .add(
                     "trainer.training_preprocessing_pipeline.*.split_filter.timestamp_col_name",
@@ -131,7 +121,7 @@ class ModelCatalogue:
         auc_roc = train_baseline_model_from_cfg(cfg)
 
         return {"project": project, "auc": auc_roc}
-    
+
     def retrain_and_test_from_configs(
         self,
         experiment_name: str = "models_retrained_from_catalogue",
@@ -139,18 +129,17 @@ class ModelCatalogue:
             "regional_data_filter", "outcomestratified_split_filter"
         ] = "outcomestratified_split_filter",
     ) -> pd.DataFrame:
-        
         cfgs = self.get_cfgs()
 
         date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         experiment_name = f"{experiment_name}_{date_str}"
 
-
         auc_rocs = []
 
         for project, cfg in cfgs.items():
-            auc_rocs.append(self.retrain_and_test_from_configs_(project, cfg, experiment_name, split_filter))
-            
+            auc_rocs.append(
+                self.retrain_and_test_from_configs_(project, cfg, experiment_name, split_filter)
+            )
 
         auc_rocs_df = pd.DataFrame(auc_rocs)
         auc_rocs_df.to_csv(f"{CROSS_EXPERIMENTS_BASE_PATH + experiment_name}/auc_rocs.csv")
