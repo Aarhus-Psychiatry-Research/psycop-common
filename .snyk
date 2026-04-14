@@ -314,4 +314,11 @@ ignore:
   - '*':
       reason: Approved. See Slack conversation in programming channel on 04/07/26
       created: 2026-04-14T11:47:16.626Z
+  SNYK-PYTHON-TORCH-15746467:
+  - '*':
+      reason: >-
+        Vulnerability related to loading (.pt2) models with torch. This vulnerability is avoided best
+        by thorougly background checking models we use. Going forward, we aim to pin HuggingFace 
+        model commits when we use a model, so we have full control over files being loaded. 
+      created: 2026-04-14T12:43:16.626Z
 patch: {}
