@@ -45,9 +45,9 @@ if __name__ == "__main__":
     tuning_cfgs = catalogue.get_hyperparameter_tuning_cfgs()
 
     date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    experiment_name = "all_projects_concentrated_auroc_tuning"
+    experiment_name = "all_projects_partial_auroc_tuning"
     experiment_name = f"{experiment_name}_{date_str}"
     experiment_path = CROSS_EXPERIMENTS_BASE_PATH + experiment_name
 
     for project, cfg in tuning_cfgs.items():
-        optimize_models_on_metric(project, cfg, experiment_name, "concentrated_binary_auroc")
+        optimize_models_on_metric(project, cfg, experiment_name, "partial_binary_auroc")

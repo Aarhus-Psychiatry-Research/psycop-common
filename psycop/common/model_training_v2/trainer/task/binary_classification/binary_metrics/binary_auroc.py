@@ -33,10 +33,10 @@ class BinaryAUROC(BinaryMetric):
         )
 
 
-@BaselineRegistry.metrics.register("concentrated_binary_auroc")
-class ConcentratedBinaryAUROC(BinaryMetric):
+@BaselineRegistry.metrics.register("partial_binary_auroc")
+class PartialBinaryAUROC(BinaryMetric):
     """
-    max_fpr allows for calculation of concentrated AUROC. If max_fpr is None, calculates standard AUROC.
+    max_fpr allows for calculation of partial AUROC. If max_fpr is None, calculates standard AUROC.
     """
 
     def __init__(self, max_fpr: None | float = 0.2) -> None:
@@ -49,8 +49,6 @@ class ConcentratedBinaryAUROC(BinaryMetric):
         name_prefix: str | None = None,
     ) -> CalculatedMetric:
         return CalculatedMetric(
-            name=f"{name_prefix}_ConcentratedBinaryAUROC"
-            if name_prefix
-            else "ConcentratedBinaryAUROC",
+            name=f"{name_prefix}_PartialBinaryAUROC" if name_prefix else "PartialBinaryAUROC",
             value=float(roc_auc_score(y_true=y, y_score=y_hat_prob, max_fpr=self.max_fpr)),
         )
