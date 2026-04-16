@@ -20,7 +20,7 @@ from psycop.projects.restraint.feature_generation.modules.loaders.load_restraint
 )
 
 
-def plotnine_auroc_by_region(df: pd.DataFrame, title: str = "AUROC by Region") -> pn.ggplot:
+def plotnine_auroc_by_region(df: pd.DataFrame, title: str = "AUROC by Location") -> pn.ggplot:
     df["proportion_of_n"] = df["n_in_bin"] / df["n_in_bin"].sum()
     df["percentage_of_n"] = df["proportion_of_n"] * 100
     df["region_en"] = pd.Categorical(
@@ -33,7 +33,7 @@ def plotnine_auroc_by_region(df: pd.DataFrame, title: str = "AUROC by Region") -
         + pn.geom_bar(pn.aes(x="region_en", y="proportion_of_n", fill="region_en"), stat="identity")
         + pn.geom_path(group=1, size=1)
         + pn.labs(
-            x="Region", y="AUROC", title=title
+            x="Area of Central Denmark Region", y="AUROC", title=title
         )  # + pn.geom_text(position=pn.position_stack(vjust=1))
         + pn.geom_text(
             pn.aes(x="region_en", y="proportion_of_n", fill="region_en", label="percentage_of_n"),
