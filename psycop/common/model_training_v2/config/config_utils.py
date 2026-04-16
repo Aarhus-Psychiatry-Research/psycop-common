@@ -137,3 +137,34 @@ class PsycopConfig(confection.Config):
             PsycopConfig: The loaded config.
         """
         return PsycopConfig(Config().from_disk(path, interpolate=interpolate, overrides=overrides))
+
+    def from_str(
+        self,
+        text: str,
+        *,
+        interpolate: bool = True,
+        overrides: dict[str, Any] = {},  # noqa: B006
+    ) -> "PsycopConfig":
+        """Load a config from a string.
+
+        Args:
+            text: String config to load.
+            interpolate: Whether to interpolate variables in the config. Defaults to True.
+            overrides: A dictionary of overrides to apply to the config.
+
+        Returns:
+            PsycopConfig: The loaded config.
+        """
+        return PsycopConfig(Config().from_str(text, interpolate=interpolate, overrides=overrides))
+
+    def merge(self, updates: dict[str, Any] | Config, remove_extra: bool = False) -> "PsycopConfig":
+        """Deep-merge two config objects, using the current config as the default. Values that are provided in the updates are overwritten in the base config, and any new values or sections are added.
+
+        Args:
+            updates: New or updates sections of config.
+            remove_extra: Remove extra sections.
+
+        Returns:
+            PsycopConfig: The merged config
+        """
+        return PsycopConfig(Config().merge(updates, remove_extra))

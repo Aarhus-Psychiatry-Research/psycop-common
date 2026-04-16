@@ -9,6 +9,8 @@ from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 
 class RestraintGetter(Getter):
     predicted_positive_rate: float = 0.01
+    n_trials: int = 250
+    n_jobs: int = 10
 
     @staticmethod
     def get_eval_df() -> pd.DataFrame:
@@ -25,6 +27,12 @@ class RestraintGetter(Getter):
     @staticmethod
     def get_cfg() -> PsycopConfig:
         config_path = "E:/shared_resources/restraint/eval_runs/restraint_all_tuning_v2_best_run_evaluated_on_test/config.cfg"
+
+        return PsycopConfig(Config().from_disk(path=Path(config_path)))
+
+    @staticmethod
+    def get_hyperparameter_tuning_cfg() -> PsycopConfig:
+        config_path = "E:/shared_resources/restraint/main_tuning_config/restraint_all_tuning.cfg"
 
         return PsycopConfig(Config().from_disk(path=Path(config_path)))
 
