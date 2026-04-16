@@ -156,12 +156,8 @@ class PsycopConfig(confection.Config):
             PsycopConfig: The loaded config.
         """
         return PsycopConfig(Config().from_str(text, interpolate=interpolate, overrides=overrides))
-    
-    def merge(
-        self,
-        updates: dict[str, Any] | "PsycopConfig",
-        remove_extra: bool = False,
-    ) -> "PsycopConfig":
+
+    def merge(self, updates: dict[str, Any] | Config, remove_extra: bool = False) -> "PsycopConfig":
         """Deep-merge two config objects, using the current config as the default. Values that are provided in the updates are overwritten in the base config, and any new values or sections are added.
 
         Args:

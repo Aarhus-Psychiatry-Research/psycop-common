@@ -90,9 +90,8 @@ class ModelCatalogue:
         run_path = {project_path}
 
         [trainer]
-        [trainer.training_preprocessing_pipeline]
-        [trainer.training_preprocessing_pipeline.*]
-        [trainer.training_preprocessing_pipeline.*.split_filter]
+        [trainer.*]
+        [trainer.*.split_filter]
         @preprocessing = {split_filter}
         """)
 
