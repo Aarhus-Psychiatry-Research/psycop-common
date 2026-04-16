@@ -25,21 +25,20 @@ ENV PATH=$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 RUN npm install -g snyk
 
 # Install dev tools
-# The cache mount caches downloaded packages for Docker
 # The --no-compile options defers compilation to runtime, instead of install-time. This can dramatically save on build time, at the cost of slightly increased first-run times.
 RUN pip install uv
 
 COPY test-requirements.txt .
-RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r test-requirements.txt --no-compile
+RUN uv pip install --no-cache-dir -r test-requirements.txt --no-compile
 
 COPY dev-requirements.txt .
-RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r dev-requirements.txt --no-compile
+RUN uv pip install --no-cache-dir -r dev-requirements.txt --no-compile
 
 COPY gpu-requirements.txt .
-RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r gpu-requirements.txt --no-compile
+RUN uv pip install --no-cache-dir -r gpu-requirements.txt --no-compile
 
 COPY requirements.txt .
-RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r requirements.txt --no-compile
+RUN uv pip install --no-cache-dir -r requirements.txt --no-compile
 
 # Set the working directory to /app
 WORKDIR /app

@@ -146,6 +146,6 @@ if __name__ == "__main__":
         limited_feature_set=False,
         lookbehind_180d_mean=False,
         washout_on_prior_forced_admissions=True,
-        feature_set_name="all_structured_features",
+        feature_set_name="structured_features",
         generate_in_chunks=False,
     )

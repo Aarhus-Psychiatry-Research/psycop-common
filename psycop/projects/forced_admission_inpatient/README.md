@@ -142,7 +142,7 @@ forced_admission_inpatient/
 ```
 
 #### EVAL_DF
-The resulting evaluation dataframe has the following format:
+The resulting evaluation dataframe has the following format (en eval_df.parquet file also exists new which uses model_training_v2 logic):
 | ids | pred_time_uuids       | pred_timestamps     | outcome_timestamps  | y | age  | is_female | y_hat_prob |
 |-----|-----------------------|---------------------|---------------------|---|------|-----------|------------|
 | 1   | 1-yyyy-mm-dd-00:00:00 | yyyy-mm-dd 00:00:00 | yyyy-mm-dd 00:00:00 | 0 | 20.2 | 0         | 0.001      |
@@ -157,8 +157,10 @@ E:/shared_resources/forced_admission_inpatient/
 │   │   └── chuddahs-caterwauls-eval-on-test/ 
 │   │   │   └── abrasiometerintergradient-eval-on-test # best XGBoost
 │   │   │   │   └── cfg.json
+│   │   │   │   └── config.cfg #config using v2 config logic
 │   │   │   │   └── cfg.pkl
 │   │   │   │   └── evaluation_dataset.parquet # here it is (eval_df)!!
+│   │   │   │   └── eval_df.parquet # eval df using v2 logic (better for comparisons with other projects!)
 │   │   │   │   └── pipe_metadata.pkl
 │   │   │   │   └── pipe.pkl
 │   │   │   └── belgiumigdyr-eval-on-test # best logistic regression
