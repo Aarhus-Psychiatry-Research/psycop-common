@@ -18,7 +18,7 @@ def setup_wandb(cfg: FullConfigSchema) -> str:
 
     wandb.init(  # type: ignore
         project=f"{cfg.project.name}-baseline-model-training",
-        mode=cfg.project.wandb.mode,
+        mode=cfg.project.wandb.mode,  # type: ignore
         group=wandb_group,
         entity=cfg.project.wandb.entity,
         name="process_manager",

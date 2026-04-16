@@ -71,7 +71,7 @@ class WandbHandler:
         wandb.init(  # type: ignore
             project=f"{self.cfg.project.name}-baseline-model-training",
             reinit=True,
-            mode=self.cfg.project.wandb.mode,
+            mode=self.cfg.project.wandb.mode,  # type: ignore
             group=self.cfg.project.wandb.group,
             config=self._get_cfg_as_dict(),
             entity=self.cfg.project.wandb.entity,
