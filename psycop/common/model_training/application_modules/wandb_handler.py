@@ -68,7 +68,7 @@ class WandbHandler:
                 exist_ok=True, parents=True
             )
 
-        wandb.init(
+        wandb.init(  # type: ignore
             project=f"{self.cfg.project.name}-baseline-model-training",
             reinit=True,
             mode=self.cfg.project.wandb.mode,
