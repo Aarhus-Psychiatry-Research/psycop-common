@@ -80,22 +80,14 @@ class ModelCatalogue:
             )
 
         # mutate config paths and filter
-        updated_cfg = PsycopConfig().from_str(f"""
-        [logger]
-        [logger.*]
-        [logger.*.mlflow]
-        experiment_name = {experiment_name}
-
-        [logger.*.disk_logger]
-        run_path = {project_path}
-
-        [trainer]
-        [trainer.*]
-        [trainer.*.split_filter]
-        @preprocessing = {split_filter}
-        """)
-
-        cfg = cfg.merge(updated_cfg)
+        cfg = (
+            cfg.mut("logger.*.mlflow.experiment_name", experiment_name)
+            .mut("logger.*.disk_logger.run_path", project_path)
+            .mut(
+                "trainer.training_preprocessing_pipeline.*.split_filter.@preprocessing",
+                split_filter,
+            )
+        )
 
         # if desired split filter is geopgraphic, re-add necessary filters
         if split_filter == "regional_data_filter":
