@@ -182,7 +182,7 @@ def create_pr(c: Context):
         )
         print(f"{msg_type.GOOD} PR already exists at: {pr_result.stdout}")
     except Exception:
-        branch_title = c.run("git rev-parse --abbrev-ref HEAD", hide=True).stdout.strip()
+        branch_title = c.run("git rev-parse --abbrev-ref HEAD", hide=True).stdout.strip()  # type: ignore
         preprocessed_pr_title = branch_title.split("-")[1:]
         preprocessed_pr_title[0] = f"{preprocessed_pr_title[0]}:"
         pr_title = " ".join(preprocessed_pr_title)
