@@ -16,9 +16,9 @@ def setup_wandb(cfg: FullConfigSchema) -> str:
     """Start a wandb group for this set of models."""
     wandb_group = create_random_wandb_group_name()
 
-    wandb.init(
+    wandb.init(  # type: ignore
         project=f"{cfg.project.name}-baseline-model-training",
-        mode=cfg.project.wandb.mode,
+        mode=cfg.project.wandb.mode,  # type: ignore
         group=wandb_group,
         entity=cfg.project.wandb.entity,
         name="process_manager",

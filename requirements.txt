@@ -8,7 +8,7 @@ hydra-optuna-sweeper==1.2.0
 ipython==8.10.0
 iterpy==1.6.0
 Levenshtein==0.21.0
-mlflow>=2.16.0
+mlflow==3.10.0
 matplotlib==3.9.1
 numpy==1.26.0
 pandas==2.0.3
@@ -16,12 +16,13 @@ patchworklib==0.6.2
 plotly==5.22.0
 plotnine==0.12.2
 polars==0.20.10
-protobuf==4.25.8 # Due to Snyk vuln SNYK-PYTHON-PROTOBUF-10364902
+protobuf==5.29.6 # Due to Snyk vuln SNYK-PYTHON-PROTOBUF-10364902
 pyarrow==14.0.1
 pydantic==2.5.3
+pygments>=2.20.0 # Due to SNYK-PYTHON-PYGMENTS-15746419
 pyodbc==4.0.39
 Random-Word==1.0.11
-requests>=2.32.4 # Due to Snyk vuln SNYK-PYTHON-REQUESTS-10305723
+requests>=2.33.0 # Due to Snyk vuln SNYK-PYTHON-REQUESTS-10305723 / SNYK-PYTHON-REQUESTS-15763443]
 setuptools==78.1.1 # Due to Snyk vuln fSNYK-PYTHON-SETUPTOOLS-7448482
 scikit-learn==1.5.0
 scipy==1.10.0
@@ -30,9 +31,10 @@ sqlalchemy==1.4.39
 tableone==0.8.0
 tabulate==0.8.10
 timeseriesflattener==2.5.2
-wandb==0.15.12
+wandb==0.25.1
 wasabi==0.9.1
 xgboost==1.7.3
 imbalanced-learn==0.12.3
 rapidfuzz==3.6.1
 fairlearn==0.10.0
+cryptography==46.0.7 # Due to SNYK-PYTHON-CRYPTOGRAPHY-15809188 / SNYK-PYTHON-CRYPTOGRAPHY-15953315
