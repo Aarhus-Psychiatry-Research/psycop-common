@@ -27,6 +27,7 @@ def physical_visits_psykometri_2025(
         "emergency_visits",
     ),
     return_shak_location: bool = False,
+    keep_diagnosegruppestreng: bool = False,
 ) -> pd.DataFrame:
     """Load pshysical visits to both somatic and psychiatry.
 
@@ -41,6 +42,7 @@ def physical_visits_psykometri_2025(
         return_value_as_visit_length_days (Optional[bool], optional): Whether to return length of visit in days as the value for the loader. Defaults to False which results in value=1 for all visits.
         visit_types (list[Literal["admissions", "ambulatory_visits", "emergency_visits"]]]): Which visit types to load. Defaults to ["admissions", "ambulatory_visits", "emergency_visits"].
         return_shak_location (bool): Whether to return the shak code of the visit
+        keep_diagnosegruppestreng (bool): whether to keep the diagnosegruppestreng column to be able to extract A and B diagnoses.
 
     Returns:
         pd.DataFrame: Dataframe with all physical visits to psychiatry. Has columns dw_ek_borger and timestamp.
@@ -79,6 +81,8 @@ def physical_visits_psykometri_2025(
         ),
     }
 
+    schemas_with_diagnoses = {"LPR3", "ambulatory_visits", "admissions"}
+
     allowed_visit_types = ["admissions", "ambulatory_visits", "emergency_visits"]
 
     if any(types not in allowed_visit_types for types in visit_types):
@@ -101,19 +105,39 @@ def physical_visits_psykometri_2025(
 
     dfs = []
 
-    for schema in chosen_schemas.values():
-        cols = f"{schema.start_datetime_col_name}, {schema.end_datetime_col_name}, dw_ek_borger, {schema.location_col_name}"
+    for schema_name, schema in chosen_schemas.items():
+        cols = f"""
+            {schema.start_datetime_col_name},
+            {schema.end_datetime_col_name},
+            dw_ek_borger,
+            {schema.location_col_name}
+        """
 
-        sql = f"SELECT {cols} FROM [fct].{schema.view} WHERE {schema.start_datetime_col_name} IS NOT NULL {schema.where_clause}"
+        if keep_diagnosegruppestreng:
+            if schema_name in schemas_with_diagnoses:
+                cols += ", diagnosegruppestreng"
+            else:
+                cols += ", NULL AS diagnosegruppestreng"
+
+        sql = f"""
+            SELECT TOP 100000 {cols}
+            FROM [fct].{schema.view}
+            WHERE {schema.start_datetime_col_name} IS NOT NULL
+            {schema.where_clause}
+        """
 
         if shak_code is not None:
             sql += f" AND {schema.location_col_name} != 'Ukendt'"
-            sql += f" AND left({schema.location_col_name}, {len(str(shak_code))}) {shak_sql_operator} {shak_code!s}"
+            sql += (
+                f" AND left({schema.location_col_name}, {len(str(shak_code))}) "
+                f"{shak_sql_operator} {shak_code!s}"
+            )
 
         if where_clause is not None:
             sql += f" {where_separator} {where_clause}"
 
         df = sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
+
         df = df.rename(
             columns={
                 schema.end_datetime_col_name: "timestamp_end",
@@ -150,6 +174,9 @@ def physical_visits_psykometri_2025(
     output_cols = ["dw_ek_borger", "timestamp", "value"]
     if return_shak_location:
         output_cols = [*output_cols, "shak_location"]
+
+    if keep_diagnosegruppestreng:
+        output_cols = [*output_cols, "diagnosegruppestreng"]
 
     return output_df[output_cols].reset_index(drop=True)
 
@@ -265,3 +292,14 @@ def first_visit_to_psychiatry_2025() -> pl.DataFrame:
         .agg(pl.col("timestamp").min())
     )
     return first_visit
+
+
+def physical_visits_loader_psykometri_2025_with_diagnosis(
+    n_rows: Union[int, None] = None, return_value_as_visit_length_days: Union[bool, None] = False
+) -> pd.DataFrame:
+    """Load physical visits to all units."""
+    return physical_visits_psykometri_2025(
+        n_rows=n_rows,
+        return_value_as_visit_length_days=return_value_as_visit_length_days,
+        keep_diagnosegruppestreng=True,
+    )
