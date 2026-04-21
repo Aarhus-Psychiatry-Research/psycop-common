@@ -22,7 +22,7 @@ def birthdays(n_rows: int | None = None) -> pd.DataFrame:
 
 
 def sex_female(n_rows: int | None = None) -> pd.DataFrame:
-    view = "[Clozapin_kohorte_demografi]"
+    view = "[psykometri_kohorte_demografi]"
 
     sql = f"SELECT dw_ek_borger, koennavn FROM [fct].{view}"
 
