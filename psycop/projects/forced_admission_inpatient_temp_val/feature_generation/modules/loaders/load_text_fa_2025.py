@@ -46,7 +46,7 @@ def get_valid_text_sfi_names() -> set[str]:
 
 
 def load_text(
-    text_sfi_names: str | list[str],
+    text_sfi_names: str | set[str],
     include_sfi_name: bool = False,
     view: str
     | None = "FOR_SFI_fritekst_resultat_udfoert_i_psykiatrien_aendret_tvangsindlæggelse_sep_2025",
