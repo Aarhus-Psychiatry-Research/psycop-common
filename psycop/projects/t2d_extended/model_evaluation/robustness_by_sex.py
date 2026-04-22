@@ -11,8 +11,8 @@ from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 from psycop.projects.t2d_extended.model_evaluation.config import T2D_PN_THEME
 from psycop.projects.t2d_extended.model_evaluation.utils.auroc_utils import auroc_by_model
 from psycop.projects.t2d_extended.model_evaluation.utils.parse_utils import (
-    parse_dw_ek_borger_from_uuid,
     eval_df_to_eval_dataset,
+    parse_dw_ek_borger_from_uuid,
 )
 
 

@@ -207,11 +207,7 @@ def _patient_frame(
         pl.col(model.sex_col_name).first().alias(model.sex_col_name),
         pl.col(model.outcome_col_name).max().alias(model.outcome_col_name),
         pl.col("timestamp").min().alias("first_contact_timestamp"),
-        # pl.col("dataset").first().alias("dataset"),
-        # pl.col("cause").first().alias("outcome_cause"),  # noqa: ERA001
     )
-
-    # patient_df_labelled = label_by_outcome_type(patient_df, procedure_col="outcome_cause")  # noqa: ERA001
 
     return _to_table_one(specs, data=patient_df.to_pandas(), groupby_col_name="dataset")
 
@@ -238,9 +234,6 @@ def t2d_extended_table_one(model: TableOneModel) -> pd.DataFrame:
                 nonnormal=True,
                 category=RowCategory.demographics,
             ),
-            # RowSpecification(
-            #     source_col_name="age_grouped", readable_name="Age grouped", categorical=True
-            # ),
             RowSpecification(
                 source_col_name="pred_sex_female_fallback_0",
                 readable_name="Female",

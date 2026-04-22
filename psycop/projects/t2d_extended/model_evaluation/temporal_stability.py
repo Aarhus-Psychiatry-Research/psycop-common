@@ -3,6 +3,7 @@ Shows AUROC for each test year, with a zoomed inset showing a linear regression 
 """
 
 from pathlib import Path
+from typing import Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -16,7 +17,7 @@ def set_plot_style():
     plt.rcParams["font.size"] = 11
 
 
-def fit_wlr(x: np.ndarray, y: np.ndarray, weights: np.ndarray = None):
+def fit_wlr(x: np.ndarray, y: np.ndarray, weights: np.ndarray = None) -> dict:
     X = sm.add_constant(x)
     model = sm.WLS(y, X, weights=weights).fit()
     pred = model.get_prediction(X)
@@ -32,7 +33,7 @@ def fit_wlr(x: np.ndarray, y: np.ndarray, weights: np.ndarray = None):
 
 def plot_aurocs(
     ax: plt.Axes, x: np.ndarray, y: np.ndarray, xlim: tuple = (2017.7, 2023.3), ylim: tuple = (0, 1)
-):
+) -> None:
     ax.scatter(x, y, s=60, facecolors="white", edgecolors="black", linewidth=1.2)
 
     ax.set_xlabel("Year", fontsize=12)
@@ -42,7 +43,7 @@ def plot_aurocs(
     ax.grid(True, linestyle=":", linewidth=0.5, alpha=0.6)
 
 
-def add_zoom_box(ax: plt.Axes, zoom_xlim: tuple, zoom_ylim: tuple):
+def add_zoom_box(ax: plt.Axes, zoom_xlim: tuple, zoom_ylim: tuple) -> None:
     rect = plt.Rectangle(
         (zoom_xlim[0], zoom_ylim[0]),
         zoom_xlim[1] - zoom_xlim[0],
@@ -62,7 +63,7 @@ def add_inset(
     lr_result: dict,
     zoom_xlim: tuple,
     zoom_ylim: tuple,
-):
+) -> plt.Axes:
     ax_inset = inset_axes(
         ax_main,
         width="35%",
@@ -75,11 +76,10 @@ def add_inset(
 
     ax_inset.scatter(x, y, s=35, facecolors="white", edgecolors="black", linewidth=1.0)
 
-    if lr_result is not None:
-        ax_inset.plot(x, lr_result["pred_mean"], color="darkblue", linewidth=1.2)
-        ax_inset.fill_between(
-            x, lr_result["pred_ci"][:, 0], lr_result["pred_ci"][:, 1], color="darkblue", alpha=0.07
-        )
+    ax_inset.plot(x, lr_result["pred_mean"], color="darkblue", linewidth=1.2)
+    ax_inset.fill_between(
+        x, lr_result["pred_ci"][:, 0], lr_result["pred_ci"][:, 1], color="darkblue", alpha=0.07
+    )
 
     ax_inset.set_xlim(*zoom_xlim)
     ax_inset.set_ylim(*zoom_ylim)
@@ -99,25 +99,21 @@ def add_inset(
 
 def plot_aurocs_with_inset(
     auroc_dict: dict,
-    weights: np.ndarray = None,
+    weights: Optional[dict] = None,
     zoom_xlim: tuple = (2017.7, 2023.3),
     zoom_ylim: tuple = (0.75, 0.91),
-    show_regression: bool = True,
-    exp_path=None,
-):
+    exp_path: str | None = None,
+) -> None:
     set_plot_style()
 
     years = np.array(sorted(auroc_dict.keys()))
     x = 2000 + years
     y = np.array([auroc_dict[k] for k in years])
 
-    lr_result = (
-        fit_wlr(x, y, weights=np.array([n_contacts[k] for k in years])) if show_regression else None
-    )
+    lr_result = fit_wlr(x, y, weights=np.array([weights[k] for k in years]))
 
-    if lr_result:
-        print(f"Slope:          {lr_result['slope']:.6f}")
-        print(f"Standard error: {lr_result['slope_se']:.6f}")
+    print(f"Slope:          {lr_result['slope']:.6f}")
+    print(f"Standard error: {lr_result['slope_se']:.6f}")
 
     fig, ax = plt.subplots(figsize=(7, 4), dpi=300)
 

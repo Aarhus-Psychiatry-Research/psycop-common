@@ -29,28 +29,6 @@ class TableOneModel(ValidatedFrame[pl.DataFrame]):
     pred_time_uuid_col_name: str = "pred_time_uuid"
 
 
-# @shared_cache().cache
-# def _train_test_column(flattened_data: pl.DataFrame) -> pl.DataFrame:
-#     """Adds a 'dataset' column to the dataframe, indicating whether the row is in the train or test set."""
-#     train_data = (
-#         RegionalFilter(["train", "val"])
-#         .apply(flattened_data.lazy())
-#         .with_columns(dataset=pl.lit("0. train"))
-#         .collect()
-#     )
-#     test_data = (
-#         RegionalFilter(["test"])
-#         .apply(flattened_data.lazy())
-#         .with_columns(dataset=pl.lit("test"))
-#         .collect()
-#     )
-
-#     flattened_combined = pl.concat([train_data, test_data], how="vertical").rename(
-#         {"prediction_time_uuid": "pred_time_uuid"}
-#     )
-#     return flattened_combined
-
-
 def _add_dataset_column(flattened_data: pl.DataFrame, dataset_name: str) -> pl.DataFrame:
     """Adds a 'dataset' column to the dataframe, indicating whether the row is in the train or test set."""
     flattened_data_with_dataset_column = flattened_data.with_columns(
@@ -74,7 +52,7 @@ def _first_outcome_data(data: pl.DataFrame) -> pl.DataFrame:
 
 @shared_cache().cache
 def prepare_table_one_dataset(
-    cfg: PsycopConfig, sex_col_name: str, dataset_name: str, split: Literal["train", "val"]
+    cfg: PsycopConfig, dataset_name: str, split: Literal["train", "val"]
 ) -> pl.DataFrame:
     tmp_cfg = pathlib.Path(mkdtemp()) / "tmp.cfg"
     cfg.to_disk(tmp_cfg)
