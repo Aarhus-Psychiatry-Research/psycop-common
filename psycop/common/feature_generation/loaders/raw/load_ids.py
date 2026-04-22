@@ -6,8 +6,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING
 
-import polars as pl
 import pandas as pd
+import polars as pl
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 
@@ -88,7 +88,4 @@ def load_and_concatenate_2025_ids(n_rows: int | None = None) -> FullFrame:
 
     combined_df = pd.concat(dfs).reset_index(drop=True)
 
-    return FullFrame(
-        frame=pl.from_pandas(combined_df).lazy(),
-        allow_extra_columns=True,
-    )
+    return FullFrame(frame=pl.from_pandas(combined_df).lazy(), allow_extra_columns=True)

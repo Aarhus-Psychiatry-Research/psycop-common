@@ -11,8 +11,8 @@ import pandas as pd
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.feature_generation.loaders.raw.load_ids import (
     SplitName,
-    load_stratified_by_outcome_split_ids,
     load_and_concatenate_2025_ids,
+    load_stratified_by_outcome_split_ids,
 )
 from psycop.common.feature_generation.utils import write_df_to_file
 

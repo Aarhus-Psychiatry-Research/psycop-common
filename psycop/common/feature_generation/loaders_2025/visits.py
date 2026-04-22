@@ -267,6 +267,5 @@ def first_visit_to_psychiatry_2025() -> pl.DataFrame:
     return first_visit
 
 
-
 if __name__ == "__main__":
     physical_visits_to_psychiatry_2025()

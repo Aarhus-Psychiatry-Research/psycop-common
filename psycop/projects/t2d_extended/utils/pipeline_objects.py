@@ -12,7 +12,7 @@ from sklearn.pipeline import Pipeline
 from psycop.common.model_training.config_schemas.conf_utils import FullConfigSchema
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
-EVAL_ROOT = Path("E:/shared_resources/t2d_extended/model_eval") # TODO fh: how is this folder created?
+EVAL_ROOT = Path("E:/shared_resources/t2d_extended/model_eval")
 
 
 def load_file_from_pkl(file_path: Path) -> Any:
@@ -42,7 +42,7 @@ class RunGroup:
 
     @property
     def group_dir(self) -> Path:
-        return Path(f"E:/shared_resources/t2d_extended/model_eval/{self.name}") # TODO fh: add models to this folder?
+        return Path(f"E:/shared_resources/t2d_extended/model_eval/{self.name}")
 
     @property
     def flattened_ds_dir(self) -> Path:
