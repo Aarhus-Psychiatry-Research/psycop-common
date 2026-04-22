@@ -2,32 +2,21 @@
 Generates a bar plot showing the proportion of predictions made on each age group, with an overlaid line plot showing the AUROC for each age group.
 """
 
-from pathlib import Path
+from collections.abc import Sequence
 
 import pandas as pd
 import plotnine as pn
 import polars as pl
 
 from psycop.common.feature_generation.loaders_2025.demographics import birthdays
-
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.common.model_training_v2.config.config_utils import PsycopConfig
-
-
-from collections.abc import Sequence
-from typing import Optional
-
-import pandas as pd
-
-from psycop.common.model_evaluation.utils import bin_continuous_data
-
 from psycop.projects.t2d_extended.model_evaluation.config import T2D_PN_THEME
-from psycop.projects.t2d_extended.model_evaluation.utils.plot_utils import (
-    auroc_by_model,
-    parse_dw_ek_borger_from_uuid,
-    fix_pred_timestamps,
+from psycop.projects.t2d_extended.model_evaluation.utils.parse_utils import (
     eval_df_to_eval_dataset,
+    fix_pred_timestamps,
+    parse_dw_ek_borger_from_uuid,
 )
+from psycop.projects.t2d_extended.model_evaluation.utils.auroc_utils import auroc_by_model
 
 
 def add_age(df: pl.DataFrame, birthdays: pl.DataFrame, age_col_name: str = "age") -> pl.DataFrame:

@@ -3,9 +3,9 @@ Shows AUROC for each test year, with a zoomed inset showing a linear regression 
 """
 
 from pathlib import Path
-import numpy as np
+
 import matplotlib.pyplot as plt
-from psycop.common.model_training_v2.config.config_utils import PsycopConfig
+import numpy as np
 import statsmodels.api as sm
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes, mark_inset
 

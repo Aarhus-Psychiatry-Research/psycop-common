@@ -1,22 +1,17 @@
 """Generate calibration plots for each test year of the T2D-extended project.
 Produces a panel of calibration curves with confidence intervals, along with histograms of predicted probabilities."""
 
-import matplotlib.pyplot as plt
-import pandas as pd
-from sklearn.calibration import calibration_curve
 import math
 
-from psycop.common.model_training_v2.config.config_utils import PsycopConfig
-from psycop.projects.t2d_extended.model_training.temporal_evaluation import eval_df_to_eval_dataset
-
-
-import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
 import numpy as np
+import pandas as pd
+import statsmodels.api as sm
 from scipy.stats import binom
 from sklearn.metrics import brier_score_loss
-import statsmodels.api as sm
+
+from psycop.common.model_training_v2.config.config_utils import PsycopConfig
+from psycop.projects.t2d_extended.model_evaluation.utils.parse_utils import eval_df_to_eval_dataset
 
 
 def logit(p: np.ndarray) -> np.ndarray:

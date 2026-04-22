@@ -2,29 +2,20 @@
 Produces AUROC and confusion matrix plots for each test year, and saves them to the respective run directories.
 """
 
-from collections.abc import Sequence
-from pathlib import Path
-from typing import Optional
-
 import numpy as np
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.common.model_training_v2.config.config_utils import PsycopConfig
-
 import pandas as pd
 import plotnine as pn
 
 from psycop.common.model_evaluation.binary.global_performance.roc_auc import bootstrap_roc
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
+    ConfusionMatrix,
     get_confusion_matrix_cells_from_df,
 )
-
-import pandas as pd
-import plotnine as pn
-
-from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import ConfusionMatrix
+from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 from psycop.common.test_utils.str_to_df import str_to_df
 from psycop.projects.t2d_extended.model_evaluation.config import T2D_PN_THEME
-from psycop.projects.t2d_extended.model_evaluation.utils.plot_utils import eval_df_to_eval_dataset
+from psycop.projects.t2d_extended.model_evaluation.utils.parse_utils import eval_df_to_eval_dataset
 
 
 def plot_auc_roc(eval_dataset: EvalDataset, title: str = "", n_bootstraps: int = 100) -> pn.ggplot:

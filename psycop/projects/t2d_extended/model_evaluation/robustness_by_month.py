@@ -2,18 +2,15 @@
 Generates a bar plot showing the proportion of predictions made on each month, with an overlaid line plot showing the AUROC for each month.
 """
 
-from pathlib import Path
-
 import pandas as pd
 import plotnine as pn
 import polars as pl
 
 from psycop.common.model_evaluation.binary.time.periodic_data import roc_auc_by_periodic_time_df
 from psycop.common.model_training_v2.config.config_utils import PsycopConfig
+from psycop.projects.t2d_extended.model_evaluation.utils.auroc_utils import auroc_by_model
+from psycop.projects.t2d_extended.model_evaluation.utils.parse_utils import fix_pred_timestamps
 from psycop.projects.t2d_extended.model_evaluation.config import T2D_PN_THEME
-from psycop.projects.t2d_extended.model_evaluation.auroc_curve import eval_df_to_eval_dataset
-
-from psycop.projects.t2d_extended.model_evaluation.utils.plot_utils import fix_pred_timestamps
 
 
 def plotnine_auroc_by_month(df: pd.DataFrame, title: str = "") -> pn.ggplot:

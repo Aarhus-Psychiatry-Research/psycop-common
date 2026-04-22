@@ -2,31 +2,17 @@
 Generates a bar plot showing the proportion of predictions made on each sex, with an overlaid line plot showing the AUROC for each sex.
 """
 
-from pathlib import Path
-
 import pandas as pd
 import plotnine as pn
 import polars as pl
 
 from psycop.common.feature_generation.loaders_2025.demographics import sex_female
-
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.common.model_training_v2.config.config_utils import PsycopConfig
-
-
-from collections.abc import Sequence
-from typing import Optional
-
-import pandas as pd
-
-from psycop.common.model_evaluation.binary.utils import auroc_by_group
-from psycop.common.model_evaluation.utils import bin_continuous_data
-
 from psycop.projects.t2d_extended.model_evaluation.config import T2D_PN_THEME
-from psycop.projects.t2d_extended.model_evaluation.auroc_curve import eval_df_to_eval_dataset
-from psycop.projects.t2d_extended.model_evaluation.utils.plot_utils import (
-    auroc_by_model,
+from psycop.projects.t2d_extended.model_evaluation.utils.auroc_utils import auroc_by_model
+from psycop.projects.t2d_extended.model_evaluation.utils.parse_utils import (
     parse_dw_ek_borger_from_uuid,
+    eval_df_to_eval_dataset,
 )
 
 
