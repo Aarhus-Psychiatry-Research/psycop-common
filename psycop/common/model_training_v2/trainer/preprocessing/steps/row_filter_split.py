@@ -9,6 +9,7 @@ from psycop.common.feature_generation.loaders.raw.load_ids import (
     load_stratified_by_outcome_split_ids,
 )
 from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits
+from psycop.common.feature_generation.loaders_2025.load_ids import load_random_2025_split_ids
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 from psycop.common.sequence_models.registry import SequenceRegistry
@@ -169,6 +170,39 @@ class FilterByOutcomeStratifiedSplits(PresplitStep):
 
         return (
             pl.concat([load_stratified_by_outcome_split_ids(split).frame for split in split_names])
+            .collect()
+            .get_column("dw_ek_borger")
+        )
+
+
+@BaselineRegistry.preprocessing.register("random_2025_split_filter")
+@dataclass
+class FilterByRandom2025Splits(PresplitStep):
+    """Filter the data to only include ids from the splits randomised from 2025 ID's, for the given split_to_keep."""
+
+    splits_to_keep: Sequence[Literal["train", "val", "test"]]
+    id_col_name: str = "dw_ek_borger"
+
+    def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
+        """Filter the dataloader to only include ids from the desired splits
+        from the original datasplit"""
+        split_ids = self._load_random_2025_split_ids()
+        return input_df.filter(pl.col(self.id_col_name).is_in(split_ids))
+
+    def _load_random_2025_split_ids(self) -> pl.Series:
+        split_names: list[SplitName] = []
+
+        for split_name in self.splits_to_keep:
+            match split_name:
+                case "train":
+                    split_names.append(SplitName.TRAIN)
+                case "val":
+                    split_names.append(SplitName.VALIDATION)
+                case "test":
+                    split_names.append(SplitName.TEST)
+
+        return (
+            pl.concat([load_random_2025_split_ids(split).frame for split in split_names])
             .collect()
             .get_column("dw_ek_borger")
         )

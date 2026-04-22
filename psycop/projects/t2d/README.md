@@ -106,6 +106,7 @@ E:/shared_resources/t2d/
 │   │   └── nonviolentstigmaria-eval-on-test/ # best XGBoost model retrained on test set
 │   │   │   └── cfg.json
 │   │   │   └── cfg.pkl
+│   │   │   └── config.cfg # config adhering to model training v2 format
 │   │   │   └── evaluation_dataset.parquet # here it is (eval_df)!!
 │   │   │   └── pipe_metadata.pkl
 │   │   │   └── pipe.pkl

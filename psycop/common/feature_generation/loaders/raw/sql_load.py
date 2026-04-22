@@ -40,7 +40,7 @@ def sql_load(
         # From USR_PS_Forsk
         >>> view = "[FOR_SFI_fritekst_resultat_udfoert_i_psykiatrien_aendret_2011]"
         >>> sql = "SELECT * FROM [fct]." + view
-        >>> df = sql_load(sql, chunksize = None)
+        >>> df = sql_load(sql)
     """
     # Driver for Kubeflow is different from driver on Ovartaci
     driver = "SQL Server"

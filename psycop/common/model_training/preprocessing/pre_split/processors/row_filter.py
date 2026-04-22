@@ -129,9 +129,6 @@ class PreSplitRowFilter:
 
     def run_filter(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Run filters based on config."""
-        if self.pre_split_cfg.min_prediction_time_date:
-            self._drop_rows_before_min_date(dataset)
-
         for direction in ("ahead", "behind"):
             if direction == "ahead":
                 n_days = self.pre_split_cfg.min_lookahead_days
@@ -143,6 +140,9 @@ class PreSplitRowFilter:
             dataset = self._drop_rows_if_datasets_ends_within_days(
                 n_days=n_days, dataset=dataset, direction=direction
             )
+
+        if self.pre_split_cfg.min_prediction_time_date:
+            self._drop_rows_before_min_date(dataset)
 
         if self.pre_split_cfg.drop_patient_if_exclusion_before_date:
             if self.data_cfg.col_name.exclusion_timestamp is None:

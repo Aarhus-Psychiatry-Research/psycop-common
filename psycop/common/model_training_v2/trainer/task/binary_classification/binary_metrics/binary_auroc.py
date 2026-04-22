@@ -31,3 +31,24 @@ class BinaryAUROC(BinaryMetric):
             name=f"{name_prefix}_BinaryAUROC" if name_prefix else "BinaryAUROC",
             value=float(roc_auc_score(y_true=y, y_score=y_hat_prob)),
         )
+
+
+@BaselineRegistry.metrics.register("partial_binary_auroc")
+class PartialBinaryAUROC(BinaryMetric):
+    """
+    max_fpr allows for calculation of partial AUROC. If max_fpr is None, calculates standard AUROC.
+    """
+
+    def __init__(self, max_fpr: None | float = 0.2) -> None:
+        self.max_fpr = max_fpr
+
+    def calculate(
+        self,
+        y: pd.Series,  # type: ignore
+        y_hat_prob: PredProbaSeries,
+        name_prefix: str | None = None,
+    ) -> CalculatedMetric:
+        return CalculatedMetric(
+            name=f"{name_prefix}_PartialBinaryAUROC" if name_prefix else "PartialBinaryAUROC",
+            value=float(roc_auc_score(y_true=y, y_score=y_hat_prob, max_fpr=self.max_fpr)),
+        )

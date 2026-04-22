@@ -22,7 +22,7 @@ def get_admissions_to_psychiatry() -> pd.DataFrame:
     sql += "WHERE datotid_start > '2012-01-01' AND pt_type = 'Indlagt'"
     sql += "AND datotid_start IS NOT NULL AND datotid_slut IS NOT NULL;"
 
-    df = pd.DataFrame(sql_load(sql, chunksize=None))  # type: ignore
+    df = pd.DataFrame(sql_load(sql))  # type: ignore
 
     df[["datotid_start", "datotid_slut"]] = df[["datotid_start", "datotid_slut"]].apply(
         pd.to_datetime
@@ -44,7 +44,7 @@ def admissions_onset_timestamps() -> pd.DataFrame:
 
     sql = "SELECT " + cols_to_keep + " FROM [fct]." + view
 
-    admissions_onset_timestamps = pd.DataFrame(sql_load(sql, chunksize=None))  # type: ignore
+    admissions_onset_timestamps = pd.DataFrame(sql_load(sql))  # type: ignore
 
     admissions_onset_timestamps = admissions_onset_timestamps.rename(
         columns={"datotid_star": "timestamp"}
@@ -60,7 +60,7 @@ def admissions_discharge_timestamps() -> pd.DataFrame:
 
     sql = "SELECT " + cols_to_keep + " FROM [fct]." + view
 
-    admissions_discharge_timestamps = pd.DataFrame(sql_load(sql, chunksize=None))  # type: ignore
+    admissions_discharge_timestamps = pd.DataFrame(sql_load(sql))  # type: ignore
 
     admissions_discharge_timestamps = admissions_discharge_timestamps.rename(
         columns={"datotid_slut": "timestamp"}

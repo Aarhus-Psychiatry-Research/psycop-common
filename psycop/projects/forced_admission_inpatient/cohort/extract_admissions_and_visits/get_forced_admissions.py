@@ -15,7 +15,7 @@ def get_forced_admissions() -> pd.DataFrame:
     sql = "SELECT " + cols_to_keep + " FROM [fct]." + view
     sql += "WHERE datotid_start_sei > '2012-01-01' AND typetekst_sei = 'Tvangsindlæggelse'"
 
-    forced_admissions = pd.DataFrame(sql_load(sql, chunksize=None)).drop_duplicates()  # type: ignore
+    forced_admissions = pd.DataFrame(sql_load(sql)).drop_duplicates()  # type: ignore
     forced_admissions[["datotid_start_sei", "datotid_slut_sei"]] = forced_admissions[  # type: ignore
         ["datotid_start_sei", "datotid_slut_sei"]
     ].apply(pd.to_datetime)
