@@ -49,7 +49,7 @@ def load_text(
     text_sfi_names: str | set[str],
     include_sfi_name: bool = False,
     view: str
-    | None = "FOR_SFI_fritekst_resultat_udfoert_i_psykiatrien_aendret_tvangsindlæggelse_sep_2025",
+    | None = "FOR_SFI_fritekst_resultater_resultat_udfoert_i_psykiatrien_tvangsindlæggelse_sep_2025",
     n_rows: int | None = None,
 ) -> pd.DataFrame:
     """Loads clinical notes from sql from a specified year and matching
@@ -72,7 +72,14 @@ def load_text(
     if include_sfi_name:
         sql += ", overskrift"
 
-    sql += f" FROM [fct].[{view}]" + f" WHERE overskrift IN {text_sfi_names}"
+    if isinstance(text_sfi_names, str):
+        # enkelt værdi → ('værdi')
+        in_clause = f"('{text_sfi_names}')"
+    else:
+        # set af værdier → ('v1','v2',...)
+        in_clause = "('" + "', '".join(text_sfi_names) + "')"
+
+    sql += f" FROM [fct].[{view}]" + f" WHERE overskrift IN {in_clause}"
 
     return sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
 

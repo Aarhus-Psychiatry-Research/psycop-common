@@ -40,7 +40,8 @@ def multiply_inequalities_in_df(
         col_can_contain_ineq = df[col_to_multiply].dtype == "object"
 
         if col_can_contain_ineq:
-            starts_with_ineq_idxs = df[col_to_multiply].str.startswith(in_eq).fillna(False)
+            string_series = df[col_to_multiply].fillna("").astype(str)
+            starts_with_ineq_idxs = string_series.str.startswith(in_eq).fillna(False)
 
             df.loc[starts_with_ineq_idxs, col_to_multiply] = (
                 df.loc[starts_with_ineq_idxs, col_to_multiply]
