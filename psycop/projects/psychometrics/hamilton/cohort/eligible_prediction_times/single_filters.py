@@ -29,7 +29,7 @@ class PsychometricsMinAgeFilter(PredictionTimeFilter):
         return after_df
 
 
-class PsychometricsF3disorders(PredictionTimeFilter):
+class HamiltonF3disorders(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         f3_disorders_df = (
             add_only_patients_with_f3_diagnosis()
@@ -59,12 +59,12 @@ class PsychometricsF3disorders(PredictionTimeFilter):
         return after_df
 
 
-class PsychometricsWashoutMoveFilter(PredictionTimeFilter):
+class HamiltonWashoutMoveFilter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         not_within_half_a_year_from_move = QuarantineFilter(
             entity_id_col_name="dw_ek_borger",
             quarantine_timestamps_loader=MoveIntoRMBaselineLoader(),
-            quarantine_interval_days=182,
+            quarantine_interval_days=30,
             timestamp_col_name="timestamp",
         ).apply(df)
 

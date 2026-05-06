@@ -66,15 +66,13 @@ def physical_visits(
 
     # SHAK = 6600 ≈ in psychiatry
 
-    source_schemas = {
-        "LPR3": RawValueSourceSchema(
-            view="[FOR_LPR3kontakter_psyk_somatik_tvangsindlæggelse_sep_2025]",
-            start_datetime_col_name="datotid_lpr3kontaktstart",
-            end_datetime_col_name="datotid_lpr3kontaktslut",
-            location_col_name="shakkode_lpr3kontaktansvarlig",
-            where_clause="AND [Kontakttype] = 'Fysisk fremmøde'",
-        )
-    }
+    schema_lpr3 = RawValueSourceSchema(
+        view="[FOR_LPR3kontakter_psyk_somatik_tvangsindlæggelse_sep_2025]",
+        start_datetime_col_name="datotid_lpr3kontaktstart",
+        end_datetime_col_name="datotid_lpr3kontaktslut",
+        location_col_name="shakkode_lpr3kontaktansvarlig",
+        where_clause="AND [Kontakttype] = 'Fysisk fremmøde'",
+    )
 
     allowed_visit_types = ["admissions", "ambulatory_visits", "emergency_visits"]
 
@@ -86,9 +84,9 @@ def physical_visits(
         "ambulatory_visits": "'Ambulant'",
         "emergency_visits": "'Akut ambulant'",
     }
-    chosen_schemas = {
-        visit_type: source_schemas[visit_type] for visit_type in [*visit_types, "LPR3"]
-    }
+    chosen_schemas = {visit_type: schema_lpr3 for visit_type in visit_types}
+    chosen_schemas["LPR3"] = schema_lpr3
+
     english_to_lpr3_visit_type = [  # type: ignore
         english_to_lpr3_visit_type[visit] for visit in visit_types
     ]

@@ -32,7 +32,7 @@ def get_hamilton_scores(
     if timestamp_as_value_col:
         df["value"] = df["timestamp"]
     else:
-        df["value"] = 1
+        df["value"] = df["value"]
 
     if timestamps_only:
         return df[["dw_ek_borger", "timestamp"]]

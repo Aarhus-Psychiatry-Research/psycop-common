@@ -10,10 +10,10 @@ from psycop.common.cohort_definition import (
 )
 from psycop.common.global_utils.cache import shared_cache
 from psycop.projects.psychometrics.hamilton.cohort.eligible_prediction_times.single_filters import (
-    PsychometricsF3disorders,
+    HamiltonF3disorders,
+    HamiltonWashoutMoveFilter,
     PsychometricsMinAgeFilter,
     PsychometricsMinDateFilter,
-    PsychometricsWashoutMoveFilter,
 )
 from psycop.projects.psychometrics.hamilton.cohort.outcome_specification.hamilton_score import (
     get_hamilton_scores,
@@ -24,21 +24,21 @@ from psycop.projects.psychometrics.loaders.visits import (
 
 
 @shared_cache().cache()
-def psychometrics_pred_filtering() -> FilteredPredictionTimeBundle:
-    return PsychometricsCohortDefiner().get_filtered_prediction_times_bundle()
+def hamilton_pred_filtering() -> FilteredPredictionTimeBundle:
+    return HamiltonCohortDefiner().get_filtered_prediction_times_bundle()
 
 
 @shared_cache().cache()
-def clozapine_pred_times() -> PredictionTimeFrame:
-    return psychometrics_pred_filtering().prediction_times
+def hamilton_pred_times() -> PredictionTimeFrame:
+    return hamilton_pred_filtering().prediction_times
 
 
 @shared_cache().cache()
-def clozapine_outcome_timestamps() -> OutcomeTimestampFrame:
-    return PsychometricsCohortDefiner().get_outcome_timestamps()
+def hamilton_outcome_timestamps() -> OutcomeTimestampFrame:
+    return HamiltonCohortDefiner().get_outcome_timestamps()
 
 
-class PsychometricsCohortDefiner(CohortDefiner):
+class HamiltonCohortDefiner(CohortDefiner):
     @staticmethod
     def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle:
         unfiltered_prediction_times = pl.from_pandas(
@@ -52,15 +52,14 @@ class PsychometricsCohortDefiner(CohortDefiner):
             filtering_steps=(
                 PsychometricsMinAgeFilter(),
                 PsychometricsMinDateFilter(),
-                PsychometricsF3disorders(),
-                PsychometricsWashoutMoveFilter(),
+                HamiltonF3disorders(),
+                HamiltonWashoutMoveFilter(),
             ),
             entity_id_col_name="dw_ek_borger",
         )
 
         return result
 
-    @staticmethod
     @staticmethod
     def get_outcome_timestamps() -> OutcomeTimestampFrame:
         # Load all outcome timestamps
@@ -74,11 +73,9 @@ class PsychometricsCohortDefiner(CohortDefiner):
 
 
 if __name__ == "__main__":
-    filtered_prediction_time_bundle = (
-        PsychometricsCohortDefiner.get_filtered_prediction_times_bundle()
-    )
+    filtered_prediction_time_bundle = HamiltonCohortDefiner.get_filtered_prediction_times_bundle()
 
-    outcome_timestamps_bundle = PsychometricsCohortDefiner.get_outcome_timestamps()
+    outcome_timestamps_bundle = HamiltonCohortDefiner.get_outcome_timestamps()
 
     for filtering_step in filtered_prediction_time_bundle.filter_steps:
         msg.info(f"Filter step {filtering_step.step_index} {filtering_step.step_name}")
