@@ -61,6 +61,8 @@ RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r dev-requirements
 # Ensure pyright is installed from npm since npm is not accessible at runtime
 RUN pyright --help
 
+RUN apt-get install -y libltdl7 libkrb5-3 libgssapi-krb5-2
+
 # BI's SQL server is MsSQL 2016, which supports TLS <= 1.2. This is lower than the default TLS version of Ubuntu 22.04.
 # Modify the OpenSSL configuration file, in system and conda, to set the minimum supported TLS version to TLSv1.2
 RUN sed -i 's/^\(\[system_default_sect\]\)/\1\nMinProtocol = TLSv1.2/' /etc/ssl/openssl.cnf && \
