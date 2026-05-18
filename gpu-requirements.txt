@@ -1,7 +1,7 @@
 sentence-transformers==5.2.3
 #torch==1.13.1
 torch==2.10.0 # Due to Snyk vuln SNYK-PYTHON-TORCH-13052994 and more
-lightning==2.5.1.post
+lightning==2.6.1
 # to install CUDA enabled torch on overtaci, use the following line
 # conda install pytorch=2.2.0 pytorch-cuda=12.1 -c https://exrhel0371.it.rm.dk/api/repo/pytorch -c https://exrhel0371.it.rm.dk/api/repo/nvidia -c https://exrhel0371.it.rm.dk/api/repo/anaconda --override-channels --insecure
 transformers==5.3.0
