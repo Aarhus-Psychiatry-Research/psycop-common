@@ -321,4 +321,8 @@ ignore:
         by thorougly background checking models we use. Going forward, we aim to pin HuggingFace 
         model commits when we use a model, so we have full control over files being loaded. 
       created: 2026-04-14T12:43:16.626Z
+  SNYK-PYTHON-MLFLOWSKINNY-16698156:
+  - '*':
+      reason: Vulnerability related to default credentials in basic_auth file, which we do not use. Exception approved via Slack conversation in programming channel on 26-05-19.
+      created: 2026-05-19T12:04:00.000Z
 patch: {}
