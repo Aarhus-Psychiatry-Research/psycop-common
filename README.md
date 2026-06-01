@@ -1,4 +1,4 @@
-# PSYCOP-COMMON - test
+# PSYCOP-COMMON
 
 <!-- [![PyPI](https://img.shields.io/pypi/v/psycop-common.svg)][pypi status] -->
 <!-- [![Python Version](https://img.shields.io/pypi/pyversions/psycop-common)][pypi status] -->
