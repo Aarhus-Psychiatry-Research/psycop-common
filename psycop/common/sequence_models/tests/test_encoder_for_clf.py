@@ -123,7 +123,7 @@ def test_pretrain_from_checkpoint(
     """
     checkpoint_path = next(TEST_CHECKPOINT_DIR.glob("*.ckpt"))
 
-    loaded_model = PretrainerBEHRT.load_from_checkpoint(checkpoint_path)
+    loaded_model = PretrainerBEHRT.load_from_checkpoint(checkpoint_path, weights_only=False)
 
     clf = PatientSliceClassifier(
         embedder=loaded_model.embedder,
