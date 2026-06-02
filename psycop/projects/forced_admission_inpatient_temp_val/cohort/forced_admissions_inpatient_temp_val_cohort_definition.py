@@ -7,7 +7,6 @@ from psycop.common.cohort_definition import (
     PredictionTimeFrame,
     filter_prediction_times,
 )
-from psycop.common.global_utils.cache import shared_cache
 from psycop.projects.forced_admission_inpatient_temp_val.cohort.extract_admissions_and_visits.get_forced_admissions import (
     forced_admissions_onset_timestamps_2025,
 )
@@ -15,19 +14,17 @@ from psycop.projects.forced_admission_inpatient_temp_val.cohort.extract_admissio
     admissions_discharge_timestamps_2025,
 )
 from psycop.projects.forced_admission_inpatient_temp_val.cohort.prediction_timestamp_filters.single_filters import (
-    ForcedAdmissionsInpatientMinAgeFilter,
-    ForcedAdmissionsInpatientMinDateFilter,
-    ForcedAdmissionsInpatientWashoutMove,
-    ForcedAdmissionsInpatientWashoutPriorForcedAdmission,
+    ForcedAdmissionsInpatientTempValMinAgeFilter,
+    ForcedAdmissionsInpatientTempValMinDateFilter,
+    ForcedAdmissionsInpatientTempValWashoutMove,
+    ForcedAdmissionsInpatientTempValWashoutPriorForcedAdmission,
 )
 
 
-@shared_cache().cache()
 def forced_adm_temp_val_pred_filtering() -> FilteredPredictionTimeBundle:
     return ForcedAdmissionsInpatientTempValCohortDefiner().get_filtered_prediction_times_bundle()
 
 
-@shared_cache().cache()
 def forced_adm_temp_val_pred_times() -> PredictionTimeFrame:
     return forced_adm_temp_val_pred_filtering().prediction_times
 
@@ -43,19 +40,18 @@ class ForcedAdmissionsInpatientTempValCohortDefiner(CohortDefiner):
             return filter_prediction_times(
                 prediction_times=unfiltered_prediction_times,
                 filtering_steps=(
-                    ForcedAdmissionsInpatientMinDateFilter(),
-                    ForcedAdmissionsInpatientMinAgeFilter(),
-                    ForcedAdmissionsInpatientWashoutMove(),
-                    ForcedAdmissionsInpatientWashoutPriorForcedAdmission(),
+                    ForcedAdmissionsInpatientTempValMinDateFilter(),
+                    ForcedAdmissionsInpatientTempValMinAgeFilter(),
+                    ForcedAdmissionsInpatientTempValWashoutMove(),
+                    ForcedAdmissionsInpatientTempValWashoutPriorForcedAdmission(),
                 ),
                 entity_id_col_name="dw_ek_borger",
             )
-
         return filter_prediction_times(
             prediction_times=unfiltered_prediction_times,
             filtering_steps=(
-                ForcedAdmissionsInpatientMinDateFilter(),
-                ForcedAdmissionsInpatientMinAgeFilter(),
+                ForcedAdmissionsInpatientTempValMinDateFilter(),
+                ForcedAdmissionsInpatientTempValMinAgeFilter(),
             ),
             entity_id_col_name="dw_ek_borger",
         )
