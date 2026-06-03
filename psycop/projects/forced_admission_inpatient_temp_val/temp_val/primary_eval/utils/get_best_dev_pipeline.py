@@ -1,5 +1,6 @@
 import pickle
 from pathlib import Path
+from typing import cast
 
 from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import RunGroup
@@ -15,7 +16,7 @@ def get_best_model_cfg(model_name: str, model_algorithm: int) -> PsycopConfig:
 
     model_cfg = MODELS[model_name]
 
-    group = RunGroup(model_name=model_name, group_name=model_cfg["group_name"])
+    group = RunGroup(model_name=model_name, group_name=cast(str, model_cfg["group_name"]))
 
     run_name = group.get_best_runs_by_lookahead()[model_algorithm, 2]
 
