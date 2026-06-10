@@ -22,7 +22,7 @@ def get_parquet_filename(model_family: str) -> str:
     raise ValueError(f"Unknown model family: {model_family}")
 
 
-def find_best_group(model_dir: Path, model_family: str) -> tuple[Path, Path, float]:
+def find_best_group(model_dir: Path, model_family: str) -> tuple[Path, Path | None, float]:
     parquet_name = get_parquet_filename(model_family)
 
     best_score = -float("inf")
@@ -145,7 +145,7 @@ def extract_preprocessing(cfg: Any) -> dict[str, Any]:
     }
 
 
-def get_best_model(model_name: str, model_family: str) -> dict[str]:
+def get_best_model(model_name: str, model_family: str) -> dict[str, float]:
     model_dir = BASE_DIR / model_name
 
     group_dir, parquet_path, score = find_best_group(model_dir, model_family)
