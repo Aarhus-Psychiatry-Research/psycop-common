@@ -1,6 +1,6 @@
 import pandas as pd
 
-from psycop.common.feature_generation.loaders_2024.lab import (
+from psycop.common.feature_generation.loaders_2025.lab import (
     fasting_p_glc,
     hba1c,
     ogtt,

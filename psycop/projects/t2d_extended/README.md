@@ -1,3 +1,5 @@
+OBS: needs to be updated!!
+
 # Temporal stability of type 2 diabetes prediction model
 Project-specific code for investigating the temporal stability of a type 2 diabetes prediction model.
 
