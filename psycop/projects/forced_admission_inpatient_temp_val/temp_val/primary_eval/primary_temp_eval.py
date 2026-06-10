@@ -36,7 +36,7 @@ def eval_on_temporal_split(model: str, cfg: PsycopConfig):
 
 
 if __name__ == "__main__":
-    model = "primary_eval_xgboost_structured_features"
+    model = "primary_eval_log_reg_structured_features"
     cfg = PsycopConfig().from_disk(Path(__file__).parent / "configs" / f"{model}.cfg")
 
     eval_on_temporal_split(model=model, cfg=cfg)
