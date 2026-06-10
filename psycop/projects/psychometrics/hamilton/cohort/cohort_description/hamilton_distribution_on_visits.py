@@ -285,7 +285,7 @@ def print_overview_tables(
             ],
         }
     )
-    print("\n=== Hamilton Utilisation Overview (F3 A & F3 B) ===")
+    print("\n=== Hamilton Overview (F3 A & F3 B) ===")
     print(overview.to_pandas().to_string(index=False))
 
 

@@ -311,7 +311,7 @@ def f3_disorders_b_diagnosis(
     diagnosis_type: Literal["A", "B"] | None = "B",
 ) -> pd.DataFrame:
     return from_contacts_visits_view(
-        icd_code=["f30", "f31"],
+        icd_code="f3",
         wildcard_icd_code=True,
         timestamp_purpose=timestamp_purpose,
         diagnosis_type=diagnosis_type,
@@ -335,7 +335,31 @@ def bipolar_disorders_b_diagnosis(
     diagnosis_type: Literal["A", "B"] | None = "B",
 ) -> pd.DataFrame:
     return from_contacts_visits_view(
-        icd_code="f3",
+        icd_code=["f30", "f31"],
+        wildcard_icd_code=True,
+        timestamp_purpose=timestamp_purpose,
+        diagnosis_type=diagnosis_type,
+    )
+
+
+def f2_disorders_a_diagnosis(
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+    diagnosis_type: Literal["A", "B"] | None = "A",
+) -> pd.DataFrame:
+    return from_contacts_visits_view(
+        icd_code="f2",
+        wildcard_icd_code=True,
+        timestamp_purpose=timestamp_purpose,
+        diagnosis_type=diagnosis_type,
+    )
+
+
+def f2_disorders_b_diagnosis(
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+    diagnosis_type: Literal["A", "B"] | None = "B",
+) -> pd.DataFrame:
+    return from_contacts_visits_view(
+        icd_code="f2",
         wildcard_icd_code=True,
         timestamp_purpose=timestamp_purpose,
         diagnosis_type=diagnosis_type,
