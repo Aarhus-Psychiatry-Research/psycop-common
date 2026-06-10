@@ -145,7 +145,7 @@ def extract_preprocessing(cfg: Any) -> dict[str, Any]:
     }
 
 
-def get_best_model(model_name: str, model_family: str) -> dict[str, float]:
+def get_best_model(model_name: str, model_family: str) -> dict[str, Any]:
     model_dir = BASE_DIR / model_name
 
     group_dir, parquet_path, score = find_best_group(model_dir, model_family)
