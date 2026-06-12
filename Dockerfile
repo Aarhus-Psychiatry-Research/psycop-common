@@ -45,3 +45,7 @@ WORKDIR /app
 VOLUME psycop-common
 
 COPY . /app
+
+
+
+ENV MLFLOW_ALLOW_FILE_STORE=true
