@@ -144,5 +144,5 @@ def test_module_with_trainer(patient_slices: Sequence[PatientSlice], tmp_path: P
     # Checkpoint can be loaded
     # Note that load_from_checkpoint raises a FileNotFoundError if the checkpoint does not exist.
     # Hence, this would fail if we could not load the checkpoint.
-    loaded_model = PretrainerBEHRT.load_from_checkpoint(checkpoint_paths[0])
+    loaded_model = PretrainerBEHRT.load_from_checkpoint(checkpoint_paths[0], weights_only=False)
     trainer.fit(model=loaded_model, train_dataloaders=train_dataloader)

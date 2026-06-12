@@ -45,3 +45,6 @@ WORKDIR /app
 VOLUME psycop-common
 
 COPY . /app
+
+# MLflow now disables file-based tracking (./mlruns) by default. This project relies on this behavior for local/CI experiment tracking and historical config resolution, so we explicitly enable it to preserve backward compatibility.
+ENV MLFLOW_ALLOW_FILE_STORE=true
