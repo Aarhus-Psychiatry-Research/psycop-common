@@ -341,4 +341,16 @@ ignore:
   - '*':
       reason: Vulnerable to Origin Validation Error in the /ajax-api endpoints. Exception approved via Slack conversation in programming channel on 26-06-02.
       created: 2026-06-02T12:16:00.000Z
+  SNYK-PYTHON-MLFLOW-17231495:
+  - '*':
+      reason: Exception approved via Slack conversation in programming channel on 26-06-12.
+      created: 2026-06-12T14:06:00.000Z
+  SNYK-PYTHON-MLFLOW-17173043:
+  - '*':
+      reason: Exception approved via Slack conversation in programming channel on 26-06-12.
+      created: 2026-06-12T14:06:00.000Z
+  SNYK-PYTHON-MLFLOWSKINNY-17173042:
+  - '*':
+      reason: Exception approved via Slack conversation in programming channel on 26-06-12.
+      created: 2026-06-12T14:06:00.000Z
 patch: {}
