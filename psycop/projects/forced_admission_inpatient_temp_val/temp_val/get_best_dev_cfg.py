@@ -111,6 +111,7 @@ def extract_relevant_hyperparams(cfg: Any) -> dict[str, float | int | str | bool
         "grow_policy",
         "C",
         "alpha",
+        "lambda",
         "penalty",
         "solver",
         "tol",
@@ -171,8 +172,8 @@ def get_best_model(model_name: str, model_family: str) -> dict[str, Any]:
 
 if __name__ == "__main__":
     result = get_best_model(
-        model_name="full_model_without_text_features",
-        model_family="logistic_regression",  # or "xgboost"
+        model_name="limited_model_demographics_diagnoses",
+        model_family="xgboost",  # or "xgboost"
     )
 
     print(json.dumps(result, indent=2))
