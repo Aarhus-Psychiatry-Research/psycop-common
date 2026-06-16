@@ -28,8 +28,8 @@ def sex_female(n_rows: int | None = None) -> pd.DataFrame:
 
     df = sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
 
-    df.loc[df["koennavn"] == "Mand", "koennavn"] = False
-    df.loc[df["koennavn"] == "Kvinde", "koennavn"] = True
+    df.loc[df["koennavn"] == "Mand", "koennavn"] = 0
+    df.loc[df["koennavn"] == "Kvinde", "koennavn"] = 1
 
     df = df.rename(columns={"koennavn": "sex_female"})
 
