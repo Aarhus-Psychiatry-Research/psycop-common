@@ -6,6 +6,8 @@ import warnings
 from pathlib import Path
 from typing import Literal
 
+import pandas as pd
+
 from psycop.common.feature_generation.application_modules.chunked_feature_generation import (
     ChunkedFeatureGenerator,
 )
@@ -103,6 +105,25 @@ def main(
         )
     # normally the dataset is saved using split and save, but this dataset is already split fro temporal validation
 
+    if add_text_features:
+        reference_path = Path(
+            "E:/shared_resources/forced_admissions_inpatient/flattened_datasets/full_feature_set_with_sentence_transformers_and_tfidf_750/full_feature_set_with_sentence_transformers_and_tfidf_750.parquet"
+        )
+
+    if limited_feature_set:
+        reference_path = Path(
+            "E:/shared_resources/forced_admissions_inpatient/flattened_datasets/limited_features_set_demographics_diagnoses/limited_features_set_demographics_diagnoses.parquet"
+        )
+
+    else:
+        reference_path = Path(
+            "E:/shared_resources/forced_admissions_inpatient/flattened_datasets/structured_feature_set/structured_feature_set.parquet"
+        )
+
+    if reference_path.exists():
+        reference_cols = pd.read_parquet(reference_path).columns.tolist()
+        flattened_df = flattened_df[reference_cols]
+
     write_df_to_file(df=flattened_df, file_path=Path(feature_set_dir).with_suffix(".parquet"))
 
     save_flattened_dataset_description_to_disk(
@@ -140,9 +161,9 @@ if __name__ == "__main__":
     main(
         add_text_features=False,
         min_set_for_debug=False,
-        limited_feature_set=False,
+        limited_feature_set=True,
         lookbehind_180d_mean=False,
         washout_on_prior_forced_admissions=True,
-        feature_set_name="structured_feature_set_temp_val",
+        feature_set_name="limited_feature_set_temp_val",
         generate_in_chunks=False,
     )
