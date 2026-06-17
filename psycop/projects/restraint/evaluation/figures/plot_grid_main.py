@@ -42,19 +42,8 @@ def plot_grid(
         # Makes debugging much easier
         bricks.append(pw.load_ggplot(plot, figsize=single_plot_dimensions))
 
-    alphabet = "abcdefghijklmnopqrstuvwxyz"
-    rows = []
-
-    for i in range(len(bricks)):
-        # Add the letter
-        if add_subpanels_letters:
-            bricks[i].set_index(alphabet[first_letter_index:][i].upper(), size="xx-large")
-
-        # Add it to the row
-        rows.append(bricks[i])
-
     # Combine the rows
-    patchwork = pw.stack(rows, operator="|")
+    patchwork = pw.stack(bricks, operator="|")
 
     return patchwork
 
