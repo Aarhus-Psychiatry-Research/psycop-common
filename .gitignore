@@ -201,6 +201,8 @@ joblib
 lightning_logs/*
 logs/*
 mlruns/*
+mlartifacts/*
+
 # Allow mapping file to be uploaded
 !**/diagnosis_code_mapping.json
 !.devcontainer/devcontainer.json
