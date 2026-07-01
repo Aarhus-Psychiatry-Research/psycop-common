@@ -2,8 +2,9 @@
 Hamilton distribution-pipeline with both F3 A- og F3 B-diagnoses.
 """
 
+from collections.abc import Sequence
 from datetime import datetime
-from typing import Union
+from typing import Literal, Union
 
 import pandas as pd
 import polars as pl
@@ -11,11 +12,7 @@ import polars as pl
 from psycop.projects.psychometrics.hamilton.cohort.outcome_specification.hamilton_score import (
     get_hamilton_scores,
 )
-from psycop.projects.psychometrics.loaders.diagnoses import (
-    f3_disorders,
-    f3_disorders_a_diagnosis,
-    f3_disorders_b_diagnosis,
-)
+from psycop.projects.psychometrics.loaders.utils import parse_diagnosegruppestreng_to_diagnoses
 from psycop.projects.psychometrics.loaders.visits import (
     ambulatory_visits_psykometri_2025,
     physical_visits_psykometri_2025,
@@ -104,21 +101,102 @@ def load_hamilton() -> pl.LazyFrame:
     )
 
 
-def load_f3_a_diagnoses() -> pl.LazyFrame:
-    return pl.from_pandas(f3_disorders_a_diagnosis()).lazy()
-
-
-def load_f3_b_diagnoses() -> pl.LazyFrame:
-    return pl.from_pandas(f3_disorders_b_diagnosis()).lazy()
-
-
-def load_f3_diagnoses() -> pl.LazyFrame:
-    return pl.from_pandas(f3_disorders()).lazy()
-
-
 # ----------------------------------------------------------------------
-# INPATIENT PIPELINES (A & B)
+# F3 DIAGNOSIS LOADERS — now resolved PER VISIT ROW, not per patient.
+#
+# Each visit row already carries its own `diagnosegruppestreng`. We parse
+# that string with `parse_diagnosegruppestreng_to_diagnoses` and keep only
+# the rows that actually contain an F3 code, instead of flagging every
+# admission/visit of a patient who has an F3 diagnosis *somewhere* in
+# their history.
 # ----------------------------------------------------------------------
+def _row_has_f3(
+    diagnosegruppestreng: Union[str, None], diagnosis_type: Union[Literal["A", "B"], None]
+) -> bool:
+    if diagnosegruppestreng is None:
+        return False
+    codes = parse_diagnosegruppestreng_to_diagnoses(
+        diagnosegruppestreng, diagnosis_type=diagnosis_type
+    )
+    if not codes:
+        return False
+    return any(c.lower().startswith("f3") for c in codes)
+
+
+def _f3_diagnosis_visits(
+    timestamp_for_output: Literal["start", "end"],
+    visit_types: Sequence[Literal["admissions", "ambulatory_visits", "emergency_visits"]],
+    diagnosis_type: Union[Literal["A", "B"], None],
+) -> pd.DataFrame:
+    """Load visits (with diagnosegruppestreng kept) and filter to rows that
+    themselves carry an F3 diagnosis of the requested type (A/B/either)."""
+    df = physical_visits_psykometri_2025(
+        timestamp_for_output=timestamp_for_output,
+        visit_types=visit_types,
+        shak_code=6600,
+        shak_sql_operator="=",
+        keep_diagnosegruppestreng=True,
+    )
+
+    mask = df["diagnosegruppestreng"].apply(lambda x: _row_has_f3(x, diagnosis_type=diagnosis_type))
+
+    return df[mask].reset_index(drop=True)
+
+
+def load_f3_a_admissions_diagnoses() -> pl.LazyFrame:
+    """Admissions whose own contact carries an F3 A-diagnosis."""
+    df = _f3_diagnosis_visits(
+        timestamp_for_output="start", visit_types=["admissions"], diagnosis_type="A"
+    )
+    return (
+        pl.from_pandas(df)
+        .lazy()
+        .select(["dw_ek_borger", "timestamp"])
+        .rename({"timestamp": "timestamp_start"})
+        .unique()
+    )
+
+
+def load_f3_b_admissions_diagnoses() -> pl.LazyFrame:
+    """Admissions whose own contact carries an F3 B-diagnosis."""
+    df = _f3_diagnosis_visits(
+        timestamp_for_output="start", visit_types=["admissions"], diagnosis_type="B"
+    )
+    return (
+        pl.from_pandas(df)
+        .lazy()
+        .select(["dw_ek_borger", "timestamp"])
+        .rename({"timestamp": "timestamp_start"})
+        .unique()
+    )
+
+
+def load_f3_a_outpatient_diagnoses() -> pl.LazyFrame:
+    """Outpatient visits whose own contact carries an F3 A-diagnosis."""
+    df = _f3_diagnosis_visits(
+        timestamp_for_output="end", visit_types=["ambulatory_visits"], diagnosis_type="A"
+    )
+    return (
+        pl.from_pandas(df)
+        .lazy()
+        .select(["dw_ek_borger", "timestamp"])
+        .rename({"timestamp": "visit_timestamp"})
+        .unique()
+    )
+
+
+def load_f3_any_outpatient_diagnoses() -> pl.LazyFrame:
+    """Outpatient visits whose own contact carries any F3 diagnosis (A or B)."""
+    df = _f3_diagnosis_visits(
+        timestamp_for_output="end", visit_types=["ambulatory_visits"], diagnosis_type=None
+    )
+    return (
+        pl.from_pandas(df)
+        .lazy()
+        .select(["dw_ek_borger", "timestamp"])
+        .rename({"timestamp": "visit_timestamp"})
+        .unique()
+    )
 
 
 # ----------------------------------------------------------------------
@@ -127,10 +205,12 @@ def load_f3_diagnoses() -> pl.LazyFrame:
 def inpatient_pipeline(
     admissions: pl.LazyFrame, diagnoses: pl.LazyFrame, hamilton: pl.LazyFrame, global_min: datetime
 ) -> pl.LazyFrame:
-    dx_patients = diagnoses.select("dw_ek_borger").unique()
+    """`diagnoses` must be a LazyFrame of (dw_ek_borger, timestamp_start)
+    identifying the *specific* admissions that carry the F3 diagnosis —
+    not just patients who have it anywhere in their history."""
 
     adm_dx = (
-        admissions.join(dx_patients, on="dw_ek_borger", how="inner")
+        admissions.join(diagnoses, on=["dw_ek_borger", "timestamp_start"], how="inner")
         .filter(pl.col("timestamp_start") >= pl.lit(global_min))
         .with_columns(
             (
@@ -168,10 +248,12 @@ def inpatient_pipeline(
 def outpatient_pipeline(
     outpatient: pl.LazyFrame, diagnoses: pl.LazyFrame, hamilton: pl.LazyFrame, global_min: datetime
 ) -> pl.LazyFrame:
-    dx_patients = diagnoses.select("dw_ek_borger").unique()
+    """`diagnoses` must be a LazyFrame of (dw_ek_borger, visit_timestamp)
+    identifying the *specific* outpatient visits that carry the F3
+    diagnosis — not just patients who have it anywhere in their history."""
 
     op_dx = (
-        outpatient.join(dx_patients, on="dw_ek_borger", how="inner")
+        outpatient.join(diagnoses, on=["dw_ek_borger", "visit_timestamp"], how="inner")
         .filter(pl.col("visit_timestamp") >= pl.lit(global_min))
         .unique(subset=["dw_ek_borger", "visit_timestamp"])
     )
@@ -253,10 +335,10 @@ def print_overview_tables(
                 "Outpatient visits (F3 A) with ≥1 Hamilton score",
                 "Percent outpatient visits (F3 A) with Hamilton",
                 "Hamilton scores in outpatient F3 A",
-                "Total outpatient visits (F3 B)",
-                "Outpatient visits (F3 B) with ≥1 Hamilton score",
-                "Percent outpatient visits (F3 B) with Hamilton",
-                "Hamilton scores in outpatient F3B",
+                "Total outpatient visits (F3 any)",
+                "Outpatient visits (F3 any) with ≥1 Hamilton score",
+                "Percent outpatient visits (F3 any) with Hamilton",
+                "Hamilton scores in outpatient F3 any",
                 "Total Hamilton scores (all source data)",
             ],
             "Value": [
@@ -297,24 +379,25 @@ if __name__ == "__main__":
 
     global_min = hamilton.select(pl.col("hamilton_rating_timestamp").min()).collect().item()
 
-    dx_a = load_f3_a_diagnoses()
-    dx_b = load_f3_b_diagnoses()
-    dx_all = load_f3_diagnoses()
+    dx_a_admissions = load_f3_a_admissions_diagnoses()
+    dx_b_admissions = load_f3_b_admissions_diagnoses()
+    dx_a_outpatient = load_f3_a_outpatient_diagnoses()
+    dx_any_outpatient = load_f3_any_outpatient_diagnoses()
 
     inpatient_a_df = inpatient_pipeline(
-        admissions=admissions, diagnoses=dx_a, hamilton=hamilton, global_min=global_min
+        admissions=admissions, diagnoses=dx_a_admissions, hamilton=hamilton, global_min=global_min
     ).collect()
 
     inpatient_b_df = inpatient_pipeline(
-        admissions=admissions, diagnoses=dx_b, hamilton=hamilton, global_min=global_min
+        admissions=admissions, diagnoses=dx_b_admissions, hamilton=hamilton, global_min=global_min
     ).collect()
 
     outpatient_a_df = outpatient_pipeline(
-        outpatient=outpatient, diagnoses=dx_a, hamilton=hamilton, global_min=global_min
+        outpatient=outpatient, diagnoses=dx_a_outpatient, hamilton=hamilton, global_min=global_min
     ).collect()
 
     outpatient_all_df = outpatient_pipeline(
-        outpatient=outpatient, diagnoses=dx_all, hamilton=hamilton, global_min=global_min
+        outpatient=outpatient, diagnoses=dx_any_outpatient, hamilton=hamilton, global_min=global_min
     ).collect()
 
     print_overview_tables(inpatient_a_df, inpatient_b_df, outpatient_a_df, outpatient_all_df)
