@@ -195,7 +195,7 @@ def outpatient_pipeline(
 def inpatient_a_pipeline(
     adm: pl.LazyFrame, dx_a: pl.LazyFrame, panss: pl.LazyFrame, global_min: datetime
 ) -> pl.LazyFrame:
-    return inpatient_a_pipeline(adm, dx_a, panss, global_min)
+    return inpatient_pipeline(adm, dx_a, panss, global_min)
 
 
 def inpatient_b_pipeline(

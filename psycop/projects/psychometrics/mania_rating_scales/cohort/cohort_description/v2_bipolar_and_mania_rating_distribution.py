@@ -1,13 +1,11 @@
-from typing import Union
+from collections.abc import Sequence
+from datetime import datetime
+from typing import Literal, Union
 
 import pandas as pd
 import polars as pl
 
-from psycop.projects.psychometrics.loaders.diagnoses import (
-    bipolar_disorders_a_diagnosis,
-    bipolar_disorders_b_diagnosis,
-    manic_and_bipolar,
-)
+from psycop.projects.psychometrics.loaders.utils import parse_diagnosegruppestreng_to_diagnoses
 from psycop.projects.psychometrics.loaders.visits import (
     ambulatory_visits_psykometri_2025,
     physical_visits_psykometri_2025,
@@ -51,11 +49,8 @@ def load_admissions() -> pl.LazyFrame:
     df_start = pl.from_pandas(admissions_start()).lazy()
     df_end = pl.from_pandas(admissions_end()).lazy()
 
-    df_start = df_start.rename({"timestamp": "timestamp_start"})
-    df_end = df_end.rename({"timestamp": "timestamp_end"})
-
-    df_start = df_start.drop(["value"])
-    df_end = df_end.drop(["value"])
+    df_start = df_start.rename({"timestamp": "timestamp_start"}).drop(["value"])
+    df_end = df_end.rename({"timestamp": "timestamp_end"}).drop(["value"])
 
     df_start = df_start.sort(["dw_ek_borger", "timestamp_start"])
     df_end = df_end.sort(["dw_ek_borger", "timestamp_end"])
@@ -78,7 +73,6 @@ def load_outpatient() -> pl.LazyFrame:
     df_pd = ambulatory_visits_psykometri_2025(
         shak_code=6600, shak_sql_operator="=", timestamps_only=True, timestamp_for_output="end"
     )
-
     return pl.from_pandas(df_pd).lazy().rename({"timestamp": "visit_timestamp"})
 
 
@@ -91,37 +85,125 @@ def load_mas() -> pl.LazyFrame:
     )
 
 
-def get_global_min_mania_timestamp() -> pl.Expr:
+def get_global_min_mania_timestamp() -> datetime:
     return load_mas().select(pl.col("mania_rating_timestamp").min()).collect().item()
 
 
-def load_bipolar_a_diagnoses() -> pl.LazyFrame:
-    return pl.from_pandas(bipolar_disorders_a_diagnosis()).lazy()
+# --------------------------------------------------------------
+# BIPOLAR DIAGNOSIS LOADERS — visit-level, not patient-level.
+#
+# Each row from physical_visits already carries its own
+# `diagnosegruppestreng`. We parse that string with
+# `parse_diagnosegruppestreng_to_diagnoses` and keep only the
+# rows that actually contain an F30/F31 code of the requested
+# type (A/B/either), so no admission/outpatient visit is
+# included just because the patient has bipolar *somewhere else*
+# in their history.
+# --------------------------------------------------------------
+
+_BIPOLAR_PREFIXES = ("f30", "f31")
 
 
-def load_bipolar_b_diagnoses() -> pl.LazyFrame:
-    return pl.from_pandas(bipolar_disorders_b_diagnosis()).lazy()
+def _row_has_bipolar(
+    diagnosegruppestreng: Union[str, None], diagnosis_type: Union[Literal["A", "B"], None]
+) -> bool:
+    codes = parse_diagnosegruppestreng_to_diagnoses(
+        diagnosegruppestreng, diagnosis_type=diagnosis_type
+    )
+    if not codes:
+        return False
+    return any(c.lower().startswith(prefix) for c in codes for prefix in _BIPOLAR_PREFIXES)
 
 
-def load_bipolar_diagnoses() -> pl.LazyFrame:
-    return pl.from_pandas(manic_and_bipolar()).lazy()
+def _bipolar_diagnosis_visits(
+    timestamp_for_output: Literal["start", "end"],
+    visit_types: Sequence[Literal["admissions", "ambulatory_visits", "emergency_visits"]],
+    diagnosis_type: Union[Literal["A", "B"], None],
+) -> pd.DataFrame:
+    """Load visits with diagnosegruppestreng and keep only rows that
+    carry an F30/F31 (bipolar/manic) diagnosis of the requested type."""
+    df = physical_visits_psykometri_2025(
+        timestamp_for_output=timestamp_for_output,
+        visit_types=visit_types,
+        shak_code=6600,
+        shak_sql_operator="=",
+        keep_diagnosegruppestreng=True,
+    )
+    mask = df["diagnosegruppestreng"].apply(
+        lambda x: _row_has_bipolar(x, diagnosis_type=diagnosis_type)
+    )
+    return df[mask].reset_index(drop=True)
+
+
+def load_bipolar_a_admissions_diagnoses() -> pl.LazyFrame:
+    """Admissions whose own contact carries a bipolar A-diagnosis (F30/F31 A)."""
+    df = _bipolar_diagnosis_visits(
+        timestamp_for_output="start", visit_types=["admissions"], diagnosis_type="A"
+    )
+    return (
+        pl.from_pandas(df)
+        .lazy()
+        .select(["dw_ek_borger", "timestamp"])
+        .rename({"timestamp": "timestamp_start"})
+        .unique()
+    )
+
+
+def load_bipolar_b_admissions_diagnoses() -> pl.LazyFrame:
+    """Admissions whose own contact carries a bipolar B-diagnosis (F30/F31 B)."""
+    df = _bipolar_diagnosis_visits(
+        timestamp_for_output="start", visit_types=["admissions"], diagnosis_type="B"
+    )
+    return (
+        pl.from_pandas(df)
+        .lazy()
+        .select(["dw_ek_borger", "timestamp"])
+        .rename({"timestamp": "timestamp_start"})
+        .unique()
+    )
+
+
+def load_bipolar_a_outpatient_diagnoses() -> pl.LazyFrame:
+    """Outpatient visits whose own contact carries a bipolar A-diagnosis."""
+    df = _bipolar_diagnosis_visits(
+        timestamp_for_output="end", visit_types=["ambulatory_visits"], diagnosis_type="A"
+    )
+    return (
+        pl.from_pandas(df)
+        .lazy()
+        .select(["dw_ek_borger", "timestamp"])
+        .rename({"timestamp": "visit_timestamp"})
+        .unique()
+    )
+
+
+def load_bipolar_any_outpatient_diagnoses() -> pl.LazyFrame:
+    """Outpatient visits whose own contact carries any bipolar diagnosis (A or B)."""
+    df = _bipolar_diagnosis_visits(
+        timestamp_for_output="end", visit_types=["ambulatory_visits"], diagnosis_type=None
+    )
+    return (
+        pl.from_pandas(df)
+        .lazy()
+        .select(["dw_ek_borger", "timestamp"])
+        .rename({"timestamp": "visit_timestamp"})
+        .unique()
+    )
 
 
 # --------------------------------------------------------------
-# INPATIENT PIPELINES
+# GENERIC PIPELINES
 # --------------------------------------------------------------
 
 
-def inpatient_a_pipeline() -> pl.LazyFrame:
-    adm = load_admissions()
-    dx_a = load_bipolar_a_diagnoses()
-    mania = load_mas()
-    global_min = get_global_min_mania_timestamp()
+def inpatient_pipeline(
+    admissions: pl.LazyFrame, diagnoses: pl.LazyFrame, mas: pl.LazyFrame, global_min: datetime
+) -> pl.LazyFrame:
+    """`diagnoses` must be (dw_ek_borger, timestamp_start) for the specific
+    admissions that carry the bipolar diagnosis on that contact."""
 
-    dx_a_patients = dx_a.select("dw_ek_borger").unique()
-
-    adm_f2a = (
-        adm.join(dx_a_patients, on="dw_ek_borger", how="inner")
+    adm_dx = (
+        admissions.join(diagnoses, on=["dw_ek_borger", "timestamp_start"], how="inner")
         .filter(pl.col("timestamp_start") >= pl.lit(global_min))
         .with_columns(
             (
@@ -134,7 +216,7 @@ def inpatient_a_pipeline() -> pl.LazyFrame:
     )
 
     joined = (
-        adm_f2a.join(mania, on="dw_ek_borger", how="left")
+        adm_dx.join(mas, on="dw_ek_borger", how="left")
         .filter(
             (pl.col("mania_rating_timestamp") >= pl.col("timestamp_start"))
             & (pl.col("mania_rating_timestamp") <= pl.col("timestamp_end"))
@@ -148,7 +230,7 @@ def inpatient_a_pipeline() -> pl.LazyFrame:
         .with_columns((pl.col("n_mania_rating") > 0).alias("has_mania_rating"))
     )
 
-    base = adm_f2a.with_columns(pl.lit("inpatient").alias("contact_type"))
+    base = adm_dx.with_columns(pl.lit("inpatient").alias("contact_type"))
 
     return base.join(
         agg, on=["dw_ek_borger", "admission_id", "timestamp_start", "timestamp_end"], how="left"
@@ -157,70 +239,20 @@ def inpatient_a_pipeline() -> pl.LazyFrame:
     )
 
 
-def inpatient_b_pipeline() -> pl.LazyFrame:
-    adm = load_admissions()
-    dx_b = load_bipolar_b_diagnoses()
-    mania = load_mas()
-    global_min = get_global_min_mania_timestamp()
+def outpatient_pipeline(
+    outpatient: pl.LazyFrame, diagnoses: pl.LazyFrame, mas: pl.LazyFrame, global_min: datetime
+) -> pl.LazyFrame:
+    """`diagnoses` must be (dw_ek_borger, visit_timestamp) for the specific
+    outpatient visits that carry the bipolar diagnosis on that contact."""
 
-    dx_b_patients = dx_b.select("dw_ek_borger").unique()
-
-    adm_f2b = (
-        adm.join(dx_b_patients, on="dw_ek_borger", how="inner")
-        .filter(pl.col("timestamp_start") >= pl.lit(global_min))
-        .with_columns(
-            (
-                pl.col("dw_ek_borger").cast(pl.Utf8)
-                + "_"
-                + pl.col("timestamp_start").dt.strftime("%Y%m%d%H%M%S")
-            ).alias("admission_id")
-        )
-        .unique(subset=["dw_ek_borger", "admission_id", "timestamp_start", "timestamp_end"])
-    )
-
-    joined = (
-        adm_f2b.join(mania, on="dw_ek_borger", how="left")
-        .filter(
-            (pl.col("mania_rating_timestamp") >= pl.col("timestamp_start"))
-            & (pl.col("mania_rating_timestamp") <= pl.col("timestamp_end"))
-        )
-        .with_columns(pl.lit("inpatient").alias("contact_type"))
-    )
-
-    agg = (
-        joined.group_by(["dw_ek_borger", "admission_id", "timestamp_start", "timestamp_end"])
-        .agg(pl.col("mania_rating_timestamp").count().alias("n_mania_rating"))
-        .with_columns((pl.col("n_mania_rating") > 0).alias("has_mania_rating"))
-    )
-
-    base = adm_f2b.with_columns(pl.lit("inpatient").alias("contact_type"))
-
-    return base.join(
-        agg, on=["dw_ek_borger", "admission_id", "timestamp_start", "timestamp_end"], how="left"
-    ).with_columns(
-        pl.col("n_mania_rating").fill_null(0), pl.col("has_mania_rating").fill_null(False)
-    )
-
-
-# --------------------------------------------------------------
-# OUTPATIENT PIPELINES
-# --------------------------------------------------------------
-
-
-def outpatient_a_pipeline() -> pl.LazyFrame:
-    op = load_outpatient()
-    dx_a = load_bipolar_a_diagnoses()
-    mania = load_mas()
-    global_min = get_global_min_mania_timestamp()
-
-    op_bipolar = (
-        op.join(dx_a, on="dw_ek_borger", how="inner")
+    op_dx = (
+        outpatient.join(diagnoses, on=["dw_ek_borger", "visit_timestamp"], how="inner")
         .filter(pl.col("visit_timestamp") >= pl.lit(global_min))
         .unique(subset=["dw_ek_borger", "visit_timestamp"])
     )
 
     joined = (
-        op_bipolar.join(mania, on="dw_ek_borger", how="left")
+        op_dx.join(mas, on="dw_ek_borger", how="left")
         .filter(pl.col("visit_timestamp").dt.date() == pl.col("mania_rating_timestamp").dt.date())
         .with_columns(pl.lit("outpatient").alias("contact_type"))
     )
@@ -231,38 +263,7 @@ def outpatient_a_pipeline() -> pl.LazyFrame:
         .with_columns((pl.col("n_mania_rating") > 0).alias("has_mania_rating"))
     )
 
-    base = op_bipolar.with_columns(pl.lit("outpatient").alias("contact_type"))
-
-    return base.join(agg, on=["dw_ek_borger", "visit_timestamp"], how="left").with_columns(
-        pl.col("n_mania_rating").fill_null(0), pl.col("has_mania_rating").fill_null(False)
-    )
-
-
-def outpatient_all_pipeline() -> pl.LazyFrame:
-    op = load_outpatient()
-    dx_all = load_bipolar_diagnoses()
-    mania = load_mas()
-    global_min = get_global_min_mania_timestamp()
-
-    op_bipolar = (
-        op.join(dx_all, on="dw_ek_borger", how="inner")
-        .filter(pl.col("visit_timestamp") >= pl.lit(global_min))
-        .unique(subset=["dw_ek_borger", "visit_timestamp"])
-    )
-
-    joined = (
-        op_bipolar.join(mania, on="dw_ek_borger", how="left")
-        .filter(pl.col("visit_timestamp").dt.date() == pl.col("mania_rating_timestamp").dt.date())
-        .with_columns(pl.lit("outpatient").alias("contact_type"))
-    )
-
-    agg = (
-        joined.group_by(["dw_ek_borger", "visit_timestamp"])
-        .agg(pl.count("mania_rating_timestamp").alias("n_mania_rating"))
-        .with_columns((pl.col("n_mania_rating") > 0).alias("has_mania_rating"))
-    )
-
-    base = op_bipolar.with_columns(pl.lit("outpatient").alias("contact_type"))
+    base = op_dx.with_columns(pl.lit("outpatient").alias("contact_type"))
 
     return base.join(agg, on=["dw_ek_borger", "visit_timestamp"], how="left").with_columns(
         pl.col("n_mania_rating").fill_null(0), pl.col("has_mania_rating").fill_null(False)
@@ -368,9 +369,31 @@ def print_overview_tables(
 # --------------------------------------------------------------
 
 if __name__ == "__main__":
-    inpatient_a_df = inpatient_a_pipeline().collect()
-    inpatient_b_df = inpatient_b_pipeline().collect()
-    outpatient_df = outpatient_a_pipeline().collect()
-    outpatient_all_df = outpatient_all_pipeline().collect()
+    # Expensive loads only once
+    admissions = load_admissions()
+    outpatient = load_outpatient()
+    mas = load_mas()
+    global_min = get_global_min_mania_timestamp()
+
+    dx_a_admissions = load_bipolar_a_admissions_diagnoses()
+    dx_b_admissions = load_bipolar_b_admissions_diagnoses()
+    dx_a_outpatient = load_bipolar_a_outpatient_diagnoses()
+    dx_any_outpatient = load_bipolar_any_outpatient_diagnoses()
+
+    inpatient_a_df = inpatient_pipeline(
+        admissions=admissions, diagnoses=dx_a_admissions, mas=mas, global_min=global_min
+    ).collect()
+
+    inpatient_b_df = inpatient_pipeline(
+        admissions=admissions, diagnoses=dx_b_admissions, mas=mas, global_min=global_min
+    ).collect()
+
+    outpatient_df = outpatient_pipeline(
+        outpatient=outpatient, diagnoses=dx_a_outpatient, mas=mas, global_min=global_min
+    ).collect()
+
+    outpatient_all_df = outpatient_pipeline(
+        outpatient=outpatient, diagnoses=dx_any_outpatient, mas=mas, global_min=global_min
+    ).collect()
 
     print_overview_tables(inpatient_a_df, inpatient_b_df, outpatient_df, outpatient_all_df)

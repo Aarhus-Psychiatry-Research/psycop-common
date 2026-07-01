@@ -120,7 +120,7 @@ def physical_visits_psykometri_2025(
                 cols += ", NULL AS diagnosegruppestreng"
 
         sql = f"""
-            SELECT TOP 100000 {cols}
+            SELECT {cols}
             FROM [fct].{schema.view}
             WHERE {schema.start_datetime_col_name} IS NOT NULL
             {schema.where_clause}
@@ -299,6 +299,19 @@ def physical_visits_loader_psykometri_2025_with_diagnosis(
 ) -> pd.DataFrame:
     """Load physical visits to all units."""
     return physical_visits_psykometri_2025(
+        n_rows=n_rows,
+        return_value_as_visit_length_days=return_value_as_visit_length_days,
+        keep_diagnosegruppestreng=True,
+    )
+
+
+def physical_visits_to_psychiatry_loader_psykometri_2025_with_diagnosis(
+    n_rows: Union[int, None] = None, return_value_as_visit_length_days: Union[bool, None] = False
+) -> pd.DataFrame:
+    """Load physical visits to psychiatry."""
+    return physical_visits_psykometri_2025(
+        shak_code=6600,
+        shak_sql_operator="=",
         n_rows=n_rows,
         return_value_as_visit_length_days=return_value_as_visit_length_days,
         keep_diagnosegruppestreng=True,
