@@ -107,6 +107,8 @@ _BIPOLAR_PREFIXES = ("f30", "f31")
 def _row_has_bipolar(
     diagnosegruppestreng: Union[str, None], diagnosis_type: Union[Literal["A", "B"], None]
 ) -> bool:
+    if diagnosegruppestreng is None:
+        return False
     codes = parse_diagnosegruppestreng_to_diagnoses(
         diagnosegruppestreng, diagnosis_type=diagnosis_type
     )

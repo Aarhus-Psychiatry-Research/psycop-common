@@ -113,6 +113,8 @@ def load_hamilton() -> pl.LazyFrame:
 def _row_has_f3(
     diagnosegruppestreng: Union[str, None], diagnosis_type: Union[Literal["A", "B"], None]
 ) -> bool:
+    if diagnosegruppestreng is None:
+        return False
     codes = parse_diagnosegruppestreng_to_diagnoses(
         diagnosegruppestreng, diagnosis_type=diagnosis_type
     )
