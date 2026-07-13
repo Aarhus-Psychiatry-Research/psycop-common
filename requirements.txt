@@ -23,7 +23,7 @@ pygments>=2.20.0 # Due to SNYK-PYTHON-PYGMENTS-15746419
 pyodbc==4.0.39
 Random-Word==1.0.11
 requests>=2.33.0 # Due to Snyk vuln SNYK-PYTHON-REQUESTS-10305723 / SNYK-PYTHON-REQUESTS-15763443]
-setuptools==78.1.1 # Due to Snyk vuln fSNYK-PYTHON-SETUPTOOLS-7448482
+setuptools==83.0.0 # Due to Snyk vuln SNYK-PYTHON-SETUPTOOLS-17895075
 scikit-learn==1.5.0
 scipy==1.10.0
 shap==0.41.0
