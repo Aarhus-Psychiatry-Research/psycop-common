@@ -18,7 +18,7 @@ def cluster_bootstrap(
         sampled_ids = []
         for _, group in cluster_df.groupby(stratify_col):
             sampled_ids.append(rng.choice(group[sampling_unit_col], size=len(group), replace=True))
-        sampled_ids = np.vstack(sampled_ids).flatten()
+        sampled_ids = np.concatenate(sampled_ids).flatten()
     else:
         sampled_ids = rng.choice(cluster_df[sampling_unit_col], size=len(cluster_df), replace=True)
 

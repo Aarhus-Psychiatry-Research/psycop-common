@@ -121,27 +121,122 @@ def get_metrics(
     return pd.concat([metric_df, auroc_df])
 
 
-def get_bootstraps(
+def bootstrap_metrics(
     eval_df: pd.DataFrame,
     protected_attribute: Literal["sex", "age_group", "region", "unit"],
+    metrics: dict[str, Any],
     n_bootstrap: int = 100,
-    rng: int | None = None,
+    rng: np.random.Generator | None = None,
+    sample_weight: bool = False
 ) -> pd.DataFrame:
-    eval_df = eval_df[eval_df[protected_attribute].notna()]
-
     dfs = []
     for _ in range(n_bootstrap):
-        dfs.append(
-            cluster_bootstrap(
+        df = cluster_bootstrap(
                 eval_df,
-                rng=np.random.default_rng(rng if rng is not None else np.random.default_rng()),
+                rng=(rng if rng is not None else np.random.default_rng()),
                 sampling_unit_col="dw_ek_borger",
                 stratify_col=protected_attribute,
                 sample_weight=True,
             )
+        metric_frame = MetricFrame(
+            metrics=metrics,
+            y_true=df["y"],
+            y_pred=df["y_hat"],
+            sensitive_features=df[protected_attribute],
+            sample_params=(
+                {
+                    metric_name: {
+                        "sample_weight": df["sample_weight"]
+                    }
+                    for metric_name in metrics
+                }
+                if sample_weight
+                else None
+            )
         )
+        auroc_frame = MetricFrame(
+            metrics={"AUROC": roc_auc_score},
+            y_true=df["y"],
+            y_pred=df["y_hat_prob"],
+            sensitive_features=df[protected_attribute],
+            sample_params=(
+                {
+                    metric_name: {
+                        "sample_weight": df["sample_weight"]
+                    }
+                    for metric_name in metrics
+                }
+                if sample_weight
+                else None
+            ),
+        )
+        dfs.append(pd.concat([metric_frame.by_group.reset_index(), auroc_frame.by_group.reset_index()], axis=1).assign(bootstrap=_))
 
-    return pd.concat(dfs)
+    results = pd.concat(dfs)
+    results = results.melt(
+        id_vars=[protected_attribute, "Count"],
+        value_vars=[
+            "Positive predictive value",
+            "True positive rate",
+            "True negative rate",
+            "False positive rate",
+            "False negative rate",
+            "Selection rate",
+            "AUROC"
+        ],
+    )
+
+    results = results.groupby(["variable", protected_attribute])["value"].quantile([0.025, 0.975]).unstack().rename(columns={0.025: "lower", 0.975: "upper"}).reset_index()
+
+    estimate_metrics = MetricFrame(metrics=metrics,
+        y_true=eval_df["y"],
+        y_pred=eval_df["y_hat"],
+        sensitive_features=eval_df[protected_attribute],
+        sample_params=(
+            {
+                metric_name: {
+                    "sample_weight": eval_df["sample_weight"]
+                }
+                for metric_name in metrics
+            }
+            if sample_weight
+            else None
+        ))
+    estimate_auroc = MetricFrame(metrics={"AUROC": roc_auc_score},
+        y_true=eval_df["y"],
+        y_pred=eval_df["y_hat_prob"],
+        sensitive_features=eval_df[protected_attribute],
+        sample_params=(
+            {
+                metric_name: {
+                    "sample_weight": eval_df["sample_weight"]
+                }
+                for metric_name in metrics
+            }
+            if sample_weight
+            else None
+        ))
+    
+    estimates = pd.merge(estimate_metrics.by_group.reset_index(), estimate_auroc.by_group.reset_index(), on="sex")
+    
+    estimates = estimates.melt(
+        id_vars=[protected_attribute, "Count"],
+        value_vars=[
+            "Positive predictive value",
+            "True positive rate",
+            "True negative rate",
+            "False positive rate",
+            "False negative rate",
+            "Selection rate",
+            "AUROC"
+        ],
+    )
+
+    estimates = estimates.groupby(["variable", protected_attribute, "Count"])["value"].mean().reset_index()
+
+    # ADD RATIO
+
+    return pd.merge(results, estimates, on=[protected_attribute, "variable"])
 
 
 def _get_metrics(
@@ -229,11 +324,11 @@ if __name__ == "__main__":
         "Count": count,
     }
 
-    cvd = get_eval_dfs(ModelCatalogue(projects=["CVD"]))
+    cvd = eval_df[eval_df["model"] == "Cardiovascular disease"]
 
-    cvd_boots = get_bootstraps(cvd, protected_attribute="sex", n_bootstrap=100, rng=42)
+    cvd_boots = bootstrap_metrics(cvd, metrics=metrics, protected_attribute="sex", n_bootstrap=100, rng=np.random.default_rng(42))
 
-    cvd_metrics = get_metrics(cvd, metrics, protected_attribute="sex")
+ 
 
     protected_attribute = "unit"
     metric_df = get_metrics(eval_df, metrics, protected_attribute=protected_attribute)

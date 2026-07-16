@@ -176,7 +176,7 @@ def get_eval_dfs(catalogue: ModelCatalogue) -> pd.DataFrame:
     eval_df = eval_df.merge(sex_female(), on="dw_ek_borger", how="left")
     eval_df["sex"] = eval_df["sex_female"].replace({True: "Female", False: "Male"})
 
-    return eval_df.drop(columns=["pred_time_uuid", "date_of_birth", "sex_female"])
+    return eval_df.drop(columns=["pred_time_uuid", "date_of_birth", "timestamp_minus_day", "sex_female"])
 
 
 if __name__ == "__main__":
