@@ -10,8 +10,8 @@ from psycop.common.model_training.preprocessing.post_split.pipeline import (
     create_post_split_pipeline,
 )
 from psycop.common.model_training.training.utils import create_eval_dataset
-from psycop.common.model_training_v2.dataclasses import EvalDataset
 from psycop.common.model_training.utils.col_name_inference import get_col_names
+from psycop.common.model_training_v2.dataclasses import EvalDataset
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
     ForcedAdmissionInpatientPipelineRun,
 )
