@@ -5,10 +5,8 @@ from sklearn.metrics import recall_score, roc_auc_score
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_evaluation.binary.bootstrap_estimates import bootstrap_estimates
-from psycop.common.model_training.training_output.dataclasses import (
-    get_predictions_for_positive_rate,
-)
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
+from psycop.common.model_training_v2.dataclasses import get_predictions_for_positive_rate
 from psycop.projects.ect.feature_generation.cohort_definition.outcome_specification.combined import (
     add_first_ect_time_after_prediction_time,
 )

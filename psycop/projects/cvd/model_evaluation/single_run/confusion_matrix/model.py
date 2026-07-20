@@ -6,9 +6,7 @@ from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
     ConfusionMatrix,
     get_confusion_matrix_cells_from_df,
 )
-from psycop.common.model_training.training_output.dataclasses import (
-    get_predictions_for_positive_rate,
-)
+from psycop.common.model_training_v2.dataclasses import get_predictions_for_positive_rate
 
 
 @shared_cache().cache()

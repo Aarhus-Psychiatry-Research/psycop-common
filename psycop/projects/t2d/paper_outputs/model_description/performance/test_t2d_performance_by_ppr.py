@@ -3,7 +3,7 @@ import pandas as pd
 from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
     generate_performance_by_ppr_table,
 )
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.common.model_training_v2.dataclasses import EvalDataset
 from psycop.projects.t2d.paper_outputs.model_description.performance.performance_by_ppr import (
     _clean_up_performance_by_ppr,  # type: ignore
 )

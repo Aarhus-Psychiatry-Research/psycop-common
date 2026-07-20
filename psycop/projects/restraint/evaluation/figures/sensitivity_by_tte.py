@@ -9,9 +9,7 @@ from psycop.common.feature_generation.loaders.raw import sql_load
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_sensitivity_by_timedelta_df,
 )
-from psycop.common.model_training.training_output.dataclasses import (
-    get_predictions_for_positive_rate,
-)
+from psycop.common.model_training_v2.dataclasses import get_predictions_for_positive_rate
 from psycop.projects.restraint.evaluation.utils import (
     parse_dw_ek_borger_from_uuid,
     parse_timestamp_from_uuid,

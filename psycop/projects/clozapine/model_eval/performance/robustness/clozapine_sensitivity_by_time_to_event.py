@@ -8,9 +8,7 @@ import polars as pl
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_sensitivity_by_timedelta_df,
 )
-from psycop.common.model_training.training_output.dataclasses import (
-    get_predictions_for_positive_rate,
-)
+from psycop.common.model_training_v2.dataclasses import get_predictions_for_positive_rate
 from psycop.projects.clozapine.feature_generation.cohort_definition.outcome_specification.combine_text_structured_clozapine_outcome import (
     get_first_clozapine_prescription,
 )

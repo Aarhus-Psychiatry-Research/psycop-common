@@ -5,11 +5,7 @@ import pandas as pd
 import pytest
 
 from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
-from psycop.common.model_training.config_schemas.conf_utils import (
-    FullConfigSchema,
-    load_test_cfg_as_pydantic,
-)
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.common.model_training_v2.dataclasses import EvalDataset
 
 CONFIG_DIR_PATH_REL = "../application/config"
 
@@ -85,18 +81,6 @@ def df_to_synth_eval_dataset(df: pd.DataFrame) -> EvalDataset:
 def synth_eval_dataset(synth_eval_df: pd.DataFrame) -> EvalDataset:
     """Load synthetic data."""
     return df_to_synth_eval_dataset(synth_eval_df)
-
-
-@pytest.fixture
-def immuteable_test_config() -> FullConfigSchema:
-    """Get an immutable config for testing."""
-    return load_test_cfg_as_pydantic(config_file_name="default_config.yaml")
-
-
-@pytest.fixture
-def muteable_test_config() -> FullConfigSchema:
-    """Get a mutable config for testing."""
-    return load_test_cfg_as_pydantic(config_file_name="default_config.yaml", unfrozen=True)
 
 
 @pytest.fixture

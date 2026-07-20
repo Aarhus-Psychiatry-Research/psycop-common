@@ -6,7 +6,7 @@ import plotnine as pn
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_sensitivity_by_timedelta_df,
 )
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.common.model_training_v2.dataclasses import EvalDataset
 from psycop.projects.forced_admission_inpatient.model_eval.config import FA_PN_THEME
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
     ForcedAdmissionInpatientPipelineRun,

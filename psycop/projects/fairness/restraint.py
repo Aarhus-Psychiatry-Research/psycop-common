@@ -11,9 +11,7 @@ from fairlearn.metrics import (
 from sklearn.metrics import precision_score, roc_auc_score
 
 from psycop.common.feature_generation.loaders.raw.load_demographic import sex_female
-from psycop.common.model_training.training_output.dataclasses import (
-    get_predictions_for_positive_rate,
-)
+from psycop.common.model_training_v2.dataclasses import get_predictions_for_positive_rate
 from psycop.projects.cvd.model_evaluation.single_run.auroc_by.auroc_by_model import auroc_by_model
 
 

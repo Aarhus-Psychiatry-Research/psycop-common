@@ -3,7 +3,7 @@ import plotnine as pn
 from psycop.common.model_evaluation.binary.time.absolute_data import (
     create_roc_auc_by_absolute_time_df,
 )
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.common.model_training_v2.dataclasses import EvalDataset
 from psycop.projects.scz_bp.evaluation.model_performance.robustness.scz_bp_robustness_plot import (
     scz_bp_plot_robustness,
 )

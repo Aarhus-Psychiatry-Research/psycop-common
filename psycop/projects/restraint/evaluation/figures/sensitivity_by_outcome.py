@@ -5,9 +5,7 @@ import plotnine as pn
 import polars as pl
 
 from psycop.common.model_evaluation.binary.utils import sensitivity_by_group
-from psycop.common.model_training.training_output.dataclasses import (
-    get_predictions_for_positive_rate,
-)
+from psycop.common.model_training_v2.dataclasses import get_predictions_for_positive_rate
 from psycop.projects.restraint.evaluation.utils import (
     parse_dw_ek_borger_from_uuid,
     parse_timestamp_from_uuid,

@@ -2,7 +2,7 @@ import plotnine as pn
 import polars as pl
 
 from psycop.common.model_evaluation.binary.time.timedelta_data import get_auroc_by_timedelta_df
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.common.model_training_v2.dataclasses import EvalDataset
 from psycop.projects.clozapine.model_eval.performance.robustness.clozapine_robustness_plot import (
     clozapine_plot_robustness,
 )

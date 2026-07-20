@@ -1,9 +1,7 @@
 import pandas as pd
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
-from psycop.common.model_training.training_output.dataclasses import (
-    get_predictions_for_positive_rate,
-)
+from psycop.common.model_training_v2.dataclasses import get_predictions_for_positive_rate
 from psycop.projects.bipolar.feature_generation.inspect_feature_sets import load_bp_feature_set
 
 

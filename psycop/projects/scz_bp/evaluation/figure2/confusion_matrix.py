@@ -9,7 +9,7 @@ from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
     ConfusionMatrix,
     get_confusion_matrix_cells_from_df,
 )
-from psycop.common.model_training.training_output.dataclasses import (
+from psycop.common.model_training_v2.dataclasses import (
     EvalDataset,
     get_predictions_for_positive_rate,
 )

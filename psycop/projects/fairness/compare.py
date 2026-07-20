@@ -15,9 +15,7 @@ from sklearn.metrics import precision_score, roc_auc_score
 
 from psycop.common.feature_generation.loaders.raw.load_demographic import sex_female
 from psycop.common.model_evaluation.binary.global_performance.roc_auc import bootstrap_roc
-from psycop.common.model_training.training_output.dataclasses import (
-    get_predictions_for_positive_rate,
-)
+from psycop.common.model_training_v2.dataclasses import get_predictions_for_positive_rate
 from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
     scz_bp_get_eval_ds_from_disk,
 )

@@ -5,7 +5,7 @@ import pandas as pd
 
 from psycop.common.model_evaluation.binary.utils import auroc_by_group
 from psycop.common.model_evaluation.utils import bin_continuous_data
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.common.model_training_v2.dataclasses import EvalDataset
 
 
 def get_auroc_by_input_df(

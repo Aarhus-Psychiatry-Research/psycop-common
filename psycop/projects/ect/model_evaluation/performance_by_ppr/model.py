@@ -12,9 +12,7 @@ from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame, 
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
     get_confusion_matrix_cells_from_df,
 )
-from psycop.common.model_training.training_output.dataclasses import (
-    get_predictions_for_positive_rate,
-)
+from psycop.common.model_training_v2.dataclasses import get_predictions_for_positive_rate
 from psycop.projects.ect.feature_generation.cohort_definition.outcome_specification.combined import (
     add_first_ect_time_after_prediction_time,
 )

@@ -6,7 +6,7 @@ import plotnine as pn
 from wasabi import Printer
 
 from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.common.model_training_v2.dataclasses import EvalDataset
 from psycop.projects.forced_admission_outpatient.old_project_code.model_eval.config import (
     BEST_POS_RATE,
     FA_PN_THEME,

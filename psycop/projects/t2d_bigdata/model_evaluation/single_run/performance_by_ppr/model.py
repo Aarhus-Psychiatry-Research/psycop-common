@@ -13,9 +13,7 @@ from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
     get_confusion_matrix_cells_from_df,
 )
-from psycop.common.model_training.training_output.dataclasses import (
-    get_predictions_for_positive_rate,
-)
+from psycop.common.model_training_v2.dataclasses import get_predictions_for_positive_rate
 from psycop.projects.t2d_bigdata.model_evaluation.single_run.performance_by_ppr.days_from_first_positive_to_event import (
     days_from_first_positive_to_event,
 )

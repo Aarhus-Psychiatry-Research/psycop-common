@@ -15,7 +15,7 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
     get_confusion_matrix_cells_from_df,
 )
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.common.model_training_v2.dataclasses import EvalDataset
 
 
 def get_true_positives(eval_dataset: EvalDataset, positive_rate: float = 0.5) -> pd.DataFrame:

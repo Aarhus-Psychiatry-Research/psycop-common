@@ -4,7 +4,7 @@ import plotnine as pn
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_sensitivity_by_timedelta_df,
 )
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.common.model_training_v2.dataclasses import EvalDataset
 from psycop.projects.t2d.paper_outputs.config import T2D_PN_THEME
 from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
 

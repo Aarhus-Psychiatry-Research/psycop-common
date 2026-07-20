@@ -10,7 +10,7 @@ import polars as pl
 from sklearn.pipeline import Pipeline
 
 from psycop.common.model_training.config_schemas.conf_utils import FullConfigSchema
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.common.model_training_v2.dataclasses import EvalDataset
 
 EVAL_ROOT = Path("E:/shared_resources/clozapine/eval")
 

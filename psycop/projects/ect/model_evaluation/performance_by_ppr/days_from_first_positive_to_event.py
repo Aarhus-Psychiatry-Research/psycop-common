@@ -3,9 +3,7 @@ import logging
 import pandas as pd
 import polars as pl
 
-from psycop.common.model_training.training_output.dataclasses import (
-    get_predictions_for_positive_rate,
-)
+from psycop.common.model_training_v2.dataclasses import get_predictions_for_positive_rate
 from psycop.projects.ect.model_evaluation.uuid_parsers import (
     parse_dw_ek_borger_from_uuid,
     parse_timestamp_from_uuid,

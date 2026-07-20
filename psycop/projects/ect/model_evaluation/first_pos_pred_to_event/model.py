@@ -7,9 +7,7 @@ from psycop.common.global_utils.cache import shared_cache
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_time_from_first_positive_to_diagnosis_df,
 )
-from psycop.common.model_training.training_output.dataclasses import (
-    get_predictions_for_positive_rate,
-)
+from psycop.common.model_training_v2.dataclasses import get_predictions_for_positive_rate
 
 FirstPosPredToEventDF = NewType("FirstPosPredToEventDF", pl.DataFrame)
 # Contains columns "pred", "y", "id", "pred_timestamps", "outcome_timestamps"

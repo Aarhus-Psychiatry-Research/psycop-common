@@ -7,9 +7,7 @@ from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
     ConfusionMatrix,
     get_confusion_matrix_cells_from_df,
 )
-from psycop.common.model_training.training_output.dataclasses import (
-    get_predictions_for_positive_rate,
-)
+from psycop.common.model_training_v2.dataclasses import get_predictions_for_positive_rate
 from psycop.common.test_utils.str_to_df import str_to_df
 from psycop.projects.restraint.evaluation.utils import read_eval_df_from_disk
 

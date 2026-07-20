@@ -8,7 +8,7 @@ import plotnine as pn
 from sklearn.metrics import roc_auc_score, roc_curve
 from sklearn.utils import resample
 
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.common.model_training_v2.dataclasses import EvalDataset
 
 
 def bootstrap_roc(

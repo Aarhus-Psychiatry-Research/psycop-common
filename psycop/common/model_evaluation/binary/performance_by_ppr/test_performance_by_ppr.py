@@ -5,7 +5,7 @@ from psycop.common.model_evaluation.binary.performance_by_ppr.prop_of_all_events
     get_percentage_of_events_captured,
     get_prop_of_events_captured_from_eval_dataset,
 )
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.common.model_training_v2.dataclasses import EvalDataset
 from psycop.common.test_utils.str_to_df import str_to_df
 
 

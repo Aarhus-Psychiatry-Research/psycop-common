@@ -1,6 +1,6 @@
 import pandas as pd
 
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.common.model_training_v2.dataclasses import EvalDataset
 
 
 def get_prop_of_events_captured_from_eval_dataset(

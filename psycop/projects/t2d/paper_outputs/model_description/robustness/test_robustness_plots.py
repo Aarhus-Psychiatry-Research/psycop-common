@@ -1,5 +1,5 @@
 from psycop.common.model_evaluation.binary.subgroup_data import get_auroc_by_input_df
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.common.model_training_v2.dataclasses import EvalDataset
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
     t2d_plot_robustness,
 )

@@ -4,10 +4,8 @@ from typing import TYPE_CHECKING
 
 from sklearn.metrics import precision_score
 
-from psycop.common.model_training.training_output.dataclasses import (
-    get_predictions_for_positive_rate,
-)
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
+from psycop.common.model_training_v2.dataclasses import get_predictions_for_positive_rate
 from psycop.common.model_training_v2.trainer.task.base_metric import CalculatedMetric
 from psycop.common.model_training_v2.trainer.task.binary_classification.binary_metrics.base_binary_metric import (
     BinaryMetric,

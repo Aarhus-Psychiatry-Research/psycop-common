@@ -7,7 +7,7 @@ from pandas import Index
 from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
     generate_performance_by_ppr_table,
 )
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.common.model_training_v2.dataclasses import EvalDataset
 from psycop.projects.scz_bp.evaluation.configs import SCZ_BP_EVAL_OUTPUT_DIR
 from psycop.projects.scz_bp.evaluation.figure2.first_positive_prediction_to_outcome import (
     scz_bp_first_pred_to_event_stratified,

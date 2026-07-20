@@ -23,11 +23,11 @@ from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
     PsycopMlflowRun,
 )
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema
 from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
+from psycop.common.model_training_v2.dataclasses import EvalDataset
 from psycop.common.model_training_v2.trainer.base_trainer import BaselineTrainer
 from psycop.common.model_training_v2.trainer.cross_validator_trainer import CrossValidatorTrainer
 from psycop.common.model_training_v2.trainer.split_trainer import (

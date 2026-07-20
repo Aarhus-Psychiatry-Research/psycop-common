@@ -2,7 +2,7 @@ import pandas as pd
 import plotnine as pn
 from wasabi import Printer
 
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.common.model_training_v2.dataclasses import EvalDataset
 from psycop.projects.forced_admission_inpatient.model_eval.config import FA_PN_THEME
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
     ForcedAdmissionInpatientPipelineRun,

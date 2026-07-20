@@ -7,9 +7,7 @@ import polars as pl
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_sensitivity_by_timedelta_df,
 )
-from psycop.common.model_training.training_output.dataclasses import (
-    get_predictions_for_positive_rate,
-)
+from psycop.common.model_training_v2.dataclasses import get_predictions_for_positive_rate
 
 SensitivityByTTEDF = NewType("SensitivityByTTEDF", pl.DataFrame)
 
