@@ -7,7 +7,6 @@ import polars as pl
 from numpy import float64
 
 from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
-from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 
 
 def get_predictions_for_positive_rate(
@@ -113,11 +112,3 @@ class PipeMetadata(PSYCOPBaseModel):
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
         self.model_config["frozen"] = False
-
-
-class ModelEvalData(PSYCOPBaseModel):
-    """Dataclass for model evaluation data."""
-
-    eval_dataset: EvalDataset
-    cfg: PsycopConfig
-    pipe_metadata: Optional[PipeMetadata] = None
