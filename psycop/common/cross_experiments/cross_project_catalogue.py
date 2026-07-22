@@ -79,9 +79,10 @@ class ModelCatalogue:
                 )
             )
 
-        # mutate config paths and filter
+        # mutate config paths, filter, mlflow tracking_uri
         cfg = (
             cfg.mut("logger.*.mlflow.experiment_name", experiment_name)
+            .add("logger.*.mlflow.tracking_uri", "http://localhost:5000")
             .mut("logger.*.disk_logger.run_path", project_path)
             .mut(
                 "trainer.training_preprocessing_pipeline.*.split_filter.@preprocessing",
@@ -139,6 +140,6 @@ class ModelCatalogue:
 
 
 if __name__ == "__main__":
-    model_catalogue = ModelCatalogue(projects=["Restraint"])
+    model_catalogue = ModelCatalogue(projects=["ECT"])
     auc_rocs = model_catalogue.retrain_and_test_from_configs()
     print(auc_rocs)
