@@ -32,7 +32,7 @@ def get_eval_dfs(catalogue: ModelCatalogue) -> pd.DataFrame:
         .apply(lambda x: "-".join(x[1:]))
         .pipe(pd.to_datetime, format="%Y-%m-%d %H:%M:%S")
     )
-    cvd["model"] = "Cardiovascular disease"
+    cvd["model"] = "CVD"
 
     ect = eval_dfs["ECT"]
     ect["y_hat"] = get_predictions_for_positive_rate(pprs["ECT"], ect["y_hat_prob"])[0]
@@ -43,7 +43,7 @@ def get_eval_dfs(catalogue: ModelCatalogue) -> pd.DataFrame:
         .apply(lambda x: "-".join(x[1:]))
         .pipe(pd.to_datetime, format="%Y-%m-%d %H:%M:%S")
     )
-    ect["model"] = "Electroconvulsive therapy"
+    ect["model"] = "ECT"
 
     restraint = eval_dfs["Restraint"]
     restraint["y_hat"] = get_predictions_for_positive_rate(
@@ -56,7 +56,7 @@ def get_eval_dfs(catalogue: ModelCatalogue) -> pd.DataFrame:
         .apply(lambda x: "-".join(x[1:]))
         .pipe(pd.to_datetime, format="%Y-%m-%d-%H-%M-%S")
     )
-    restraint["model"] = "Physical restraint"
+    restraint["model"] = "PR"
     pred_times = pl.DataFrame(load_restraint_prediction_timestamps()).select(
         pl.col(["dw_ek_borger", "timestamp", "timestamp_discharge"])
     )
@@ -76,7 +76,7 @@ def get_eval_dfs(catalogue: ModelCatalogue) -> pd.DataFrame:
         .apply(lambda x: "-".join(x[1:]))
         .pipe(pd.to_datetime, format="%Y-%m-%d-%H-%M-%S")
     )
-    sczbp["model"] = "Schizophrenia or bipolar disorder"
+    sczbp["model"] = "SCZ/BP"
 
     fai = eval_dfs["FAI"]
     fai["y_hat"] = get_predictions_for_positive_rate(pprs["FAI"], fai["y_hat_prob"])[0]
@@ -87,7 +87,7 @@ def get_eval_dfs(catalogue: ModelCatalogue) -> pd.DataFrame:
         .apply(lambda x: "-".join(x[1:]))
         .pipe(pd.to_datetime, format="%Y-%m-%d-%H-%M-%S")
     )
-    fai["model"] = "Involuntary hospitalisation"
+    fai["model"] = "IVC"
 
     t2d = pd.DataFrame(
         {
@@ -99,7 +99,7 @@ def get_eval_dfs(catalogue: ModelCatalogue) -> pd.DataFrame:
             ],
             "dw_ek_borger": eval_dfs["T2D"]["ids"],
             "timestamp": eval_dfs["T2D"]["pred_timestamps"],
-            "model": "Type 2 diabetes",
+            "model": "T2D",
         }
     )
 
