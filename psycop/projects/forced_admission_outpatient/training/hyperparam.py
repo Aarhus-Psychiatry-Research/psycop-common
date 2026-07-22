@@ -31,9 +31,11 @@ def hyperparameter_search(cfg: PsycopConfig, run_name: str):
 
 
 if __name__ == "__main__":
+    feature_setting = "structured_features"
+    config_name = "fao_structured_hyperparam.cfg"
     populate_baseline_registry()
     populate_with_fao_registry()
     hyperparameter_search(
-        PsycopConfig().from_disk(Path(__file__).parent / "fao_text_hyperparam.cfg"),
-        run_name="full_model_text_features",
+        PsycopConfig().from_disk(Path(__file__).parent / config_name),
+        run_name=f"ia_outpatient_{feature_setting}",
     )
