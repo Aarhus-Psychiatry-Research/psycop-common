@@ -31,8 +31,8 @@ def hyperparameter_search(cfg: PsycopConfig, run_name: str):
 
 
 if __name__ == "__main__":
-    feature_setting = "structured_features"
-    config_name = "fao_structured_hyperparam.cfg"
+    feature_setting = "all_features"
+    config_name = "fao_all_features_hyperparam.cfg"
     populate_baseline_registry()
     populate_with_fao_registry()
     hyperparameter_search(
