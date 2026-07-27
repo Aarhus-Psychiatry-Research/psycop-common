@@ -353,12 +353,12 @@ ignore:
   - '*':
       reason: Exception approved via Slack conversation in programming channel on 26-06-12.
       created: 2026-06-12T14:06:00.000Z
-SNYK-PYTHON-WANDB-17966703:
-- '*':
-      reason: wandb no longer actively in use. Approved via slack conversation in programming channel on 26-07-22.
-      created: 2026-07-23T10:44:00.000Z
-SNYK-PYTHON-PYTORCHLIGHTNING-18016331:
-- '*':
-      reason: Vulnerability if malicious code loaded through load_from_checkpoint(). Approved via slack conversation in programming channel on 26-07-22.
-      created: 2026-07-23T10:45:00.000Z
+  SNYK-PYTHON-WANDB-17966703:
+  - '*':
+        reason: wandb no longer actively in use. Approved via slack conversation in programming channel on 26-07-22.
+        created: 2026-07-23T10:44:00.000Z
+  SNYK-PYTHON-PYTORCHLIGHTNING-18016331:
+  - '*':
+        reason: Vulnerability if malicious code loaded through load_from_checkpoint(). Approved via slack conversation in programming channel on 26-07-22.
+        created: 2026-07-23T10:45:00.000Z
 patch: {}
