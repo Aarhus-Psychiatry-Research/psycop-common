@@ -7,15 +7,9 @@ import plotnine as pn
 ########################################
 # UPDATE THESE TO SELECT MODEL OUTPUTS #
 ########################################
-MODEL_NAME = "clozapine_no_text_outcome_model_medication_diagnoses_coercion"
-PROJECT_MODEL_DIR = Path(f"E:/shared_resources/clozapine/models/{MODEL_NAME}/pipeline_eval")
 MODEL_ALGORITHM = 1  # 0 fo logistic regression and 1 for best xgboost
 
 CLOZAPINE_EVAL_OUTPUT_DIR = Path("E:/shared_resources/clozapine/eval/")
-
-BEST_POS_RATE = 0.05
-DEV_GROUP_NAME = "chuddahs-caterwauls"
-
 
 ################
 # OUTPUT PATHS #
