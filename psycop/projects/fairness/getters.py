@@ -1,3 +1,5 @@
+from typing import Any, List
+
 import pandas as pd
 import polars as pl
 
@@ -8,13 +10,50 @@ from psycop.common.model_evaluation.utils import bin_continuous_data
 from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
 )
+from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
+from psycop.common.model_training_v2.config.config_utils import resolve_and_fill_config
+from psycop.common.model_training_v2.loggers.terminal_logger import TerminalLogger
 from psycop.common.model_training_v2.trainer.preprocessing.steps.geographical_split._geographical_split import (
     add_shak_to_region_mapping,
     load_shak_to_location_mapping,
 )
+from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import _get_regional_split_df
 from psycop.projects.restraint.feature_generation.modules.loaders.load_restraint_prediction_timestamps import (
     load_restraint_prediction_timestamps,
 )
+
+
+def _filter_regional_move_df_by_regions(df: pl.LazyFrame, splits_to_keep: list[str]) -> pl.LazyFrame:
+        """Keep only the ids from the desired regions and rename dw_ek_borger
+        to match the id_col_name of the incoming dataloader"""
+        splits2region = {"train": "øst", "val": "vest", "test": "midt"}
+        regions_to_keep = {splits2region[split] for split in splits_to_keep}
+
+        return df.filter(
+            pl.col("region").is_in(regions_to_keep)
+        )
+
+def get_filtered_prediction_times(cfg: dict[str, Any]) -> pl.DataFrame:
+        filled = BaselineRegistry.fill(cfg, validate=False)
+        resolved = BaselineRegistry.resolve(filled)
+        data = resolved["trainer"].validation_data.load()
+
+        resolved["trainer"].validation_preprocessing_pipeline._logger = TerminalLogger()
+        preprocessing_pipeline = resolved["trainer"].validation_preprocessing_pipeline
+        preprocessed_all_splits: pl.DataFrame = pl.from_pandas(preprocessing_pipeline.apply(data))
+
+        regional_move_df = (
+                    _get_regional_split_df().select(
+                        "dw_ek_borger", "region", "first_regional_move_timestamp"
+                    )
+                )
+        
+        filtered_regional_move_df = _filter_regional_move_df_by_regions(regional_move_df, ["test"])
+
+        
+        test = data.join(filtered_regional_move_df, on="dw_ek_borger", how="inner").filter(pl.col("timestamp") < pl.col("first_regional_move_timestamp")).drop(["first_regional_move_timestamp"])
+
+        return preprocessed_all_splits
 
 
 # change to class subset with methods a la get_preprocessed_dfs (for each individual)
@@ -103,7 +142,7 @@ def get_eval_dfs(catalogue: ModelCatalogue) -> pd.DataFrame:
         }
     )
 
-    eval_df_cvd_t2d = pd.concat([cvd, t2d, ect])
+    eval_df_cvd_t2d = pd.concat([cvd, t2d])
 
     shak_to_location_df = load_shak_to_location_mapping()
 
@@ -117,7 +156,7 @@ def get_eval_dfs(catalogue: ModelCatalogue) -> pd.DataFrame:
             visits=visits_start,
             shak_to_location_df=shak_to_location_df,
             shak_codes_to_drop=[],
-            columns_to_keep=["dw_ek_borger", "timestamp", "unit", "region"],
+            columns_to_keep=["dw_ek_borger", "timestamp", "region", "shak_location"],
         )
         .sort(["dw_ek_borger", "timestamp"])
         .to_pandas()
@@ -134,14 +173,14 @@ def get_eval_dfs(catalogue: ModelCatalogue) -> pd.DataFrame:
         sorted_all_visits_start_df.drop(columns="timestamp"),
         left_on=["dw_ek_borger", "timestamp"],
         right_on=["dw_ek_borger", "timestamp_minus_day"],
-        how="left",
+        how="left"
     )
 
     sorted_all_visits_end_df = add_shak_to_region_mapping(
         visits=visits_end,
         shak_to_location_df=shak_to_location_df,
         shak_codes_to_drop=[],
-        columns_to_keep=["dw_ek_borger", "timestamp", "unit", "region"],
+        columns_to_keep=["dw_ek_borger", "timestamp", "region", "shak_location"],
     ).sort(["dw_ek_borger", "timestamp"])
 
     eval_df_restraint = (
@@ -160,6 +199,11 @@ def get_eval_dfs(catalogue: ModelCatalogue) -> pd.DataFrame:
         .join(sorted_all_visits_end_df, on=["dw_ek_borger", "timestamp"], how="left")
         .to_pandas()
     )
+
+    # eval_df_ect = ect.merge(
+    #     sorted_all_visits_start_df, on=["dw_ek_borger"], how="left"
+    # )
+    # timestamp minus seven days
 
     eval_df = pd.concat([eval_df_cvd_t2d, eval_df_restraint, eval_df_fai, eval_df_sczbp])
 

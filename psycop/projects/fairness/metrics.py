@@ -40,16 +40,6 @@ def by_patient(eval_df: pd.DataFrame) -> pd.DataFrame:
     return patient_df
 
 
-def add_group_prevalence(eval_df: pd.DataFrame, protected_attribute: str) -> pd.DataFrame:
-    prevalences = (
-        eval_df.groupby(["model", protected_attribute], as_index=False)["y"]
-        .mean()
-        .rename(columns={"y": "prevalence"})
-    )  # type: ignore
-
-    return prevalences
-
-
 def get_metrics(
     eval_df: pd.DataFrame,
     metrics: dict[str, Any],
@@ -132,6 +122,7 @@ def bootstrap_metrics(
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     by_group = []
     ratios = []
+    overall = []
     for _ in range(n_bootstrap):
         df = cluster_bootstrap(
                 eval_df,
@@ -170,9 +161,10 @@ def bootstrap_metrics(
         )
         by_group.append(pd.merge(metric_frame.by_group.reset_index(), auroc_frame.by_group.reset_index(), on=protected_attribute).assign(bootstrap=_))
         ratios.append(pd.concat([metric_frame.ratio().reset_index(), auroc_frame.ratio().reset_index()]).assign(bootstrap=_))
+        overall.append(pd.concat([metric_frame.overall.reset_index(), auroc_frame.overall.reset_index()]).assign(bootstrap=_))
 
-    results = pd.concat(by_group)
-    results = results.melt(
+    results_df = pd.concat(by_group)
+    results_df = results_df.melt(
         id_vars=[protected_attribute, "Count"],
         value_vars=[
             "Positive predictive value",
@@ -185,11 +177,11 @@ def bootstrap_metrics(
         ],
     )
 
-    missing = results.groupby(
+    missing = results_df.groupby(
         ["variable", protected_attribute]
         )["value"].apply(lambda x: x.isna().mean()).reset_index().rename(columns={"value": "missing"})
 
-    results = results.groupby(["variable", protected_attribute])["value"].quantile([0.025, 0.975]).unstack().rename(columns={0.025: "lower", 0.975: "upper"}).reset_index()
+    results = results_df.groupby(["variable", protected_attribute])["value"].quantile([0.025, 0.975]).unstack().rename(columns={0.025: "lower", 0.975: "upper"}).reset_index()
 
     if sample_weight:
         eval_df["sample_weight"] = 1 / eval_df.groupby("dw_ek_borger")[
@@ -221,9 +213,9 @@ def bootstrap_metrics(
                 }if sample_weight
                 else None))
     
-    estimates = pd.merge(estimate_metrics.by_group.reset_index(), estimate_auroc.by_group.reset_index(), on=protected_attribute)
+    estimates_df = pd.merge(estimate_metrics.by_group.reset_index(), estimate_auroc.by_group.reset_index(), on=protected_attribute)
     
-    estimates = estimates.melt(
+    estimates_df = estimates_df.melt(
         id_vars=[protected_attribute, "Count"],
         value_vars=[
             "Positive predictive value",
@@ -236,7 +228,7 @@ def bootstrap_metrics(
         ],
     )
 
-    estimates = estimates.groupby(["variable", protected_attribute, "Count"])["value"].mean().reset_index()
+    estimates = estimates_df.groupby(["variable", protected_attribute, "Count"])["value"].mean().reset_index()
     
     estimates = pd.merge(results, estimates, on=[protected_attribute, "variable"])
 
@@ -250,93 +242,47 @@ def bootstrap_metrics(
 
     estimates = pd.merge(estimates, missing, on=[protected_attribute, "variable"])
 
-    ratio_results = pd.concat(ratios).rename(columns={"index": "variable", 0: "value"})
+    if len(eval_df[protected_attribute].unique()) < 3:
+        ratio_results = pd.concat(ratios).rename(columns={"index": "variable", 0: "value"})
 
-    ratio_missing = ratio_results.groupby(
-        ["variable"]
-        )["value"].apply(lambda x: x.isna().mean()).reset_index().rename(columns={"value": "missing"})
+        ratio_missing = ratio_results.groupby(
+            ["variable"]
+            )["value"].apply(lambda x: x.isna().mean()).reset_index().rename(columns={"value": "missing"})
 
-    ratio_results = ratio_results.groupby(["variable"])["value"].quantile([0.025, 0.975]).unstack().rename(columns={0.025: "lower", 0.975: "upper"}).reset_index()
+        ratio_results = ratio_results.groupby(["variable"])["value"].quantile([0.025, 0.975]).unstack().rename(columns={0.025: "lower", 0.975: "upper"}).reset_index()
 
-    ratio_estimates = pd.concat([estimate_metrics.ratio().reset_index(), estimate_auroc.ratio().reset_index()]).rename(columns={"index": "variable", 0: "value"})
+        ratio_estimates = pd.concat([estimate_metrics.ratio().reset_index(), estimate_auroc.ratio().reset_index()]).rename(columns={"index": "variable", 0: "value"})
 
-    ratio_estimates = ratio_estimates.groupby(["variable"])["value"].mean().reset_index()
-    
-    ratio_estimates = pd.merge(ratio_results, ratio_estimates, on="variable")
+        ratio_estimates = ratio_estimates.groupby(["variable"])["value"].mean().reset_index()
+        
+        ratio_estimates = pd.merge(ratio_results, ratio_estimates, on="variable")
 
-    ratio_estimates = pd.merge(ratio_estimates, ratio_missing, on="variable")
+        ratio_estimates = pd.merge(ratio_estimates, ratio_missing, on="variable")
+
+    else:
+        overall_df = pd.concat(overall).rename(columns={"index": "variable", 0: "overall"})
+
+        ratio_results = pd.merge(results_df, overall_df, how="left", on=["variable"])
+        ratio_results["ratio"] = np.log(ratio_results["value"]) - np.log(ratio_results["overall"])
+
+        ratio_missing = ratio_results.groupby([protected_attribute, "variable"])["ratio"].apply(lambda x: x.isna().mean()).reset_index().rename(columns={"ratio": "missing"})
+
+        ratio_results= ratio_results.groupby([protected_attribute, "variable"])["ratio"].quantile([0.025, 0.975]).unstack().rename(columns={0.025: "lower", 0.975: "upper"}).reset_index()
+
+        estimates_overall = pd.concat([estimate_metrics.overall.reset_index(), estimate_auroc.overall.reset_index()]).rename(columns={"index": "variable", 0: "overall"})
+        ratio_estimates = pd.merge(estimates_df, estimates_overall, how="left", on=["variable"])
+        ratio_estimates["ratio"] = ratio_estimates["value"] / ratio_estimates["overall"]
+
+        ratio_estimates = ratio_estimates.drop(columns=["value", "overall"]).rename(columns={"ratio": "value"})
+                
+        ratio_estimates = pd.merge(ratio_results, ratio_estimates, on=[protected_attribute, "variable"])
+        
+        ratio_estimates = pd.merge(ratio_estimates, ratio_missing, on=[protected_attribute, "variable"])
+
 
     return estimates, ratio_estimates
 
 
-def _get_metrics(
-    eval_df: pd.DataFrame,
-    metrics: dict[str, Any],
-    protected_attribute: Literal["sex", "age_group", "region", "unit"],
-) -> pd.DataFrame:
-    eval_df = eval_df[eval_df[protected_attribute].notna()]
-    metric_frame = MetricFrame(
-        metrics=metrics,
-        y_true=eval_df["y"],
-        y_pred=eval_df["y_hat"],
-        sensitive_features=eval_df[protected_attribute],
-    )
-
-    mean = metric_frame.by_group.reset_index()
-    mean = mean.melt(
-        id_vars=[protected_attribute, "Count"],
-        value_vars=[
-            "Positive predictive value",
-            "True positive rate",
-            "True negative rate",
-            "False positive rate",
-            "False negative rate",
-            "Selection rate",
-        ],
-    )
-    lower = metric_frame.by_group_ci[0].reset_index()
-    lower = lower.melt(
-        id_vars=[protected_attribute],
-        value_vars=[
-            "Positive predictive value",
-            "True positive rate",
-            "True negative rate",
-            "False positive rate",
-            "False negative rate",
-            "Selection rate",
-        ],
-        value_name="lower",
-    )
-    upper = metric_frame.by_group_ci[1].reset_index()
-    upper = upper.melt(
-        id_vars=[protected_attribute],
-        value_vars=[
-            "Positive predictive value",
-            "True positive rate",
-            "True negative rate",
-            "False positive rate",
-            "False negative rate",
-            "Selection rate",
-        ],
-        value_name="upper",
-    )
-
-    metric_df = mean.merge(lower, how="left", on=[protected_attribute, "variable"])
-    metric_df = metric_df.merge(upper, how="left", on=[protected_attribute, "variable"])
-
-    auroc_frame = MetricFrame(
-        metrics={"AUROC": roc_auc_score},
-        y_true=eval_df["y"],
-        y_pred=eval_df["y_pred"],
-        sensitive_features=eval_df[protected_attribute],
-    )
-
-    auroc_df = auroc_df.rename(
-        columns={"auroc": "value", "ci_lower": "lower", "ci_upper": "upper", "n_in_bin": "Count"}
-    ).drop(columns=["level_2"])
-    auroc_df["variable"] = "AUROC"
-
-    return pd.concat([metric_df, auroc_df])
 
 
 if __name__ == "__main__":
@@ -355,10 +301,12 @@ if __name__ == "__main__":
     }
 
 
+    protected_attribute = "age_group"
+
     by_groups = []
     ratios = []
     for model in eval_df.model.unique():
-        by_group, ratio = bootstrap_metrics(eval_df[eval_df["model"] == model], metrics=metrics, protected_attribute="sex", n_bootstrap=1000, rng=np.random.default_rng(42), sample_weight=True)
+        by_group, ratio = bootstrap_metrics(eval_df[eval_df["model"] == model], metrics=metrics, protected_attribute=protected_attribute, n_bootstrap=1000, rng=np.random.default_rng(42), sample_weight=False)
         by_groups.append(by_group.assign(model=model))
         ratios.append(ratio.assign(model=model))
 
@@ -368,11 +316,11 @@ if __name__ == "__main__":
     by_group_boot["cohort_n"] = by_group_boot.groupby(["model", "variable"])["Count"].transform("sum")
     by_group_boot["proportion"] = by_group_boot["Count"] / by_group_boot["cohort_n"]
 
-    by_group_boot.to_csv("metrics_sex_1000_weight.csv")
-    ratio_boot.to_csv("ratios_sex_1000_weight.csv")
+    by_group_boot.to_csv(f"metrics_{protected_attribute}_1000.csv")
+    ratio_boot.to_csv(f"ratios_{protected_attribute}_1000.csv")
 
     
-    cvd_boots = bootstrap_metrics(eval_df[eval_df["model"] == "CVD"], metrics=metrics, protected_attribute="sex", n_bootstrap=100, rng=np.random.default_rng(42), sample_weight=True).assign(model="CVD")
+    cvd_boots = bootstrap_metrics(eval_df[eval_df["model"] == "CVD"], metrics=metrics, protected_attribute="sex", n_bootstrap=100, rng=np.random.default_rng(42), sample_weight=False).assign(model="CVD")
     ect_boots = bootstrap_metrics(eval_df[eval_df["model"] == "ECT"], metrics=metrics, protected_attribute="sex", n_bootstrap=100, rng=np.random.default_rng(42), sample_weight=True).assign(model="ECT")
     t2d_boots = bootstrap_metrics(eval_df[eval_df["model"] == "T2D"], metrics=metrics, protected_attribute="sex", n_bootstrap=100, rng=np.random.default_rng(42), sample_weight=True).assign(model="T2D")
     sczbp_boots = bootstrap_metrics(eval_df[eval_df["model"] == "SCZ/BP"], metrics=metrics, protected_attribute="sex", n_bootstrap=100, rng=np.random.default_rng(42), sample_weight=True).assign(model="SCZ/BP")
@@ -388,26 +336,3 @@ if __name__ == "__main__":
 
 
 
- 
-
-    protected_attribute = "unit"
-    metric_df = get_metrics(eval_df, metrics, protected_attribute=protected_attribute)
-    prevalences = add_group_prevalence(eval_df, protected_attribute=protected_attribute)
-
-    metric_df = metric_df.merge(prevalences, on=["model", protected_attribute])
-
-    metric_df["cohort_n"] = metric_df.groupby(["model", "variable"])["Count"].transform("sum")
-    metric_df["proportion"] = metric_df["Count"] / metric_df["cohort_n"]
-
-    metric_df.to_csv(f"df_{protected_attribute}.csv")
-
-    patient_df = by_patient(eval_df)
-    p_metric_df = get_metrics(patient_df, metrics, protected_attribute=protected_attribute)
-    p_prevalences = add_group_prevalence(patient_df, protected_attribute=protected_attribute)
-
-    p_metric_df = p_metric_df.merge(p_prevalences, on=["model", protected_attribute])
-
-    p_metric_df["cohort_n"] = p_metric_df.groupby(["model", "variable"])["Count"].transform("sum")
-    p_metric_df["proportion"] = p_metric_df["Count"] / p_metric_df["cohort_n"]
-
-    p_metric_df.to_csv(f"p_df_{protected_attribute}.csv")
