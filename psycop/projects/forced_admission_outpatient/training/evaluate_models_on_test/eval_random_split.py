@@ -15,7 +15,7 @@ def eval_random_split_test_set(
 ):
     if test_data_path is None:
         test_data_path = [
-            "E:/shared_resources/forced_admissions_outpatient/flattened_datasets/structured_feature_set/structured_feature_set.parquet"
+            "E:/shared_resources/forced_admissions_outpatient/flattened_datasets/full_feature_set/full_feature_set.parquet"
         ]
     if test_split is None:
         test_split = ["val"]
@@ -96,7 +96,7 @@ if __name__ == "__main__":
     populate_baseline_registry()
 
     eval_random_split_test_set(
-        experiment_name="full_model_without_text_features_TEST",
+        experiment_name="ia_outpatient_all_features_training",
         train_splits=["train"],
         test_split=["val"],
     )
