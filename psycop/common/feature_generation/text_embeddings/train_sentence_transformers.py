@@ -4,7 +4,7 @@ from time import time
 from typing import Literal
 
 from sentence_transformers import InputExample, SentenceTransformer
-from sentence_transformers.losses import MultipleNegativesRankingLoss
+from sentence_transformers.sentence_transformer.losses import MultipleNegativesRankingLoss
 from torch.utils.data import DataLoader
 
 from psycop.common.feature_generation.loaders.raw.load_text import load_text_split
