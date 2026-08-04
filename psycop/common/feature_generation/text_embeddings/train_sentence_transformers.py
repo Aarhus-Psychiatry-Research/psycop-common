@@ -3,7 +3,8 @@
 from time import time
 from typing import Literal
 
-from sentence_transformers import InputExample, SentenceTransformer, losses
+from sentence_transformers import InputExample, SentenceTransformer
+from sentence_transformers.sentence_transformer.losses import MultipleNegativesRankingLoss
 from torch.utils.data import DataLoader
 
 from psycop.common.feature_generation.loaders.raw.load_text import load_text_split
@@ -53,7 +54,7 @@ def train_simcse_model(
     save_dir = TEXT_EMBEDDING_MODELS_DIR / model_name
     save_dir.mkdir(exist_ok=True, parents=True)
     # use SimCSE loss for unsupervised training
-    train_loss = losses.MultipleNegativesRankingLoss(model)
+    train_loss = MultipleNegativesRankingLoss(model)
     t0 = time()
     model.fit(train_objectives=[(dataloader, train_loss)], epochs=epochs, show_progress_bar=True)
     model.save(str(save_dir))
