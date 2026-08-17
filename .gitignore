@@ -212,3 +212,6 @@ mlruns/*
 .testmon*
 *.db
 func_code.py
+
+# 
+/mlartifacts

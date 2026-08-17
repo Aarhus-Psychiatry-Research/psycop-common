@@ -9,6 +9,8 @@ from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 
 class SczBpGetter(Getter):
     predicted_positive_rate: float = 0.02
+    n_trials: int = 150
+    n_jobs: int = 15
 
     @staticmethod
     def get_eval_df() -> pd.DataFrame:
@@ -26,6 +28,12 @@ class SczBpGetter(Getter):
     def get_cfg() -> PsycopConfig:
         experiment_path = "E:/shared_resources/scz_bp/testing"
         return PsycopConfig(Config().from_disk(path=Path(experiment_path) / "config.cfg"))
+
+    @staticmethod
+    def get_hyperparameter_tuning_cfg() -> PsycopConfig:
+        config_path = "E:/frihae/psycop-common/psycop/projects/optimization_experiments/configs/scz_bp.cfg" # TODO fh
+
+        return PsycopConfig(Config().from_disk(path=Path(config_path)))
 
 
 if __name__ == "__main__":

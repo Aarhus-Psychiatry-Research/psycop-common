@@ -9,9 +9,14 @@ from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 
 class ForcedAdmissionsInpatientGetter(Getter):
     predicted_positive_rate: float = 0.05
+    n_trials: int = 300
+    n_jobs: int = 10
 
     @staticmethod
     def get_eval_df() -> pd.DataFrame:
+        """
+        OBS: the path points to the eval_df generated from the config file written to train the original model but in model_training_v2 notation. It is not completely identical to the original trained model (the one reported in the paper), but it is very close. The original model eval_df is named evaluation_dataset.parquet and is located in the same folder.
+        """
         eval_df_path = "E:/shared_resources/forced_admissions_inpatient/models/full_model_with_text_features_train_val/pipeline_eval/chuddahs-caterwauls-eval-on-test/abrasiometerintergradient-eval-on-test/eval_df.parquet"
 
         return pd.read_parquet(eval_df_path)
@@ -27,6 +32,12 @@ class ForcedAdmissionsInpatientGetter(Getter):
         config_path = "E:/shared_resources/forced_admissions_inpatient/models/full_model_with_text_features_train_val/pipeline_eval/chuddahs-caterwauls-eval-on-test/abrasiometerintergradient-eval-on-test//config.cfg"
 
         # read and return config
+        return PsycopConfig(Config().from_disk(path=Path(config_path)))
+
+    @staticmethod
+    def get_hyperparameter_tuning_cfg() -> PsycopConfig:
+        config_path = "E:/frihae/psycop-common/psycop/projects/optimization_experiments/configs/fai.cfg" # TODO fh
+
         return PsycopConfig(Config().from_disk(path=Path(config_path)))
 
 

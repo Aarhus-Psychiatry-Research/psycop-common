@@ -32,7 +32,7 @@ class RestraintGetter(Getter):
 
     @staticmethod
     def get_hyperparameter_tuning_cfg() -> PsycopConfig:
-        config_path = "E:/shared_resources/restraint/main_tuning_config/restraint_all_tuning.cfg"
+        config_path = "E:/shared_resources/restraint/hp_tuning_config/restraint_all_tuning.cfg"
 
         return PsycopConfig(Config().from_disk(path=Path(config_path)))
 
