@@ -9,15 +9,15 @@ from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_othe
 msg = Printer(timestamp=True)
 
 from psycop.common.cohort_definition import PredictionTimeFilter
-from psycop.projects.t2d_extended.cohort_definition.eligible_prediction_times.eligible_config import (
+from psycop.projects.t2d_extended.feature_generation.cohort_definition.eligible_prediction_times.eligible_config import (
     AGE_COL_NAME,
     MIN_AGE,
     MIN_DATE,
 )
-from psycop.projects.t2d_extended.cohort_definition.outcome_specification.combined import (
+from psycop.projects.t2d_extended.feature_generation.cohort_definition.outcome_specification.combined import (
     get_first_diabetes_indicator,
 )
-from psycop.projects.t2d_extended.cohort_definition.outcome_specification.lab_results import (
+from psycop.projects.t2d_extended.feature_generation.cohort_definition.outcome_specification.lab_results import (
     get_first_diabetes_lab_result_above_threshold,
 )
 

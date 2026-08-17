@@ -1,6 +1,6 @@
 import pandas as pd
 
-from psycop.common.feature_generation.loaders_2024.diagnoses import type_2_diabetes
+from psycop.common.feature_generation.loaders_2025.diagnoses import type_2_diabetes
 
 
 def get_first_type_2_diabetes_diagnosis() -> pd.DataFrame:
