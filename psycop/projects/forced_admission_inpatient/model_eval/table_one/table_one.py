@@ -15,7 +15,7 @@ from psycop.projects.forced_admission_inpatient.model_eval.table_one.table_one_l
 )
 
 model_train_df = pl.concat(
-    [get_best_eval_pipeline().inputs.get_flattened_split_as_lazyframe(split=["train","val"])],
+    [get_best_eval_pipeline().inputs.get_flattened_split_as_lazyframe(split=["train", "val"])],
     how="vertical",
 ).with_columns(dataset=pl.format("0. train"))
 
