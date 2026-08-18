@@ -22,8 +22,8 @@ model_train_df = pl.concat(
 
 val_dataset = (
     get_best_eval_pipeline()
-    .inputs.get_flattened_split_as_lazyframe(split="test")
-    .with_columns(dataset=pl.format("test"))
+    .inputs.get_flattened_split_as_lazyframe(split="val")
+    .with_columns(dataset=pl.format("val"))
 )
 
 flattened_combined = pl.concat([model_train_df, val_dataset], how="vertical").rename(
