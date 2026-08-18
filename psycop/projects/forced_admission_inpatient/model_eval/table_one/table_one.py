@@ -15,15 +15,15 @@ from psycop.projects.forced_admission_inpatient.model_eval.table_one.table_one_l
 )
 
 model_train_df = pl.concat(
-    [get_best_eval_pipeline().inputs.get_flattened_split_as_lazyframe(split="train")],
+    [get_best_eval_pipeline().inputs.get_flattened_split_as_lazyframe(split=["train","val"])],
     how="vertical",
 ).with_columns(dataset=pl.format("0. train"))
 
 
 val_dataset = (
     get_best_eval_pipeline()
-    .inputs.get_flattened_split_as_lazyframe(split="val")
-    .with_columns(dataset=pl.format("val"))
+    .inputs.get_flattened_split_as_lazyframe(split="test")
+    .with_columns(dataset=pl.format("test"))
 )
 
 flattened_combined = pl.concat([model_train_df, val_dataset], how="vertical").rename(

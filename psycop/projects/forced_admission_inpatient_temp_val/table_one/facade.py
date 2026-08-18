@@ -24,7 +24,7 @@ if __name__ == "__main__":
     table_one_facade(
         Path(__file__).parent,
         MlflowClientWrapper().get_run(
-            "primary_eval_xgboost_structured_features_evaluated_on_full_temporal_split_updated_sex_column",
-            "bright-cod-131",
+            "primary_eval_xgboost_structured_features_evaluated_on_full_temporal_split",
+            "bouncy-calf-357",
         ),
     )
