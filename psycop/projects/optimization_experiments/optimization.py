@@ -30,8 +30,8 @@ def optimize_models_on_metric(
     if max_fpr is not None:
         cfg = cfg.add("trainer.metric.max_fpr", max_fpr)
 
-    # mlflow.set_tracking_uri("http://localhost:5129")
-    # mlflow.set_experiment(experiment_name=project_name)
+    mlflow.set_tracking_uri("http://localhost:5129")
+    mlflow.set_experiment(experiment_name=project_name)
 
     OptunaHyperParameterOptimization().from_cfg(
             cfg=cfg,

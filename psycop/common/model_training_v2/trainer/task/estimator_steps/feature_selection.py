@@ -1,3 +1,4 @@
+from collections.abc import Mapping
 from typing import Literal
 
 import optuna
@@ -10,6 +11,8 @@ from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_su
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.suggester_spaces import (
     CategoricalSpace,
     CategoricalSpaceT,
+    IntegerSpace,
+    IntegerspaceT,
 )
 from psycop.common.model_training_v2.trainer.task.estimator_steps.utils import IdentityTransformer
 from psycop.common.model_training_v2.trainer.task.model_step import ModelStep
@@ -35,10 +38,16 @@ def select_percentile(score_function_name: IMPLEMENTED_FUNCTIONS, percentile: in
 
 @BaselineRegistry.estimator_steps_suggesters.register("feature_selection_suggester")
 class FeatureSelectionSuggester(Suggester):
-    def __init__(self, score_functions: CategoricalSpaceT, percentiles: CategoricalSpaceT):
+    def __init__(self, score_functions: CategoricalSpaceT, percentiles: CategoricalSpaceT | IntegerspaceT):
         self.score_function = CategoricalSpace(choices=score_functions)
 
-        self.percentile = CategoricalSpace(choices=percentiles)
+        print(type(percentiles), percentiles)
+
+        if isinstance(percentiles, Mapping):
+            self.percentile = IntegerSpace.from_mapping(percentiles)
+        else:
+            self.percentile = CategoricalSpace(choices=percentiles)
+
 
     def suggest_hyperparameters(self, trial: optuna.Trial) -> dict[str, str]:
         score_function = self.score_function.suggest(trial, "score_function")
