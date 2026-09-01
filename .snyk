@@ -373,4 +373,8 @@ ignore:
   - '*':
         reason: Vulnerability related to excessive resource consumption during certificate chain validation. Will check if compatible update is available in two weeks. Approved via slack conversation in programming channel on 26-08-12.
         created: 2026-08-12T08:40:00.000Z
+  SNYK-PYTHON-TRANSFORMERS-18965959:
+  - '*':
+        reason: Will check if compatible update is available in two weeks. Approved via slack conversation in programming channel on 26-08-31.
+        created: 2026-08-31T10:04:00.000Z
 patch: {}
