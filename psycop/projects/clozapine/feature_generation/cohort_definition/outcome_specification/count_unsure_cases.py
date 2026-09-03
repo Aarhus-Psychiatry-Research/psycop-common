@@ -50,7 +50,7 @@ def load_already_processed_borgers(base_name: str, parent_dir: Path) -> set:
             return set(df_saved["dw_ek_borger"].unique())
 
     print("No previous version found. Starting fresh.")
-    return set()
+    return set
 
 
 def _save_group(df: pd.DataFrame, name: str, count: int, every: int = 5) -> None:
