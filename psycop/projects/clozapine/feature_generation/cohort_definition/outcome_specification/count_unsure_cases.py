@@ -40,17 +40,17 @@ def get_next_version_file_path(file_path: Path) -> Path:
     return new_file_path
 
 
-def load_already_processed_borgers(base_name: str, parent_dir: Path) -> set:
+def load_already_processed_borgers(base_name: str, parent_dir: Path) -> set[int]:
     """Loads the set of dw_ek_borger IDs from the latest saved parquet version."""
     latest_file = get_latest_version_file_path(base_name, parent_dir)
     if latest_file and latest_file.exists():
         print(f"Loading already processed patients from latest save: {latest_file.name}")
         df_saved = pd.read_parquet(latest_file)
         if "dw_ek_borger" in df_saved.columns:
-            return set(df_saved["dw_ek_borger"].unique())
+            return {int(x) for x in df_saved["dw_ek_borger"].unique()}
 
     print("No previous version found. Starting fresh.")
-    return set
+    return set()
 
 
 def _save_group(df: pd.DataFrame, name: str, count: int, every: int = 5) -> None:
