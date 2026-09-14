@@ -108,7 +108,7 @@ class PsycopMlflowRun(Run):
 
 class MlflowClientWrapper:
     def __init__(self) -> None:
-        tracking_uri = "http://localhost:5000"
+        tracking_uri = "http://localhost:5014"
 
         self.client = MlflowClient(tracking_uri=tracking_uri)
         mlflow.set_tracking_uri(tracking_uri)

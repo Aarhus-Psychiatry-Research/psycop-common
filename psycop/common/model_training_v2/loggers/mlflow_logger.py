@@ -35,7 +35,7 @@ class MLFlowLogger(BaselineLogger):
 
     experiment_name: str
     run_name: str | None = None
-    tracking_uri: str = "http://localhost:5000"
+    tracking_uri: str = "http://localhost:5014"
     postpone_run_creation_to_first_log: bool = False
 
     def __post_init__(self) -> None:
