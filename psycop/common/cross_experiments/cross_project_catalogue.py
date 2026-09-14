@@ -149,8 +149,6 @@ class ModelCatalogue:
 
 
 if __name__ == "__main__":
-    model_catalogue = ModelCatalogue(projects=["SCZ_BP"])
-    auc_rocs = model_catalogue.retrain_and_test_from_configs(
-        experiment_name="stratifiedsplit_scz_bp"
-    )
+    model_catalogue = ModelCatalogue(projects=["Restraint"])
+    auc_rocs = model_catalogue.retrain_and_test_from_configs()
     print(auc_rocs)
