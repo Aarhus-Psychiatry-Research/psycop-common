@@ -62,7 +62,7 @@ def get_eval_dfs(catalogue: ModelCatalogue) -> pd.DataFrame:
     pprs = catalogue.get_predicted_positive_rates()
 
     # MAKE DFS OPTIONAL
-    cvd = eval_dfs["CVD"]
+    cvd = pd.read_parquet("E:/shared_resources/cross_experiments/stratifiedsplit_cvd_2026-09-11_15-47-42/CVD/eval_df.parquet")
     cvd["y_hat"] = get_predictions_for_positive_rate(pprs["CVD"], cvd["y_hat_prob"])[0]
     cvd["dw_ek_borger"] = cvd["pred_time_uuid"].str.split("-").str[0].astype("int64")
     cvd["timestamp"] = (
@@ -73,16 +73,16 @@ def get_eval_dfs(catalogue: ModelCatalogue) -> pd.DataFrame:
     )
     cvd["model"] = "CVD"
 
-    ect = eval_dfs["ECT"]
-    ect["y_hat"] = get_predictions_for_positive_rate(pprs["ECT"], ect["y_hat_prob"])[0]
-    ect["dw_ek_borger"] = ect["pred_time_uuid"].str.split("-").str[0].astype("int64")
-    ect["timestamp"] = (
-        ect["pred_time_uuid"]
-        .str.split("-")
-        .apply(lambda x: "-".join(x[1:]))
-        .pipe(pd.to_datetime, format="%Y-%m-%d %H:%M:%S")
-    )
-    ect["model"] = "ECT"
+    # ect = eval_dfs["ECT"]
+    # ect["y_hat"] = get_predictions_for_positive_rate(pprs["ECT"], ect["y_hat_prob"])[0]
+    # ect["dw_ek_borger"] = ect["pred_time_uuid"].str.split("-").str[0].astype("int64")
+    # ect["timestamp"] = (
+    #     ect["pred_time_uuid"]
+    #     .str.split("-")
+    #     .apply(lambda x: "-".join(x[1:]))
+    #     .pipe(pd.to_datetime, format="%Y-%m-%d %H:%M:%S")
+    # )
+    # ect["model"] = "ECT"
 
     restraint = eval_dfs["Restraint"]
     restraint["y_hat"] = get_predictions_for_positive_rate(
@@ -106,7 +106,7 @@ def get_eval_dfs(catalogue: ModelCatalogue) -> pd.DataFrame:
         .join(pred_times, on=["dw_ek_borger", "timestamp"], how="left")
     )
 
-    sczbp = eval_dfs["SCZ_BP"]
+    sczbp = pd.read_parquet("E:/shared_resources/cross_experiments/stratifiedsplit_scz_bp_2026-09-11_15-54-44/SCZ_BP/eval_df.parquet")
     sczbp["y_hat"] = get_predictions_for_positive_rate(pprs["SCZ_BP"], sczbp["y_hat_prob"])[0]
     sczbp["dw_ek_borger"] = sczbp["pred_time_uuid"].str.split("-").str[0].astype("int64")
     sczbp["timestamp"] = (
@@ -156,7 +156,6 @@ def get_eval_dfs(catalogue: ModelCatalogue) -> pd.DataFrame:
             visits=visits_start,
             shak_to_location_df=shak_to_location_df,
             shak_codes_to_drop=[],
-            columns_to_keep=["dw_ek_borger", "timestamp", "region", "shak_location"],
         )
         .sort(["dw_ek_borger", "timestamp"])
         .to_pandas()
@@ -180,7 +179,6 @@ def get_eval_dfs(catalogue: ModelCatalogue) -> pd.DataFrame:
         visits=visits_end,
         shak_to_location_df=shak_to_location_df,
         shak_codes_to_drop=[],
-        columns_to_keep=["dw_ek_borger", "timestamp", "region", "shak_location"],
     ).sort(["dw_ek_borger", "timestamp"])
 
     eval_df_restraint = (
