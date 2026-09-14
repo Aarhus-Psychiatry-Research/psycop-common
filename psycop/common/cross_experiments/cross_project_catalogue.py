@@ -76,22 +76,24 @@ class ModelCatalogue:
                 .rem("trainer.training_preprocessing_pipeline.*.split_filter.region_col_name")
                 .rem(
                     "trainer.training_preprocessing_pipeline.*.split_filter.timestamp_cutoff_col_name"
-                ).rem("trainer.validation_preprocessing_pipeline.*.split_filter.regional_move_df")
+                )
+                .rem("trainer.validation_preprocessing_pipeline.*.split_filter.regional_move_df")
                 .rem("trainer.validation_preprocessing_pipeline.*.split_filter.timestamp_col_name")
                 .rem("trainer.validation_preprocessing_pipeline.*.split_filter.region_col_name")
                 .rem(
                     "trainer.validation_preprocessing_pipeline.*.split_filter.timestamp_cutoff_col_name"
-                
-            ))
+                )
+            )
 
         # mutate config paths and filter
         cfg = (
             cfg.mut("logger.*.mlflow.experiment_name", experiment_name)
-            cfg.mut("logger.*.disk_logger.run_path", project_path)
+            .mut("logger.*.disk_logger.run_path", project_path)
             .mut(
                 "trainer.training_preprocessing_pipeline.*.split_filter.@preprocessing",
                 split_filter,
-            ).mut(
+            )
+            .mut(
                 "trainer.validation_preprocessing_pipeline.*.split_filter.@preprocessing",
                 split_filter,
             )
@@ -116,7 +118,6 @@ class ModelCatalogue:
                     "first_regional_move_timestamp",
                 )
             )
-
 
         auc_roc = train_baseline_model_from_cfg(cfg)
 
@@ -149,5 +150,7 @@ class ModelCatalogue:
 
 if __name__ == "__main__":
     model_catalogue = ModelCatalogue(projects=["SCZ_BP"])
-    auc_rocs = model_catalogue.retrain_and_test_from_configs(experiment_name="stratifiedsplit_scz_bp")
+    auc_rocs = model_catalogue.retrain_and_test_from_configs(
+        experiment_name="stratifiedsplit_scz_bp"
+    )
     print(auc_rocs)
