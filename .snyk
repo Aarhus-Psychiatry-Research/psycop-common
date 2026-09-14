@@ -361,20 +361,16 @@ ignore:
   - '*':
         reason: Vulnerability if malicious code loaded through load_from_checkpoint(). Approved via slack conversation in programming channel on 26-07-22.
         created: 2026-07-23T10:45:00.000Z
-  SNYK-PYTHON-CRYPTOGRAPHY-18516620:
-  - '*':
-        reason: Vulnerability related to incorrect validation of digital certificates on mlflow. Will check if compatible update of mlflow is available in two weeks. Approved via slack conversation in programming channel on 26-08-12.
-        created: 2026-08-12T08:40:00.000Z
-  SNYK-PYTHON-CRYPTOGRAPHY-18516621:
-  - '*':
-        reason: Vulnerability related to information leakage during cryptographic operations. Will check if compatible update of mlflow is available in two weeks. Approved via slack conversation in programming channel on 26-08-12.
-        created: 2026-08-12T08:40:00.000Z
-  SNYK-PYTHON-CRYPTOGRAPHY-18516622:
-  - '*':
-        reason: Vulnerability related to excessive resource consumption during certificate chain validation. Will check if compatible update is available in two weeks. Approved via slack conversation in programming channel on 26-08-12.
-        created: 2026-08-12T08:40:00.000Z
   SNYK-PYTHON-TRANSFORMERS-18965959:
   - '*':
         reason: Will check if compatible update is available in two weeks. Approved via slack conversation in programming channel on 26-08-31.
         created: 2026-08-31T10:04:00.000Z
+  SNYK-PYTHON-MLFLOW-19653590:
+  - '*':
+        reason: Vulnerability related to Unsafe Dependency Resolution through the model artifact loading process in the project’s model handling components. We do not use this functionality in MLflow. Approved via slack conversation in programming channel on xxx.
+        created: 2026-09-14T12:40:00.000Z
+  SNYK-PYTHON-TRANSFORMERS-19500670:
+  - '*':
+        reason: Vulnerability allowing an attacker to inject malicious code in custom_generate/generate.py file, which can be logged in the cache to avoid the trust_remote_code=False flag. We have added a checkpoint to the model approval proces that adresses this specificallu. Approved via slack conversation in programming channel on xxx.
+        created: 2026-09-14T12:40:00.000Z
 patch: {}
