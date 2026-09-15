@@ -77,6 +77,12 @@ class ModelCatalogue:
                 .rem(
                     "trainer.training_preprocessing_pipeline.*.split_filter.timestamp_cutoff_col_name"
                 )
+                .rem("trainer.validation_preprocessing_pipeline.*.split_filter.regional_move_df")
+                .rem("trainer.validation_preprocessing_pipeline.*.split_filter.timestamp_col_name")
+                .rem("trainer.validation_preprocessing_pipeline.*.split_filter.region_col_name")
+                .rem(
+                    "trainer.validation_preprocessing_pipeline.*.split_filter.timestamp_cutoff_col_name"
+                )
             )
 
         # mutate config paths and filter
@@ -85,6 +91,10 @@ class ModelCatalogue:
             .mut("logger.*.disk_logger.run_path", project_path)
             .mut(
                 "trainer.training_preprocessing_pipeline.*.split_filter.@preprocessing",
+                split_filter,
+            )
+            .mut(
+                "trainer.validation_preprocessing_pipeline.*.split_filter.@preprocessing",
                 split_filter,
             )
         )
