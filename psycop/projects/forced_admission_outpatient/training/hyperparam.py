@@ -37,5 +37,5 @@ if __name__ == "__main__":
     populate_with_fao_registry()
     hyperparameter_search(
         PsycopConfig().from_disk(Path(__file__).parent / config_name),
-        run_name=f"ia_outpatient_{feature_setting}",
+        run_name=f"ia_outpatient_{feature_setting}_training",
     )
