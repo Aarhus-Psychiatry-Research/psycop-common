@@ -9,7 +9,7 @@ from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr
     get_true_positives,
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.forced_admission_outpatient.eval.utils import (
+from psycop.projects.forced_admission_outpatient.model_evaluation.utils import (
     expand_eval_df_with_extra_cols,
     read_eval_df_from_disk,
 )
