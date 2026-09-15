@@ -44,7 +44,12 @@ class ECTCohortDefiner(CohortDefiner):
         # make predictions 7 days after admission to not make predictions
         # for patients in acute need (which would already be known)
         unfiltered_prediction_times = pl.from_pandas(
-            admissions(timestamps_only=True, timestamp_for_output="start")
+            admissions(
+                shak_code=6600,
+                shak_sql_operator="=",
+                timestamps_only=True,
+                timestamp_for_output="start",
+            )
         ).with_columns(pl.col("timestamp") + pl.duration(days=7))
 
         result = filter_prediction_times(

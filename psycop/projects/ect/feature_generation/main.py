@@ -85,6 +85,21 @@ def get_ect_project_info() -> ProjectInfo:
     return ProjectInfo(project_name="ect", project_path=OVARTACI_SHARED_DIR / "ect" / "feature_set")
 
 
+def split_df_to_list(  # noqa: D417
+    df: pl.DataFrame, entity_id_col_name: str = "entity_id", timestamp_col_name: str = "timestamp"
+) -> list[pl.DataFrame]:
+    mandatory_cols = [entity_id_col_name, timestamp_col_name]
+
+    # Validate required columns
+    for col in mandatory_cols:
+        if col not in df.columns:
+            raise ValueError(f"Missing mandatory column: '{col}'")
+
+    value_cols = [col for col in df.columns if col not in mandatory_cols]
+
+    return [df.select([*mandatory_cols, col]) for col in value_cols]
+
+
 def _init_ect_predictor(
     df_loader: Callable[[], pd.DataFrame],
     layer: str,
@@ -183,6 +198,12 @@ if __name__ == "__main__":
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
         datefmt="%Y/%m/%d %H:%M:%S",
         stream=sys.stdout,
+    )
+
+    df_tfidf_split = split_df_to_list(
+        df=pl.read_parquet(TEXT_EMBEDDINGS_DIR / TEXT_FILE_NAME).drop("overskrift"),
+        entity_id_col_name="dw_ek_borger",
+        timestamp_col_name="timestamp",
     )
 
     feature_layers = {
@@ -390,17 +411,16 @@ if __name__ == "__main__":
         "layer_text": [
             ts.PredictorSpec(
                 value_frame=ts.ValueFrame(
-                    init_df=pl.read_parquet(TEXT_EMBEDDINGS_DIR / TEXT_FILE_NAME).drop(
-                        "overskrift"
-                    ),
+                    init_df=df,
                     entity_id_col_name="dw_ek_borger",
                     value_timestamp_col_name="timestamp",
                 ),
                 lookbehind_distances=[datetime.timedelta(days=730)],
                 aggregators=[MeanAggregator()],
                 fallback=np.nan,
-                column_prefix="pred_layer_text",
+                column_prefix=f"pred_layer_text__{df.columns[-1]}",
             )
+            for df in df_tfidf_split
         ],
     }
 
@@ -418,7 +438,7 @@ if __name__ == "__main__":
         project_info=get_ect_project_info(),
         eligible_prediction_times_frame=ect_pred_times(),
         feature_specs=specs,
-        feature_set_name="ect_feature_set",
+        feature_set_name="ect_feature_set_v2",
         n_workers=None,
         step_size=datetime.timedelta(days=365),
         do_dataset_description=False,
