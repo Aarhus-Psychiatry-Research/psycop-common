@@ -10,6 +10,7 @@ from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_othe
 from psycop.projects.ect.feature_generation.cohort_definition.add_age import add_age
 from psycop.projects.ect.feature_generation.cohort_definition.eligible_prediction_times.eligible_config import (
     AGE_COL_NAME,
+    MAX_DATE,
     MIN_AGE,
     MIN_DATE,
 )
@@ -21,6 +22,12 @@ from psycop.projects.ect.feature_generation.cohort_definition.outcome_specificat
 class ECTMinDateFilter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         after_df = df.filter(pl.col("timestamp") > MIN_DATE)
+        return after_df
+
+
+class ECTMaxDateFilter(PredictionTimeFilter):
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
+        after_df = df.filter(pl.col("timestamp") < MAX_DATE)
         return after_df
 
 

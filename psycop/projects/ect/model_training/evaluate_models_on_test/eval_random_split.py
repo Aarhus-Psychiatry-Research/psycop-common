@@ -15,13 +15,13 @@ def eval_random_split_test_set(
 ):
     if test_data_path is None:
         test_data_path = [
-            "E:/shared_resources/ect/feature_set/flattened_datasets/ect_feature_set/ect_feature_set.parquet"
+            "E:/shared_resources/ect/feature_set/flattened_datasets/ect_feature_set_v2/ect_feature_set_v2.parquet"
         ]
     if test_split is None:
         test_split = ["val"]
     if train_splits is None:
         train_splits = ["train"]
-    test_run_experiment_name = f"{experiment_name}_best_run_{test_run_name}"
+    test_run_experiment_name = f"{experiment_name}_{test_run_name}"
 
     test_run_path = "E:/shared_resources/" + "/ect" + "/eval_runs/" + test_run_experiment_name
 
@@ -94,7 +94,7 @@ if __name__ == "__main__":
 
     for feature_set in feature_sets:
         eval_random_split_test_set(
-            experiment_name=f"ECT-trunc-and-hp-{feature_set}-xgboost-no-lookbehind-filter",
+            experiment_name=f"ECT-v2-{feature_set}-xgboost-no-lookbehind-filter",
             train_splits=["train", "val"],
             test_split=["test"],
         )

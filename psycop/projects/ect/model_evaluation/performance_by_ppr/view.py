@@ -1,10 +1,11 @@
 import polars as pl
 
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame
 from psycop.projects.ect.model_evaluation.performance_by_ppr.model import (
     PerformanceByPPRModel,
     performance_by_ppr_model,
 )
+from psycop.projects.restraint.evaluation.utils import read_eval_df_from_disk
 
 
 def performance_by_ppr_view(model: PerformanceByPPRModel, outcome_label: str) -> pl.DataFrame:
@@ -64,16 +65,17 @@ if __name__ == "__main__":
         datefmt="%Y/%m/%d %H:%M:%S",
     )
 
-    eval_df = (
-        MlflowClientWrapper()
-        .get_run(
-            experiment_name="CVD hyperparam tuning, layer 2, xgboost, v2",
-            run_name="Layer 2, hparam",
-        )
-        .eval_frame()
+    structured_only_experiment = "ECT-v2-structured_only-xgboost-no-lookbehind-filter"
+    structured_only_experiment_path = (
+        f"E:/shared_resources/ect/eval_runs/{structured_only_experiment}_evaluated_on_test"
     )
+    structured_only_df = read_eval_df_from_disk(structured_only_experiment_path)
+    eval_df = EvalFrame(frame=structured_only_df, allow_extra_columns=True)
+
     table = performance_by_ppr_view(
-        performance_by_ppr_model(eval_df=eval_df, positive_rates=[0.01, 0.02, 0.3, 0.4]),
+        performance_by_ppr_model(
+            eval_df=eval_df, positive_rates=[0.01, 0.02, 0.03, 0.04, 0.1, 0.2, 0.5]
+        ),
         outcome_label="ECT",
     )
-    table.write_csv("performance_by_ppr.csv")
+    table.write_excel(f"{structured_only_experiment_path}/performance_by_ppr.xlsx")

@@ -438,7 +438,7 @@ if __name__ == "__main__":
         project_info=get_ect_project_info(),
         eligible_prediction_times_frame=ect_pred_times(),
         feature_specs=specs,
-        feature_set_name="ect_feature_set_v2",
+        feature_set_name="ect_feature_df",
         n_workers=None,
         step_size=datetime.timedelta(days=365),
         do_dataset_description=False,

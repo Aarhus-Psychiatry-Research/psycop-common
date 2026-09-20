@@ -11,6 +11,7 @@ from psycop.common.cohort_definition import (
 from psycop.common.feature_generation.loaders.raw.load_visits import admissions
 from psycop.common.global_utils.cache import shared_cache
 from psycop.projects.ect.feature_generation.cohort_definition.eligible_prediction_times.single_filters import (
+    ECTMaxDateFilter,
     ECTMinAgeFilter,
     ECTMinDateFilter,
     ECTWashoutMove,
@@ -21,6 +22,7 @@ from psycop.projects.ect.feature_generation.cohort_definition.eligible_predictio
 from psycop.projects.ect.feature_generation.cohort_definition.outcome_specification.combined import (
     get_first_ect_indicator,
 )
+from psycop.projects.restraint.cohort.utils.functions import preprocess_readmissions
 
 
 @shared_cache().cache()
@@ -43,19 +45,64 @@ class ECTCohortDefiner(CohortDefiner):
     def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle:
         # make predictions 7 days after admission to not make predictions
         # for patients in acute need (which would already be known)
-        unfiltered_prediction_times = pl.from_pandas(
+
+        # Load start and end admission timestamps
+        admissions_start = pl.from_pandas(
             admissions(
                 shak_code=6600,
                 shak_sql_operator="=",
                 timestamps_only=True,
                 timestamp_for_output="start",
             )
-        ).with_columns(pl.col("timestamp") + pl.duration(days=7))
+        )
+        admissions_end = pl.from_pandas(
+            admissions(
+                shak_code=6600,
+                shak_sql_operator="=",
+                timestamps_only=True,
+                timestamp_for_output="end",
+                remove_na_timestamp_rows=False,
+            )
+        )
+
+        # Merge
+        unfiltered_prediction_times = admissions_start.with_columns(
+            admissions_end["timestamp"].alias("datotid_slut")
+        )
+
+        # Add shakkode column
+        unfiltered_prediction_times = unfiltered_prediction_times.with_columns(
+            pl.lit(6600).alias("shakkode_ansvarlig")
+        )
+
+        unfiltered_prediction_times = unfiltered_prediction_times.rename(
+            {"timestamp": "datotid_start"}
+        )
+
+        # Concatenate admissions where a new admission is started within 8 hours following discharge
+        unfiltered_prediction_times = preprocess_readmissions(df=unfiltered_prediction_times)
+
+        # Create prediction timestamps 7 days after admission time
+        unfiltered_prediction_times = unfiltered_prediction_times.collect().with_columns(
+            pl.col("datotid_start") + pl.duration(days=7)
+        )
+
+        # Remove rows where prediction timestamp is after discharge
+        unfiltered_prediction_times = unfiltered_prediction_times.filter(
+            pl.col("datotid_slut").is_not_null()
+            & (pl.col("datotid_start") <= pl.col("datotid_slut"))
+        )
+
+        # Rename timestamp column
+        unfiltered_prediction_times = unfiltered_prediction_times[
+            ["dw_ek_borger", "datotid_start"]
+        ].rename({"datotid_start": "timestamp"})
 
         result = filter_prediction_times(
             prediction_times=unfiltered_prediction_times.lazy(),
             filtering_steps=(
                 ECTMinDateFilter(),
+                ECTMaxDateFilter(),
                 ECTMinAgeFilter(),
                 NoIncidentECTWithin3Years(),
                 ECTWashoutMove(),

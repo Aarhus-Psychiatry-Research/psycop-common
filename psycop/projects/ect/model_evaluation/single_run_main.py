@@ -97,20 +97,22 @@ if __name__ == "__main__":
     )
     MAIN_METRIC = "all_oof_BinaryAUROC"
 
-    structured_text_experiment = "ECT-trunc-and-hp-structured_text-xgboost-no-lookbehind-filter"
-    structured_text_experiment_path = f"E:/shared_resources/ect/eval_runs/{structured_text_experiment}_best_run_evaluated_on_geographic_test"
+    structured_text_experiment = "ECT-v2-structured_text-xgboost-no-lookbehind-filter"
+    structured_text_experiment_path = (
+        f"E:/shared_resources/ect/eval_runs/{structured_text_experiment}_evaluated_on_test"
+    )
     structured_text_df = read_eval_df_from_disk(structured_text_experiment_path)
 
     # read other dfs
-    structured_only_experiment = "ECT-trunc-and-hp-structured_only-xgboost-no-lookbehind-filter"
+    structured_only_experiment = "ECT-v2-structured_only-xgboost-no-lookbehind-filter"
     structured_only_experiment_path = (
-        f"E:/shared_resources/ect/eval_runs/{structured_only_experiment}_best_run_evaluated_on_test"
+        f"E:/shared_resources/ect/eval_runs/{structured_only_experiment}_evaluated_on_test"
     )
     structured_only_df = read_eval_df_from_disk(structured_only_experiment_path)
 
-    text_only_experiment = "ECT-trunc-and-hp-text_only-xgboost-no-lookbehind-filter"
+    text_only_experiment = "ECT-v2-text_only-xgboost-no-lookbehind-filter"
     text_only_experiment_path = (
-        f"E:/shared_resources/ect/eval_runs/{text_only_experiment}_best_run_evaluated_on_test"
+        f"E:/shared_resources/ect/eval_runs/{text_only_experiment}_evaluated_on_test"
     )
     text_only_df = read_eval_df_from_disk(text_only_experiment_path)
 
@@ -123,10 +125,8 @@ if __name__ == "__main__":
     feature_sets = ["structured_only", "text_only", "structured_text"]
 
     for feature_set_name in feature_sets:
-        experiment = f"ECT-trunc-and-hp-{feature_set_name}-xgboost-no-lookbehind-filter"
-        experiment_path = (
-            f"E:/shared_resources/ect/eval_runs/{experiment}_best_run_evaluated_on_test"
-        )
+        experiment = f"ECT-v2-{feature_set_name}-xgboost-no-lookbehind-filter"
+        experiment_path = f"E:/shared_resources/ect/eval_runs/{experiment}_evaluated_on_test"
         experiment_df = read_eval_df_from_disk(experiment_path)
 
         save_dir = Path(experiment_path + "/figures")

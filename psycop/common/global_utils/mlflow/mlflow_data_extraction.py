@@ -50,12 +50,12 @@ class EvalFrame(ValidatedFrame[pl.DataFrame]):
 
     y_col_rules: Sequence[ValidatorRule] = (
         ColumnExistsRule(),
-        ColumnTypeRule(expected_type=pl.Int64),  # might need to allo pl.Int32 in the future
+        ColumnTypeRule(expected_type=pl.Int32),  # might need to allo pl.Int32 in the future
     )
 
     y_hat_prob_col_rules: Sequence[ValidatorRule] = (
         ColumnExistsRule(),
-        ColumnTypeRule(expected_type=pl.Float64),  # might need to allo pl.Float32 in the future
+        ColumnTypeRule(expected_type=pl.Float32),  # might need to allo pl.Float32 in the future
     )
 
 
@@ -108,7 +108,7 @@ class PsycopMlflowRun(Run):
 
 class MlflowClientWrapper:
     def __init__(self) -> None:
-        tracking_uri = "http://exrhel0371.it.rm.dk:5050"
+        tracking_uri = "http://localhost:5000"
 
         self.client = MlflowClient(tracking_uri=tracking_uri)
         mlflow.set_tracking_uri(tracking_uri)
