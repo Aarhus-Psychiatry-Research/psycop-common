@@ -65,7 +65,7 @@ if __name__ == "__main__":
         datefmt="%Y/%m/%d %H:%M:%S",
     )
 
-    structured_only_experiment = "ECT-v2-structured_only-xgboost-no-lookbehind-filter"
+    structured_only_experiment = "ECT-structured_text-xgboost"
     structured_only_experiment_path = (
         f"E:/shared_resources/ect/eval_runs/{structured_only_experiment}_evaluated_on_test"
     )
