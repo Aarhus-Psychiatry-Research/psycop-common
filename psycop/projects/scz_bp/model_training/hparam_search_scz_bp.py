@@ -10,8 +10,8 @@ if __name__ == "__main__":
     populate_baseline_registry()
     populate_scz_bp_registry()
     OptunaHyperParameterOptimization().from_file(
-        (Path(__file__).parent / "config" / "hparam_tuning" / "scz_bp_structured_only_logreg.cfg"),
-        study_name="structured_only_log_reg_saga_scaler",
+        (Path(__file__).parent / "config" / "hparam_tuning" / "tuning_test.cfg"),
+        study_name="jakob_test",
         n_trials=150,
         n_jobs=15,
         direction="maximize",
