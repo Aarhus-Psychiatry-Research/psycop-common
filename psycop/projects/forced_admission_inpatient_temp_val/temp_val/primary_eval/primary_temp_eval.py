@@ -5,7 +5,7 @@ from psycop.common.model_training_v2.config.config_utils import PsycopConfig
 
 
 def eval_on_temporal_split(model: str, cfg: PsycopConfig):
-    test_run_experiment_name = f"{model}_evaluated_on_full_temporal_split"
+    test_run_experiment_name = f"inv_admission_temp_val_{model}_evaluated_on_full_temporal_split"
 
     test_run_path = (
         "E:/shared_resources/forced_admissions_inpatient_temp_val/"
@@ -36,7 +36,7 @@ def eval_on_temporal_split(model: str, cfg: PsycopConfig):
 
 
 if __name__ == "__main__":
-    model = "primary_eval_log_reg_structured_features"
+    model = "primary_eval_xgboost_full_feature_set"
     cfg = PsycopConfig().from_disk(Path(__file__).parent / "configs" / f"{model}.cfg")
 
     eval_on_temporal_split(model=model, cfg=cfg)
