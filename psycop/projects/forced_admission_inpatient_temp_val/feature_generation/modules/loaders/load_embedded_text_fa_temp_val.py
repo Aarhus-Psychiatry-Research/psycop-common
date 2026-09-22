@@ -25,27 +25,14 @@ class EmbeddedTextLoader:
             raise FileNotFoundError(f"File {filename} not found in {TEXT_EMBEDDINGS_DIR}")
 
     @staticmethod
-    def load_embedded_text(
-        filename: str, text_sfi_names: list[str], include_sfi_name: bool, n_rows: int | None
-    ) -> pl.DataFrame:
+    def load_embedded_text(filename: str) -> pl.DataFrame:
         """Loads embedded text (e.g. from sentence-transformers) from disk.
 
         Args:
             filename (str): Name of file to load from disk. Assumes file is
                 located in TEXT_EMBEDDINGS_DIR.
-            text_sfi_names (list[str]): Which note types to load. See
-                `get_all_valid_text_sfi_names()` for a list of valid note types.
-            include_sfi_name (bool): Whether to include column with sfi name
-                ("overskrift").
-            n_rows (int | None): Number of rows to load. Defaults to None which
-                loads all rows."""
-        EmbeddedTextLoader._validate_input(text_sfi_names=text_sfi_names, filename=filename)
+        """
 
-        embedded_text_df = pl.scan_parquet(TEXT_EMBEDDINGS_DIR / filename).filter(
-            pl.col("overskrift").is_in(text_sfi_names)
-        )
-        if n_rows is not None:
-            embedded_text_df = embedded_text_df.head(n_rows)
-        if not include_sfi_name:
-            embedded_text_df = embedded_text_df.drop("overskrift")
+        embedded_text_df = pl.scan_parquet(TEXT_EMBEDDINGS_DIR / filename)
+
         return embedded_text_df.collect()
