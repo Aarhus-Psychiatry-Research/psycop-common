@@ -22,7 +22,7 @@ pydantic==2.9.0
 pygments>=2.20.0 # Due to SNYK-PYTHON-PYGMENTS-15746419
 pyodbc==4.0.39
 Random-Word==1.0.11
-requests>=2.33.0 # Due to Snyk SNYK-PYTHON-REQUESTS-10305723 / SNYK-PYTHON-REQUESTS-15763443]
+requests>=2.33.0 # Due to Snyk vuln SNYK-PYTHON-REQUESTS-10305723 / SNYK-PYTHON-REQUESTS-15763443]
 setuptools==83.0.0 # Due to Snyk vuln SNYK-PYTHON-SETUPTOOLS-17895075
 scikit-learn==1.5.0
 scipy==1.10.0
@@ -40,4 +40,3 @@ fairlearn==0.10.0
 cryptography==50.0.0 # Due to PYTHON-CRYPTOGRAPHY-18516621
 starlette>=1.0.1 # Due to SNYK-PYTHON-STARLETTE-16881242
 fastapi>=0.136.3 # Due to SNYK-PYTHON-FASTAPI-1303092
-glances==4.5.6 # Due to SNYK-PYTHON-GLANCES-20158934
