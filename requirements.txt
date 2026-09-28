@@ -39,4 +39,5 @@ rapidfuzz==3.6.1
 fairlearn==0.10.0
 cryptography==50.0.0 # Due to PYTHON-CRYPTOGRAPHY-18516621
 starlette>=1.0.1 # Due to SNYK-PYTHON-STARLETTE-16881242
-fastapi>=0.136.3 # SNYK-PYTHON-FASTAPI-1303092
+fastapi>=0.136.3 # Due to SNYK-PYTHON-FASTAPI-1303092
+glances==4.5.6 # Due to SNYK-PYTHON-GLANCES-20158934
