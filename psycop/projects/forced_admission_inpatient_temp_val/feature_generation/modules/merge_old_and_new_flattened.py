@@ -1,7 +1,7 @@
 ### This script merges the old and new flattened data for secondary analysis with modified sliding window temporal validation ###
 
 """
-This script merges the original and new flattened data for secondary analysis with modified sliding window temporal validation.
+This script merges the old and new flattened data for secondary analysis with modified sliding window temporal validation.
 Reports:
   - new patients (dw_ek_borger) introduced by the "newest" dataset
   - patients present in both datasets
@@ -57,11 +57,11 @@ def merge_datasets():
         f"New dataset: {TEMPORAL_VAL_DATASET.name} -> {len(df_temp_val):,} rows, {df_temp_val[PATIENT_COL].nunique():,} unique patients"
     )
 
-    old_patients = set(df_original[PATIENT_COL].unique())
-    new_patients = set(df_temp_val[PATIENT_COL].unique())
+    original_patients = set(df_original[PATIENT_COL].unique())
+    temp_val_patients = set(df_temp_val[PATIENT_COL].unique())
 
-    added_patients = new_patients - old_patients
-    overlapping_patients = new_patients & old_patients
+    added_patients = temp_val_patients - original_patients
+    overlapping_patients = temp_val_patients & original_patients
 
     # ---- Per-dataset timestamp boundaries (before merging) ----
     ts_original = pd.to_datetime(df_original[TIMESTAMP_COL])

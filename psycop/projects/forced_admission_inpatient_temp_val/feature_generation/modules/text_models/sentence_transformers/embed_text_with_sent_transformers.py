@@ -29,10 +29,11 @@ if __name__ == "__main__":
 
     text = load_text(text_sfi_names=text_sfis, include_sfi_name=True)
 
-    model = SentenceTransformer(model_name_or_path=model_str)
-    embeddings = embed_text_to_df(model, text["value"].to_list())
+    model = SentenceTransformer(f"E:/shared_resources/hf-models/{model_str}")
 
-    text = pl.from_pandas(text).drop(columns=["value"])  # type: ignore
+    embeddings = embed_text_to_df(model, text["fritekst"].to_list())
+
+    text = pl.from_pandas(text).drop(columns=["fritekst"])  # type: ignore
 
     embedded_notes = pl.concat([text, embeddings], how="horizontal")  # type: ignore
 

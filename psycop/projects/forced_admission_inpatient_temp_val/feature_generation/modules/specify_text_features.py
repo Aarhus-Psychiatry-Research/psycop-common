@@ -30,9 +30,8 @@ class TextFeatureSpecifier:
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         log.info("-------- Generating sentence transformer specs --------")
-        embedded_text_filename = (
-            "text_embeddings_paraphrase-multilingual-MiniLM-L12-v2_fa_temp_val.parquet"
-        )
+        embedded_text_filename = "fa_temp_val_text_transformer_embeddings_paraphrase-multilingual-MiniLM-L12-v2_2020_2025.parquet"
+
         TEXT_SFIS = [
             "Observation af patient, Psykiatri",
             "Samtale med behandlingssigte",
@@ -48,11 +47,12 @@ class TextFeatureSpecifier:
         ]
 
         embedded_text = EmbeddedTextLoader.load_embedded_text(
-            filename=embedded_text_filename,
-            text_sfi_names=TEXT_SFIS,
-            include_sfi_name=False,
-            n_rows=None,
+            filename=embedded_text_filename
         ).to_pandas()
+
+        embedded_text = embedded_text.rename(
+            columns={"datotid_senest_aendret_i_sfien": "timestamp"}
+        )
 
         embedded_text = df_with_multiple_values_to_named_dataframes(
             df=embedded_text,
@@ -76,7 +76,7 @@ class TextFeatureSpecifier:
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         log.info("-------- Generating tfidf specs --------")
-        embedded_text_filename = "fa_temp_val_text_tfidf_temp_val_split_2020_2025__all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750"
+        embedded_text_filename = "fa_temp_val_text_tfidf_temp_val_split_2020_2025__all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750.parquet"
         TEXT_SFIS = [
             "Observation af patient, Psykiatri",
             "Samtale med behandlingssigte",
@@ -92,10 +92,7 @@ class TextFeatureSpecifier:
         ]
 
         embedded_text = EmbeddedTextLoader.load_embedded_text(
-            filename=embedded_text_filename,
-            text_sfi_names=TEXT_SFIS,
-            include_sfi_name=False,
-            n_rows=None,
+            filename=embedded_text_filename
         ).to_pandas()
 
         embedded_text = df_with_multiple_values_to_named_dataframes(
@@ -115,7 +112,7 @@ class TextFeatureSpecifier:
         return tfidf_specs
 
     def _get_text_specs(
-        self, embedding_method: Literal["tfidf", "sentence_transformer", "both"] = "tfidf"
+        self, embedding_method: Literal["tfidf", "sentence_transformer", "both"] = "both"
     ) -> list[PredictorSpec]:
         """Generate predictor spec list."""
         log.info("-------- Generating text predictor specs --------")

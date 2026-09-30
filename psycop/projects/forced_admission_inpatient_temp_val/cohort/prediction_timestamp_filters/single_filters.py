@@ -12,6 +12,7 @@ from psycop.projects.forced_admission_inpatient_temp_val.cohort.extract_admissio
 )
 from psycop.projects.forced_admission_inpatient_temp_val.cohort.prediction_timestamp_filters.eligible_config import (
     AGE_COL_NAME,
+    MAX_DATE,
     MIN_AGE,
     MIN_DATE,
 )
@@ -20,6 +21,13 @@ from psycop.projects.forced_admission_inpatient_temp_val.cohort.prediction_times
 class ForcedAdmissionsInpatientTempValMinDateFilter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         after_df = df.filter(pl.col("timestamp") > MIN_DATE)
+
+        return after_df
+
+
+class ForcedAdmissionsInpatientTempValMaxDateFilter(PredictionTimeFilter):
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
+        after_df = df.filter(pl.col("timestamp") < MAX_DATE)
 
         return after_df
 

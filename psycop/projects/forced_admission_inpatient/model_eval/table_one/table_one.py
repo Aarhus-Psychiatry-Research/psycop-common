@@ -14,15 +14,20 @@ from psycop.projects.forced_admission_inpatient.model_eval.table_one.table_one_l
     time_of_first_contact_to_psychiatry,
 )
 
+pipeline = get_best_eval_pipeline()
+
 model_train_df = pl.concat(
-    [get_best_eval_pipeline().inputs.get_flattened_split_as_lazyframe(split="train")],
+    [
+        pipeline.inputs.get_flattened_split_as_lazyframe(split="train"),
+        pipeline.inputs.get_flattened_split_as_lazyframe(split="val"),
+    ],
     how="vertical",
-).with_columns(dataset=pl.format("0. train"))
+).with_columns(dataset=pl.format("train"))
 
 
 val_dataset = (
     get_best_eval_pipeline()
-    .inputs.get_flattened_split_as_lazyframe(split="val")
+    .inputs.get_flattened_split_as_lazyframe(split="test")
     .with_columns(dataset=pl.format("val"))
 )
 
@@ -126,7 +131,7 @@ patient_df = (
             pred_sex_female=pl.col("pred_sex_female").first(),
             prediction_timestamp=pl.col("timestamp").min(),
             outcome_timestamp=pl.col(
-                "timestamp_outcome__within_180_days_earliest_fallback_nan_dichotomous"
+                "timestamp_outcome__within_180_days_earliest_fallback_nan"
             ).min(),
             first_contact=pl.col("first_contact").first(),
             dataset=pl.col("dataset").first(),
@@ -166,7 +171,9 @@ patient_table_one = create_table(
 combined = pd.concat([visit_table_one, patient_table_one])
 
 get_best_eval_pipeline().paper_outputs.paths.tables.mkdir(parents=True, exist_ok=True)
-combined.to_csv(get_best_eval_pipeline().paper_outputs.paths.tables / "descriptive_stats_table.csv")
+combined.to_csv(
+    get_best_eval_pipeline().paper_outputs.paths.tables / "descriptive_stats_table_check_up.csv"
+)
 
 # %%
 # %load_ext autoreload

@@ -31,7 +31,7 @@ sqlalchemy==1.4.39
 tableone==0.8.0
 tabulate==0.8.10
 timeseriesflattener==2.5.2
-wandb==0.25.1
+wandb==0.30.0
 wasabi==0.9.1
 xgboost==1.7.3
 imbalanced-learn==0.12.3
@@ -39,4 +39,4 @@ rapidfuzz==3.6.1
 fairlearn==0.10.0
 cryptography==50.0.0 # Due to PYTHON-CRYPTOGRAPHY-18516621
 starlette>=1.0.1 # Due to SNYK-PYTHON-STARLETTE-16881242
-fastapi>=0.136.3 # SNYK-PYTHON-FASTAPI-1303092
+fastapi>=0.136.3 # Due to SNYK-PYTHON-FASTAPI-1303092

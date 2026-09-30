@@ -14,6 +14,7 @@ from psycop.projects.forced_admission_inpatient_temp_val.cohort.extract_admissio
     admissions_discharge_timestamps_2025,
 )
 from psycop.projects.forced_admission_inpatient_temp_val.cohort.prediction_timestamp_filters.single_filters import (
+    ForcedAdmissionsInpatientTempValMaxDateFilter,
     ForcedAdmissionsInpatientTempValMinAgeFilter,
     ForcedAdmissionsInpatientTempValMinDateFilter,
     ForcedAdmissionsInpatientTempValWashoutMove,
@@ -41,6 +42,7 @@ class ForcedAdmissionsInpatientTempValCohortDefiner(CohortDefiner):
                 prediction_times=unfiltered_prediction_times,
                 filtering_steps=(
                     ForcedAdmissionsInpatientTempValMinDateFilter(),
+                    ForcedAdmissionsInpatientTempValMaxDateFilter(),
                     ForcedAdmissionsInpatientTempValMinAgeFilter(),
                     ForcedAdmissionsInpatientTempValWashoutMove(),
                     ForcedAdmissionsInpatientTempValWashoutPriorForcedAdmission(),
