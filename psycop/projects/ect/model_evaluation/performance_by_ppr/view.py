@@ -65,12 +65,10 @@ if __name__ == "__main__":
         datefmt="%Y/%m/%d %H:%M:%S",
     )
 
-    structured_only_experiment = "ECT-structured_text-xgboost"
-    structured_only_experiment_path = (
-        f"E:/shared_resources/ect/eval_runs/{structured_only_experiment}_evaluated_on_test"
-    )
-    structured_only_df = read_eval_df_from_disk(structured_only_experiment_path)
-    eval_df = EvalFrame(frame=structured_only_df, allow_extra_columns=True)
+    experiment = "ECT-structured_text-xgboost"
+    experiment_path = f"E:/shared_resources/ect/eval_runs/{experiment}_evaluated_on_test"
+    eval_dataset = read_eval_df_from_disk(experiment_path)
+    eval_df = EvalFrame(frame=eval_dataset, allow_extra_columns=True)
 
     table = performance_by_ppr_view(
         performance_by_ppr_model(
@@ -78,4 +76,4 @@ if __name__ == "__main__":
         ),
         outcome_label="ECT",
     )
-    table.write_excel(f"{structured_only_experiment_path}/performance_by_ppr.xlsx")
+    table.write_excel(f"{experiment_path}/performance_by_ppr.xlsx")

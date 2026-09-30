@@ -1,13 +1,11 @@
 # type: ignore
-import pathlib
 import re
 from pathlib import Path
 
+import joblib
 import pandas as pd
 import polars as pl
 from sklearn.pipeline import Pipeline
-
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 
 
 def ect_parse_static_feature(full_string: str) -> str:
@@ -81,15 +79,15 @@ def ect_generate_feature_importance_table(
 def ect_feature_importance_table_facade(pipeline: Pipeline, output_dir: Path) -> None:
     feat_imp = ect_generate_feature_importance_table(pipeline=pipeline, clf_model_name="classifier")
     pl.Config.set_tbl_rows(100)
+    output_dir.mkdir(exist_ok=True, parents=True)
     (output_dir / "feature_importance.html").write_text(feat_imp.to_html())
 
 
 if __name__ == "__main__":
-    run = MlflowClientWrapper().get_run("ECT random split test set, xgboost", "structured_text")
+    experiment = "ECT-structured_text-xgboost"
+    experiment_path = f"E:/shared_resources/ect/eval_runs/{experiment}_evaluated_on_test"
+    pipeline = joblib.load(Path(experiment_path) / "sklearn_pipe.pkl")
 
-    feat_imp = ect_generate_feature_importance_table(
-        pipeline=run.sklearn_pipeline(), clf_model_name="classifier"
+    feat_imp = ect_feature_importance_table_facade(
+        pipeline=pipeline, output_dir=Path(f"{experiment_path}/tables")
     )
-    pl.Config.set_tbl_rows(100)
-
-    pathlib.Path("ect_feature_importances.html").write_text(feat_imp.to_html())
