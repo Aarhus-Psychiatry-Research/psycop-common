@@ -22,8 +22,5 @@ class AUROCByQuarterPlot(SingleRunPlot):
         logging.info(f"Starting {self.__class__.__name__}")
 
         return auroc_by_view(
-            df=self.data.to_pandas(),
-            x_column="time_bin",
-            line_y_col_name="auroc",
-            xlab="Month of Year",
+            df=self.data.to_pandas(), x_column="time_bin", line_y_col_name="auroc", xlab="Year"
         )

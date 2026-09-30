@@ -6,7 +6,7 @@ from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame
 from psycop.common.model_evaluation.binary.time.timedelta_data import get_auroc_by_timedelta_df
 from psycop.projects.ect.model_evaluation.uuid_parsers import (
     parse_dw_ek_borger_from_uuid,
-    parse_timestamp_from_uuid,
+    parse_timestamp_from_uuid_dashed_version,
 )
 
 TimeFromFirstVisitDF = NewType("TimeFromFirstVisitDF", pl.DataFrame)
@@ -15,7 +15,9 @@ TimeFromFirstVisitDF = NewType("TimeFromFirstVisitDF", pl.DataFrame)
 def auroc_by_time_from_first_visit_model(
     eval_frame: EvalFrame, all_visits_df: pl.DataFrame
 ) -> TimeFromFirstVisitDF:
-    eval_dataset = parse_dw_ek_borger_from_uuid(parse_timestamp_from_uuid(eval_frame.frame))
+    eval_dataset = parse_dw_ek_borger_from_uuid(
+        parse_timestamp_from_uuid_dashed_version(eval_frame.frame)
+    )
 
     first_visit = (
         all_visits_df.sort("timestamp", descending=False)

@@ -7,7 +7,7 @@ from psycop.common.global_utils.cache import shared_cache
 from psycop.projects.ect.model_evaluation.auroc_by.auroc_by_model import auroc_by_model
 from psycop.projects.ect.model_evaluation.uuid_parsers import (
     parse_dw_ek_borger_from_uuid,
-    parse_timestamp_from_uuid,
+    parse_timestamp_from_uuid_dashed_version,
 )
 
 AUROCByAgeDF = NewType("AUROCByAgeDF", pl.DataFrame)
@@ -28,7 +28,10 @@ def auroc_by_age_model(
     eval_df: pl.DataFrame, birthdays: pl.DataFrame, bins: Sequence[float]
 ) -> AUROCByAgeDF:
     eval_dataset = (
-        add_age(parse_timestamp_from_uuid(parse_dw_ek_borger_from_uuid(eval_df)), birthdays)
+        add_age(
+            parse_timestamp_from_uuid_dashed_version(parse_dw_ek_borger_from_uuid(eval_df)),
+            birthdays,
+        )
     ).to_pandas()
 
     df = auroc_by_model(

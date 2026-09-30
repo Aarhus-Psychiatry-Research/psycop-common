@@ -105,6 +105,7 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
             "median_warning_days",
             "prop with ≥1 true positive",
             "prop of all events captured",
+            "total_warning_days_for_true_positives",
         ],
         axis=1,
     )
@@ -122,12 +123,20 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
             "false_negatives": "FN",
             "f1": "F1",
             "mcc": "MCC",
+            "mean_warning_days_for_true_positives": "Mean warning days for TPs",
+            "median_warning_days_for_true_positives": "Median warning days for TPs",
         },
         axis=1,
     )
 
     # Handle proportion columns
-    prop_cols = [c for c in renamed_df.columns if renamed_df[c].dtype == "float64"]
+    prop_cols = [
+        c
+        for c in renamed_df.columns
+        if renamed_df[c].dtype == "float64"
+        and c not in {"Mean warning days for TPs", "Median warning days for TPs"}
+    ]
+
     for c in prop_cols:
         renamed_df[c] = renamed_df[c].apply(format_prop_as_percent)
 
@@ -135,8 +144,6 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
     count_cols = [c for c in renamed_df.columns if renamed_df[c].dtype == "int64"]
     for col in count_cols:
         renamed_df[col] = renamed_df[col].apply(format_with_thousand_separator)
-
-    renamed_df["Median days from first positive to outcome"] = round(df["median_warning_days"], 1)
 
     return renamed_df
 
@@ -176,17 +183,17 @@ def fa_outpatient_output_performance_by_ppr(
     df = clean_up_performance_by_ppr(df)
 
     if eval_dir:
-        (Path(eval_dir) / "figure_and_tables").mkdir(parents=True, exist_ok=True)
-        df.to_excel(Path(eval_dir) / "figure_and_tables" / "performance_by_ppr.xlsx", index=False)
+        (Path(eval_dir) / "tables").mkdir(parents=True, exist_ok=True)
+        df.to_excel(Path(eval_dir) / "tables" / "performance_by_ppr.xlsx", index=False)
         return None
 
     return df
 
 
 if __name__ == "__main__":
-    experiment_name = "full_model_without_text_features_TEST"
+    experiment_name = "ia_outpatient_all_features_training"
     eval_dir = f"E:/shared_resources/forced_admissions_outpatient/eval_runs/{experiment_name}_best_run_evaluated_on_test"
-    flattend_df_dir = "E:/shared_resources/forced_admissions_outpatient/flattened_datasets/structured_feature_set/structured_feature_set.parquet"
+    flattend_df_dir = "E:/shared_resources/forced_admissions_outpatient/flattened_datasets/full_feature_set/full_feature_set.parquet"
     outcome_timestamp_col_name = "timestamp_outcome__within_180_days_earliest_fallback_nan"
 
     fa_outpatient_output_performance_by_ppr(
