@@ -45,6 +45,7 @@ def physical_visits(
         "emergency_visits",
     ),
     return_shak_location: bool = False,
+    remove_na_timestamp_rows: bool = False,
 ) -> pd.DataFrame:
     """Load pshysical visits to both somatic and psychiatry.
 
@@ -59,6 +60,7 @@ def physical_visits(
         return_value_as_visit_length_days (Optional[bool], optional): Whether to return length of visit in days as the value for the loader. Defaults to False which results in value=1 for all visits.
         visit_types (list[Literal["admissions", "ambulatory_visits", "emergency_visits"]]]): Which visit types to load. Defaults to ["admissions", "ambulatory_visits", "emergency_visits"].
         return_shak_location (bool): Whether to return the shak code of the visit
+        remove_na_timestamp_rows (bool): Whether to remove rows where the timestamp value is NA (e.g. end of admission timestamps for admissions that overlap the end of the dataset). Defaults to True
 
     Returns:
         pd.DataFrame: Dataframe with all physical visits to psychiatry. Has columns dw_ek_borger and timestamp.
@@ -152,7 +154,8 @@ def physical_visits(
     output_df = output_df.drop_duplicates(
         subset=[output_timestamp_col_name, "dw_ek_borger"], keep="first"
     )
-    output_df = output_df.dropna(subset=[output_timestamp_col_name])  # type: ignore
+    if remove_na_timestamp_rows:
+        output_df = output_df.dropna(subset=[output_timestamp_col_name])  # type: ignore
 
     # Change value column to length of admission in days
     if return_value_as_visit_length_days:
@@ -221,6 +224,7 @@ def admissions(
     shak_sql_operator: Union[str, None] = None,
     timestamp_for_output: Literal["start", "end"] = "end",
     timestamps_only: bool = False,
+    remove_na_timestamp_rows: bool = True,
 ) -> pd.DataFrame:
     """Load admissions."""
     df = physical_visits(
@@ -230,6 +234,7 @@ def admissions(
         shak_code=shak_code,
         shak_sql_operator=shak_sql_operator,
         timestamp_for_output=timestamp_for_output,
+        remove_na_timestamp_rows=remove_na_timestamp_rows,
     )
     if timestamps_only:
         df = df.drop(columns=["value"])
