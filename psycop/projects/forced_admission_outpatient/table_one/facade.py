@@ -16,8 +16,8 @@ def table_one_facade(output_dir: Path, run: PsycopMlflowRun, sex_col_name: str =
     out_dir = output_dir / "tables"
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    view.to_excel(output_dir / "tables" / "table_1_fa_temp_val.xlsx")
-    view.to_csv(output_dir / "tables" / "table_1_fa_temp_val.csv")
+    view.to_excel(output_dir / "tables" / "table_1_fao.xlsx")
+    view.to_csv(output_dir / "tables" / "table_1_fao.csv")
 
 
 if __name__ == "__main__":
