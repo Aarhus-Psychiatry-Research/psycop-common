@@ -13,7 +13,7 @@ def decision_curve_analysis(eval_df: pl.DataFrame) -> dict:  # type: ignore
     y_prob = np.array(eval_df["y_hat_prob"])
 
     # Define thresholds excluding 0 and 1 to avoid division by zero
-    thresholds = np.linspace(0.01, 0.99, 100)
+    thresholds = np.linspace(0.001, 0.99, 100)
 
     # Number of samples
     n = len(y_true)
@@ -82,8 +82,8 @@ def plot_decision_curve(dca: dict, save_dir: Path):  # type: ignore
     plt.legend(loc="best")
     plt.grid(True)
 
-    plt.xlim(0, 0.2)
-    plt.ylim(-0.2, 0.15)
+    plt.xlim(0, 0.05)
+    plt.ylim(-0.05, 0.02)
 
     save_dir.mkdir(parents=True, exist_ok=True)
     save_path_png = save_dir / "figures" / "dca.png"
