@@ -8,7 +8,7 @@ hydra-optuna-sweeper==1.2.0
 ipython==8.10.0
 iterpy==1.6.0
 Levenshtein==0.21.0
-mlflow>=3.11.0 # Due to SNYK-PYTHON-MLFLOW-17135851
+mlflow==3.17.2 # Due to SNYK-PYTHON-MLFLOW-17135851
 matplotlib==3.9.1
 numpy==1.26.0
 pandas==2.0.3
@@ -17,13 +17,13 @@ plotly==5.22.0
 plotnine==0.12.2
 polars==0.20.10
 protobuf==5.29.6 # Due to Snyk vuln SNYK-PYTHON-PROTOBUF-10364902
-pyarrow==14.0.1
+pyarrow==25.0.0 # Due to SNYK-PYTHON-PYARROW-21279727
 pydantic==2.9.0
 pygments>=2.20.0 # Due to SNYK-PYTHON-PYGMENTS-15746419
 pyodbc==4.0.39
 Random-Word==1.0.11
 requests>=2.33.0 # Due to Snyk vuln SNYK-PYTHON-REQUESTS-10305723 / SNYK-PYTHON-REQUESTS-15763443]
-setuptools==83.0.0 # Due to Snyk vuln SNYK-PYTHON-SETUPTOOLS-17895075
+setuptools==84.1.0 # Due to Snyk vuln SNYK-PYTHON-SETUPTOOLS-21689156
 scikit-learn==1.5.0
 scipy==1.10.0
 shap==0.41.0
@@ -39,4 +39,5 @@ rapidfuzz==3.6.1
 fairlearn==0.10.0
 cryptography==50.0.0 # Due to PYTHON-CRYPTOGRAPHY-18516621
 starlette>=1.0.1 # Due to SNYK-PYTHON-STARLETTE-16881242
-fastapi>=0.136.3 # Due to SNYK-PYTHON-FASTAPI-1303092
+fastapi>=0.136.3 # Due to SNYK-PYTHON-FASTAPI-1303092 
+pillow==13.0.0 # Due to SNYK-PYTHON-PILLOW-21277776

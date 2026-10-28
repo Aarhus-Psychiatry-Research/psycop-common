@@ -367,10 +367,22 @@ ignore:
         created: 2026-08-31T10:04:00.000Z
   SNYK-PYTHON-MLFLOW-19653590:
     - '*':
-        reason: Vulnerability related to Unsafe Dependency Resolution through the model artifact loading process in the project’s model handling components. We do not use this functionality in MLflow. Approved via slack conversation in programming channel on xxx.
+        reason: Vulnerability related to Unsafe Dependency Resolution through the model artifact loading process in the project’s model handling components. We do not use this functionality in MLflow. Approved via slack conversation in programming channel on 26-09-18.
         created: 2026-09-14T12:40:00.000Z
   SNYK-PYTHON-TRANSFORMERS-19500670:
     - '*':
-        reason: Vulnerability allowing an attacker to inject malicious code in custom_generate/generate.py file, which can be logged in the cache to avoid the trust_remote_code=False flag. We have added a checkpoint to the model approval proces that adresses this specificallu. Approved via slack conversation in programming channel on xxx.
+        reason: Vulnerability allowing an attacker to inject malicious code in custom_generate/generate.py file, which can be logged in the cache to avoid the trust_remote_code=False flag. We have added a checkpoint to the model approval proces that adresses this specificallu. Approved via slack conversation in programming channel on 26-09-18.
+        created: 2026-09-14T12:40:00.000Z
+  SNYK-PYTHON-PYARROW-21279727:
+    - '*':
+        reason: Pyarrow not used directly in the code. Approved via slack conversation in programming channel on 26-10-28.
+        created: 2026-10-28T10:04:00.000Z
+  SNYK-PYTHON-MLFLOW-21460702:
+    - '*':
+        reason: Vulnerability related to the FileStore-backend. We deem it difficult to exploit due to offline MLflow server. Approved via slack conversation in programming channel on 26-10-28.
+        created: 2026-09-14T12:40:00.000Z
+  SNYK-PYTHON-SQLPARSE-21248801:
+    - '*':
+        reason: Vulnerability related to Arbitrary Code Injection. SQLparse not used directly in the code. Approved via slack conversation in programming channel on 26-10-28.
         created: 2026-09-14T12:40:00.000Z
 patch: {}
