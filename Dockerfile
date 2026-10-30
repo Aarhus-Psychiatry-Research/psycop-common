@@ -1,4 +1,4 @@
-FROM python:3.10
+FROM python:3.11
 
 ENV UV_SYSTEM_PYTHON=1
 
