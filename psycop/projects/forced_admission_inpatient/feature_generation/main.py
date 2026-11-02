@@ -146,6 +146,6 @@ if __name__ == "__main__":
         limited_feature_set=True,
         lookbehind_180d_mean=False,
         washout_on_prior_forced_admissions=True,
-        feature_set_name="limited_features_set_demographics_diagnoses",
+        feature_set_name="test",
         generate_in_chunks=False,
     )
