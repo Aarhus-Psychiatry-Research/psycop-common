@@ -66,5 +66,5 @@ def run_perf_from_run(run: PsycopMlflowRun) -> TemporalRunPerformance | None:
 
 
 def temporal_stability(runs: Sequence[PsycopMlflowRun]) -> Sequence[TemporalRunPerformance]:
-    """Temporal stability model for T2D Extended."""
+    """Temporal stability model."""
     return [auc for run in runs if (auc := run_perf_from_run(run)) is not None]

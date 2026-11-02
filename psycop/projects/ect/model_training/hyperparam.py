@@ -36,14 +36,11 @@ def hyperparameter_search(cfg: PsycopConfig):
 
     # Set run name
     for feature_set, features in FEATURE_SETS.items():
-        cfg.mut(
-            "logger.*.mlflow.experiment_name",
-            f"ECT-trunc-and-hp-{feature_set}-xgboost-no-lookbehind-filter",
-        )
+        cfg.mut("logger.*.mlflow.experiment_name", f"test_ECT-{feature_set}-xgboost")
 
         cfg.mut(
             "logger.*.disk_logger.run_path",
-            f"E:/shared_resources/ect/training/ECT-trunc-and-hp-{feature_set}-xgboost-no-lookbehind-filter",
+            f"E:/shared_resources/ect/training/test_ECT{feature_set}-xgboost",
         )
 
         layer_regex = "|".join(features)

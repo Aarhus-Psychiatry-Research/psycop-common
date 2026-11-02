@@ -137,7 +137,7 @@ class MlflowClientWrapper:
     def get_best_run_from_experiment(
         self, experiment_name: str, metric: str, larger_is_better: bool = True
     ) -> PsycopMlflowRun:
-        """Get the best run from one or more experiments based on some metric,
+        """Get the best run from one or rmore experiments based on some metric,
         e.g. 'all_oof_BinaryAUROC'"""
         order = "DESC" if larger_is_better else "ASC"
 
@@ -161,12 +161,10 @@ class MlflowClientWrapper:
 
 
 if __name__ == "__main__":
-    df = MlflowClientWrapper().get_all_metrics_for_experiment("text_exp")
-
     best_config = (
         MlflowClientWrapper()
         .get_best_run_from_experiment(
-            experiment_name="scz-bp_3_year_lookahead", metric="all_oof_BinaryAUROC"
+            experiment_name="ECT-structured_only-xgboost", metric="all_oof_BinaryAUROC"
         )
         .get_config()
     )

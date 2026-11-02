@@ -124,7 +124,7 @@ def eval_stratified_split(
 def evaluate_feature_set_and_year(
     feature_set: str, train_end_year: int
 ) -> tuple[int, dict[int, float | None]]:
-    experiment_name = f"ECT-trunc-and-hp-{feature_set}-xgboost-no-lookbehind-filter"
+    experiment_name = f"ECT-{feature_set}-xgboost"
 
     evaluation_years = range(train_end_year, 22)
     year_aurocs = {
