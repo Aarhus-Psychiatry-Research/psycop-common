@@ -6,7 +6,6 @@ from wasabi import Printer
 
 from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
     generate_performance_by_ppr_table,
-    get_true_positives,
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.projects.ect.model_evaluation.utils import (
@@ -43,44 +42,6 @@ def _get_num_of_unique_outcome_events(eval_dataset: EvalDataset) -> int:
     num_unique = df[df["y"] == 1][["id", "outcome_timestamps"]].drop_duplicates().shape[0]
 
     return num_unique
-
-
-def _get_number_of_outcome_events_with_at_least_one_true_positve(
-    eval_dataset: EvalDataset, positive_rate: float, min_alert_days: None | int = 30
-) -> float:
-    """Get number of outcomes with a prediction time that has at least one true positive prediction.
-
-    Args:
-        eval_dataset (EvalDataset): EvalDataset object.
-        positive_rate (float, optional): Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
-        min_alert_days (None | int, optional): Minimum number of days a positive prediction must be made before the outcome event for it to be considered actionable/beneficial. Defaults to 30.
-
-    Returns:
-        float: Number of outcomes with at least one true positive.
-    """
-
-    # Generate df with only true positives
-    tp_df = get_true_positives(eval_dataset=eval_dataset, positive_rate=positive_rate)
-
-    # If min alert days is not None, creatre a column that calculates the number of days from pred_timestamps to outcome_timestamps
-    if min_alert_days is not None:
-        tp_df["days_from_pred_to_outcome"] = (
-            tp_df["outcome_timestamps"] - tp_df["pred_timestamps"]
-        ).dt.days
-
-        # group by id and outcome_timestamps and sort by days_from_pred_to_outcome from highest to lowest
-        tp_df = tp_df.sort_values(
-            by=["id", "outcome_timestamps", "days_from_pred_to_outcome"],
-            ascending=[True, True, False],
-        )
-
-        # if the first row of days_from_pred_to_outcome for each id and outcome id is smaller than min_alert_days, drop all rows for that id and outcome id
-        tp_df = tp_df.groupby(["id", "outcome_timestamps"]).filter(
-            lambda x: x["days_from_pred_to_outcome"].iloc[0] >= min_alert_days
-        )
-
-    # Return number of outcome events with at least one true positives
-    return tp_df[["id", "outcome_timestamps"]].drop_duplicates().shape[0]
 
 
 def format_with_thousand_separator(num: int) -> str:
@@ -151,7 +112,7 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
 def ect_output_performance_by_ppr(
     eval_df: pd.DataFrame,
     eval_dir: str | None = None,
-    positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01, 0.001],
+    positive_rates: Sequence[float] = [0.01, 0.02, 0.03, 0.05, 0.075, 0.1, 0.2, 0.5],
 ) -> pd.DataFrame | None:
     eval_dataset = _df_to_eval_dataset(eval_df)
 
@@ -165,19 +126,6 @@ def ect_output_performance_by_ppr(
 
     df["Number of positive outcomes in test set (TP+FN)"] = (
         df["true_positives"] + df["false_negatives"]
-    )
-
-    df["Number of unique outcome events detected ≥1"] = [
-        _get_number_of_outcome_events_with_at_least_one_true_positve(
-            eval_dataset=eval_dataset, positive_rate=pos_rate
-        )
-        for pos_rate in positive_rates
-    ]
-
-    df["Prop. of unique outcome events detected ≥1"] = round(
-        df["Number of unique outcome events detected ≥1"]
-        / df["Total number of unique outcome events"],
-        3,
     )
 
     df = clean_up_performance_by_ppr(df)
@@ -197,10 +145,5 @@ if __name__ == "__main__":
     outcome_timestamp_col_name = "outc_ect_value_within_0_to_60_days_max_fallback_0"
 
     ect_output_performance_by_ppr(
-        expand_eval_df_with_extra_cols(
-            read_eval_df_from_disk(experiment_path),
-            flattend_df_dir,
-            outcome_timestamp_col_name=outcome_timestamp_col_name,
-        ),
-        experiment_path,
+        expand_eval_df_with_extra_cols(read_eval_df_from_disk(experiment_path)), experiment_path
     )

@@ -8,6 +8,9 @@ from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_spli
     FilterByOutcomeStratifiedSplits,
     RegionalFilter,
 )
+from psycop.projects.ect.feature_generation.cohort_definition.outcome_specification.procedure_codes import (
+    get_ect_procedures,
+)
 
 
 def log_cross_val_eval_df_from_best_run(experiment_name: str):
@@ -130,14 +133,29 @@ def add_age(df: pl.DataFrame, birthdays: pl.DataFrame, age_col_name: str = "age"
     return df
 
 
-def expand_eval_df_with_extra_cols(
-    eval_df: pl.DataFrame, flattened_df_path: str, outcome_timestamp_col_name: str | None = None
-) -> pd.DataFrame:
+def expand_eval_df_with_extra_cols(eval_df: pl.DataFrame) -> pd.DataFrame:
     birthdates = pl.from_pandas(birthdays())
 
     eval_df = parse_timestamp_from_uuid(eval_df)
     eval_df = parse_dw_ek_borger_from_uuid(eval_df)
     eval_df = add_age(eval_df, birthdates)
-    eval_df = parse_outcome_timestamps(eval_df, flattened_df_path, outcome_timestamp_col_name)
+
+    procedure_codes = (
+        get_ect_procedures()
+        .select("dw_ek_borger", "timestamp")
+        .rename({"timestamp": "timestamp_outcome"})
+    )
+
+    only_prediction_times_with_ect = eval_df.join(procedure_codes, on="dw_ek_borger", how="inner")
+
+    ect_after_prediction_time = only_prediction_times_with_ect.filter(
+        pl.col("timestamp") < pl.col("timestamp_outcome")
+    )
+
+    ect_closest_to_prediction_time = ect_after_prediction_time.groupby("pred_time_uuid").agg(
+        pl.min("timestamp_outcome")
+    )
+
+    eval_df = eval_df.join(ect_closest_to_prediction_time, on="pred_time_uuid", how="left")
 
     return eval_df.to_pandas()
