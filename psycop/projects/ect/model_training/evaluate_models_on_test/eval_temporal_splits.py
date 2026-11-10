@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import Optional
 
 from joblib import Parallel, delayed
@@ -18,26 +17,11 @@ def eval_stratified_split(
 ) -> float | None:
     if test_data_path is None:
         test_data_path = [
-            "E:/shared_resources/ect/feature_set/flattened_datasets/ect_feature_set/ect_feature_set.parquet"
+            "E:/shared_resources/ect/feature_set/flattened_datasets/ect_feature_df/ect_feature_df.parquet"
         ]
     test_run_experiment_name = f"{experiment_name}_best_run_temporal_eval"
 
     test_run_path = "E:/shared_resources/" + "/ect" + "/eval_runs/" + test_run_experiment_name
-
-    if Path(test_run_path).exists():
-        while True:
-            response = input(
-                f"This path '{test_run_path}' already exists. Do you want to potentially overwrite the contents of this folder with new feature sets? (yes/no): "
-            )
-
-            if response.lower() not in ["yes", "y", "no", "n"]:
-                print("Invalid response. Please enter 'yes/y' or 'no/n'.")
-            if response.lower() in ["no", "n"]:
-                print("Process stopped.")
-                return None
-            if response.lower() in ["yes", "y"]:
-                print("Content of folder may be overwritten.")
-                break
 
     outcome_col_name: str = cfg.retrieve("trainer.outcome_col_name")
 
@@ -52,6 +36,7 @@ def eval_stratified_split(
             "logger.*.mlflow.run_name",
             f"{training_end_date}_{evaluation_interval[0]}_{evaluation_interval[1]}",
         )
+        .mut("logger.*.disk_logger.run_path", test_run_path)
         .mut("trainer.@trainers", "split_trainer_separate_preprocessing")
         .rem("trainer.outcome_col_name")  # Separate for train and test later
         .rem("trainer.preprocessing_pipeline")  # Separate for train and test

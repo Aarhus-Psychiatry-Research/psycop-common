@@ -62,7 +62,9 @@ if __name__ == "__main__":
     coloredlogs.install(level="INFO", fmt="%(asctime)s [%(levelname)s] %(message)s")
 
     for feature_set in ["structured_only", "text_only", "structured_text"]:
-        runs = MlflowClientWrapper().get_runs_from_experiment(f"ECT-{feature_set}-xgboost")
+        runs = MlflowClientWrapper().get_runs_from_experiment(
+            f"ECT-{feature_set}-xgboost_best_run_temporal_eval"
+        )
         performances = temporal_stability(runs)
         for is_relative_time in [True, False]:
             relative_time_str = "relative" if is_relative_time else "absolute"
