@@ -130,7 +130,7 @@ def fa_inpatient_output_performance_by_ppr(
     run: ForcedAdmissionInpatientPipelineRun,
     save: bool = True,
     positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
-    min_alert_days: None | int = 30,
+    min_alert_days: None | int = None,
 ) -> pd.DataFrame | None:
     output_path = (
         run.paper_outputs.paths.tables / run.paper_outputs.artifact_names.performance_by_ppr

@@ -16,7 +16,7 @@ from psycop.projects.forced_admission_inpatient.model_eval.table_one.table_one_l
 
 pipeline = get_best_eval_pipeline()
 
-model_train_df = pl.concat(
+train_dataset = pl.concat(
     [
         pipeline.inputs.get_flattened_split_as_lazyframe(split="train"),
         pipeline.inputs.get_flattened_split_as_lazyframe(split="val"),
@@ -25,13 +25,11 @@ model_train_df = pl.concat(
 ).with_columns(dataset=pl.format("train"))
 
 
-val_dataset = (
-    get_best_eval_pipeline()
-    .inputs.get_flattened_split_as_lazyframe(split="test")
-    .with_columns(dataset=pl.format("val"))
+test_dataset = pipeline.inputs.get_flattened_split_as_lazyframe(split="test").with_columns(
+    dataset=pl.format("test")
 )
 
-flattened_combined = pl.concat([model_train_df, val_dataset], how="vertical").rename(
+flattened_combined = pl.concat([train_dataset, test_dataset], how="vertical").rename(
     {"prediction_time_uuid": "pred_time_uuid"}
 )
 
