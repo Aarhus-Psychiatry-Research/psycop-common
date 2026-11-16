@@ -84,10 +84,11 @@ def ect_feature_importance_table_facade(pipeline: Pipeline, output_dir: Path) ->
 
 
 if __name__ == "__main__":
-    experiment = "ECT-structured_text-xgboost"
-    experiment_path = f"E:/shared_resources/ect/eval_runs/{experiment}_evaluated_on_test"
-    pipeline = joblib.load(Path(experiment_path) / "sklearn_pipe.pkl")
+    for feature_set in ["structured_only", "text_only", "structured_text"]:
+        experiment = f"ECT-{feature_set}-xgboost"
+        experiment_path = f"E:/shared_resources/ect/eval_runs/{experiment}_evaluated_on_test"
+        pipeline = joblib.load(Path(experiment_path) / "sklearn_pipe.pkl")
 
-    feat_imp = ect_feature_importance_table_facade(
-        pipeline=pipeline, output_dir=Path(f"{experiment_path}/tables")
-    )
+        feat_imp = ect_feature_importance_table_facade(
+            pipeline=pipeline, output_dir=Path(f"{experiment_path}/tables")
+        )

@@ -139,11 +139,10 @@ def ect_output_performance_by_ppr(
 
 
 if __name__ == "__main__":
-    experiment = "ECT-structured_text-xgboost"
-    experiment_path = f"E:/shared_resources/ect/eval_runs/{experiment}_evaluated_on_test"
-    flattend_df_dir = "E:/shared_resources/ect/feature_set/flattened_datasets/ect_feature_df/ect_feature_df.parquet"
-    outcome_timestamp_col_name = "outc_ect_value_within_0_to_60_days_max_fallback_0"
+    for feature_set in ["structured_only", "text_only", "structured_text"]:
+        experiment = f"ECT-{feature_set}-xgboost"
+        experiment_path = f"E:/shared_resources/ect/eval_runs/{experiment}_evaluated_on_test"
 
-    ect_output_performance_by_ppr(
-        expand_eval_df_with_extra_cols(read_eval_df_from_disk(experiment_path)), experiment_path
-    )
+        ect_output_performance_by_ppr(
+            expand_eval_df_with_extra_cols(read_eval_df_from_disk(experiment_path)), experiment_path
+        )
