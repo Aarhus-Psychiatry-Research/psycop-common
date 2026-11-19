@@ -7,24 +7,7 @@ from psycop.common.model_training_v2.hyperparameter_suggester.optuna_hyperparame
 )
 
 FEATURE_SETS = {
-    "structured_only": [
-        "basic",
-        "contacts",
-        "ham-broset",
-        "diagnoses",
-        "medication",
-        "leave-suicide",
-    ],
-    "text_only": ["text"],
-    "structured_text": [
-        "basic",
-        "contacts",
-        "ham-broset",
-        "diagnoses",
-        "medication",
-        "leave-suicide",
-        "text",
-    ],
+    "structured": ["basic", "contacts", "ham-broset", "diagnoses", "medication", "leave-suicide"]
 }
 
 
@@ -40,7 +23,7 @@ def hyperparameter_search(cfg: PsycopConfig):
 
         cfg.mut(
             "logger.*.disk_logger.run_path",
-            f"E:/shared_resources/ect/training/ECT{feature_set}-xgboost",
+            f"E:/shared_resources/ect/training/ECT-{feature_set}-xgboost",
         )
 
         layer_regex = "|".join(features)

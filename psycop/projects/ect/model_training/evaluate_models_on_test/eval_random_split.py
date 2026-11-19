@@ -90,7 +90,7 @@ def eval_random_split_test_set(
 if __name__ == "__main__":
     populate_baseline_registry()
 
-    feature_sets = ["structured_only", "text_only", "structured_text"]
+    feature_sets = ["structured_only"]
 
     for feature_set in feature_sets:
         eval_random_split_test_set(
