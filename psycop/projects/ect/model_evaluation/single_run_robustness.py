@@ -1,9 +1,11 @@
 import logging
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import patchworklib as pw
 import polars as pl
 
+from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
 from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits_to_psychiatry
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame
 from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
@@ -74,12 +76,24 @@ if __name__ == "__main__":
     from psycop.common.global_utils.mlflow.mlflow_data_extraction import EvalFrame
     from psycop.projects.restraint.evaluation.utils import read_eval_df_from_disk
 
-    experiment = "ECT-trunc-and-hp-structured_only-xgboost-no-lookbehind-filter"
-    experiment_path = f"E:/shared_resources/ect/eval_runs/{experiment}_best_run_evaluated_on_test"
-    experiment_df = read_eval_df_from_disk(experiment_path)
-    eval_frame = EvalFrame(frame=experiment_df, allow_extra_columns=True)
-    all_visits_df = pl.from_pandas(physical_visits_to_psychiatry())
+    for feature_set in ["structured_only", "text_only", "structured_text"]:
+        experiment = f"ECT-{feature_set}-xgboost"
+        experiment_path = f"E:/shared_resources/ect/eval_runs/{experiment}_evaluated_on_test"
+        experiment_df = read_eval_df_from_disk(experiment_path)
+        eval_frame = EvalFrame(frame=experiment_df, allow_extra_columns=True)
 
-    time_from_first_run = AUROCByTimeFromFirstVisitPlot(
-        auroc_by_time_from_first_visit_model(eval_frame=eval_frame, all_visits_df=all_visits_df)  # type: ignore
-    ).__call__
+        all_visits_df = pl.from_pandas(physical_visits_to_psychiatry())
+        birthdays_df = pl.from_pandas(birthdays())
+        sex_female_df = pl.from_pandas(sex_female())
+
+        save_dir = Path(experiment_path + "/figures")
+        save_dir.mkdir(parents=True, exist_ok=True)
+
+        figure = single_run_robustness(
+            eval_frame=eval_frame,
+            birthdays=birthdays_df,
+            sex_df=sex_female_df,
+            all_visits_df=all_visits_df,
+        )
+
+        figure.savefig(save_dir / f"{feature_set}_ect_robustness_plot.png")

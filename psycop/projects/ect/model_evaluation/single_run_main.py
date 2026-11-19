@@ -135,7 +135,7 @@ if __name__ == "__main__":
         figure = single_run_main(
             eval_df=experiment_df,
             group_auroc_experiments=ExperimentWithNames(feature_set_eval_dfs),
-            desired_positive_rate=0.02,
+            desired_positive_rate=0.075,
             outcome_label="ECT",
             first_letter_index=0,
         )

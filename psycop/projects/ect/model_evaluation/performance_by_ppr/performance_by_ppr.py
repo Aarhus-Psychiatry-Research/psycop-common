@@ -132,7 +132,7 @@ def ect_output_performance_by_ppr(
 
     if eval_dir:
         (Path(eval_dir) / "tables").mkdir(parents=True, exist_ok=True)
-        df.to_excel(Path(eval_dir) / "tables" / "performance_by_ppr_test.xlsx", index=False)
+        df.to_excel(Path(eval_dir) / "tables" / "performance_by_ppr.xlsx", index=False)
         return None
 
     return df
