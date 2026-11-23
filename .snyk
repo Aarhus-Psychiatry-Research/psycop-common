@@ -385,4 +385,12 @@ ignore:
     - '*':
         reason: Vulnerability related to Arbitrary Code Injection. SQLparse not used directly in the code. Approved via slack conversation in programming channel on 26-10-28.
         created: 2026-09-14T12:40:00.000Z
+  SNYK-PYTHON-GUNICORN-22743256:
+    - '*':
+        reason: Gunicorn not installed on windows (uvicorn instead). Approved via slack converstaion in programming channel on 23-11-26.
+        created: 2026-11-23T15:27:00.000Z
+  SNYK-PYTHON-GUNICORN-22743310:
+    - '*':
+        reason: Gunicorn not installed on windows (uvicorn instead). Approved via slack converstaion in programming channel on 23-11-26.
+        created: 2026-11-23T15:27:00.000Z
 patch: {}
